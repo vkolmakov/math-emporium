@@ -1,11 +1,17 @@
 import db from 'sequelize-connect';
+import aux from '../aux';
 
 const locationController = {};
+const allowedToRead = ['id', 'name'];
+const allowedToWrite = ['name'];
+
+const extractDataValues = aux.extractDataValues(allowedToRead);
 
 locationController.handleGet = async (req, res, next) => {
     try {
         const locationsRes = await db.models.location.findAll();
-        const locations = locationsRes.map((loc) => loc.dataValues);
+        const locations = locationsRes.map((loc) => extractDataValues(loc));
+
         res.status(200).json(locations);
     } catch (err) {
         next(err);
@@ -17,11 +23,25 @@ locationController.handleGetId = async (req, res, next) => {
         const location = await db.models.location.findOne({
             where: { id: req.params.id },
         });
+
         if (location) {
-            res.status(200).json(location.dataValues);
+            res.status(200).json(extractDataValues(location));
         } else {
             res.status(404).json({});
         }
+    } catch (err) {
+        next(err);
+    }
+};
+
+locationController.handlePost = async (req, res, next) => {
+    try {
+        // TODO: add verification
+        const createdLocation = await db.models.location.create(req.body, {
+            fields: allowedToWrite,
+        });
+
+        res.status(201).json(extractDataValues(createdLocation));
     } catch (err) {
         next(err);
     }
@@ -44,34 +64,12 @@ locationController.handleDelete = async (req, res, next) => {
     }
 };
 
-locationController.handlePost = (req, res, next) => {
-    db.sequelize.transaction(async (transaction) => {
-        try {
-            // TODO: add verification
-
-            const createdLocation = await db.models.location.create({
-                name: req.body.name,
-            }, {
-                transaction,
-            });
-            res.status(201).json({
-                id: createdLocation.dataValues.id,
-                name: createdLocation.dataValues.name,
-            });
-        } catch (err) {
-            next(err);
-        }
-    });
-};
-
 locationController.handleUpdate = async (req, res, next) => {
     try {
-        const updatedLocation = await db.models.location.update({
-            name: req.body.name,
-        }, {
+        const updatedLocation = await db.models.location.update(req.body, {
+            fields: allowedToWrite,
             where: { id: req.params.id },
         });
-        console.log(updatedLocation);
 
         if (updatedLocation[0]) {
             res.status(200).json({
@@ -81,6 +79,7 @@ locationController.handleUpdate = async (req, res, next) => {
         } else {
             throw (Error('Location not found'));
         }
+        // TODO: send a better response
         res.status(200);
     } catch (err) {
         next(err);
