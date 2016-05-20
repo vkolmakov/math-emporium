@@ -41,18 +41,11 @@ courseController.handleGetId = async (req, res, next) => {
 
 courseController.handlePost = async (req, res, next) => {
     try {
-        if (!isObject(req.body.location)) {
+        if (!isObject(req.body.location) || !hasOneOf(req.body.location, 'name', 'id')) {
             throw Error('"location" object (with "name" or "id" field) is required');
         }
 
-        const location = await db.models.location.findOne({
-            where: {
-                $or: [
-                    { id: req.body.location.id },
-                    { name: req.body.location.name },
-                ],
-            },
-        });
+        const location = await db.models.location.findIfExists(req.body.location);
 
         if (!location) {
             throw Error('Selected location does not exist');
@@ -100,14 +93,7 @@ courseController.handleUpdate = async (req, res, next) => {
         let location;
         if (hasOneOf(req.body, 'location')) {
             if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
-                location = await db.models.location.findOne({
-                    where: {
-                        $or: [
-                            { id: req.body.location.id },
-                            { name: req.body.location.name },
-                        ],
-                    },
-                });
+                location = await db.models.location.findIfExists(req.body.location);
 
                 if (!location) {
                     throw Error('Location does not exist');

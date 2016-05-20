@@ -15,6 +15,6 @@ aux.extractDataValues = (allowedFields) => {
 
 aux.isObject = (obj) => obj === Object(obj);
 
-aux.hasOneOf = (obj, ...props) => [...props].some((prop) => Object.keys(obj).indexOf(prop) > -1);
+aux.hasOneOf = (obj, ...keys) => [...keys].some((key) => Object.keys(obj).indexOf(key) > -1);
 
 module.exports = aux;
