@@ -118,10 +118,6 @@ tutorController.handleUpdate = async (req, res, next) => {
                 throw Error('"courses" must be an array with course objects that have "id" properties');
             }
         }
-
-        // const assoc = await updatedTutor.getCourses();
-        // console.log(assoc);
-
         // updating general info
         const result = await updatedTutor.update(req.body, {
             include: relatedModels,

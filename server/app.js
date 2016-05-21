@@ -32,6 +32,7 @@ function connect() {
         ['locations', 'private'],
         ['courses', 'private'],
         ['tutors', 'private'],
+        ['schedules', 'private'],
     ];
 
     crudRoutes.forEach((route) => app.use('/api', createCrudRouter(...route)));

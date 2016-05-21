@@ -1,7 +1,10 @@
 export default function createScheduleModel(sequelize, DataTypes) {
     const schedule = sequelize.define('schedule', {
+        // TODO: Add custom validator: make sure that there's one and only one
+        //       pair of weekday and time for a given location
         weekday: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
+            // TODO: Make sure it's between 0 and 6 inclusive
             allowNull: false,
         },
         time: {
@@ -18,8 +21,8 @@ export default function createScheduleModel(sequelize, DataTypes) {
         timestamps: false,
         classMethods: {
             associate(models) {
-                schedule.belongsToMany(models.tutor, { through: 'schedule_tutor' });
-                schedule.belongsTo(models.location);
+                schedule.belongsToMany(models.tutor, { through: 'schedule_tutor', as: 'tutors' });
+                schedule.belongsTo(models.location, { as: 'location' });
             },
         },
     });
