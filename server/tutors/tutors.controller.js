@@ -7,9 +7,9 @@ const Location = db.models.location;
 const Tutor = db.models.tutor;
 const Course = db.models.course;
 
-const allowedToRead = ['id', 'name', 'location']; // TODO: Add courses and schedules
+const allowedToRead = ['id', 'name', 'location', 'courses']; // TODO: Add courses and schedules
 const allowedToWrite = ['name']; // TODO: Add courses and schedules
-const relatedModels = [Location, Course];
+const relatedModels = [Location, { model: Course, as: 'courses' }];
 
 const extractDataValues = aux.extractDataValues(allowedToRead);
 const isObject = aux.isObject;
@@ -111,16 +111,16 @@ tutorController.handleUpdate = async (req, res, next) => {
 
         // possibly updating courses
         if (hasOneOf(req.body, 'courses')) {
-            if (isObject(req.body.courses) && hasOneOf(req.body.courses[0], 'id')) {
+            if (isObject(req.body.courses) && (hasOneOf(req.body.courses[0], 'id') || req.body.courses.length === 0)) {
                 // check if first element of the array is a valid course
-                await updatedTutor.addCourses(req.body.courses.map((course) => course.id));
+                await updatedTutor.setCourses(req.body.courses.map((course) => course.id));
             } else {
                 throw Error('"courses" must be an array with course objects that have "id" properties');
             }
         }
 
-        const assoc = await updatedTutor.getCourses();
-        console.log(assoc);
+        // const assoc = await updatedTutor.getCourses();
+        // console.log(assoc);
 
         // updating general info
         const result = await updatedTutor.update(req.body, {

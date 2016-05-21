@@ -1,5 +1,12 @@
 const aux = {};
 
+aux.isObject = (obj) => obj === Object(obj);
+
+aux.hasOneOf = (obj, ...keys) => {
+    console.log(obj);
+    return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
+};
+
 aux.extractDataValues = (allowedFields) => {
     // returns a function that takes in a result from sequelize query
     // and filters them using predefined array of allowedFields
@@ -12,9 +19,5 @@ aux.extractDataValues = (allowedFields) => {
         }, {});
     };
 };
-
-aux.isObject = (obj) => obj === Object(obj);
-
-aux.hasOneOf = (obj, ...keys) => [...keys].some((key) => Object.keys(obj).indexOf(key) > -1);
 
 module.exports = aux;

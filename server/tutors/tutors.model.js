@@ -8,7 +8,7 @@ export default function createTutorModel(sequelize, DataTypes) {
         timestamps: false,
         classMethods: {
             associate(models) {
-                tutor.belongsToMany(models.course, { through: 'tutor_course' });
+                tutor.belongsToMany(models.course, { through: 'tutor_course', as: 'courses' });
                 tutor.belongsToMany(models.schedule, { through: 'schedule_tutor' });
                 tutor.belongsTo(models.location);
             },

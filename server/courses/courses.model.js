@@ -20,7 +20,7 @@ export default function createCourseModel(sequelize, DataTypes) {
         timestamps: false,
         classMethods: {
             associate(models) {
-                course.belongsToMany(models.tutor, { through: 'tutor_course' });
+                course.belongsToMany(models.tutor, { through: 'tutor_course', as: 'tutors' });
                 course.belongsTo(models.location);
             },
         },
