@@ -9,11 +9,11 @@ import createCrudRouter from './crudRouter';
 const app = express();
 const port = 3000;
 
-async function connect() {
+function connect() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model.js/);
 
-    await db.connect('mathcenterappdb', 'postgres', '', {
+    return db.connect('mathcenterappdb', 'postgres', '', {
         force: false,
         dialect: 'postgres',
     });
@@ -28,9 +28,13 @@ async function connect() {
 
     app.use(bodyParser.json());
 
-    app.use('/api', createCrudRouter('locations', 'private'));
-    app.use('/api', createCrudRouter('courses', 'private'));
-    app.use('/api', createCrudRouter('tutors', 'private'));
+    const crudRoutes = [
+        ['locations', 'private'],
+        ['courses', 'private'],
+        ['tutors', 'private'],
+    ];
+
+    crudRoutes.forEach((route) => app.use('/api', createCrudRouter(...route)));
 
     app.listen(port, () => console.log(`Running on port ${port}`));
 })();
