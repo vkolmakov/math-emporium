@@ -2,17 +2,23 @@ import db from 'sequelize-connect';
 import aux from '../aux';
 
 const courseController = {};
+
+const Location = db.models.location;
+const Course = db.models.course;
+
 const allowedToRead = ['id', 'name', 'code', 'color', 'location'];
 const allowedToWrite = ['name', 'code', 'color'];
+const relatedModels = [Location];
 
 const extractDataValues = aux.extractDataValues(allowedToRead);
 const isObject = aux.isObject;
 const hasOneOf = aux.hasOneOf;
 
+
 courseController.handleGet = async (req, res, next) => {
     try {
-        const coursesRes = await db.models.course.findAll({
-            include: db.models.location,
+        const coursesRes = await Course.findAll({
+            include: relatedModels,
         });
         const courses = coursesRes.map((course) => extractDataValues(course));
 
@@ -22,11 +28,12 @@ courseController.handleGet = async (req, res, next) => {
     }
 };
 
+
 courseController.handleGetId = async (req, res, next) => {
     try {
         // TODO: verify id's an integer
-        const course = await db.models.course.findOne({
-            include: db.models.location,
+        const course = await Course.findOne({
+            include: relatedModels,
             where: { id: req.params.id },
         });
         if (course) {
@@ -45,17 +52,17 @@ courseController.handlePost = async (req, res, next) => {
             throw Error('"location" object (with "name" or "id" field) is required');
         }
 
-        const location = await db.models.location.findIfExists(req.body.location);
+        const location = await Location.findIfExists(req.body.location);
 
         if (!location) {
             throw Error('Selected location does not exist');
         }
 
-        const createdCourse = db.models.course.build(req.body, {
+        const createdCourse = Course.build(req.body, {
             fields: allowedToWrite,
         });
 
-        await createdCourse.setLocation(location);
+        await createdCourse.setLocation(location, { save: false });
         await createdCourse.save();
 
         res.status(201).json(extractDataValues(createdCourse));
@@ -66,7 +73,7 @@ courseController.handlePost = async (req, res, next) => {
 
 courseController.handleDelete = async (req, res, next) => {
     try {
-        const removedCourse = await db.models.course.destroy({
+        const removedCourse = await Course.destroy({
             where: { id: req.params.id },
         });
         if (removedCourse) {
@@ -81,8 +88,8 @@ courseController.handleDelete = async (req, res, next) => {
 
 courseController.handleUpdate = async (req, res, next) => {
     try {
-        const updatedCourse = await db.models.course.findOne({
-            include: db.models.location,
+        const updatedCourse = await Course.findOne({
+            include: relatedModels,
             where: { id: req.params.id },
         });
 
@@ -93,7 +100,7 @@ courseController.handleUpdate = async (req, res, next) => {
         let location;
         if (hasOneOf(req.body, 'location')) {
             if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
-                location = await db.models.location.findIfExists(req.body.location);
+                location = await Location.findIfExists(req.body.location);
 
                 if (!location) {
                     throw Error('Location does not exist');
@@ -105,7 +112,7 @@ courseController.handleUpdate = async (req, res, next) => {
         }
 
         const result = await updatedCourse.update(req.body, {
-            include: db.models.location,
+            include: relatedModels,
             fields: allowedToWrite,
         });
 

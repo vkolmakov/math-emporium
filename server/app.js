@@ -30,6 +30,7 @@ async function connect() {
 
     app.use('/api', createCrudRouter('locations', 'private'));
     app.use('/api', createCrudRouter('courses', 'private'));
+    app.use('/api', createCrudRouter('tutors', 'private'));
 
     app.listen(port, () => console.log(`Running on port ${port}`));
 })();

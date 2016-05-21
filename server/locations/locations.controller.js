@@ -7,9 +7,11 @@ const allowedToWrite = ['name'];
 
 const extractDataValues = aux.extractDataValues(allowedToRead);
 
+const Location = db.models.location;
+
 locationController.handleGet = async (req, res, next) => {
     try {
-        const locationsRes = await db.models.location.findAll();
+        const locationsRes = await Location.findAll();
         const locations = locationsRes.map((loc) => extractDataValues(loc));
 
         res.status(200).json(locations);
@@ -20,7 +22,7 @@ locationController.handleGet = async (req, res, next) => {
 
 locationController.handleGetId = async (req, res, next) => {
     try {
-        const location = await db.models.location.findOne({
+        const location = await Location.findOne({
             where: { id: req.params.id },
         });
 
@@ -37,7 +39,7 @@ locationController.handleGetId = async (req, res, next) => {
 locationController.handlePost = async (req, res, next) => {
     try {
         // TODO: add verification
-        const createdLocation = await db.models.location.create(req.body, {
+        const createdLocation = await Location.create(req.body, {
             fields: allowedToWrite,
         });
 
@@ -49,7 +51,7 @@ locationController.handlePost = async (req, res, next) => {
 
 locationController.handleDelete = async (req, res, next) => {
     try {
-        const removedLocation = await db.models.location.destroy({
+        const removedLocation = await Location.destroy({
             where: { id: req.params.id },
         });
         if (removedLocation) {
@@ -66,7 +68,7 @@ locationController.handleDelete = async (req, res, next) => {
 
 locationController.handleUpdate = async (req, res, next) => {
     try {
-        const updatedLocation = await db.models.location.update(req.body, {
+        const updatedLocation = await Location.update(req.body, {
             fields: allowedToWrite,
             where: { id: req.params.id },
         });
