@@ -11,10 +11,10 @@ aux.extractDataValues = (allowedFields) => {
     // returns a function that takes in a result from sequelize query
     // and filters them using predefined array of allowedFields
     return (sequelizeRes) => {
-        let data = sequelizeRes.dataValues;
+        let data = sequelizeRes;
         // Grab only the allowed fields
         return allowedFields.reduce((result, fieldName) => {
-            result[fieldName] = data[fieldName];
+            result[fieldName] = data.get(fieldName);
             return result;
         }, {});
     };

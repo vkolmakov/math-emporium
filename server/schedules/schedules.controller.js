@@ -35,8 +35,8 @@ scheduleController.handleGetId = async (req, res, next) => {
             include: relatedModels,
             where: { id: req.params.id },
         });
-
-        console.log(scheduleRes);
+        console.dir(scheduleRes.get('location'));
+        // console.log(scheduleRes);
         if (scheduleRes) {
             res.status(200).json(extractDataValues(scheduleRes));
         } else {

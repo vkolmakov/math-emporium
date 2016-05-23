@@ -35,7 +35,7 @@ function connect() {
         ['schedules', 'private'],
     ];
 
-    crudRoutes.forEach((route) => app.use('/api', createCrudRouter(...route)));
+    crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
 
     app.listen(port, () => console.log(`Running on port ${port}`));
 })();
