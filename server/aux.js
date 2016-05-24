@@ -3,7 +3,6 @@ const aux = {};
 aux.isObject = (obj) => obj === Object(obj);
 
 aux.hasOneOf = (obj, ...keys) => {
-    console.log(obj);
     return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
 };
 

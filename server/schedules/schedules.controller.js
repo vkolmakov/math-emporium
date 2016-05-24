@@ -7,7 +7,7 @@ const Schedule = db.models.schedule;
 const Location = db.models.location;
 const Tutor = db.models.tutor;
 
-const allowedToRead = ['id', 'weekday', 'time', 'location'];
+const allowedToRead = ['id', 'weekday', 'time', 'location', 'tutors'];
 const allowedToWrite = ['weekday', 'time'];
 const relatedModels = [{ model: Location, as: 'location' },
                        { model: Tutor, as: 'tutors' }];
@@ -35,8 +35,6 @@ scheduleController.handleGetId = async (req, res, next) => {
             include: relatedModels,
             where: { id: req.params.id },
         });
-        console.dir(scheduleRes.get('location'));
-        // console.log(scheduleRes);
         if (scheduleRes) {
             res.status(200).json(extractDataValues(scheduleRes));
         } else {
@@ -87,7 +85,46 @@ scheduleController.handleDelete = async (req, res, next) => {
 };
 
 scheduleController.handleUpdate = async (req, res, next) => {
-    res.status(400).json({});
+    try {
+        const updatedSchedule = await Schedule.findOne({
+            include: relatedModels,
+            where: { id: req.params.id },
+        });
+
+        if (!updatedSchedule) {
+            throw Error('Schedule not found');
+        }
+
+        // updating location
+        if (hasOneOf(req.body, 'location')) {
+            let location;
+            if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
+                location = await Location.findIfExists(req.body.location);
+                if (!location) {
+                    throw Error('Location does not exists');
+                }
+            } else {
+                throw Error('"location" object (with "name" or "id" field) is required to update the location');
+            }
+            await updatedSchedule.setLocation(location);
+        }
+        // updating tutors
+        if (hasOneOf(req.body, 'tutors')) {
+            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id') || req.body.courses.tutors === 0)) {
+                // check if first element of the array is a valid tutor object
+                await updatedSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
+            } else {
+                throw Error('"tutors" must be an array with tutor objects that have "id" properties');
+            }
+        }
+        const result = await updatedSchedule.update(req.body, {
+            include: relatedModels,
+            fields: allowedToWrite,
+        });
+        res.status(200).json(extractDataValues(result));
+    } catch (err) {
+        next(err);
+    }
 };
 
 module.exports = scheduleController;
