@@ -1,11 +1,11 @@
 import db from 'sequelize-connect';
-import aux from '../aux';
+import { createExtractDataValuesFunction } from '../aux';
 
 const locationController = {};
 const allowedToRead = ['id', 'name'];
 const allowedToWrite = ['name'];
 
-const extractDataValues = aux.extractDataValues(allowedToRead);
+const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 const Location = db.models.location;
 

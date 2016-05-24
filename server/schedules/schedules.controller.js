@@ -1,5 +1,5 @@
 import db from 'sequelize-connect';
-import aux from '../aux';
+import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
 
 const scheduleController = {};
 
@@ -12,9 +12,7 @@ const allowedToWrite = ['weekday', 'time'];
 const relatedModels = [{ model: Location, as: 'location' },
                        { model: Tutor, as: 'tutors' }];
 
-const extractDataValues = aux.extractDataValues(allowedToRead);
-const isObject = aux.isObject;
-const hasOneOf = aux.hasOneOf;
+const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 scheduleController.handleGet = async (req, res, next) => {
     try {

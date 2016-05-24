@@ -6,7 +6,7 @@ aux.hasOneOf = (obj, ...keys) => {
     return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
 };
 
-aux.extractDataValues = (allowedFields) => {
+aux.createExtractDataValuesFunction = (allowedFields) => {
     // returns a function that takes in a result from sequelize query
     // and filters them using predefined array of allowedFields
     return (sequelizeRes) => {

@@ -1,5 +1,5 @@
 import db from 'sequelize-connect';
-import aux from '../aux';
+import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
 
 const courseController = {};
 
@@ -10,10 +10,7 @@ const allowedToRead = ['id', 'name', 'code', 'color', 'location'];
 const allowedToWrite = ['name', 'code', 'color'];
 const relatedModels = [Location];
 
-const extractDataValues = aux.extractDataValues(allowedToRead);
-const isObject = aux.isObject;
-const hasOneOf = aux.hasOneOf;
-
+const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 courseController.handleGet = async (req, res, next) => {
     try {
