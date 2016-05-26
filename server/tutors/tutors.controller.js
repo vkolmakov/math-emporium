@@ -1,5 +1,5 @@
 import db from 'sequelize-connect';
-import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
+import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
 
 const Location = db.models.location;
 const Tutor = db.models.tutor;
@@ -14,6 +14,7 @@ const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 export const handleGet = async (req, res, next) => {
     try {
         const tutorsRes = await Tutor.findAll({
+            where: transformRequestToQuery(req.body),
             include: relatedModels,
         });
         const tutors = tutorsRes.map((tutor) => extractDataValues(tutor));
@@ -57,6 +58,17 @@ export const handlePost = async (req, res, next) => {
         });
         await createdTutor.setLocation(location, { save: false });
         await createdTutor.save();
+
+        // possibly adding courses
+        if (hasOneOf(req.body, 'courses')) {
+            if (isObject(req.body.courses) && (hasOneOf(req.body.courses[0], 'id') || req.body.courses.length === 0)) {
+                // check if first element of the array is a valid course
+                await createdTutor.setCourses(req.body.courses.map((course) => course.id));
+            } else {
+                // TODO: inform user that tutor was created but with no courses set
+                throw Error('"courses" must be an array with course objects that have "id" properties');
+            }
+        }
 
         res.status(201).json(extractDataValues(createdTutor));
     } catch (err) {

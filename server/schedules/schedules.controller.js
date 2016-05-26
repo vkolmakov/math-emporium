@@ -1,5 +1,5 @@
 import db from 'sequelize-connect';
-import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
+import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
 
 const Schedule = db.models.schedule;
 const Location = db.models.location;
@@ -15,6 +15,7 @@ const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 export const handleGet = async (req, res, next) => {
     try {
         const schedulesRes = await Schedule.findAll({
+            where: transformRequestToQuery(req.body),
             include: relatedModels,
         });
         const schedules = schedulesRes.map((schedule) => extractDataValues(schedule));
@@ -56,8 +57,21 @@ export const handlePost = async (req, res, next) => {
         const createdSchedule = Schedule.build(req.body, {
             fields: allowedToWrite,
         });
+
         await createdSchedule.setLocation(location, { save: false });
+
         await createdSchedule.save();
+
+        // setting tutors, if provided
+        if (hasOneOf(req.body, 'tutors')) {
+            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id') || req.body.courses.tutors === 0)) {
+                // check if first element of the array is a valid tutor object
+                await createdSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
+            } else {
+                // TODO: let user know that schedule was created, but tutors we're not added
+                throw Error('"tutors" must be an array with tutor objects that have "id" properties');
+            }
+        }
 
         res.status(201).json(extractDataValues(createdSchedule));
     } catch (err) {
