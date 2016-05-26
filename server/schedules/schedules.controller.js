@@ -1,8 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
 
-const scheduleController = {};
-
 const Schedule = db.models.schedule;
 const Location = db.models.location;
 const Tutor = db.models.tutor;
@@ -14,7 +12,7 @@ const relatedModels = [{ model: Location, as: 'location' },
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
-scheduleController.handleGet = async (req, res, next) => {
+export const handleGet = async (req, res, next) => {
     try {
         const schedulesRes = await Schedule.findAll({
             include: relatedModels,
@@ -27,7 +25,7 @@ scheduleController.handleGet = async (req, res, next) => {
     }
 };
 
-scheduleController.handleGetId = async (req, res, next) => {
+export const handleGetId = async (req, res, next) => {
     try {
         const scheduleRes = await Schedule.find({
             include: relatedModels,
@@ -43,7 +41,7 @@ scheduleController.handleGetId = async (req, res, next) => {
     }
 };
 
-scheduleController.handlePost = async (req, res, next) => {
+export const handlePost = async (req, res, next) => {
     try {
         if (!isObject(req.body.location)) {
             throw Error('"location" object (with "name" or "id" field) is required');
@@ -67,7 +65,7 @@ scheduleController.handlePost = async (req, res, next) => {
     }
 };
 
-scheduleController.handleDelete = async (req, res, next) => {
+export const handleDelete = async (req, res, next) => {
     try {
         const removedSchedule = await Schedule.destroy({
             where: { id: req.params.id },
@@ -82,7 +80,7 @@ scheduleController.handleDelete = async (req, res, next) => {
     }
 };
 
-scheduleController.handleUpdate = async (req, res, next) => {
+export const handleUpdate = async (req, res, next) => {
     try {
         const updatedSchedule = await Schedule.findOne({
             include: relatedModels,
@@ -124,5 +122,3 @@ scheduleController.handleUpdate = async (req, res, next) => {
         next(err);
     }
 };
-
-module.exports = scheduleController;

@@ -1,8 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
 
-const tutorController = {};
-
 const Location = db.models.location;
 const Tutor = db.models.tutor;
 const Course = db.models.course;
@@ -13,8 +11,7 @@ const relatedModels = [Location, { model: Course, as: 'courses' }];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
-
-tutorController.handleGet = async (req, res, next) => {
+export const handleGet = async (req, res, next) => {
     try {
         const tutorsRes = await Tutor.findAll({
             include: relatedModels,
@@ -27,7 +24,7 @@ tutorController.handleGet = async (req, res, next) => {
     }
 };
 
-tutorController.handleGetId = async (req, res, next) => {
+export const handleGetId = async (req, res, next) => {
     try {
         const tutor = await Tutor.findOne({
             where: { id: req.params.id },
@@ -43,7 +40,7 @@ tutorController.handleGetId = async (req, res, next) => {
     }
 };
 
-tutorController.handlePost = async (req, res, next) => {
+export const handlePost = async (req, res, next) => {
     try {
         if (!isObject(req.body.location)) {
             throw Error('"location" object (with "name" or "id" field) is required');
@@ -67,7 +64,7 @@ tutorController.handlePost = async (req, res, next) => {
     }
 };
 
-tutorController.handleDelete = async (req, res, next) => {
+export const handleDelete = async (req, res, next) => {
     try {
         const removedTutor = await Tutor.destroy({
             where: { id: req.params.id },
@@ -83,7 +80,7 @@ tutorController.handleDelete = async (req, res, next) => {
     }
 };
 
-tutorController.handleUpdate = async (req, res, next) => {
+export const handleUpdate = async (req, res, next) => {
     try {
         const updatedTutor = await Tutor.findOne({
             include: relatedModels,
@@ -127,5 +124,3 @@ tutorController.handleUpdate = async (req, res, next) => {
         next(err);
     }
 };
-
-module.exports = tutorController;

@@ -1,7 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction } from '../aux';
 
-const locationController = {};
 const allowedToRead = ['id', 'name'];
 const allowedToWrite = ['name'];
 
@@ -9,7 +8,7 @@ const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 const Location = db.models.location;
 
-locationController.handleGet = async (req, res, next) => {
+export const handleGet = async (req, res, next) => {
     try {
         const locationsRes = await Location.findAll();
         const locations = locationsRes.map((loc) => extractDataValues(loc));
@@ -20,7 +19,7 @@ locationController.handleGet = async (req, res, next) => {
     }
 };
 
-locationController.handleGetId = async (req, res, next) => {
+export const handleGetId = async (req, res, next) => {
     try {
         const location = await Location.findOne({
             where: { id: req.params.id },
@@ -36,7 +35,7 @@ locationController.handleGetId = async (req, res, next) => {
     }
 };
 
-locationController.handlePost = async (req, res, next) => {
+export const handlePost = async (req, res, next) => {
     try {
         // TODO: add verification
         const createdLocation = await Location.create(req.body, {
@@ -49,7 +48,7 @@ locationController.handlePost = async (req, res, next) => {
     }
 };
 
-locationController.handleDelete = async (req, res, next) => {
+export const handleDelete = async (req, res, next) => {
     try {
         const removedLocation = await Location.destroy({
             where: { id: req.params.id },
@@ -66,7 +65,7 @@ locationController.handleDelete = async (req, res, next) => {
     }
 };
 
-locationController.handleUpdate = async (req, res, next) => {
+export const handleUpdate = async (req, res, next) => {
     try {
         const updatedLocation = await Location.update(req.body, {
             fields: allowedToWrite,
@@ -87,5 +86,3 @@ locationController.handleUpdate = async (req, res, next) => {
         next(err);
     }
 };
-
-module.exports = locationController;
