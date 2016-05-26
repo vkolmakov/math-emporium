@@ -1,7 +1,5 @@
 import db from 'sequelize-connect';
-import { createExtractDataValuesFunction, isObject, hasOneOf } from '../aux';
-
-const courseController = {};
+import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
 
 const Location = db.models.location;
 const Course = db.models.course;
@@ -12,12 +10,13 @@ const relatedModels = [Location];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
-courseController.handleGet = async (req, res, next) => {
+export const handleGet = async (req, res, next) => {
     try {
         const coursesRes = await Course.findAll({
+            where: transformRequestToQuery(req.body),
             include: relatedModels,
         });
-        const courses = coursesRes.map((course) => extractDataValues(course));
+        const courses = coursesRes.map((courseRes) => extractDataValues(courseRes));
 
         res.status(200).json(courses);
     } catch (err) {
@@ -26,7 +25,7 @@ courseController.handleGet = async (req, res, next) => {
 };
 
 
-courseController.handleGetId = async (req, res, next) => {
+export const handleGetId = async (req, res, next) => {
     try {
         // TODO: verify id's an integer
         const course = await Course.findOne({
@@ -43,7 +42,7 @@ courseController.handleGetId = async (req, res, next) => {
     }
 };
 
-courseController.handlePost = async (req, res, next) => {
+export const handlePost = async (req, res, next) => {
     try {
         if (!isObject(req.body.location) || !hasOneOf(req.body.location, 'name', 'id')) {
             throw Error('"location" object (with "name" or "id" field) is required');
@@ -68,7 +67,7 @@ courseController.handlePost = async (req, res, next) => {
     }
 };
 
-courseController.handleDelete = async (req, res, next) => {
+export const handleDelete = async (req, res, next) => {
     try {
         const removedCourse = await Course.destroy({
             where: { id: req.params.id },
@@ -83,7 +82,7 @@ courseController.handleDelete = async (req, res, next) => {
     }
 };
 
-courseController.handleUpdate = async (req, res, next) => {
+export const handleUpdate = async (req, res, next) => {
     try {
         const updatedCourse = await Course.findOne({
             include: relatedModels,
@@ -118,5 +117,3 @@ courseController.handleUpdate = async (req, res, next) => {
         next(err);
     }
 };
-
-module.exports = courseController;

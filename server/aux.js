@@ -1,12 +1,12 @@
-const aux = {};
+export function isObject(obj) {
+    return obj === Object(obj);
+}
 
-aux.isObject = (obj) => obj === Object(obj);
-
-aux.hasOneOf = (obj, ...keys) => {
+export function hasOneOf(obj, ...keys) {
     return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
-};
+}
 
-aux.createExtractDataValuesFunction = (allowedFields) => {
+export function createExtractDataValuesFunction(allowedFields) {
     // returns a function that takes in a result from sequelize query
     // and filters them using predefined array of allowedFields
     return (sequelizeRes) => {
@@ -17,6 +17,20 @@ aux.createExtractDataValuesFunction = (allowedFields) => {
             return result;
         }, {});
     };
-};
+}
 
-module.exports = aux;
+export function transformRequestToQuery(data) {
+    // takes in a request and returns an appropriate query object
+    // after modifying tartet keys that may specify one-to-one or many-to-many relations
+    // for Location, Course, and Tutor models.
+    let queryParams = { ...data };
+
+    // case when request contains location
+    if (isObject(data.location) && hasOneOf(data.location, 'id')) {
+        // removing original location key from request
+        delete queryParams.location;
+        // adding indendifier for the database query
+        queryParams = { ...queryParams, locationId: data.location.id };
+    }
+    return queryParams;
+}
