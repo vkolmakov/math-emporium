@@ -11,7 +11,7 @@ const port = 3000;
 
 function connect() {
     db.discover = path.join(__dirname);
-    db.matcher = (file) => !!file.match(/.+\.model.js/);
+    db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
     return db.connect('mathcenterappdb', 'postgres', '', {
         force: false,
