@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
+import EditingAppReducers from './editingApp/reducers';
 
 const rootReducer = combineReducers({
-  state: (state = {}) => state
+    ...EditingAppReducers,
 });
 
 export default rootReducer;

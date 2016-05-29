@@ -1,0 +1,161 @@
+@import "~susy/sass/susy";
+@import "~breakpoint-sass/stylesheets/breakpoint";
+@import "~compass-mixins/lib/compass";
+
+
+$susy: (
+    colums: 12,
+    /* debug: (image: show), */
+    global-box-sizing: border-sizing
+);
+
+
+// COLORS
+$background-color: #fff;
+
+// buttons
+$button-color: #ececec;
+$button-text-color: #000;
+
+// tables
+$table-border-color: #7a98c6;
+
+// SIZES
+$large-text: 36px;
+$medium-text: 18px;
+$small-text: 12px;
+
+$large-margin: 16px;
+$medium-margin: 8px;
+$small-margin: 4px;
+
+$medium-screen: 480px;
+
+// MIXINS
+
+@mixin rounded-border {
+    @include border-radius (5px);
+    border: 2px solid darken($background-color, 10%);
+}
+
+//
+
+body {
+    background-color: $background-color;
+}
+
+.container {
+    height: 100vh;
+    padding: 20px;
+    @include container();
+}
+
+.button {
+    background: $button-color;
+    color: $button-text-color;
+    padding: $medium-margin;
+    width: 145px;
+    @include rounded-border;
+    @include float-right;
+}
+
+.table {
+    @include span(12 of 12);
+
+    border-spacing: 0px;
+    border-collapse: separate;
+
+    th {
+        text-align: left;
+        display: none;
+        @include breakpoint($medium-screen) {
+            display: table-cell;
+        }
+    }
+
+    td {
+        padding: $small-margin;
+        display: block;
+        &:before {
+            content: attr(data-header)": ";
+            font-weight: bold;
+        }
+
+        @include breakpoint($medium-screen) {
+            display: table-cell;
+            &:before {
+                content: "";
+            }
+        }
+    }
+
+    tr {
+        height: $large-text;
+        border-bottom: 2px solid $table-border-color;
+    }
+
+    td.icon {
+        vertical-align: middle;
+        display: table-cell;
+        text-align: right;
+
+        &:before {
+            content: "";
+        }
+
+        @include breakpoint($medium-screen) {
+            text-align: center;
+        }
+
+    }
+
+
+}
+
+fa-pencil {
+    text-align: center;
+}
+
+// *** FORMS ***
+form {
+    margin: auto;
+    padding: 0px $medium-margin $medium-margin $medium-margin;
+    width: 80%;
+    @include span(12 of 12);
+
+    .form-header {
+        font-size: $large-text;
+        font-weight: bold;
+    }
+}
+
+.form-field {
+    @include span(12 of 12);
+    margin: $medium-margin;
+
+    label {
+        font-size: $medium-text ;
+    }
+
+    .form-input-group {
+        margin-top: $small-margin;
+
+        input, select, textarea {
+            @include rounded-border;
+            outline: none;
+            width: 100%;
+            padding: $small-margin;
+        }
+
+        input {
+            font-size: $medium-text;
+        }
+
+        .form-help {
+            font-size: $small-text;
+            @include float-right();
+        }
+    }
+}
+
+// *** END FORMS ***
