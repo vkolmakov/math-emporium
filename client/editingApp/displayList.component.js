@@ -30,7 +30,7 @@ export default class DisplayList extends Component {
                     </thead>
 
                     <tbody>
-                    {data.map((d) => this.renderData(d))}
+                    {data.map((d) => this.renderDatum(d))}
                     </tbody>
                   </table>
                 </div>
@@ -49,18 +49,30 @@ export default class DisplayList extends Component {
         };
     }
 
-    renderData(datum) {
+    renderDatum(datum) {
         const { dataProps, headers, keyProp, webLink } = this.props.config;
 
         // data-header directive is used to create responsive table
         // make a list of td's according to our datum and config
+        const dataCols = headers.map((h, i) => {
+            let displayValue;
+            if (dataProps[i] === Object(dataProps[i])) {
+                // if given dataProp is object
+                if (datum[dataProps[i].key] === Object(datum[dataProps[i].key])) {
+                    displayValue = datum[dataProps[i].key][dataProps[i].display];
+                } else {
+                    displayValue = 'nil';
+                }
+            } else {
+                displayValue = datum[dataProps[i]];
+            }
 
-        // TODO: add rendering for complex properties and lists
-        const dataCols = headers.map((h, i) => (
-            <td data-header={headers[i]} key={h}>
-              {datum[dataProps[i]]}
-            </td>
-        ));
+            return (
+                <td data-header={headers[i]} key={h}>
+                  {displayValue}
+                </td>
+            );
+        });
 
         // return a table row with data columns and remove+edit buttons
         return (

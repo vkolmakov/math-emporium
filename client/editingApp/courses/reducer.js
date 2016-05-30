@@ -1,16 +1,14 @@
-import { GET_LOCATIONS, SET_CURRENT_LOCATION } from './actions';
+import { GET_COURSES } from './actions';
 
 const INITIAL_STATE = {
     all: [],
-    location: null,
+    course: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-    case GET_LOCATIONS:
+    case GET_COURSES:
         return { ...state, all: action.payload.data };
-    case SET_CURRENT_LOCATION:
-        return { ...state, location: action.payload };
     default:
         return state;
     }

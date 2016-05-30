@@ -31,6 +31,8 @@ $small-margin: 4px;
 
 $medium-screen: 480px;
 
+$max-width-input: 600px;
+
 // MIXINS
 
 @mixin rounded-border {
@@ -42,6 +44,12 @@ $medium-screen: 480px;
 
 body {
     background-color: $background-color;
+}
+
+input, select, textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .container {
@@ -58,6 +66,23 @@ body {
     @include rounded-border;
     @include float-right;
 }
+
+.select {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+
+    display:inline-block;
+    @include rounded-border;
+    background-color: lighten($background-color, 5%);
+    color: darken($background-color, 60%);
+    cursor:pointer;
+    font-size:$medium-text;
+    max-width: $max-width-input;
+    padding: $small-margin;
+}
+
+
 
 .table {
     @include span(12 of 12);
@@ -98,6 +123,7 @@ body {
         vertical-align: middle;
         display: table-cell;
         text-align: right;
+        cursor: pointer;
 
         &:before {
             content: "";
@@ -108,30 +134,27 @@ body {
         }
 
     }
-
-
 }
 
-fa-pencil {
-    text-align: center;
-}
 
 // *** FORMS ***
 form {
     margin: auto;
     padding: 0px $medium-margin $medium-margin $medium-margin;
-    width: 80%;
     @include span(12 of 12);
 
     .form-header {
         font-size: $large-text;
         font-weight: bold;
+        display: block;
     }
 }
 
 .form-field {
     @include span(12 of 12);
-    margin: $medium-margin;
+    margin: $medium-margin auto;
+    display: block;
+    width: 80%;
 
     label {
         font-size: $medium-text ;
@@ -143,6 +166,7 @@ form {
         input, select, textarea {
             @include rounded-border;
             outline: none;
+            max-width: $max-width-input;
             width: 100%;
             padding: $small-margin;
         }
