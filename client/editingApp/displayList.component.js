@@ -18,7 +18,7 @@ export default class DisplayList extends Component {
             return <div className="loading">Loading...</div>;
         } else {
             return (
-                <div className="container">
+                <div className="list-container">
                   <h3>{title}</h3>
                   <table className="table">
                     <thead>
@@ -78,12 +78,12 @@ export default class DisplayList extends Component {
         return (
             <tr key={datum[keyProp]}>
               {dataCols}
-              <td className="icon">
+              <td className="icon" data-header="Edit">
                 <Link to={`${webLink}/${datum[keyProp]}`}>
                   <i className="fa fa-lg fa-pencil" aria-hidden="true"></i>
                 </Link>
               </td>
-              <td className="icon">
+              <td className="icon" data-header="Remove">
                 <i className="fa fa-times"
                    aria-hidden="true"
                    onClick={this.onRemove(datum[keyProp]).bind(this)}></i>
