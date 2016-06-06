@@ -2,206 +2,138 @@
 @import "~breakpoint-sass/stylesheets/breakpoint";
 @import "~compass-mixins/lib/compass";
 
-
 $susy: (
     colums: 12,
-    /* debug: (image: show), */
-    global-box-sizing: border-sizing
+    container: 960px,
+    global-box-sizing: border-box
 );
 
 
-// COLORS
-$background-color: #fff;
+$medium-screen: 700px;
+$small-screen-width: 480px;
 
-// buttons
-$button-color: #ececec;
-$button-text-color: #000;
-
-// tables
-$table-border-color: #7a98c6;
-
-// SIZES
-$large-text: 36px;
-$medium-text: 18px;
-$small-text: 12px;
-
-$large-margin: 16px;
-$medium-margin: 8px;
-$small-margin: 4px;
-
-$medium-screen: 480px;
-
-$max-width-input: 600px;
-
-// MIXINS
-
-@mixin rounded-border {
-    @include border-radius (5px);
-    border: 2px solid darken($background-color, 10%);
-}
-
-//
-
-body {
-    background-color: $background-color;
-}
-
-input, select, textarea {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.container {
-    padding: 20px;
+.wrap {
     @include container();
 }
 
-.button {
-    background: $button-color;
-    color: $button-text-color;
-    padding: $medium-margin;
-    width: 145px;
-    @include rounded-border;
-    @include float-right;
-}
+.content {
+    margin: 0 auto;
 
-.select {
-    -webkit-appearance:none;
-    -moz-appearance:none;
-    appearance:none;
-
-    display:inline-block;
-    @include rounded-border;
-    background-color: lighten($background-color, 5%);
-    color: darken($background-color, 60%);
-    cursor: pointer;
-    font-size: $small-text;
-    max-width: $max-width-input;
-    padding: $small-margin;
-}
-
-
-.list-container {
-    clear: both;
-    display: inline-block;
-    @include span(12 of 12);
-}
-
-
-.table {
-    @include span(12 of 12);
-
-    width: 100%;
-    border-spacing: 0px;
-    border-collapse: separate;
-
-
-    th, td {
-        text-align: left;
+    h2 {
+        margin: 0;
     }
+
+    @include breakpoint($medium-screen) {
+        @include span(9 of 12 last nest); // This container will contain nested things
+    }
+}
+
+.sidebar {
+    background-color: #fafafa;
+    @include clearfix();
+
+    @include breakpoint($medium-screen) {
+        @include span(3 of 12);
+        height: 100vh;
+    }
+}
+
+.form-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(3 of 9);
+    }
+
+    max-width: $small-screen-width;
+    /* margin: 1em auto; */
+
+    input, select {
+        @include box-sizing(border-box);
+        width: 100%;
+    }
+
+    .form-field {
+        margin: 1em auto;
+        /* @include clearfix(); */
+    }
+
+    .form-help {
+        @include float-right();
+    }
+}
+
+.list-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(6 of 9 last);
+    }
+
+    max-width: $small-screen-width;
+    margin: 0 auto;
 
     th {
         display: none;
+
         @include breakpoint($medium-screen) {
             display: table-cell;
+            text-align: left;
         }
     }
 
     td {
         display: block;
+        @include breakpoint($medium-screen) {
+            display: table-cell;
+        }
+
+
         &:before {
             content: attr(data-header)": ";
             font-weight: bold;
             display: inline-block;
-        }
 
-        &:first-child {
-            padding-top: $large-margin;
+            @include breakpoint($medium-screen) {
+                content: "";
+            }
         }
 
         &:last-child {
-            padding-bottom: $large-margin;
-        }
+            padding-bottom: 1em;
 
-        @include breakpoint($medium-screen) {
-            display: table-cell;
-            &:before {
-                content: "";
+            @include breakpoint($medium-screen) {
+                padding: 0.5em;
             }
-            &:first-child {
-                padding-top: 0px;
-            }
-
-            &:last-child {
-                padding-bottom: 0px;
-            }
-
-        }
-    }
-
-    tr {
-        height: $large-text;
-        border-bottom: 2px solid $table-border-color;
-    }
-
-    td.icon {
-        vertical-align: middle;
-        display: table-row;
-        cursor: pointer;
-
-        @include breakpoint($medium-screen) {
-            text-align: center;
-            display: table-cell;
         }
 
     }
 }
 
+.list-controls-wrap {
+    max-width: $small-screen-width;
+    margin: 0 auto;
 
-// *** FORMS ***
-form {
-    padding: 0px $medium-margin $medium-margin $medium-margin;
-    @include span(12 of 12);
-
-    .form-header {
-        font-size: $large-text;
-        font-weight: bold;
-        display: block;
+    @include breakpoint($medium-screen) {
+        @include span(3 of 9);
     }
+
+    select {
+        @include box-sizing(border-box);
+        width: 100%;
+    }
+
 }
 
-.form-field {
-    @include span(12 of 12);
-    margin: $medium-margin auto;
-    max-width: $max-width-input;
-    display: inline-block;
-    width: 100%;
-
-    label {
-        font-size: $medium-text ;
-    }
-
-    .form-input-group {
-        margin-top: $small-margin;
-
-        input, select, textarea {
-            @include rounded-border;
-            outline: none;
-            max-width: $max-width-input;
-            width: 100%;
-            padding: $small-margin;
-        }
-
-        input {
-            font-size: $small-text;
-        }
-
-        .form-help {
-            font-size: $small-text;
-            @include float-right();
-        }
-    }
+@mixin rounded-border {
+    @include border-radius (5px);
+    border: 2px solid darken(white, 10%);
 }
 
-// *** END FORMS ***
+$button-color: #ececec;
+$button-text-color: #000;
+
+.button {
+    background: $button-color;
+    color: $button-text-color;
+    padding: 0.5em;
+    width: 145px;
+    @include rounded-border();
+    @include float-right();
+}

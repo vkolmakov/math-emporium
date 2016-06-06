@@ -83,7 +83,7 @@ export const handleDelete = async (req, res, next) => {
         });
 
         if (removedTutor) {
-            res.status(200).json({});
+            res.status(200).json({ id: req.params.id });
         } else {
             res.status(400).json({});
         }

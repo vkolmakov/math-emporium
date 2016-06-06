@@ -5,7 +5,7 @@ import EditingApp from './editingApp.component';
 import EditingAppMenu from './menu/editingAppMenu.component';
 import EditLocations from './locations/index';
 import EditCourses from './courses/index';
-import EditTutors from './editTutors.component';
+import EditTutors from './tutors/index';
 import EditSchedules from './editSchedules.component';
 
 export default(

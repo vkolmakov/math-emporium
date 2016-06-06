@@ -55,7 +55,7 @@ export const handleDelete = async (req, res, next) => {
         });
         if (removedLocation) {
             // TODO: send proper success message
-            res.status(200).json({});
+            res.status(200).json({ id: req.params.id });
         } else {
             // TODO: send proper error message
             res.status(404).json({});
