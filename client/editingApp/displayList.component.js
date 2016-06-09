@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 
 import axios from 'axios';
 
-
 /*
  * Takes in data list
  *          config object
@@ -18,8 +17,7 @@ export default class DisplayList extends Component {
             return <div className="loading">Loading...</div>;
         } else {
             return (
-                <div className="list-container">
-                  <h3>{title}</h3>
+                <div className="list-wrap">
                   <table className="table">
                     <thead>
                       <tr>

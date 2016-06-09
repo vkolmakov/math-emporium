@@ -6,8 +6,7 @@ import { getTutors, deleteTutor } from './actions';
 import { getCourses } from '../courses/actions';
 
 import Table from '../components/table/index';
-import CreateTutorForm from './form.component';
-
+import CreateTutorForm from './createTutorForm.component';
 
 class EditTutors extends Component {
     componentWillMount() {

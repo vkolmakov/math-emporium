@@ -27,8 +27,6 @@ export function createCourse(data) {
     };
     const request = axios.post(`${API_URL}${API_TYPE}${EXTENSION}`, requestData);
 
-    console.log(request);
-
     return {
         type: CREATE_COURSE,
         payload: request,

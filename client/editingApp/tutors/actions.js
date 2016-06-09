@@ -3,6 +3,7 @@ import axios from 'axios';
 export const GET_TUTORS = 'GET_TUTORS';
 export const CREATE_TUTOR = 'CREATE_TUTOR';
 export const DELETE_TUTOR = 'DELETE_TUTOR';
+export const UPDATE_TUTOR = 'UPDATE_TUTOR';
 
 const BASE_URL = '/api/private/tutors';
 
@@ -36,5 +37,14 @@ export function deleteTutor(id) {
     return {
         type: DELETE_TUTOR,
         payload: request,
+    };
+}
+
+export function updateTutor(id, data) {
+    console.log(id, data);
+
+    return {
+        type: UPDATE_TUTOR,
+        payload: data,
     };
 }

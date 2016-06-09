@@ -26,11 +26,9 @@ export function createLocation(data) {
     };
 }
 
-export function setCurrentLocation(location) {
-    console.log(location);
-
+export function setCurrentLocation(locationId) {
     return {
         type: SET_CURRENT_LOCATION,
-        payload: location,
+        payload: locationId,
     };
 }
