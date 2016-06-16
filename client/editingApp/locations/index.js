@@ -1,28 +1,13 @@
 import React, { Component } from 'react';
-import CreateLocationForm from './form.component'; // TODO: make a generic form
-import DisplayList from '../displayList.component';
-
 import { connect } from 'react-redux';
 
-import { getLocations, createLocation } from './actions';
+import { BASE_PATH } from '../constants';
 
-const listConfig = {
-    title: 'Locations',
-    headers: ['Name', 'ID'],
-    dataProps: ['name', 'id'],
-    keyProp: 'id',
-    apiLink: '/api/private/locations',
-    webLink: '/edit-schedule/locations',
-};
+import { getLocations, deleteLocation } from './actions';
 
-const formConfig = {
-    form: 'LocationForm',
-    title: 'Add a New Location',
-    fields: [
-        { name: 'name', label: 'name', type: 'text', placeholder: 'Enter New Location Name' },
-    ],
-    onSubmitFunction: createLocation,
-};
+import LoadingSpinner from '../components/loadingSpinner';
+import Table from '../components/table/index';
+import CreateLocationForm from './createLocationForm.component';
 
 class EditLocations extends Component {
     componentWillMount() {
@@ -30,16 +15,45 @@ class EditLocations extends Component {
     }
 
     render() {
-        return (
-            <div className="container">
-              <CreateLocationForm
-                 config={formConfig}
-                 updateData={this.props.getLocations}/>
+        const { locations } = this.props;
 
-              <DisplayList
-                 data={this.props.locations}
-                 config={listConfig}
-                 updateData={this.props.getLocations}/>
+        const { deleteLocation } = this.props;
+
+        if (!locations.all) {
+            return (
+                <LoadingSpinner />
+            );
+        }
+
+        const tableHeaders = [
+            {
+                dataKey: 'id',
+                label: 'ID',
+            }, {
+                dataKey: 'name',
+                label: 'Name',
+            },
+        ];
+
+        const tableActions = [
+            {
+                label: 'Remove',
+                action: deleteLocation,
+            }, {
+                label: 'Edit',
+                action: `/${BASE_PATH}/locations`,
+            },
+        ];
+
+        return (
+            <div className="content">
+
+              <CreateLocationForm locations={locations} />
+
+              <Table headers={tableHeaders}
+                     data={locations.all}
+                     actions={tableActions} />
+
             </div>
         );
     }
@@ -47,8 +61,13 @@ class EditLocations extends Component {
 
 function mapStateToProps(state) {
     return {
-        locations: state.locations.all,
+        locations: {
+            all: state.locations.all,
+        },
     };
 }
 
-export default connect(mapStateToProps, { getLocations })(EditLocations);
+export default connect(mapStateToProps, {
+    getLocations,
+    deleteLocation,
+})(EditLocations);

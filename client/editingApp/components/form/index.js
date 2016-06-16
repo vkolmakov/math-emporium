@@ -2,7 +2,9 @@ import React from 'react';
 import Select from '../select/reactSelectWrapper';
 import FormField from './formField';
 
-export default ({ handleSubmit, title, fields }) => (
+export default ({ handleSubmit,
+                  title,
+                  fields }) => (
     <form onSubmit={handleSubmit}>
       <h2>{title}</h2>
 

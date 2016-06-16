@@ -1,72 +1,85 @@
 import React, { Component } from 'react';
-import CreateCoursesForm from './form.component'; // TODO: make a generic form
-import DisplayList from '../displayList.component';
-
 import { connect } from 'react-redux';
 
-import { getCourses, createCourse } from './actions';
+import { BASE_PATH } from '../constants';
 
-const listConfig = {
-    title: 'Courses',
-    headers: ['Code', 'Name', 'Color', 'Location'],
-    dataProps: [
-        'code',
-        'name',
-        'color',
-        { key: 'location', display: 'name' },
-    ],
-    keyProp: 'id',
-    apiLink: '/api/private/courses',
-    webLink: '/edit-schedule/courses',
-};
+import { getCourses, deleteCourse } from './actions';
+import { getLocations, setCurrentLocation } from '../locations/actions';
 
-const formConfig = {
-    form: 'CourseForm',
-    title: 'Add a New Course',
-    fields: [
-        {
-            name: 'name',
-            label: 'Name',
-            type: 'text',
-            placeholder: 'Course Name',
-        }, {
-            name: 'code',
-            label: 'Code',
-            type: 'text',
-            placeholder: 'Course Code',
-        }, {
-            name: 'color',
-            label: 'Color',
-            type: 'text',
-            placeholder: 'Course Color',
-        }, {
-            name: 'location',
-            label: 'Location',
-            type: 'select',
-            propsOptionsKey: 'locations', // key that contains props options
-            optionValueKey: 'id',
-            optionDisplayKey: 'name',
-            placeholder: 'Select Location',
-        },
-    ],
-};
+import LoadingSpinner from '../components/loadingSpinner';
+import Table from '../components/table/index';
+import CreateCourseForm from './createCourseForm.component';
+import FilterControls from '../components/filterControls';
 
 class EditCourses extends Component {
     componentWillMount() {
+        this.props.getLocations();
         this.props.getCourses();
     }
 
     render() {
-        return (
-            <div className="container">
-              <CreateCoursesForm
-                 config={formConfig}
-                 updateData={this.props.getCourses}/>
+        let { courses, locations } = this.props;
 
-              <DisplayList
-                 data={this.props.courses}
-                 config={listConfig}
-                 updateData={this.props.getCourses}/>
+        const { setCurrentLocation, deleteCourse } = this.props;
+
+        if (!courses.all) {
+            return (
+                <LoadingSpinner />
+            );
+        }
+
+        if (locations.selected) {
+            const selectedLocation = locations.selected;
+            const filteredCourses = courses.all.filter(
+                course => course.location.id === selectedLocation.id
+            )
+            courses = {
+                ...courses,
+                all: filteredCourses
+            };
+        }
+
+
+        const tableHeaders = [
+            {
+                dataKey: 'id',
+                label: 'ID',
+            }, {
+                dataKey: 'code',
+                label: 'Code',
+            }, {
+                dataKey: 'name',
+                label: 'Name',
+            }, {
+                dataKey: 'hexColor',
+                label: 'Color',
+            }, {
+                dataKey: 'location->name',
+                label: 'Location',
+            },
+        ];
+
+        const tableActions = [
+            {
+                label: 'Remove',
+                action: deleteCourse,
+            }, {
+                label: 'Edit',
+                action: `/${BASE_PATH}/courses`,
+            },
+        ];
+
+        return (
+            <div className="content">
+              <FilterControls options={locations.all}
+                              currentValue={locations.selected ? locations.selected.id : ''}
+                              onChange={setCurrentLocation.bind(this)} />
+
+              <CreateCourseForm locations={locations} />
+
+              <Table headers={tableHeaders}
+                     data={courses.all}
+                     actions={tableActions} />
             </div>
         );
     }
@@ -74,8 +87,19 @@ class EditCourses extends Component {
 
 function mapStateToProps(state) {
     return {
-        courses: state.courses.all,
+        courses: {
+            all: state.courses.all,
+        },
+        locations: {
+            all: state.locations.all,
+            selected: state.locations.selected,
+        },
     };
 }
 
-export default connect(mapStateToProps, { getCourses })(EditCourses);
+export default connect(mapStateToProps, {
+    getCourses,
+    getLocations,
+    deleteCourse,
+    setCurrentLocation,
+})(EditCourses);

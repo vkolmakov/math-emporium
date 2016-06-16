@@ -1,27 +1,31 @@
 import React from 'react';
 
+import ColorIcon from '../colorIcon';
+
 export default ({ header, datum }) => {
     const { dataKey, label } = header;
     const [key, subkey] = dataKey.split('->');
+    let displayDataElement;
 
-    let displayDataValue = '';
-
-    if (subkey && datum[key]) {
+    if (key === 'hexColor') {
+        // if it has a color, just display a colorIcon
+        displayDataElement = <ColorIcon color={datum[key]}/>;
+    } else if (subkey && datum[key]) {
         // given header contains an object
         if (Array.isArray(datum[key])) {
             // given datum is an array
-            displayDataValue = datum[key].map((elem) => elem[subkey]).join(', ');
+            displayDataElement = <span>{datum[key].map((elem) => elem[subkey]).join(', ')}</span>;
         } else {
             // just an object
-            displayDataValue = datum[key][subkey];
+            displayDataElement = <span>{datum[key][subkey]}</span>;
         }
     } else {
         // just a value
-        displayDataValue = datum[key];
+        displayDataElement = <span>{datum[key]}</span>;
     }
 
     return (
         <td data-header={label}
-            key={dataKey}>{displayDataValue}</td>
+            key={dataKey}>{displayDataElement}</td>
     );
 };

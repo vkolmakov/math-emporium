@@ -4,49 +4,30 @@ import { connect } from 'react-redux';
 import { BASE_PATH } from '../constants';
 
 import { getLocations, setCurrentLocation } from '../locations/actions';
-import { getTutors, deleteTutor } from './actions';
-import { getCourses } from '../courses/actions';
+import { getTutors } from '../tutors/actions';
+import { getSchedules, deleteSchedule } from './actions';
 
 import LoadingSpinner from '../components/loadingSpinner';
 import Table from '../components/table/index';
-import CreateTutorForm from './createTutorForm.component';
+import CreateScheduleForm from './components/createScheduleForm';
 import FilterControls from '../components/filterControls';
 
-class EditTutors extends Component {
+class EditSchedules extends Component {
     componentWillMount() {
         this.props.getTutors();
         this.props.getLocations();
-        this.props.getCourses();
+        this.props.getSchedules();
     }
 
     render() {
-        let { tutors, locations, courses } = this.props;
+        let { tutors, locations, schedules } = this.props;
 
-        const { setCurrentLocation, deleteTutor } = this.props;
+        const { setCurrentLocation, deleteSchedule } = this.props;
 
-        if (!tutors.all) {
+        if (!schedules.all) {
             return (
                 <LoadingSpinner />
             );
-        }
-
-        if (locations.selected) {
-            const selectedLocation = locations.selected;
-            const [filteredTutors, filteredCourses] = [tutors.all, courses.all].map(
-                list => list.filter(
-                    elem => elem.location.id == selectedLocation.id
-                )
-            );
-
-            tutors = {
-                ...tutors,
-                all: filteredTutors,
-            };
-
-            courses = {
-                ...tutors,
-                all: filteredCourses,
-            };
         }
 
         const tableHeaders = [
@@ -54,41 +35,43 @@ class EditTutors extends Component {
                 dataKey: 'id',
                 label: 'ID',
             }, {
-                dataKey: 'name',
-                label: 'Name',
+                dataKey: 'weekday',
+                label: 'Weekday',
+            }, {
+                dataKey: 'time',
+                label: 'Time',
             }, {
                 dataKey: 'location->name',
                 label: 'Location',
             }, {
-                dataKey: 'courses->code',
-                label: 'Courses',
+                dataKey: 'tutors->name',
+                label: 'Tutors',
             },
         ];
 
         const tableActions = [
             {
                 label: 'Remove',
-                action: deleteTutor,
+                action: deleteSchedule,
             }, {
                 label: 'Edit',
                 action: `/${BASE_PATH}/tutors`,
             },
-        ];
+        ]
 
         return (
             <div className="content">
               <FilterControls options={locations.all}
                               currentValue={locations.selected ? locations.selected.id : ''}
                               onChange={setCurrentLocation.bind(this)} />
-
-              <CreateTutorForm locations={locations}
-                               courses={courses} />
-
+              <CreateScheduleForm locations={locations}
+                                  tutors={tutors} />
               <Table headers={tableHeaders}
-                     data={tutors.all}
+                     data={schedules.all}
                      actions={tableActions} />
             </div>
-        );
+        )
+
     }
 }
 
@@ -101,13 +84,13 @@ function mapStateToProps(state) {
         tutors: {
             all: state.tutors.all,
         },
-        courses: {
-            all: state.courses.all,
-        },
+        schedules: {
+            all: state.schedules.all,
+        }
     };
 }
 
 export default connect(
     mapStateToProps,
-    { getLocations, setCurrentLocation, getTutors, deleteTutor, getCourses }
-)(EditTutors);
+    { getLocations, setCurrentLocation, getTutors, getSchedules, deleteSchedule }
+)(EditSchedules);

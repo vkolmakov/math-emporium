@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 
-import { createTutor, getTutors } from './actions';
-import { setCurrentLocation } from '../locations/actions';
+import { createLocation, getLocations } from './actions';
 
 import { selectTransformOptions } from '../utils';
+
 import Form from '../components/form/index';
 
-class CreateTutorForm extends Component {
+class CreateLocationForm extends Component {
     render() {
-        const { name, location, courses } = this.props.fields;
+        const { name } = this.props.fields;
+
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
-        const coursesOptions = selectTransformOptions('id', 'code')(this.props.courses.all);
 
         const onSubmit = (data) => {
-            this.props.createTutor(data)
+            this.props.createLocation(data)
                 .then(this.props.resetForm)
-                .then(this.props.getTutors);
+                .then(this.props.getLocations);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Add a New Tutor';
+        const title = 'Add a New Location';
 
         const fields = [
             {
@@ -30,27 +30,14 @@ class CreateTutorForm extends Component {
                     type: 'text',
                     binding: name,
                 },
-            }, {
-                label: 'Location',
-                input: {
-                    type: 'select',
-                    binding: location,
-                    options: locationsOptions,
-                },
-            }, {
-                label: 'Courses',
-                input: {
-                    type: 'multiselect',
-                    binding: courses,
-                    options: coursesOptions,
-                },
             },
         ];
+
         return (
             <div className="form-wrap">
               <Form handleSubmit={handleSubmit}
                     title={title}
-                    fields={fields}/>
+                    fields={fields} />
             </div>
         );
     }
@@ -60,7 +47,6 @@ function validate(values) {
     const errors = {};
     const requiredFields = {
         name: 'Enter a name',
-        location: 'Choose a location',
     };
 
     Object.keys(requiredFields).forEach(field => {
@@ -73,7 +59,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'CreateTutorForm',
-    fields: ['name', 'location', 'courses'],
+    form: 'CreateLocationForm',
+    fields: ['name'],
     validate,
-}, null, { createTutor, setCurrentLocation, getTutors })(CreateTutorForm);
+}, null, { createLocation, getLocations })(CreateLocationForm);

@@ -41,10 +41,16 @@ export function deleteTutor(id) {
 }
 
 export function updateTutor(id, data) {
-    console.log(id, data);
+    const requestData = {
+        name: data.name,
+        location: { id: data.location },
+        courses: data.courses.map(course => ({ id: course.value })),
+    };
+
+    const request = axios.put(`${BASE_URL}/${id}`, requestData);
 
     return {
         type: UPDATE_TUTOR,
-        payload: data,
+        payload: request,
     };
 }

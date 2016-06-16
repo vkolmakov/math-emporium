@@ -2,12 +2,12 @@ import React from 'react';
 
 export default ({ action, datum }) => {
     const param = datum.id;
-    let onClick;
+    let onClick = () => {};
+    let url = '#';
+
     if (typeof action.action === 'string') {
         // got a URL
-        onClick = () => {
-            console.log('link clicked!', param);
-        };
+        url = `${action.action}/${param}`;
     } else if (typeof action.action === 'function') {
         // got a regular action
         onClick = () => {
@@ -17,7 +17,7 @@ export default ({ action, datum }) => {
 
     return (
         <td onClick={onClick}>
-          <a href="#">
+          <a href={url}>
             {action.label}
           </a>
         </td>

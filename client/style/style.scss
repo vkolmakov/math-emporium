@@ -8,9 +8,19 @@ $susy: (
     global-box-sizing: border-box
 );
 
+$font-family: Times;
 
 $medium-screen: 700px;
 $small-screen-width: 480px;
+
+@mixin rounded-border {
+    @include border-radius (5px);
+    border: 1px solid #ccc;
+}
+
+body {
+    font-family: $font-family;
+}
 
 .wrap {
     @include container();
@@ -29,12 +39,26 @@ $small-screen-width: 480px;
 }
 
 .sidebar {
-    background-color: #fafafa;
     @include clearfix();
 
     @include breakpoint($medium-screen) {
         @include span(3 of 12);
         height: 100vh;
+    }
+}
+
+.select-filter-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(3 of 9 last);
+    }
+
+    max-width: $small-screen-width;
+    padding: 0.5em 0;
+
+    input {
+
+        @include box-sizing(border-box);
+        width: 100%;
     }
 }
 
@@ -45,19 +69,42 @@ $small-screen-width: 480px;
 
     max-width: $small-screen-width;
     /* margin: 1em auto; */
+}
 
-    input, select {
-        @include box-sizing(border-box);
-        width: 100%;
-    }
-
-    .form-field {
+.form-field {
         margin: 1em auto;
         /* @include clearfix(); */
     }
 
-    .form-help {
-        @include float-right();
+.form-input-group {
+    > input {
+        @include box-sizing(border-box);
+        @include rounded-border();
+        font-family: $font-family;
+        padding: 0.5em;
+        font-size: 16px;
+        height:34px;
+        width: 100%;
+    }
+}
+
+.form-help {
+    @include float-right();
+}
+
+.color-icon {
+    @include rounded-border();
+    @include inline-block();
+    margin-right: 2px;
+    height: 18px;
+
+    width: 10%;
+
+    td > & {
+        @include breakpoint($medium-screen) {
+            width: 50%;
+        }
+
     }
 }
 
@@ -121,10 +168,7 @@ $small-screen-width: 480px;
 
 }
 
-@mixin rounded-border {
-    @include border-radius (5px);
-    border: 2px solid darken(white, 10%);
-}
+
 
 $button-color: #ececec;
 $button-text-color: #000;
