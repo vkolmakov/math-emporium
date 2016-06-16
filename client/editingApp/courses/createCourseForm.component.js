@@ -13,6 +13,8 @@ class CreateCourseForm extends Component {
     render() {
         const { name, location, code, color } = this.props.fields;
 
+        const { setCurrentLocation } = this.props;
+
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
 
@@ -52,6 +54,7 @@ class CreateCourseForm extends Component {
                     type: 'select',
                     binding: location,
                     options: locationsOptions,
+                    onSelect: setCurrentLocation,
                 },
             },
         ];

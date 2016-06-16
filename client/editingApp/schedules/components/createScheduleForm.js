@@ -12,6 +12,8 @@ import Form from '../../components/form/index';
 class CreateScheduleForm extends Component {
     render() {
         const { weekday, time, location, tutors } = this.props.fields;
+        const { setCurrentLocation } = this.props;
+
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const tutorOptions = selectTransformOptions('id', 'name')(this.props.tutors.all);
         const weekdaysOptions = selectTransformOptions('value', 'display')(WEEKDAY_OPTIONS);
@@ -49,6 +51,7 @@ class CreateScheduleForm extends Component {
                     type: 'select',
                     binding: location,
                     options: locationsOptions,
+                    onSelect: setCurrentLocation,
                 },
             }, {
                 label: 'Tutors',

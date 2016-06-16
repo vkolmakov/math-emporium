@@ -44,7 +44,7 @@ class EditTutors extends Component {
             };
 
             courses = {
-                ...tutors,
+                ...courses,
                 all: filteredCourses,
             };
         }

@@ -13,6 +13,8 @@ class CreateTutorForm extends Component {
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const coursesOptions = selectTransformOptions('id', 'code')(this.props.courses.all);
 
+        const { setCurrentLocation } = this.props;
+
         const onSubmit = (data) => {
             this.props.createTutor(data)
                 .then(this.props.resetForm)
@@ -36,6 +38,7 @@ class CreateTutorForm extends Component {
                     type: 'select',
                     binding: location,
                     options: locationsOptions,
+                    onSelect: setCurrentLocation,
                 },
             }, {
                 label: 'Courses',

@@ -30,6 +30,25 @@ class EditSchedules extends Component {
             );
         }
 
+        if (locations.selected) {
+            const selectedLocation = locations.selected;
+            const [filteredTutors, filteredSchedules] = [tutors.all, schedules.all].map(
+                list => list.filter(
+                    elem => elem.location.id == selectedLocation.id
+                )
+            );
+
+            tutors = {
+                ...tutors,
+                all: filteredTutors,
+            };
+
+            schedules = {
+                ...schedules,
+                all: filteredSchedules
+            };
+        }
+
         const tableHeaders = [
             {
                 dataKey: 'id',

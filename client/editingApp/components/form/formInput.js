@@ -3,7 +3,7 @@ import Select from '../select/reactSelectWrapper';
 
 import ColorIcon from '../colorIcon';
 
-export default ({ type, binding, options }) => {
+export default ({ type, binding, options, onSelect }) => {
     let inputElement;
 
     if (type === 'text') {
@@ -29,13 +29,28 @@ export default ({ type, binding, options }) => {
                 ),
             };
         }
+        let onSelectHandler;
 
+        if (onSelect) {
+            onSelectHandler = (value) => {
+                // custom handler
+                onSelect(value);
+                // default event handler from redux-form
+                binding.onChange(value);
+            };
+        } else {
+            onSelectHandler = (value) => {
+                // if no custom on select event provided, just do the default
+                binding.onChange(value);
+            };
+        }
         inputElement = (
             <Select options={options}
                     binding={binding}
                     multi={type === 'multiselect'}
-                    {...renderer} />
-        );
+                    {...renderer}
+                    onChange={onSelectHandler}/>
+        ); // Ugly workaround to make redux-form and custom event handler work together
     }
 
     return (
