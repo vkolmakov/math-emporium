@@ -65,9 +65,6 @@ class EditSchedules extends Component {
 
         const tableHeaders = [
             {
-                dataKey: 'id',
-                label: 'ID',
-            }, {
                 dataKey: 'weekday',
                 label: 'Weekday',
             }, {
@@ -97,11 +94,11 @@ class EditSchedules extends Component {
               <FilterControls options={locationsOptions}
                               currentValue={locations.selected ? locations.selected.id : ''}
                               onChange={setCurrentLocation.bind(this)}
-                              placeholder={'Filter by location...'}/>
+                              placeholder={'Filter by location...'} />
               <FilterControls options={weekdayOptions}
                               currentValue={schedules.selectedWeekday || ''}
                               onChange={setCurrentWeekday}
-                              placeholder={'Filter by weekday...'}/>
+                              placeholder={'Filter by weekday...'} />
               <CreateScheduleForm locations={locations}
                                   tutors={tutors} />
               <Table headers={tableHeaders}

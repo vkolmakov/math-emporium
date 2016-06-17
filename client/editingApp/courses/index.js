@@ -11,6 +11,8 @@ import Table from '../components/table/index';
 import CreateCourseForm from './createCourseForm.component';
 import FilterControls from '../components/filterControls';
 
+import { selectTransformOptions } from '../utils';
+
 class EditCourses extends Component {
     componentWillMount() {
         this.props.getLocations();
@@ -39,12 +41,10 @@ class EditCourses extends Component {
             };
         }
 
+        const locationsOptions = selectTransformOptions()(locations.all);
 
         const tableHeaders = [
             {
-                dataKey: 'id',
-                label: 'ID',
-            }, {
                 dataKey: 'code',
                 label: 'Code',
             }, {
@@ -71,9 +71,10 @@ class EditCourses extends Component {
 
         return (
             <div className="content">
-              <FilterControls options={locations.all}
+              <FilterControls options={locationsOptions}
                               currentValue={locations.selected ? locations.selected.id : ''}
-                              onChange={setCurrentLocation.bind(this)} />
+                              onChange={setCurrentLocation.bind(this)}
+                              placeholder={'Filter by location...'} />
 
               <CreateCourseForm locations={locations} />
 

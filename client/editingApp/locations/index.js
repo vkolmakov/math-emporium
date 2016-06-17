@@ -27,9 +27,6 @@ class EditLocations extends Component {
 
         const tableHeaders = [
             {
-                dataKey: 'id',
-                label: 'ID',
-            }, {
                 dataKey: 'name',
                 label: 'Name',
             },
