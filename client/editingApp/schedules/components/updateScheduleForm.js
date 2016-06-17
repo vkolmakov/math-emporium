@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { reduxForm, initialize } from 'redux-form';
 
-import { updateSchedule, getSchedules } from '../actions';
+import { updateSchedule, getSchedules, setCurrentWeekday } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 
 import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
@@ -15,11 +15,14 @@ class UpdateScheduleForm extends Component {
 
         const { locations } = this.props;
 
+        const { setCurrentLocation, setCurrentWeekday } = this.props;
+
         const selectedLocation = locations.all.find(
             loc => loc.id == location.id
         );
 
-        this.props.setCurrentLocation(selectedLocation);
+        setCurrentLocation(selectedLocation);
+        setCurrentWeekday(weekday);
 
         this.props.dispatch(initialize('UpdateScheduleForm', {
             weekday,
@@ -32,7 +35,7 @@ class UpdateScheduleForm extends Component {
 
     render() {
         const { weekday, time, location, tutors } = this.props.fields;
-        const { setCurrentLocation, getSchedules } = this.props;
+        const { setCurrentLocation, getSchedules, setCurrentWeekday } = this.props;
 
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const tutorOptions = selectTransformOptions('id', 'name')(this.props.tutors.all);
@@ -55,6 +58,8 @@ class UpdateScheduleForm extends Component {
                     type: 'select',
                     binding: weekday,
                     options: weekdaysOptions,
+                    onSelect: setCurrentWeekday,
+                    controlValue: this.props.schedules.currentWeekday || null,
                 },
             }, {
                 label: 'Time',
@@ -70,6 +75,7 @@ class UpdateScheduleForm extends Component {
                     binding: location,
                     options: locationsOptions,
                     onSelect: setCurrentLocation,
+                    controlValue: this.props.locations.selected ? this.props.locations.selected.id : null,
                 },
             }, {
                 label: 'Tutors',
@@ -112,4 +118,4 @@ export default reduxForm({
     form: 'UpdateScheduleForm',
     fields: ['weekday', 'time', 'location', 'tutors'],
     validate,
-}, null, { updateSchedule, setCurrentLocation, getSchedules })(UpdateScheduleForm);
+}, null, { updateSchedule, setCurrentLocation, getSchedules, setCurrentWeekday })(UpdateScheduleForm);

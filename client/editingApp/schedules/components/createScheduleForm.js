@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 
-import { createSchedule, getSchedules } from '../actions';
+import { createSchedule, getSchedules, setCurrentWeekday } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 
 import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
@@ -12,13 +12,12 @@ import Form from '../../components/form/index';
 class CreateScheduleForm extends Component {
     render() {
         const { weekday, time, location, tutors } = this.props.fields;
-        const { setCurrentLocation } = this.props;
+        const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
-        const tutorOptions = selectTransformOptions('id', 'name')(this.props.tutors.all);
+        const tutorsOptions = selectTransformOptions('id', 'name')(this.props.tutors.all);
         const weekdaysOptions = selectTransformOptions('value', 'display')(WEEKDAY_OPTIONS);
         const timeOptions = selectTransformOptions('value', 'display')(TIME_OPTIONS);
-
 
         const onSubmit = (data) => {
             this.props.createSchedule(data)
@@ -37,6 +36,8 @@ class CreateScheduleForm extends Component {
                     type: 'select',
                     binding: weekday,
                     options: weekdaysOptions,
+                    onSelect: setCurrentWeekday,
+                    controlValue: this.props.schedules.selectedWeekday || null,
                 },
             }, {
                 label: 'Time',
@@ -52,13 +53,14 @@ class CreateScheduleForm extends Component {
                     binding: location,
                     options: locationsOptions,
                     onSelect: setCurrentLocation,
+                    controlValue: this.props.locations.selected ? this.props.locations.selected.id : null,
                 },
             }, {
                 label: 'Tutors',
                 input: {
                     type: 'multiselect',
                     binding: tutors,
-                    options: tutorOptions,
+                    options: tutorsOptions,
                 },
             },
         ];
@@ -94,4 +96,4 @@ export default reduxForm({
     form: 'CreateScheduleForm',
     fields: ['weekday', 'time', 'location', 'tutors'],
     validate,
-}, null, { createSchedule, setCurrentLocation, getSchedules })(CreateScheduleForm);
+}, null, { createSchedule, setCurrentLocation, getSchedules, setCurrentWeekday })(CreateScheduleForm);

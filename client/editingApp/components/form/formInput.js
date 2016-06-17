@@ -3,7 +3,7 @@ import Select from '../select/reactSelectWrapper';
 
 import ColorIcon from '../colorIcon';
 
-export default ({ type, binding, options, onSelect }) => {
+export default ({ type, binding, options, onSelect, controlValue }) => {
     let inputElement;
 
     if (type === 'text') {
@@ -30,7 +30,6 @@ export default ({ type, binding, options, onSelect }) => {
             };
         }
         let onSelectHandler;
-
         if (onSelect) {
             onSelectHandler = (value) => {
                 // custom handler
@@ -44,6 +43,15 @@ export default ({ type, binding, options, onSelect }) => {
                 binding.onChange(value);
             };
         }
+
+        if (controlValue) {
+            // tie up to the value from the store
+            binding = {
+                ...binding,
+                value: controlValue,
+            };
+        }
+
         inputElement = (
             <Select options={options}
                     binding={binding}

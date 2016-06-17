@@ -48,6 +48,7 @@ class ScheduleDetail extends Component {
             <div className="content">
               <UpdateScheduleForm locations={locations}
                                   tutors={tutors}
+                                  schedules={schedules}
                                   selectedSchedule={selectedSchedule} />
             </div>
         );

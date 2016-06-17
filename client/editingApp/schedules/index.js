@@ -35,11 +35,18 @@ class EditSchedules extends Component {
             );
         }
 
-
         if (locations.selected || schedules.selectedWeekday) {
             let predicate;
             if (locations.selected && schedules.selectedWeekday) {
-                predicate = elem => elem.location.id == locations.selected.id && elem.weekday == schedules.selectedWeekday;
+                predicate = elem => {
+                    if (elem.weekday) {
+                        // this is a schedule, filter by both weekday and location
+                        return elem.location.id == locations.selected.id && elem.weekday == schedules.selectedWeekday
+                    } else {
+                        // this is a tutor, filter by just location
+                        return elem.location.id == locations.selected.id;
+                    }
+                };
             } else if (schedules.selectedWeekday) {
                 predicate = elem => elem.weekday == schedules.selectedWeekday;
             } else if (locations.selected) {
@@ -95,12 +102,16 @@ class EditSchedules extends Component {
                               currentValue={locations.selected ? locations.selected.id : ''}
                               onChange={setCurrentLocation.bind(this)}
                               placeholder={'Filter by location...'} />
+
               <FilterControls options={weekdayOptions}
                               currentValue={schedules.selectedWeekday || ''}
                               onChange={setCurrentWeekday}
                               placeholder={'Filter by weekday...'} />
+
               <CreateScheduleForm locations={locations}
-                                  tutors={tutors} />
+                                  tutors={tutors}
+                                  schedules={schedules} />
+
               <Table headers={tableHeaders}
                      data={schedules.all}
                      actions={tableActions} />

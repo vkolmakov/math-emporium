@@ -3,8 +3,7 @@ import { Route, IndexRoute } from 'react-router';
 
 import { BASE_PATH } from './constants';
 
-import EditingApp from './editingApp.component';
-import EditingAppMenu from './menu/editingAppMenu.component';
+import EditingApp from './index';
 
 import EditLocations from './locations/index';
 import LocationDetail from './locations/components/locationDetail';
@@ -18,9 +17,10 @@ import TutorDetail from './tutors/components/tutorDetail';
 import EditSchedules from './schedules/index';
 import ScheduleDetail from './schedules/components/scheduleDetail';
 
+import SchedulesOverview from './overviews/schedules/index';
+
 export default(
     <Route path={BASE_PATH} component={EditingApp}>
-      <IndexRoute component={EditingAppMenu} />
       <Route path="locations" component={EditLocations} />
       <Route path="locations/:id" component={LocationDetail} />
       <Route path="courses" component={EditCourses} />
@@ -29,5 +29,6 @@ export default(
       <Route path="tutors/:id" component={TutorDetail} />
       <Route path="schedules" component={EditSchedules} />
       <Route path="schedules/:id" component={ScheduleDetail} />
+      <Route path="schedules-overview" component={SchedulesOverview} />
     </Route>
 );

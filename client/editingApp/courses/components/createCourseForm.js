@@ -55,6 +55,7 @@ class CreateCourseForm extends Component {
                     binding: location,
                     options: locationsOptions,
                     onSelect: setCurrentLocation,
+                    controlValue: this.props.locations.selected ? this.props.locations.selected.id : null,
                 },
             },
         ];

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 export default ({ action, datum }) => {
     const param = datum.id;
@@ -17,9 +18,9 @@ export default ({ action, datum }) => {
 
     return (
         <td onClick={onClick}>
-          <a href={url}>
+          <Link to={url}>
             {action.label}
-          </a>
+          </Link>
         </td>
     );
 };
