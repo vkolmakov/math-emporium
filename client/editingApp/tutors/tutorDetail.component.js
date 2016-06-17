@@ -16,7 +16,7 @@ class TutorDetail extends Component {
     }
 
     render() {
-        const { locations, courses, tutors } = this.props;
+        let { locations, courses, tutors } = this.props;
 
         const { id } = this.props.params;
 
@@ -25,8 +25,30 @@ class TutorDetail extends Component {
         );
 
         if (!selectedTutor) {
-            return <LoadingSpinner />;
+            return (
+                <LoadingSpinner />
+            );
         }
+
+        let selectedLocation;
+        if (locations.selected) {
+            // grab from the state
+            selectedLocation = locations.selected;
+        } else {
+            selectedLocation = locations.all.find(
+                location => location.id == selectedTutor.location.id
+            );
+        }
+        const [filteredCourses] = [courses.all].map(
+            list => list.filter(
+                elem => elem.location.id == selectedLocation.id
+            )
+        );
+
+        courses = {
+            ...courses,
+            all: filteredCourses,
+        };
 
         return (
             <div className="content">

@@ -14,7 +14,7 @@ class CourseDetail extends Component {
     }
 
     render() {
-        const { locations, courses } = this.props;
+        let { locations, courses } = this.props;
 
         const { id } = this.props.params;
 

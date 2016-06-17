@@ -1,12 +1,11 @@
 import React from 'react';
 import Select from 'react-select';
 
-import { selectTransformOptions } from '../utils';
-
-export default ({ options, currentValue, onChange }) => (
+export default ({ options, currentValue, onChange, placeholder }) => (
     <div className="select-filter-wrap">
-      <Select options={selectTransformOptions()(options)}
+      <Select options={(options)}
               value={currentValue}
+              placeholder={placeholder}
               onChange={onChange} />
     </div>
 );

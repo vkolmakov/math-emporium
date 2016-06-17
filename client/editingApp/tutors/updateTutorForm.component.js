@@ -10,7 +10,7 @@ import LoadingSpinner from '../components/loadingSpinner';
 
 class UpdateTutorForm extends Component {
     componentDidMount() {
-        const { name, courses, location } = this.props.selectedTutor
+        const { name, courses, location } = this.props.selectedTutor;
 
         this.props.dispatch(initialize('UpdateTutorForm', {
             name,
@@ -25,6 +25,7 @@ class UpdateTutorForm extends Component {
         const coursesOptions = selectTransformOptions('id', 'code')(this.props.courses.all);
 
         const { selectedTutor } = this.props;
+        const { setCurrentLocation } = this.props;
 
         const onSubmit = (data) => {
             this.props.updateTutor(this.props.selectedTutor.id, data)
@@ -48,6 +49,7 @@ class UpdateTutorForm extends Component {
                     type: 'select',
                     binding: location,
                     options: locationsOptions,
+                    onSelect: setCurrentLocation,
                 },
             }, {
                 label: 'Courses',

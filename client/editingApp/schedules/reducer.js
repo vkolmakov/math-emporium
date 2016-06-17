@@ -1,7 +1,10 @@
-import { GET_SCHEDULES, DELETE_SCHEDULE } from './actions';
+import { GET_SCHEDULES,
+         DELETE_SCHEDULE,
+         SET_CURRENT_WEEKDAY } from './actions';
 
 const INITIAL_STATE = {
     all: [],
+    selectedWeekday: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -15,6 +18,12 @@ export default (state = INITIAL_STATE, action) => {
                 all: state.all.filter(schedule => schedule.id != action.payload.data.id),
             };
         }
+    case SET_CURRENT_WEEKDAY:
+        const weekday = action.payload ? action.payload.value : null;
+        return {
+            ...state,
+            selectedWeekday: weekday
+        };
     default:
         return state;
     }

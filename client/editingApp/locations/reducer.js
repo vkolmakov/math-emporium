@@ -19,9 +19,15 @@ export default (state = INITIAL_STATE, action) => {
                 selected: null,
             };
         }
+        let selectedLocation;
         // check if we got an object from select or an actual id
-        const locationId = !!payload.value ? payload.value : payload;
-        const selectedLocation = state.all.find((loc) => loc.id == locationId);
+        if (!payload.id) {
+            const locationId = !!payload.value ? payload.value : payload;
+            selectedLocation = state.all.find((loc) => loc.id == locationId);
+        } else {
+            selectedLocation = payload;
+        }
+
         return {
             ...state,
             selected: selectedLocation,

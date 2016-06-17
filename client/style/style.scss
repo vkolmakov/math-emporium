@@ -97,15 +97,7 @@ body {
     @include inline-block();
     margin-right: 2px;
     height: 18px;
-
-    width: 10%;
-
-    td > & {
-        @include breakpoint($medium-screen) {
-            width: 50%;
-        }
-
-    }
+    width: 18px;
 }
 
 .list-wrap {
@@ -114,7 +106,6 @@ body {
     }
 
     max-width: $small-screen-width;
-    margin: 0 auto;
 
     th {
         display: none;

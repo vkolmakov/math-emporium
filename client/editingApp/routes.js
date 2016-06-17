@@ -16,6 +16,7 @@ import EditTutors from './tutors/index';
 import TutorDetail from './tutors/tutorDetail.component';
 
 import EditSchedules from './schedules/index';
+import ScheduleDetail from './schedules/components/scheduleDetail';
 
 export default(
     <Route path={BASE_PATH} component={EditingApp}>
@@ -27,5 +28,6 @@ export default(
       <Route path="tutors" component={EditTutors} />
       <Route path="tutors/:id" component={TutorDetail} />
       <Route path="schedules" component={EditSchedules} />
+      <Route path="schedules/:id" component={ScheduleDetail} />
     </Route>
 );
