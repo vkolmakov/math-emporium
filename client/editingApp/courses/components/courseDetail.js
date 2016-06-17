@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getLocations } from '../locations/actions';
-import { getCourses } from './actions';
+import { getLocations } from '../../locations/actions';
+import { getCourses } from '../actions';
 
-import LoadingSpinner from '../components/loadingSpinner';
-import UpdateCourseForm from './updateCourseForm.component';
+import LoadingSpinner from '../../components/loadingSpinner';
+import UpdateCourseForm from './updateCourseForm';
 
 class CourseDetail extends Component {
     componentWillMount() {

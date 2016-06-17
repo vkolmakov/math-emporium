@@ -1,30 +1,27 @@
 import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import { reduxForm } from 'redux-form';
 
-import { updateLocation, getLocations } from './actions';
+import { createLocation, getLocations } from '../actions';
 
-import Form from '../components/form/index';
+import { selectTransformOptions } from '../../utils';
 
-class UpdateLocationForm extends Component {
-    componentDidMount() {
-        const { name } = this.props.selectedLocation;
+import Form from '../../components/form/index';
 
-        this.props.dispatch(initialize('UpdateLocationForm', {
-            name,
-        }, ['name']));
-    }
-
+class CreateLocationForm extends Component {
     render() {
         const { name } = this.props.fields;
 
+        const locationsOptions = selectTransformOptions()(this.props.locations.all);
+
         const onSubmit = (data) => {
-            this.props.updateLocation(this.props.selectedLocation.id, data)
-                .then(this.props.getLocations); // TODO: redirect back to the view instead
+            this.props.createLocation(data)
+                .then(this.props.resetForm)
+                .then(this.props.getLocations);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Update a Location';
+        const title = 'Add a New Location';
 
         const fields = [
             {
@@ -37,7 +34,7 @@ class UpdateLocationForm extends Component {
         ];
 
         return (
-            <div className="list-wrap">
+            <div className="form-wrap">
               <Form handleSubmit={handleSubmit}
                     title={title}
                     fields={fields} />
@@ -62,7 +59,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'UpdateLocationForm',
+    form: 'CreateLocationForm',
     fields: ['name'],
     validate,
-}, null, { updateLocation, getLocations })(UpdateLocationForm);
+}, null, { createLocation, getLocations })(CreateLocationForm);

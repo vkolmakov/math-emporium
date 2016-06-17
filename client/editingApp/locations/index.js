@@ -7,7 +7,7 @@ import { getLocations, deleteLocation } from './actions';
 
 import LoadingSpinner from '../components/loadingSpinner';
 import Table from '../components/table/index';
-import CreateLocationForm from './createLocationForm.component';
+import CreateLocationForm from './components/createLocationForm';
 
 class EditLocations extends Component {
     componentWillMount() {

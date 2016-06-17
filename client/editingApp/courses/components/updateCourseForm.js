@@ -1,15 +1,26 @@
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form';
+import { reduxForm, initialize } from 'redux-form';
 
-import { createCourse, getCourses } from './actions';
-import { setCurrentLocation } from '../locations/actions';
+import { updateCourse, getCourses } from '../actions';
+import { setCurrentLocation } from '../../locations/actions';
 
-import { GOOGLE_CALENDAR_COLORS } from '../constants';
+import { GOOGLE_CALENDAR_COLORS } from '../../constants';
 
-import { selectTransformOptions } from '../utils';
-import Form from '../components/form/index';
+import { selectTransformOptions } from '../../utils';
+import Form from '../../components/form/index';
 
-class CreateCourseForm extends Component {
+class UpdateCourseForm extends Component {
+    componentWillMount() {
+        const { code, name, color, location } = this.props.selectedCourse;
+
+        this.props.dispatch(initialize('UpdateCourseForm', {
+            code,
+            name,
+            color,
+            location: location.id,
+        }, ['code', 'name', 'color', 'location']));
+    }
+
     render() {
         const { name, location, code, color } = this.props.fields;
 
@@ -19,14 +30,13 @@ class CreateCourseForm extends Component {
         const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
 
         const onSubmit = (data) => {
-            this.props.createCourse(data)
-                .then(this.props.resetForm)
+            this.props.updateCourse(this.props.selectedCourse.id, data)
                 .then(this.props.getCourses);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Add a New Course';
+        const title = 'Update a Course';
 
         const fields = [
             {
@@ -66,7 +76,7 @@ class CreateCourseForm extends Component {
         };
 
         return (
-            <div className="form-wrap">
+            <div className="list-wrap">
               <Form {...formConfig} />
             </div>
         );
@@ -95,7 +105,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'CreateCourseForm',
+    form: 'UpdateCourseForm',
     fields: ['code', 'name', 'color', 'location'],
     validate,
-}, null, { createCourse, getCourses, setCurrentLocation })(CreateCourseForm);
+}, null, { updateCourse, getCourses, setCurrentLocation })(UpdateCourseForm);

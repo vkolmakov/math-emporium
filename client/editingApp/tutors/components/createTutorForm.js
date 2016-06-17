@@ -1,40 +1,29 @@
 import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import { reduxForm } from 'redux-form';
 
-import { updateTutor, getTutors } from './actions';
-import { setCurrentLocation } from '../locations/actions';
-import { selectTransformOptions } from '../utils';
+import { createTutor, getTutors } from '../actions';
+import { setCurrentLocation } from '../../locations/actions';
 
-import Form from '../components/form/index';
-import LoadingSpinner from '../components/loadingSpinner';
+import { selectTransformOptions } from '../../utils';
+import Form from '../../components/form/index';
 
-class UpdateTutorForm extends Component {
-    componentDidMount() {
-        const { name, courses, location } = this.props.selectedTutor;
-
-        this.props.dispatch(initialize('UpdateTutorForm', {
-            name,
-            location: location.id,
-            courses: selectTransformOptions('id', 'code')(courses),
-        }, ['name', 'location', 'courses']));
-    }
-
+class CreateTutorForm extends Component {
     render() {
         const { name, location, courses } = this.props.fields;
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const coursesOptions = selectTransformOptions('id', 'code')(this.props.courses.all);
 
-        const { selectedTutor } = this.props;
         const { setCurrentLocation } = this.props;
 
         const onSubmit = (data) => {
-            this.props.updateTutor(this.props.selectedTutor.id, data)
-                .then(this.props.getTutors); // TODO: redirect back to the view instead
+            this.props.createTutor(data)
+                .then(this.props.resetForm)
+                .then(this.props.getTutors);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Update a Tutor';
+        const title = 'Add a New Tutor';
 
         const fields = [
             {
@@ -61,10 +50,10 @@ class UpdateTutorForm extends Component {
             },
         ];
         return (
-            <div className="list-wrap">
+            <div className="form-wrap">
               <Form handleSubmit={handleSubmit}
                     title={title}
-                    fields={fields} />
+                    fields={fields}/>
             </div>
         );
     }
@@ -87,8 +76,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'UpdateTutorForm',
+    form: 'CreateTutorForm',
     fields: ['name', 'location', 'courses'],
-    // setting initial values
     validate,
-}, null, { updateTutor, setCurrentLocation, getTutors })(UpdateTutorForm);
+}, null, { createTutor, setCurrentLocation, getTutors })(CreateTutorForm);
