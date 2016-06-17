@@ -72,7 +72,7 @@ class EditCourses extends Component {
         return (
             <div className="content">
               <FilterControls options={locationsOptions}
-                              currentValue={locations.selected ? locations.selected.id : ''}
+                              currentValue={locations.selected ? locations.selected.id : null}
                               onChange={setCurrentLocation.bind(this)}
                               placeholder={'Filter by location...'} />
 
