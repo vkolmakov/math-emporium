@@ -7,7 +7,6 @@ export default ({ handleSubmit,
                   fields }) => (
     <form onSubmit={handleSubmit}>
       <h2>{title}</h2>
-
       {fields.map(field => (
           <FormField field={field}
                      key={field.label} />

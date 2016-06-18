@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form';
+import { reduxForm, initialize } from 'redux-form';
 
 import { createSchedule, getSchedules, setCurrentWeekday } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -21,7 +21,10 @@ class CreateScheduleForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createSchedule(data)
-                .then(this.props.resetForm) // TODO: just reset the time, leave the rest
+                .then(this.props.dispatch(initialize('CreateScheduleForm', {
+                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                    weekday: this.props.schedules.selectedWeekday || null,
+                }, ['weekday', 'time', 'location', 'tutors'])))
                 .then(this.props.getSchedules);
         };
 

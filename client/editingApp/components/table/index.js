@@ -8,6 +8,7 @@ export default ({ headers, data, actions }) => (
         <thead>
           <tr>
             {headers.map((h) => <th key={h.label}>{h.label}</th>)}
+    {actions.map(a => <th key={a.label}></th>)}
           </tr>
         </thead>
         <tbody>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form';
+import { reduxForm, initialize } from 'redux-form';
 
 import { createTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -17,7 +17,9 @@ class CreateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createTutor(data)
-                .then(this.props.resetForm)
+                .then(this.props.dispatch(initialize('CreateTutorForm', {
+                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                }, ['name', 'location', 'courses'])))
                 .then(this.props.getTutors);
         };
 

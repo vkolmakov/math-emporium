@@ -30,23 +30,25 @@ class SchedulesOverview extends Component {
         if (!locations.selected) {
             // TODO: add a class
             return (
-                <div>
-                  Select a location...
+                <div className="content">
                   <FilterControls options={locationsOptions}
                                   currentValue={locations.selected ? locations.selected.id : null}
                                   onChange={setCurrentLocation}
-                                  placeholder={'Select a location'} />
+                                  placeholder={'Select a location...'} />
+                  <div>
+                    Select a location...
+                  </div>
                 </div>
             );
         }
 
         return (
-            <div>
-              Bello at {locations.selected.name}!
+            <div className="content">
               <FilterControls options={locationsOptions}
-                                  currentValue={locations.selected ? locations.selected.id : null}
-                                  onChange={setCurrentLocation}
-                                  placeholder={'Select a location'} />
+                              currentValue={locations.selected ? locations.selected.id : null}
+                              onChange={setCurrentLocation}
+                              placeholder={'Select a location...'} />
+              Bello at {locations.selected.name}!
             </div>
         );
     }

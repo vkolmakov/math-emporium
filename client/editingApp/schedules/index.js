@@ -64,9 +64,14 @@ class EditSchedules extends Component {
                 all: filteredTutors,
             };
 
+            const sortSchedulesFn = (s1, s2) => (
+                // compare by just the hour value
+                parseInt(s1.time.split(':')[0]) - parseInt(s2.time.split(':')[0])
+            );
+
             schedules = {
                 ...schedules,
-                all: filteredSchedules,
+                all: filteredSchedules.sort(sortSchedulesFn),
             };
         }
 

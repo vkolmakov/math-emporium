@@ -72,9 +72,8 @@ body {
 }
 
 .form-field {
-        margin: 1em auto;
-        /* @include clearfix(); */
-    }
+    margin: 1em auto;
+}
 
 .form-input-group {
     > input {
@@ -107,30 +106,48 @@ body {
 
     max-width: $small-screen-width;
 
+    table {
+        border-collapse:collapse;
+        border: 1px solid #eaeaea;
+    }
+
     th {
         display: none;
-
+        background: #d9edf9;
+        border-bottom: 1px solid #eaeaea;
+        padding: 0.25em;
         @include breakpoint($medium-screen) {
             display: table-cell;
             text-align: left;
         }
     }
 
+    tr {
+        &:nth-child(even) {
+            background: #f9f9f9;
+        }
+    }
+
     td {
         display: block;
+        padding: 0.25em;
+        border-bottom: 1px solid #eaeaea;
+
         @include breakpoint($medium-screen) {
             display: table-cell;
         }
 
-
         &:before {
             content: attr(data-header)": ";
             font-weight: bold;
-            display: inline-block;
 
             @include breakpoint($medium-screen) {
                 content: "";
             }
+        }
+
+        &.table-action:before {
+            content: "";
         }
 
         &:last-child {

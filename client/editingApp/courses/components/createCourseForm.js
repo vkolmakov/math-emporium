@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form';
+import { reduxForm, initialize } from 'redux-form';
 
 import { createCourse, getCourses } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -20,7 +20,9 @@ class CreateCourseForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createCourse(data)
-                .then(this.props.resetForm)
+                .then(this.props.dispatch(initialize('CreateCourseForm', {
+                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                }, ['code', 'name', 'color', 'location'])))
                 .then(this.props.getCourses);
         };
 
