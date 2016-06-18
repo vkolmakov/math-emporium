@@ -9,6 +9,8 @@ import FilterControls from '../../components/filterControls';
 
 import { selectTransformOptions } from '../../utils';
 
+import { WEEKDAY_OPTIONS } from '../../constants';
+
 class SchedulesOverview extends Component {
     componentWillMount() {
         this.props.getSchedules();
@@ -41,6 +43,17 @@ class SchedulesOverview extends Component {
                 </div>
             );
         }
+
+        const filteredSchedules = schedules.all.filter(
+            schedule => schedule.location.id == locations.selected.id
+        );
+
+        const groupedSchedules = filteredSchedules.reduce(
+            (groups, schedule) => {
+                let weekday = schedule.weekday;
+                groups[weekday] = groups[weekday] ? [...groups[weekday], schedule] : [schedule];
+                return groups;
+            }, {});
 
         return (
             <div className="content">
