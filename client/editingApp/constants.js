@@ -64,12 +64,12 @@ export const TIME_OPTIONS = [
 );
 
 export const WEEKDAY_OPTIONS = [
-    ['monday', 'Monday'],
-    ['tuesday', 'Tuesday'],
-    ['wednesday', 'Wednesday'],
-    ['thursday', 'Thursday'],
-    ['friday', 'Friday'],
-    ['saturday', 'Saturday'],
+    [1, 'Monday'],
+    [2, 'Tuesday'],
+    [3, 'Wednesday'],
+    [4, 'Thursday'],
+    [5, 'Friday'],
+    [6, 'Saturday'],
 ].map(
     ([value, display]) => ({ value, display })
 );

@@ -5,19 +5,6 @@ export default function createScheduleModel(sequelize, DataTypes) {
         weekday: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            get() {
-                const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                return weekdays[this.getDataValue('weekday')];
-            },
-            set(weekdayString) {
-                const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                const idx = weekdays.indexOf(weekdayString.toLowerCase());
-                if (idx > -1) {
-                    this.setDataValue('weekday', idx);
-                } else {
-                    throw Error(`Make sure that "weekday" is one of ${weekdays}`);
-                }
-            },
         },
         time: {
             // time is a number of minutes after midnight
