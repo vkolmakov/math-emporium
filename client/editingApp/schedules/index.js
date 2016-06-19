@@ -119,9 +119,12 @@ class EditSchedules extends Component {
                                   tutors={tutors}
                                   schedules={schedules} />
 
-              <Table headers={tableHeaders}
+              <div className="list-wrap right-col">
+                <Table headers={tableHeaders}
                      data={schedules.all}
                      actions={tableActions} />
+              </div>
+
             </div>
         );
     }

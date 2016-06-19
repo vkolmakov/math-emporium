@@ -3,13 +3,12 @@ import React from 'react';
 import TableRow from './table-row';
 
 export default ({ headers, data, actions }) => (
-    <div className="list-wrap">
-      <table>
-        <thead>
-          <tr>
-            {headers.map((h) => <th key={h.label}>{h.label}</th>)}
+    <table>
+      <thead>
+        <tr>
+          {headers.map((h) => <th key={h.label}>{h.label}</th>)}
     {actions.map(a => <th key={a.label}></th>)}
-          </tr>
+    </tr>
         </thead>
         <tbody>
         {data.map((datum) => (
@@ -19,7 +18,6 @@ export default ({ headers, data, actions }) => (
                datum={datum}
                actions={actions} />
         ))}
-        </tbody>
-      </table>
-    </div>
+    </tbody>
+        </table>
 );

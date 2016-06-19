@@ -1,5 +1,4 @@
 import React from 'react';
-import Select from '../select/reactSelectWrapper';
 import FormField from './formField';
 
 export default ({ handleSubmit,

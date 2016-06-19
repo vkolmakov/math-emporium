@@ -86,9 +86,12 @@ class EditTutors extends Component {
               <CreateTutorForm locations={locations}
                                courses={courses} />
 
-              <Table headers={tableHeaders}
+              <div className="list-wrap right-col">
+                <Table headers={tableHeaders}
                      data={tutors.all}
                      actions={tableActions} />
+              </div>
+
             </div>
         );
     }

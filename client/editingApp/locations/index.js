@@ -47,9 +47,11 @@ class EditLocations extends Component {
 
               <CreateLocationForm locations={locations} />
 
-              <Table headers={tableHeaders}
+              <div className="list-wrap right-col">
+                <Table headers={tableHeaders}
                      data={locations.all}
                      actions={tableActions} />
+              </div>
 
             </div>
         );

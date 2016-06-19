@@ -7,9 +7,11 @@ import { getLocations, setCurrentLocation } from '../../locations/actions';
 import LoadingSpinner from '../../components/loadingSpinner';
 import FilterControls from '../../components/filterControls';
 
+import Weekday from './components/weekday';
+
 import { selectTransformOptions } from '../../utils';
 
-import { WEEKDAY_OPTIONS } from '../../constants';
+import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
 
 class SchedulesOverview extends Component {
     componentWillMount() {
@@ -55,13 +57,23 @@ class SchedulesOverview extends Component {
                 return groups;
             }, {});
 
+
         return (
             <div className="content">
               <FilterControls options={locationsOptions}
                               currentValue={locations.selected ? locations.selected.id : null}
                               onChange={setCurrentLocation}
                               placeholder={'Select a location...'} />
-              Bello at {locations.selected.name}!
+              <div className="row">
+                {Object.keys(groupedSchedules).map(
+                  weekday => (
+                      <div className="weekday-wrap" key={weekday}>
+                        <Weekday weekday={weekday}
+                                 schedule={groupedSchedules[weekday]} />
+                      </div>
+                  )
+              )}
+              </div>
             </div>
         );
     }

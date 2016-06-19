@@ -15,7 +15,7 @@ export default ({ header, datum }) => {
         // given header contains an object
         if (Array.isArray(datum[key])) {
             // given datum is an array
-            DisplayDataElement = () => (<span>{datum[key].map((elem) => elem[subkey]).join(', ')}</span>);
+            DisplayDataElement = () => (<span>{datum[key].map((elem) => elem[subkey]).sort().join(', ')}</span>);
         } else {
             // just an object
             DisplayDataElement = () => (<span>{datum[key][subkey]}</span>);
@@ -25,7 +25,7 @@ export default ({ header, datum }) => {
         let displayValue;
         if (mapValuesToLabels) {
             displayValue = mapValuesToLabels.find(
-                ({value, display}) => value == datum[key]
+                ({ value, display }) => value == datum[key]
             ).display;
         } else {
             displayValue = datum[key];

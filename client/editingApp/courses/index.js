@@ -78,9 +78,12 @@ class EditCourses extends Component {
 
               <CreateCourseForm locations={locations} />
 
-              <Table headers={tableHeaders}
+              <div className="list-wrap right-col">
+                <Table headers={tableHeaders}
                      data={courses.all}
                      actions={tableActions} />
+              </div>
+
             </div>
         );
     }
