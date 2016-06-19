@@ -34,10 +34,10 @@ class EditCourses extends Component {
             const selectedLocation = locations.selected;
             const filteredCourses = courses.all.filter(
                 course => course.location.id === selectedLocation.id
-            )
+            );
             courses = {
                 ...courses,
-                all: filteredCourses
+                all: filteredCourses,
             };
         }
 
