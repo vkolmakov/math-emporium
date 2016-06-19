@@ -3,6 +3,7 @@
   "main": "bin/www",
   "scripts": {
     "start": "node ./bin/www",
+    "production": "webpack --config ./webpack.production.config.js && NODE_ENV=production npm run start",
     "dev": "nodemon -w ./ -x npm run start",
     "test": "mocha test/**/*.test.js --require babel-register --silent"
   },
@@ -36,6 +37,7 @@
     "babel-preset-node5": "^11.1.0",
     "babel-register": "^6.8.0",
     "body-parser": "^1.15.1",
+    "compression": "^1.6.2",
     "express": "^4.13.4",
     "extract-text-webpack-plugin": "^1.0.1",
     "pg": "^4.5.5",

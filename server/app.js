@@ -2,6 +2,7 @@ import express from 'express';
 import db from 'sequelize-connect';
 import bodyParser from 'body-parser';
 import path from 'path';
+import compression from 'compression';
 
 import createCrudRouter from './crudRouter';
 
@@ -9,21 +10,6 @@ import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from '../webpack.config';
-
-const compiler = webpack(config);
-const middleware = webpackMiddleware(compiler, {
-    publicPath: config.output.publicPath,
-    contentBase: 'src',
-    stats: {
-        colors: true,
-        hash: false,
-        timings: true,
-        chunks: false,
-        chunkModules: false,
-        modules: false
-    },
-});
-
 
 function connect() {
     db.discover = path.join(__dirname);
@@ -56,14 +42,34 @@ function connect() {
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
 
-    const isDev = true;
+    const isDev = process.env.NODE_ENV !== 'production';
 
     if (isDev) {
+        const compiler = webpack(config);
+        const middleware = webpackMiddleware(compiler, {
+            publicPath: config.output.publicPath,
+            contentBase: 'src',
+            stats: {
+                colors: true,
+                hash: false,
+                timings: true,
+                chunks: false,
+                chunkModules: false,
+                modules: false,
+            },
+        });
+
         app.use(middleware);
         app.use(webpackHotMiddleware(compiler));
         app.get('*', (req, res) => {
             res.write(middleware.fileSystem.readFileSync(path.join(__dirname, '../dist/index.html')));
             res.end();
+        });
+    } else {
+        app.use(compression());
+        app.use(express.static(path.join(__dirname, '../dist')));
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, '../dist/index.html'));
         });
     }
     app.listen(port, () => console.log(`Running on port ${port}`));
