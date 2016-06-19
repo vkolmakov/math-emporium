@@ -10,21 +10,6 @@ export default function createScheduleModel(sequelize, DataTypes) {
             // time is a number of minutes after midnight
             type: DataTypes.INTEGER,
             allowNull: false,
-            get() {
-                // returns military time string in HH:mm format
-                const minAfterMidnight = this.getDataValue('time');
-                const hours = Math.floor(minAfterMidnight / 60);
-                const mins = minAfterMidnight % 60;
-                // add padding to mins if needed
-                return `${hours}:${mins < 10 ? `0${mins}` : mins}`;
-            },
-            set(timeString) {
-                if (!(typeof timeString === 'string' && timeString.length === 5)) {
-                    throw Error('time must be a military time string with "HH:mm" format!');
-                }
-                const [hours, mins] = timeString.split(':');
-                this.setDataValue('time', parseInt(hours, 10) * 60 + parseInt(mins, 10));
-            },
         },
     }, {
         timestamps: false,
