@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { BASE_PATH, WEEKDAY_OPTIONS } from '../constants';
+import { BASE_PATH, WEEKDAY_OPTIONS, TIME_OPTIONS } from '../constants';
 
 import { getLocations, setCurrentLocation } from '../locations/actions';
 import { getTutors } from '../tutors/actions';
@@ -29,16 +29,16 @@ class EditSchedules extends Component {
         const weekdayOptions = selectTransformOptions('value', 'display')(WEEKDAY_OPTIONS);
         const locationsOptions = selectTransformOptions()(locations.all);
 
-        if (!schedules.all) {
+        if (!schedules.all || !locations.all || !tutors.all) {
             return (
                 <LoadingSpinner />
             );
         }
 
         if (locations.selected || schedules.selectedWeekday) {
-            let predicate;
+            let filteringFn;
             if (locations.selected && schedules.selectedWeekday) {
-                predicate = elem => {
+                filteringFn = elem => {
                     if (elem.weekday) {
                         // this is a schedule, filter by both weekday and location
                         return elem.location.id == locations.selected.id && elem.weekday == schedules.selectedWeekday
@@ -48,14 +48,14 @@ class EditSchedules extends Component {
                     }
                 };
             } else if (schedules.selectedWeekday) {
-                predicate = elem => elem.weekday == schedules.selectedWeekday;
+                filteringFn = elem => elem.weekday == schedules.selectedWeekday;
             } else if (locations.selected) {
-                predicate = elem => elem.location.id == locations.selected.id;
+                filteringFn = elem => elem.location.id == locations.selected.id;
             }
 
             const [filteredTutors, filteredSchedules] = [tutors.all, schedules.all].map(
                 list => list.filter(
-                    predicate
+                    filteringFn
                 )
             );
 
@@ -66,7 +66,7 @@ class EditSchedules extends Component {
 
             const sortSchedulesFn = (s1, s2) => (
                 // compare by just the hour value
-                parseInt(s1.time.split(':')[0]) - parseInt(s2.time.split(':')[0])
+                s1.time - s2.time
             );
 
             schedules = {
@@ -82,6 +82,7 @@ class EditSchedules extends Component {
                 label: 'Weekday',
             }, {
                 dataKey: 'time',
+                mapValuesToLabels: TIME_OPTIONS,
                 label: 'Time',
             }, {
                 dataKey: 'location->name',

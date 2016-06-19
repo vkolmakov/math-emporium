@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import { reduxForm, initialize, change } from 'redux-form';
 
 import { createCourse, getCourses } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -9,7 +9,28 @@ import { GOOGLE_CALENDAR_COLORS } from '../../constants';
 import { selectTransformOptions } from '../../utils';
 import Form from '../../components/form/index';
 
+const FORM_NAME = 'CreateCourseForm';
+const FORM_FIELDS = ['code', 'name', 'color', 'location'];
+
 class CreateCourseForm extends Component {
+    componentWillMount() {
+        const selectedLocation = this.props.locations.selected;
+        if (selectedLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', selectedLocation.id));
+        }
+    }
+
+    componentWillUpdate(nextProps) {
+        const currentLocation = nextProps.locations.selected;
+        const prevLocation = this.props.locations.selected;
+
+        if (!currentLocation && prevLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', null));
+        } else if ((currentLocation && !prevLocation) || (prevLocation && currentLocation.id != prevLocation.id)) {
+            this.props.dispatch(change(FORM_NAME, 'location', currentLocation.id));
+        }
+    }
+
     render() {
         const { name, location, code, color } = this.props.fields;
 
@@ -20,9 +41,9 @@ class CreateCourseForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createCourse(data)
-                .then(this.props.dispatch(initialize('CreateCourseForm', {
+                .then(this.props.dispatch(initialize(FORM_NAME, {
                     location: this.props.locations.selected ? this.props.locations.selected.id : null,
-                }, ['code', 'name', 'color', 'location'])))
+                }, FORM_FIELDS)))
                 .then(this.props.getCourses);
         };
 
@@ -98,7 +119,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'CreateCourseForm',
-    fields: ['code', 'name', 'color', 'location'],
+    form: FORM_NAME,
+    fields: FORM_FIELDS,
     validate,
 }, null, { createCourse, getCourses, setCurrentLocation })(CreateCourseForm);

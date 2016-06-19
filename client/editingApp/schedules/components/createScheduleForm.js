@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import { reduxForm, initialize, change } from 'redux-form';
 
 import { createSchedule, getSchedules, setCurrentWeekday } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -9,7 +9,44 @@ import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
 import { selectTransformOptions } from '../../utils';
 import Form from '../../components/form/index';
 
+const FORM_NAME = 'CreateScheduleForm';
+const FORM_FIELDS = ['weekday', 'time', 'location', 'tutors'];
+
 class CreateScheduleForm extends Component {
+    componentWillMount() {
+        const selectedLocation = this.props.locations.selected;
+        if (selectedLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', selectedLocation.id));
+        }
+
+        const selectedWeekday = this.props.schedules.selectedWeekday;
+        if (selectedWeekday) {
+            this.props.dispatch(change(FORM_NAME, 'weekday', selectedWeekday));
+        }
+    }
+
+    componentWillUpdate(nextProps) {
+        const currentLocation = nextProps.locations.selected;
+        const prevLocation = this.props.locations.selected;
+
+        if (!currentLocation && prevLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', null));
+            this.props.dispatch(change(FORM_NAME, 'tutors', []));
+        } else if ((currentLocation && !prevLocation) || (prevLocation && currentLocation.id != prevLocation.id)) {
+            this.props.dispatch(change(FORM_NAME, 'location', currentLocation.id));
+            this.props.dispatch(change(FORM_NAME, 'tutors', []));
+        }
+
+        const currentWeekday = nextProps.schedules.selectedWeekday;
+        const prevWeekday = this.props.schedules.selectedWeekday;
+
+        if (!currentWeekday && prevWeekday) {
+            this.props.dispatch(change(FORM_NAME, 'weekday', null));
+        } else if ((currentWeekday && !prevWeekday) || (prevWeekday && currentWeekday != prevWeekday)) {
+            this.props.dispatch(change(FORM_NAME, 'weekday', currentWeekday));
+        }
+    }
+
     render() {
         const { weekday, time, location, tutors } = this.props.fields;
         const { setCurrentLocation, setCurrentWeekday } = this.props;
@@ -21,10 +58,10 @@ class CreateScheduleForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createSchedule(data)
-                .then(this.props.dispatch(initialize('CreateScheduleForm', {
+                .then(this.props.dispatch(initialize(FORM_NAME, {
                     location: this.props.locations.selected ? this.props.locations.selected.id : null,
                     weekday: this.props.schedules.selectedWeekday || null,
-                }, ['weekday', 'time', 'location', 'tutors'])))
+                }, FORM_FIELDS)))
                 .then(this.props.getSchedules);
         };
 
@@ -96,7 +133,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'CreateScheduleForm',
-    fields: ['weekday', 'time', 'location', 'tutors'],
+    form: FORM_NAME,
+    fields: FORM_FIELDS,
     validate,
 }, null, { createSchedule, setCurrentLocation, getSchedules, setCurrentWeekday })(CreateScheduleForm);

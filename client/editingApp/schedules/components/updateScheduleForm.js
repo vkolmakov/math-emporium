@@ -28,7 +28,7 @@ class UpdateScheduleForm extends Component {
             weekday,
             time,
             location: location.id,
-            tutors: tutors.map(tutor => tutor.id),
+            tutors: tutors.map(tutor => ({value: tutor.id, label: tutor.name})),
         }, ['weekday', 'time', 'location', 'tutors']));
     }
 

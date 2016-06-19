@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import { reduxForm, initialize, change } from 'redux-form';
 
 import { createTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
@@ -7,7 +7,29 @@ import { setCurrentLocation } from '../../locations/actions';
 import { selectTransformOptions } from '../../utils';
 import Form from '../../components/form/index';
 
+const FORM_NAME = 'CreateTutorForm';
+const FORM_FIELDS = ['name', 'location', 'courses'];
+
 class CreateTutorForm extends Component {
+    componentWillMount() {
+        const selectedLocation = this.props.locations.selected;
+        if (selectedLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', selectedLocation.id));
+        }
+    }
+
+    componentWillUpdate(nextProps) {
+        const currentLocation = nextProps.locations.selected;
+        const prevLocation = this.props.locations.selected;
+        if (!currentLocation && prevLocation) {
+            this.props.dispatch(change(FORM_NAME, 'location', null));
+            this.props.dispatch(change(FORM_NAME, 'courses', []));
+        } else if ((currentLocation && !prevLocation) || (prevLocation && currentLocation.id != prevLocation.id)) {
+            this.props.dispatch(change(FORM_NAME, 'location', currentLocation.id));
+            this.props.dispatch(change(FORM_NAME, 'courses', []));
+        }
+    }
+
     render() {
         const { name, location, courses } = this.props.fields;
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
@@ -17,9 +39,9 @@ class CreateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createTutor(data)
-                .then(this.props.dispatch(initialize('CreateTutorForm', {
+                .then(this.props.dispatch(initialize(FORM_NAME, {
                     location: this.props.locations.selected ? this.props.locations.selected.id : null,
-                }, ['name', 'location', 'courses'])))
+                }, FORM_FIELDS)))
                 .then(this.props.getTutors);
         };
 
@@ -79,7 +101,7 @@ function validate(values) {
 }
 
 export default reduxForm({
-    form: 'CreateTutorForm',
-    fields: ['name', 'location', 'courses'],
+    form: FORM_NAME,
+    fields: FORM_FIELDS,
     validate,
 }, null, { createTutor, setCurrentLocation, getTutors })(CreateTutorForm);
