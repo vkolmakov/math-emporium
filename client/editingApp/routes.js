@@ -18,8 +18,9 @@ import EditSchedules from './schedules/index';
 import ScheduleDetail from './schedules/components/scheduleDetail';
 
 import SchedulesOverview from './overviews/schedules/index';
+import TutorsOverview from './overviews/tutors/index';
 
-export default(
+export default (
     <Route path={BASE_PATH} component={EditingApp}>
       <Route path="locations" component={EditLocations} />
       <Route path="locations/:id" component={LocationDetail} />
@@ -30,5 +31,6 @@ export default(
       <Route path="schedules" component={EditSchedules} />
       <Route path="schedules/:id" component={ScheduleDetail} />
       <Route path="schedules-overview" component={SchedulesOverview} />
+      <Route path="tutors-overview" component={TutorsOverview} />
     </Route>
 );
