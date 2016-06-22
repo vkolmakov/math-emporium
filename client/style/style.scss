@@ -4,13 +4,13 @@
 
 $susy: (
     colums: 12,
-    container: 960px,
+    container: 1040px,
     global-box-sizing: border-box
 );
 
 $font-family: Optima;
 
-$medium-screen: 700px;
+$medium-screen: 768px;
 $small-screen-width: 480px;
 
 $primary-color: #d9edf9;
@@ -69,6 +69,7 @@ nav {
 
         &:hover {
             background: $primary-color;
+            font-weight: bold;
         }
     }
 }
@@ -124,6 +125,12 @@ nav {
                 padding: 0.5em;
                 color: black;
                 display: block;
+
+                &.selected {
+                    background-color: $primary-color;
+                    font-weight: bold;
+                }
+
             }
             &:hover {
                 background-color: $primary-color;
@@ -153,12 +160,17 @@ nav {
 .form-wrap {
     @include breakpoint($medium-screen) {
         @include span(3 of 9);
+        margin: 0 auto;
     }
-    margin: 0 auto;
+    margin: 0.5em 0;
 }
 
 .form-field {
     margin: 1em auto;
+    &:last-child {
+        /* DANGER! possible react-select conflict */
+        @include clearfix();
+    }
 }
 
 .form-input-group {
@@ -203,7 +215,6 @@ nav {
 }
 
 .weekday-wrap {
-    @include clearfix();
     @include breakpoint($medium-screen) {
         @include span(4 of 8);
         &:nth-child(even) {
@@ -237,8 +248,17 @@ nav {
     }
 
     tr {
-        border-bottom: 1px solid #eaeaea;
-        border-top: 1px solid #eaeaea;
+        border: 1px solid darken($tertiary-color, 32%);
+
+        @include breakpoint($medium-screen) {
+            border: none;
+            border-bottom: 1px solid #eaeaea;
+            border-top: 1px solid #eaeaea;
+        }
+
+
+
+
         &:nth-child(even) {
             background: darken($tertiary-color, 5%);
 

@@ -1,22 +1,59 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router';
 
 import { BASE_PATH } from '../../constants';
 
-export default () => {
-    return (
-        <div className="sidebar">
-          <ul>
-            <li><Link to={`/${BASE_PATH}/locations`}>Locations</Link></li>
-            <li><Link to={`/${BASE_PATH}/courses`}>Courses</Link></li>
-            <li><Link to={`/${BASE_PATH}/tutors`}>Tutors</Link></li>
-            <li><Link to={`/${BASE_PATH}/schedules`}>Schedules</Link></li>
-          </ul>
+export default class Sidebar extends Component {
+    // TODO: Get initial state based on current url
+    constructor() {
+        super();
+        this.state = {
+            selected: null,
+        };
+        this.handleClick = this.handleClick.bind(this);
+    }
 
-          <ul>
-            <li><Link to={`/${BASE_PATH}/schedules-overview`}>Schedules overview</Link></li>
-            <li><Link to={`/${BASE_PATH}/tutors-overview`}>Tutors overview</Link></li>
-          </ul>
-        </div>
-    );
-};
+    handleClick(event){
+        const target = event.currentTarget.href.split('/').pop();
+        this.setState({ selected: target });
+    }
+
+    renderLink(path, text) {
+        return (
+            <Link to={`/${BASE_PATH}/${path}`}
+                  onClick={this.handleClick}
+                  className={this.state.selected === path ? 'selected' : ''}>
+              {text}
+            </Link>
+        );
+    }
+
+    render() {
+        const topList = [
+            ['locations', 'Locations'],
+            ['courses', 'Courses'],
+            ['tutors', 'Tutors'],
+            ['schedules', 'Schedules'],
+        ];
+
+        const bottomList = [
+            ['schedules-overview', 'Schedules Overview'],
+            ['tutors-overview', 'Tutors Overview'],
+        ];
+
+        return (
+            <div className="sidebar">
+              <ul>
+                {topList.map(([path, text]) => (
+                    <li>{this.renderLink(path, text)}</li>
+                ))}
+            </ul>
+                <ul>
+                {bottomList.map(([path, text]) => (
+                    <li>{this.renderLink(path, text)}</li>
+                ))}
+            </ul>
+            </div>
+        );
+    }
+}
