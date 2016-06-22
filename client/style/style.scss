@@ -8,18 +8,69 @@ $susy: (
     global-box-sizing: border-box
 );
 
-$font-family: Times;
+$font-family: Optima;
 
 $medium-screen: 700px;
 $small-screen-width: 480px;
+
+$primary-color: #d9edf9;
+$secondary-color: white;
+$tertiary-color: #fefefe;
+$danger-color: #ff9999;
 
 @mixin rounded-border {
     @include border-radius (5px);
     border: 1px solid #ccc;
 }
 
-body {
+@mixin set-font {
     font-family: $font-family;
+}
+
+@mixin url {
+    text-decoration: none;
+    text-transform: lowercase;
+}
+
+body {
+    @include set-font();
+    margin: 1em;
+    @include breakpoint($medium-screen) {
+        margin: 0px;
+    }
+}
+
+nav {
+    display: block;
+    max-width: $small-screen-width;
+    margin: 0 auto 0.5em auto;
+    background-color: $secondary-color;
+    border-bottom: 1px solid #eaeaea;
+
+    @include breakpoint($medium-screen) {
+        max-width: none;
+        margin-bottom: 1.5em;
+    }
+
+    a {
+        display: block;
+        padding: 0.5em;
+        @include set-font();
+        @include url();
+
+        @include breakpoint($medium-screen) {
+            display: inline-block;
+            padding: 0.75em;
+        }
+
+        color: black;
+
+        font-size: 1.2em;
+
+        &:hover {
+            background: $primary-color;
+        }
+    }
 }
 
 .wrap {
@@ -27,10 +78,17 @@ body {
 }
 
 .content {
+    max-width: $small-screen-width;
     margin: 0 auto;
+
+    @include breakpoint($medium-screen) {
+        max-width: none;
+    }
 
     h2 {
         margin: 0;
+        @include set-font();
+        font-weight: 300;
     }
 
     @include breakpoint($medium-screen) {
@@ -42,7 +100,10 @@ body {
     @include clearfix();
 
     max-width: $small-screen-width;
-    margin: 0 auto;
+
+    margin: 0 auto 0.5em auto;
+    background-color: $secondary-color;
+    border-bottom: 1px solid #eaeaea;
 
     @include breakpoint($medium-screen) {
         @include span(3 of 12);
@@ -56,15 +117,16 @@ body {
 
         li {
             margin: 0.25em;
-            @include rounded-border();
+
             a {
+                @include set-font();
                 text-decoration: none;
                 padding: 0.5em;
                 color: black;
                 display: block;
             }
             &:hover {
-                background-color: #d9edf9;
+                background-color: $primary-color;
                 font-weight: bold;
 
             }
@@ -79,10 +141,10 @@ body {
     }
 
     margin: 0 auto;
-    max-width: $small-screen-width;
     padding: 0.5em 0;
 
     input {
+        @include set-font();
         @include box-sizing(border-box);
         width: 100%;
     }
@@ -93,7 +155,6 @@ body {
         @include span(3 of 9);
     }
     margin: 0 auto;
-    max-width: $small-screen-width;
 }
 
 .form-field {
@@ -104,7 +165,7 @@ body {
     > input {
         @include box-sizing(border-box);
         @include rounded-border();
-        font-family: $font-family;
+        @include set-font();
         padding: 0.5em;
         font-size: 16px;
         height:34px;
@@ -113,7 +174,10 @@ body {
 }
 
 .form-help {
+    @include set-font();
     @include float-right();
+    color: $danger-color;
+    margin-bottom: 0.25em;
 }
 
 .color-icon {
@@ -148,22 +212,22 @@ body {
     }
 
     h2 {
+        font-weight: 300;
         padding: 0.5em 0;
     }
 }
 
 .list-wrap {
-    max-width: $small-screen-width;
-
     table {
         width: 100%;
-        border-collapse:collapse;
-        border: 1px solid #eaeaea;
+        border-collapse: collapse;
+        border-top: 1px solid #eaeaea;
     }
 
     th {
+        @include set-font();
         display: none;
-        background: #d9edf9;
+        background: $tertiary-color;
         border-bottom: 1px solid #eaeaea;
         padding: 0.25em;
         @include breakpoint($medium-screen) {
@@ -173,12 +237,20 @@ body {
     }
 
     tr {
+        border-bottom: 1px solid #eaeaea;
+        border-top: 1px solid #eaeaea;
         &:nth-child(even) {
-            background: #f9f9f9;
+            background: darken($tertiary-color, 10%);
+
+            @include breakpoint($medium-screen) {
+                background: $tertiary-color;
+            }
+
         }
     }
 
     td {
+        @include set-font();
         display: block;
         padding: 0.25em;
         border-bottom: 1px solid #eaeaea;
@@ -201,6 +273,26 @@ body {
             content: "";
         }
 
+        &.table-action {
+            border: none;
+            @include float-right();
+            @include breakpoint($medium-screen) {
+                @include reset-float();
+            }
+
+            a {
+                @include set-font();
+                @include url();
+
+                padding: 0.2em;
+                color: black;
+                &:hover {
+                    color: $primary-color;
+                    text-decoration: underline;
+                }
+            }
+        }
+
         &:last-child {
             padding-bottom: 1em;
 
@@ -212,8 +304,11 @@ body {
     }
 }
 
+.table-action {
+
+}
+
 .list-controls-wrap {
-    max-width: $small-screen-width;
     margin: 0 auto;
 
     @include breakpoint($medium-screen) {
@@ -228,15 +323,20 @@ body {
 }
 
 
-
-$button-color: #ececec;
-$button-text-color: #000;
-
 .button {
-    background: $button-color;
-    color: $button-text-color;
+    background: $tertiary-color;
+    color: black;
     padding: 0.5em;
     width: 145px;
     @include rounded-border();
-    @include float-right();
+    @include set-font();
+    font-size: 16px;
+
+    .form-wrap & {
+        @include float-right();
+        @include breakpoint($medium-screen) {
+            @include clearfix();
+        }
+    }
+
 }
