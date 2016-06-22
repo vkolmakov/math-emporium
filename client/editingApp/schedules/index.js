@@ -105,15 +105,18 @@ class EditSchedules extends Component {
 
         return (
             <div className="content">
-              <FilterControls options={locationsOptions}
-                              currentValue={locations.selected ? locations.selected.id : ''}
-                              onChange={setCurrentLocation.bind(this)}
-                              placeholder={'Filter by location...'} />
+              <div className="content-nav">
+                <h2>Schedules</h2>
+                <FilterControls options={locationsOptions}
+                                currentValue={locations.selected ? locations.selected.id : ''}
+                                onChange={setCurrentLocation.bind(this)}
+                                placeholder={'Filter by location...'} />
 
-              <FilterControls options={weekdayOptions}
-                              currentValue={schedules.selectedWeekday || ''}
-                              onChange={setCurrentWeekday}
-                              placeholder={'Filter by weekday...'} />
+                <FilterControls options={weekdayOptions}
+                                currentValue={schedules.selectedWeekday || ''}
+                                onChange={setCurrentWeekday}
+                                placeholder={'Filter by weekday...'} />
+              </div>
 
               <CreateScheduleForm locations={locations}
                                   tutors={tutors}

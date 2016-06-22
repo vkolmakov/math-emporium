@@ -240,7 +240,7 @@ nav {
         border-bottom: 1px solid #eaeaea;
         border-top: 1px solid #eaeaea;
         &:nth-child(even) {
-            background: darken($tertiary-color, 10%);
+            background: darken($tertiary-color, 5%);
 
             @include breakpoint($medium-screen) {
                 background: $tertiary-color;
@@ -304,10 +304,6 @@ nav {
     }
 }
 
-.table-action {
-
-}
-
 .list-controls-wrap {
     margin: 0 auto;
 
@@ -321,7 +317,6 @@ nav {
     }
 
 }
-
 
 .button {
     background: $tertiary-color;
@@ -338,5 +333,12 @@ nav {
             @include clearfix();
         }
     }
+}
 
+.content-nav {
+    h2 {
+        padding: 0.5em 0;
+        display: inline-block;
+    }
+    display: block;
 }

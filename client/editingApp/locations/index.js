@@ -44,7 +44,9 @@ class EditLocations extends Component {
 
         return (
             <div className="content">
-
+              <div className="content-nav">
+                <h2>Locations</h2>
+              </div>
               <CreateLocationForm locations={locations} />
 
               <div className="list-wrap right-col">

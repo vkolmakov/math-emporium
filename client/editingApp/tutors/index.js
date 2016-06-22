@@ -78,11 +78,13 @@ class EditTutors extends Component {
 
         return (
             <div className="content">
-              <FilterControls options={locationsOptions}
-                              currentValue={locations.selected ? locations.selected.id : ''}
-                              onChange={setCurrentLocation.bind(this)}
-                              placeholder={'Filter by location...'} />
-
+              <div className="content-nav">
+                <h2>Tutors</h2>
+                <FilterControls options={locationsOptions}
+                                currentValue={locations.selected ? locations.selected.id : ''}
+                                onChange={setCurrentLocation.bind(this)}
+                                placeholder={'Filter by location...'} />
+              </div>
               <CreateTutorForm locations={locations}
                                courses={courses} />
 

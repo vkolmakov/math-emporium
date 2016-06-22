@@ -60,10 +60,13 @@ class SchedulesOverview extends Component {
 
         return (
             <div className="content">
-              <FilterControls options={locationsOptions}
-                              currentValue={locations.selected ? locations.selected.id : null}
-                              onChange={setCurrentLocation}
-                              placeholder={'Select a location...'} />
+              <div className="content-nav">
+                <FilterControls options={locationsOptions}
+                                currentValue={locations.selected ? locations.selected.id : null}
+                                onChange={setCurrentLocation}
+                                placeholder={'Select a location...'} />
+                <h2>Schedule for {locations.selected.name}</h2>
+              </div>
               <div className="row">
                 {Object.keys(groupedSchedules).map(
                   weekday => (

@@ -71,11 +71,13 @@ class EditCourses extends Component {
 
         return (
             <div className="content">
-              <FilterControls options={locationsOptions}
-                              currentValue={locations.selected ? locations.selected.id : null}
-                              onChange={setCurrentLocation.bind(this)}
-                              placeholder={'Filter by location...'} />
-
+              <div className="content-nav">
+                <h2>Courses</h2>
+                <FilterControls options={locationsOptions}
+                                currentValue={locations.selected ? locations.selected.id : null}
+                                onChange={setCurrentLocation.bind(this)}
+                                placeholder={'Filter by location...'} />
+              </div>
               <CreateCourseForm locations={locations} />
 
               <div className="list-wrap right-col">
