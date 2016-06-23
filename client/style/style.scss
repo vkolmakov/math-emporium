@@ -95,6 +95,17 @@ nav {
     @include breakpoint($medium-screen) {
         @include span(9 of 12 last nest); // This container will contain nested things
     }
+
+    .middle-help-message-wrap {
+        h1 {
+            color: darken($tertiary-color, 32%);
+            font-weight: 400;
+        }
+
+        @include breakpoint($medium-screen) {
+            margin: span(3 of 12) span(4 of 12); // kinda centered
+        }
+    }
 }
 
 .sidebar {

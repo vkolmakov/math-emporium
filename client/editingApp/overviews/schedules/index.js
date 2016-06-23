@@ -32,15 +32,14 @@ class SchedulesOverview extends Component {
         const locationsOptions = selectTransformOptions()(locations.all);
 
         if (!locations.selected) {
-            // TODO: add a class
             return (
                 <div className="content">
                   <FilterControls options={locationsOptions}
                                   currentValue={locations.selected ? locations.selected.id : null}
                                   onChange={setCurrentLocation}
                                   placeholder={'Select a location...'} />
-                  <div>
-                    Select a location...
+                  <div className="middle-help-message-wrap">
+                    <h1>Select a location...</h1>
                   </div>
                 </div>
             );
