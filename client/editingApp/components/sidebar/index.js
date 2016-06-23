@@ -4,7 +4,6 @@ import { Link } from 'react-router';
 import { BASE_PATH } from '../../constants';
 
 export default class Sidebar extends Component {
-    // TODO: Get initial state based on current url
     constructor() {
         super();
         this.state = {
@@ -13,7 +12,13 @@ export default class Sidebar extends Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
-    handleClick(event){
+    componentWillMount() {
+        this.setState({
+            selected: this.props.selected,
+        });
+    }
+
+    handleClick(event) {
         const target = event.currentTarget.href.split('/').pop();
         this.setState({ selected: target });
     }
@@ -45,12 +50,12 @@ export default class Sidebar extends Component {
             <div className="sidebar">
               <ul>
                 {topList.map(([path, text]) => (
-                    <li>{this.renderLink(path, text)}</li>
+                    <li key={path}>{this.renderLink(path, text)}</li>
                 ))}
             </ul>
                 <ul>
                 {bottomList.map(([path, text]) => (
-                    <li>{this.renderLink(path, text)}</li>
+                    <li key={path}>{this.renderLink(path, text)}</li>
                 ))}
             </ul>
             </div>
