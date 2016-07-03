@@ -26,6 +26,5 @@ export default function createCourseModel(sequelize, DataTypes) {
         },
 
     });
-
     return course;
 }

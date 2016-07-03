@@ -1,9 +1,11 @@
 import React from 'react';
 import FormField from './formField';
+import Alert from './formAlert.js';
 
 export default ({ handleSubmit,
                   title,
-                  fields }) => (
+                  fields,
+                  error }) => (
     <form onSubmit={handleSubmit}>
       <h2>{title}</h2>
       {fields.map(field => (
@@ -14,5 +16,6 @@ export default ({ handleSubmit,
       <div className="form-field">
         <button className="button" type="submit">Submit</button>
       </div>
-    </form>
+      <Alert error={error}/>
+      </form>
 );

@@ -6,9 +6,9 @@ import ColorIcon from '../colorIcon';
 export default ({ type, binding, options, onSelect, controlValue }) => {
     let inputElement;
 
-    if (type === 'text') {
+    if (type === 'text' || type === 'password') {
         inputElement = (
-              <input type="text" {...binding}/>
+            <input type={type} {...binding}/>
         );
     } else if (type === 'select' || type === 'multiselect' && options) {
         let renderer = {};

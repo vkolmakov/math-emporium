@@ -338,7 +338,7 @@ nav {
     margin: 0 auto;
 
     @include breakpoint($medium-screen) {
-        @include span(3 of 9);
+        @include span(4 of 12);
     }
 
     select {
@@ -371,4 +371,17 @@ nav {
         display: inline-block;
     }
     display: block;
+}
+
+.auth-form-wrap {
+    max-width: $small-screen-width;
+    margin: 0 auto;
+    @include breakpoint($medium-screen) {
+        width: span(4 of 9);
+    }
+
+    h1 {
+        color: darken($tertiary-color, 32%);
+        font-weight: 400;
+    }
 }

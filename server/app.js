@@ -3,8 +3,10 @@ import db from 'sequelize-connect';
 import bodyParser from 'body-parser';
 import path from 'path';
 import compression from 'compression';
+import morgan from 'morgan';
 
 import createCrudRouter from './crudRouter';
+import createAuthRouter from './authRouter';
 
 import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
@@ -17,6 +19,7 @@ function connect() {
 
     return db.connect('mathcenterappdb', 'postgres', '', {
         force: false,
+        // logging: false,
         dialect: 'postgres',
     });
 }
@@ -32,6 +35,7 @@ function connect() {
     const port = 3000;
 
     app.use(bodyParser.json());
+    app.use(morgan('default', {}));
 
     const crudRoutes = [
         ['locations', 'private'],
@@ -41,6 +45,7 @@ function connect() {
     ];
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
+    app.use('/api', createAuthRouter());
 
     const isDev = process.env.NODE_ENV !== 'production';
 

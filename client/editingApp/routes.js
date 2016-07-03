@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
+import RequireAuth from '../auth/components/requireAuth';
+
 import { BASE_PATH } from './constants';
 
 import EditingApp from './index';
@@ -20,6 +22,7 @@ import ScheduleDetail from './schedules/components/scheduleDetail';
 import SchedulesOverview from './overviews/schedules/index';
 import TutorsOverview from './overviews/tutors/index';
 
+// <Route path={BASE_PATH} component={RequireAuth(EditingApp)}>
 export default (
     <Route path={BASE_PATH} component={EditingApp}>
       <Route path="locations" component={EditLocations} />
