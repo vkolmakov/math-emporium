@@ -1,5 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
+import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 
 const Location = db.models.location;
 const Course = db.models.course;
@@ -35,7 +36,7 @@ export const handleGetId = async (req, res, next) => {
         if (course) {
             res.status(200).json(extractDataValues(course));
         } else {
-            res.status(404).json({});
+            res.status(404).json(notFound('Course'));
         }
     } catch (err) {
         next(err);
@@ -45,13 +46,13 @@ export const handleGetId = async (req, res, next) => {
 export const handlePost = async (req, res, next) => {
     try {
         if (!isObject(req.body.location) || !hasOneOf(req.body.location, 'name', 'id')) {
-            throw Error('"location" object (with "name" or "id" field) is required');
+            res.status(422).json(isRequired('Location'));
         }
 
         const location = await Location.findIfExists(req.body.location);
 
         if (!location) {
-            throw Error('Selected location does not exist');
+            res.status(422).json(notFound('Location'));
         }
 
         const createdCourse = Course.build(req.body, {
@@ -63,6 +64,10 @@ export const handlePost = async (req, res, next) => {
 
         res.status(201).json(extractDataValues(createdCourse));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };
@@ -75,7 +80,7 @@ export const handleDelete = async (req, res, next) => {
         if (removedCourse) {
             res.status(200).json({ id: req.params.id });
         } else {
-            res.status(400).json({});
+            res.status(400).json(actionFailed('remove', 'course'));
         }
     } catch (err) {
         next(err);
@@ -90,7 +95,7 @@ export const handleUpdate = async (req, res, next) => {
         });
 
         if (!updatedCourse) {
-            throw Error('Course not found');
+            res.status(400).json(notFound('Course'));
         }
 
         let location;
@@ -99,10 +104,10 @@ export const handleUpdate = async (req, res, next) => {
                 location = await Location.findIfExists(req.body.location);
 
                 if (!location) {
-                    throw Error('Location does not exist');
+                    res.status(400).json(notFound('location'));
                 }
             } else {
-                throw Error('"location" object (with "name" or "id" field) is required to update the location');
+                res.status(400).json(notFound('location'));
             }
             await updatedCourse.setLocation(location);
         }
@@ -114,6 +119,10 @@ export const handleUpdate = async (req, res, next) => {
 
         res.status(200).json(extractDataValues(result));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };

@@ -5,8 +5,8 @@ import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
 
-import createCrudRouter from './crudRouter';
-import createAuthRouter from './authRouter';
+import createCrudRouter from './routes/crudRouter';
+import createAuthRouter from './routes/authRouter';
 
 import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
@@ -19,7 +19,7 @@ function connect() {
 
     return db.connect('mathcenterappdb', 'postgres', '', {
         force: false,
-        // logging: false,
+        logging: false,
         dialect: 'postgres',
     });
 }

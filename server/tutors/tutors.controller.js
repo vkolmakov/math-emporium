@@ -1,5 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
+import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 
 const Location = db.models.location;
 const Tutor = db.models.tutor;
@@ -34,7 +35,7 @@ export const handleGetId = async (req, res, next) => {
         if (tutor) {
             res.status(200).json(extractDataValues(tutor));
         } else {
-            res.status(404).json({});
+            res.status(404).json(notFound('tutor'));
         }
     } catch (err) {
         next(err);
@@ -44,18 +45,19 @@ export const handleGetId = async (req, res, next) => {
 export const handlePost = async (req, res, next) => {
     try {
         if (!isObject(req.body.location)) {
-            throw Error('"location" object (with "name" or "id" field) is required');
+            res.status(422).json(isRequired('location'));
         }
 
         const location = await Location.findIfExists(req.body.location);
 
         if (!location) {
-            throw Error('Selected location does not exist');
+            res.status(422).json(notFound('location'));
         }
 
         const createdTutor = Tutor.build(req.body, {
             fields: allowedToWrite,
         });
+
         await createdTutor.setLocation(location, { save: false });
         await createdTutor.save();
 
@@ -66,12 +68,16 @@ export const handlePost = async (req, res, next) => {
                 await createdTutor.setCourses(req.body.courses.map((course) => course.id));
             } else {
                 // TODO: inform user that tutor was created but with no courses set
-                throw Error('"courses" must be an array with course objects that have "id" properties');
+                res.status(422).json(actionFailed('process', 'courses'));
             }
         }
 
         res.status(201).json(extractDataValues(createdTutor));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };
@@ -85,7 +91,7 @@ export const handleDelete = async (req, res, next) => {
         if (removedTutor) {
             res.status(200).json({ id: req.params.id });
         } else {
-            res.status(400).json({});
+            res.status(404).json(actionFailed('remove', 'tutor'));
         }
     } catch (err) {
         next(err);
@@ -100,7 +106,7 @@ export const handleUpdate = async (req, res, next) => {
         });
 
         if (!updatedTutor) {
-            throw Error('Tutor not found');
+            res.status(404).json(notFound('tutor'));
         }
 
         // possibly updating location
@@ -109,10 +115,10 @@ export const handleUpdate = async (req, res, next) => {
             if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
                 location = await Location.findIfExists(req.body.location);
                 if (!location) {
-                    throw Error('Location does not exists');
+                    res.status(404).json(notFound('location'));
                 }
             } else {
-                throw Error('"location" object (with "name" or "id" field) is required to update the location');
+                res.status(422).json(notFound('location'));
             }
             await updatedTutor.setLocation(location);
         }
@@ -123,7 +129,7 @@ export const handleUpdate = async (req, res, next) => {
                 // check if first element of the array is a valid course
                 await updatedTutor.setCourses(req.body.courses.map((course) => course.id));
             } else {
-                throw Error('"courses" must be an array with course objects that have "id" properties');
+                res.status(422).json(actionFailed('process', 'courses'));
             }
         }
         // updating general info
@@ -133,6 +139,10 @@ export const handleUpdate = async (req, res, next) => {
         });
         res.status(200).json(extractDataValues(result));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };

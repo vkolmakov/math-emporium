@@ -1,5 +1,6 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
+import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 
 const Schedule = db.models.schedule;
 const Location = db.models.location;
@@ -35,7 +36,7 @@ export const handleGetId = async (req, res, next) => {
         if (scheduleRes) {
             res.status(200).json(extractDataValues(scheduleRes));
         } else {
-            res.status(404).json({});
+            res.status(404).json(notFound('schedule'));
         }
     } catch (err) {
         next(err);
@@ -51,7 +52,7 @@ export const handlePost = async (req, res, next) => {
         const location = await Location.findIfExists(req.body.location);
 
         if (!location) {
-            throw Error('Selected location does not exist');
+            res.status(422).json(notFound('location'));
         }
 
         const createdSchedule = Schedule.build(req.body, {
@@ -69,12 +70,16 @@ export const handlePost = async (req, res, next) => {
                 await createdSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
             } else {
                 // TODO: let user know that schedule was created, but tutors we're not added
-                throw Error('"tutors" must be an array with tutor objects that have "id" properties');
+                res.status(422).json(actionFailed('process', 'tutors'));
             }
         }
 
         res.status(201).json(extractDataValues(createdSchedule));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };
@@ -87,7 +92,7 @@ export const handleDelete = async (req, res, next) => {
         if (removedSchedule) {
             res.status(200).json({ id: req.params.id });
         } else {
-            res.status(400).json({});
+            res.status(400).json(actionFailed('remove', 'schedule'));
         }
     } catch (err) {
         next(err);
@@ -102,7 +107,7 @@ export const handleUpdate = async (req, res, next) => {
         });
 
         if (!updatedSchedule) {
-            throw Error('Schedule not found');
+            res.status(422).json(notFound('schedule'));
         }
 
         // updating location
@@ -111,10 +116,10 @@ export const handleUpdate = async (req, res, next) => {
             if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
                 location = await Location.findIfExists(req.body.location);
                 if (!location) {
-                    throw Error('Location does not exists');
+                    res.status(422).json(notFound('location'));
                 }
             } else {
-                throw Error('"location" object (with "name" or "id" field) is required to update the location');
+                res.status(422).json(notFound('location'));
             }
             await updatedSchedule.setLocation(location);
         }
@@ -124,7 +129,7 @@ export const handleUpdate = async (req, res, next) => {
                 // check if first element of the array is a valid tutor object
                 await updatedSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
             } else {
-                throw Error('"tutors" must be an array with tutor objects that have "id" properties');
+                res.status(422).json(actionFailed('process', 'tutors'));
             }
         }
         const result = await updatedSchedule.update(req.body, {

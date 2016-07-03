@@ -1,5 +1,10 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction } from '../aux';
+import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
+
+const Tutor = db.models.tutor;
+const Schedule = db.models.schedule;
+const Course = db.models.course;
 
 const allowedToRead = ['id', 'name'];
 const allowedToWrite = ['name'];
@@ -28,7 +33,7 @@ export const handleGetId = async (req, res, next) => {
         if (location) {
             res.status(200).json(extractDataValues(location));
         } else {
-            res.status(404).json({});
+            res.status(404).json(notFound('location'));
         }
     } catch (err) {
         next(err);
@@ -41,9 +46,12 @@ export const handlePost = async (req, res, next) => {
         const createdLocation = await Location.create(req.body, {
             fields: allowedToWrite,
         });
-
         res.status(201).json(extractDataValues(createdLocation));
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };
@@ -78,11 +86,13 @@ export const handleUpdate = async (req, res, next) => {
                 name: req.body.name,
             });
         } else {
-            throw (Error('Location not found'));
+            res.status(404).json(notFound('location'));
         }
-        // TODO: send a better response
-        res.status(200);
     } catch (err) {
+        if (err.message) {
+            // this is a validation error!
+            res.status(422).json(errorMessage(err.message));
+        }
         next(err);
     }
 };

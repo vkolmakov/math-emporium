@@ -1,12 +1,12 @@
 import express from 'express';
 
 import passport from 'passport';
-import passportService from './passport.service';
+import passportService from '../services/passport';
 
 const requireAuth = passport.authenticate('jwt', { session: false });
 
 export default function createCrudRouter(modelName, routeType) {
-    const controller = require(`./${modelName}/${modelName}.controller`);
+    const controller = require(`../${modelName}/${modelName}.controller`);
     const router = express.Router();
 
     router.get(`/${routeType}/${modelName}`, requireAuth, controller.handleGet);
