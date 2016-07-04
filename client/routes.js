@@ -6,11 +6,13 @@ import Home from './rootApp/components/home/index';
 
 import EditingAppRoutes from './editingApp/routes';
 import AuthRoutes from './auth/routes';
+import SchedulingAppRoutes from './schedulingApp/routes';
 
 export default(
     <Route path="/" component={App}>
       <IndexRoute component={Home} />
       {EditingAppRoutes}
       {AuthRoutes}
+      {SchedulingAppRoutes}
     </Route>
 );

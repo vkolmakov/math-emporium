@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-import { BASE_PATH } from '../../constants';
-
 export default class Sidebar extends Component {
     constructor() {
         super();
@@ -23,9 +21,10 @@ export default class Sidebar extends Component {
         this.setState({ selected: target });
     }
 
-    renderLink(path, text) {
+    renderLink(path, text, BASE_PATH) {
+        const url = `/${BASE_PATH}/${path}`;
         return (
-            <Link to={`/${BASE_PATH}/${path}`}
+            <Link to={url}
                   onClick={this.handleClick}
                   className={this.state.selected === path ? 'selected' : ''}>
               {text}
@@ -34,30 +33,15 @@ export default class Sidebar extends Component {
     }
 
     render() {
-        const topList = [
-            ['locations', 'Locations'],
-            ['courses', 'Courses'],
-            ['tutors', 'Tutors'],
-            ['schedules', 'Schedules'],
-        ];
-
-        const bottomList = [
-            ['schedules-overview', 'Schedules Overview'],
-            ['tutors-overview', 'Tutors Overview'],
-        ];
+        const { BASE_PATH, links } = this.props;
 
         return (
             <div className="sidebar">
               <ul>
-                {topList.map(([path, text]) => (
-                    <li key={path}>{this.renderLink(path, text)}</li>
+                {links.map(([path, text]) => (
+                    <li key={path}>{this.renderLink(path, text, BASE_PATH)}</li>
                 ))}
-            </ul>
-                <ul>
-                {bottomList.map(([path, text]) => (
-                    <li key={path}>{this.renderLink(path, text)}</li>
-                ))}
-            </ul>
+              </ul>
             </div>
         );
     }
