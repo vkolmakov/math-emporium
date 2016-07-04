@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Sidebar from '../components/sidebar/index';
-
 import { BASE_PATH } from './constants';
 
 export default class EditingApp extends Component {

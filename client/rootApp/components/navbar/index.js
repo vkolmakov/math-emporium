@@ -24,7 +24,7 @@ class Navbar extends Component {
         return (
             <nav>
               <Link to="/">Home</Link>
-              <Link to="#">Schedule</Link>
+              <Link to="/schedule">Schedule</Link>
               {this.renderAuthLinks()}
             </nav>
         );

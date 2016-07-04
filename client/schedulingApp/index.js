@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { Component } from 'react';
 
+import Sidebar from '../components/sidebar';
+import { BASE_PATH } from './constants';
 
-export default () => {
-    return (
-        <div>
-          <div className="sidebar">
-            Sidebar will be here
-          </div>
-          <div className="content">
-            <div className="middle-help-message-wrap">
-              <h1>WIP: this feature is coming soon!</h1>
+export default class SchedulingApp extends Component {
+    render() {
+        const currPath = this.props.location.pathname;
+        const selected = currPath.split('/').pop();
+
+        const links = [
+            ['show', 'Show Schedule'],
+            ['next', 'My Next Appointment'],
+        ];
+
+        const sidebarConfig = {
+            links,
+            BASE_PATH,
+            selected: selected !== BASE_PATH ? selected : null,
+        };
+
+        return (
+            <div className="wrap">
+              <Sidebar {...sidebarConfig} />
+              {this.props.children}
             </div>
-          </div>
-        </div>
-    );
-};
+        );
+    }
+}
