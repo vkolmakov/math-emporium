@@ -79,7 +79,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 const token = user.getDataValue('activationToken');
                 const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
-                const transporter = nodemailer.createTransport(`smtps://${serverEmail}:${serverEmailPass}@smtp.gmail.com`);
+                const transporter = nodemailer.createTransport(`smtps://${serverEmail}:${serverEmailPass.replace('@', '%40')}@smtp.gmail.com`);
 
                 const mailOptions = {
                     from: serverEmail,
