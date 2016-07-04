@@ -6,6 +6,13 @@ import { updateLocation, getLocations } from '../actions';
 import Form from '../../components/form/index';
 
 class UpdateLocationForm extends Component {
+    constructor() {
+        super();
+        this.state = {
+            success: false,
+        };
+    }
+
     componentDidMount() {
         const { name } = this.props.selectedLocation;
 
@@ -18,8 +25,15 @@ class UpdateLocationForm extends Component {
         const { name } = this.props.fields;
 
         const onSubmit = (data) => {
+            this.setState({ success: false });
             this.props.updateLocation(this.props.selectedLocation.id, data)
-                .then(this.props.getLocations); // TODO: redirect back to the view instead
+                .then(result => {
+                    if (!result.error) {
+                        this.setState({ success: true });
+                    }
+                    return new Promise(resolve => resolve(null));
+                })
+                .then(this.props.getLocations);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -36,11 +50,16 @@ class UpdateLocationForm extends Component {
             },
         ];
 
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.locations.error,
+        };
+
         return (
             <div className="list-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields} />
+              <Form {...formConfig} />
             </div>
         );
     }

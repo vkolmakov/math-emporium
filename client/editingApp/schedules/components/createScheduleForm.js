@@ -58,10 +58,15 @@ class CreateScheduleForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createSchedule(data)
-                .then(this.props.dispatch(initialize(FORM_NAME, {
-                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
-                    weekday: this.props.schedules.selectedWeekday || null,
-                }, FORM_FIELDS)))
+                .then(result => {
+                    if (result.error) {
+                        return new Promise(resolve => resolve(null));
+                    }
+                    return this.props.dispatch(initialize(FORM_NAME, {
+                        location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                        weekday: this.props.schedules.selectedWeekday || null,
+                    }, FORM_FIELDS));
+                })
                 .then(this.props.getSchedules);
         };
 
@@ -104,11 +109,17 @@ class CreateScheduleForm extends Component {
                 },
             },
         ];
+
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.schedules.error,
+        };
+
         return (
             <div className="form-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields} />
+              <Form {...formConfig} />
             </div>
         );
     }

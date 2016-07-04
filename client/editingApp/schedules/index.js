@@ -41,16 +41,16 @@ class EditSchedules extends Component {
                 filteringFn = elem => {
                     if (elem.weekday) {
                         // this is a schedule, filter by both weekday and location
-                        return elem.location.id == locations.selected.id && elem.weekday == schedules.selectedWeekday
+                        return elem.location && elem.location.id == locations.selected.id && elem.weekday == schedules.selectedWeekday
                     } else {
                         // this is a tutor, filter by just location
-                        return elem.location.id == locations.selected.id;
+                        return elem.location && elem.location.id == locations.selected.id;
                     }
                 };
             } else if (schedules.selectedWeekday) {
                 filteringFn = elem => elem.weekday == schedules.selectedWeekday;
             } else if (locations.selected) {
-                filteringFn = elem => elem.location.id == locations.selected.id;
+                filteringFn = elem => elem.location && elem.location.id == locations.selected.id;
             }
 
             const [filteredTutors, filteredSchedules] = [tutors.all, schedules.all].map(
@@ -145,6 +145,7 @@ function mapStateToProps(state) {
         schedules: {
             all: state.schedules.all,
             selectedWeekday: state.schedules.selectedWeekday,
+            error: state.schedules.error,
         },
     };
 }

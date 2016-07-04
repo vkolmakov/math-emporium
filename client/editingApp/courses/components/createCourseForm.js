@@ -41,9 +41,15 @@ class CreateCourseForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createCourse(data)
-                .then(this.props.dispatch(initialize(FORM_NAME, {
-                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
-                }, FORM_FIELDS)))
+                .then(result => {
+                    if (result.error) {
+                        return new Promise(resolve => { resolve(null); });
+                    } else {
+                        return this.props.dispatch(initialize(FORM_NAME, {
+                            location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                        }, FORM_FIELDS));
+                    }
+                })
                 .then(this.props.getCourses);
         };
 
@@ -57,12 +63,15 @@ class CreateCourseForm extends Component {
                 input: {
                     type: 'text',
                     binding: code,
+                    placeholder: 'e.g. MATH208',
+
                 },
             }, {
                 label: 'Name',
                 input: {
                     type: 'text',
                     binding: name,
+                    placeholder: 'e.g. Calculus II',
                 },
             }, {
                 label: 'Color',
@@ -87,6 +96,7 @@ class CreateCourseForm extends Component {
             handleSubmit,
             title,
             fields,
+            error: this.props.courses.error,
         };
 
         return (

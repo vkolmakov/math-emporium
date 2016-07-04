@@ -15,7 +15,12 @@ class CreateLocationForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createLocation(data)
-                .then(this.props.resetForm)
+                .then(result => {
+                    if (result.error) {
+                        return new Promise(resolve => resolve(null));
+                    }
+                    return this.props.resetForm;
+                })
                 .then(this.props.getLocations);
         };
 
@@ -33,11 +38,16 @@ class CreateLocationForm extends Component {
             },
         ];
 
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.locations.error,
+        };
+
         return (
             <div className="form-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields} />
+              <Form {...formConfig} />
             </div>
         );
     }

@@ -64,6 +64,7 @@ function mapStateToProps(state) {
     return {
         locations: {
             all: state.locations.all,
+            error: state.locations.error,
         },
     };
 }

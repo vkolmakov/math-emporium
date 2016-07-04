@@ -9,6 +9,13 @@ import Form from '../../components/form/index';
 import LoadingSpinner from '../../components/loadingSpinner';
 
 class UpdateTutorForm extends Component {
+    constructor() {
+        super();
+        this.state = {
+            success: false,
+        };
+    }
+
     componentDidMount() {
         const { name, courses, location } = this.props.selectedTutor;
 
@@ -29,7 +36,13 @@ class UpdateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.updateTutor(this.props.selectedTutor.id, data)
-                .then(this.props.getTutors); // TODO: redirect back to the view instead
+                .then(result => {
+                    if (!result.error) {
+                        this.setState({ success: true });
+                    }
+                    return new Promise(resolve => resolve(null));
+                })
+                .then(this.props.getTutors);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -61,11 +74,18 @@ class UpdateTutorForm extends Component {
                 },
             },
         ];
+
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.tutors.error,
+            success: this.state.success,
+        };
+
         return (
             <div className="list-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields} />
+              <Form {...formConfig} />
             </div>
         );
     }

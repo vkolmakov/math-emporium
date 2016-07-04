@@ -26,7 +26,8 @@ class LocationDetail extends Component {
 
         return (
             <div className="content">
-              <UpdateLocationForm selectedLocation={selectedLocation} />
+              <UpdateLocationForm selectedLocation={selectedLocation}
+                                  locations={locations} />
             </div>
         );
     }
@@ -36,6 +37,7 @@ function mapStateToProps(state) {
     return {
         locations: {
             all: state.locations.all,
+            error: state.locations.error,
         },
     };
 }

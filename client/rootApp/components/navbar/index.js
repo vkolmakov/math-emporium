@@ -13,6 +13,7 @@ class Navbar extends Component {
             ];
         } else {
             links = [
+                <Link to="/edit-schedule" key={2}>Edit-schedule</Link>,
                 <Link to="/signout" key={1}>Sign out</Link>,
             ];
         }
@@ -24,7 +25,6 @@ class Navbar extends Component {
             <nav>
               <Link to="/">Home</Link>
               <Link to="#">Schedule</Link>
-              <Link to="/edit-schedule">Edit-schedule</Link>
               {this.renderAuthLinks()}
             </nav>
         );

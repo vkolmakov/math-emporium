@@ -3,12 +3,12 @@ import Select from '../select/reactSelectWrapper';
 
 import ColorIcon from '../colorIcon';
 
-export default ({ type, binding, options, onSelect, controlValue }) => {
+export default ({ type, binding, options, onSelect, controlValue, placeholder }) => {
     let inputElement;
 
     if (type === 'text' || type === 'password') {
         inputElement = (
-            <input type={type} {...binding}/>
+            <input type={type} {...binding} placeholder={placeholder}/>
         );
     } else if (type === 'select' || type === 'multiselect' && options) {
         let renderer = {};

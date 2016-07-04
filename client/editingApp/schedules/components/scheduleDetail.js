@@ -66,6 +66,7 @@ function mapStateToProps(state) {
         },
         schedules: {
             all: state.schedules.all,
+            error: state.schedules.error,
         },
     };
 }

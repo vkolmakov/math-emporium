@@ -10,6 +10,14 @@ import { selectTransformOptions } from '../../utils';
 import Form from '../../components/form/index';
 
 class UpdateScheduleForm extends Component {
+    constructor() {
+        super();
+        this.state = {
+            success: false,
+        };
+    }
+
+
     componentDidMount() {
         const { weekday, time, location, tutors } = this.props.selectedSchedule;
 
@@ -43,7 +51,14 @@ class UpdateScheduleForm extends Component {
         const timeOptions = selectTransformOptions('value', 'display')(TIME_OPTIONS);
 
         const onSubmit = (data) => {
+            this.setState({ success: false });
             this.props.updateSchedule(this.props.selectedSchedule.id, data)
+                .then(result => {
+                    if (!result.error) {
+                        this.setState({ success: true });
+                    }
+                    return new Promise(resolve => resolve(null));
+                })
                 .then(getSchedules);
         };
 
@@ -86,11 +101,18 @@ class UpdateScheduleForm extends Component {
                 },
             },
         ];
+
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.schedules.error,
+            success: this.state.success,
+        };
+
         return (
             <div className="list-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields} />
+              <Form {...formConfig} />
             </div>
         );
     }

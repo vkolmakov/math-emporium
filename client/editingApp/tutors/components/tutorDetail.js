@@ -54,7 +54,8 @@ class TutorDetail extends Component {
             <div className="content">
               <UpdateTutorForm locations={locations}
                                courses={courses}
-                               selectedTutor={selectedTutor} />
+                               selectedTutor={selectedTutor}
+                               tutors={tutors} />
             </div>
         );
     }
@@ -68,6 +69,7 @@ function mapStateToProps(state) {
         },
         tutors: {
             all: state.tutors.all,
+            error: state.tutors.error,
         },
         courses: {
             all: state.courses.all,

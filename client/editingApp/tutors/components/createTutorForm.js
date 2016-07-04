@@ -39,9 +39,14 @@ class CreateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.createTutor(data)
-                .then(this.props.dispatch(initialize(FORM_NAME, {
-                    location: this.props.locations.selected ? this.props.locations.selected.id : null,
-                }, FORM_FIELDS)))
+                .then(result => {
+                    if (result.error) {
+                        return new Promise(resolve => resolve(null));
+                    }
+                    return this.props.dispatch(initialize(FORM_NAME, {
+                        location: this.props.locations.selected ? this.props.locations.selected.id : null,
+                    }, FORM_FIELDS));
+                })
                 .then(this.props.getTutors);
         };
 
@@ -55,6 +60,7 @@ class CreateTutorForm extends Component {
                 input: {
                     type: 'text',
                     binding: name,
+                    placeholder: 'e.g. JohnD',
                 },
             }, {
                 label: 'Location',
@@ -74,11 +80,17 @@ class CreateTutorForm extends Component {
                 },
             },
         ];
+
+        const formConfig = {
+            handleSubmit,
+            title,
+            fields,
+            error: this.props.tutors.error,
+        };
+
         return (
             <div className="form-wrap">
-              <Form handleSubmit={handleSubmit}
-                    title={title}
-                    fields={fields}/>
+              <Form {...formConfig} />
             </div>
         );
     }

@@ -10,6 +10,13 @@ import { selectTransformOptions } from '../../utils';
 import Form from '../../components/form/index';
 
 class UpdateCourseForm extends Component {
+    constructor() {
+        super();
+        this.state = {
+            success: false,
+        };
+    }
+
     componentWillMount() {
         const { code, name, color, location } = this.props.selectedCourse;
 
@@ -30,7 +37,14 @@ class UpdateCourseForm extends Component {
         const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
 
         const onSubmit = (data) => {
+            this.setState({ success: false });
             this.props.updateCourse(this.props.selectedCourse.id, data)
+                .then((result) => {
+                    if (!result.error) {
+                        this.setState({ success: true });
+                    }
+                    return new Promise(resolve => resolve(null));
+                })
                 .then(this.props.getCourses);
         };
 
@@ -69,11 +83,12 @@ class UpdateCourseForm extends Component {
                 },
             },
         ];
-
         const formConfig = {
             handleSubmit,
             title,
             fields,
+            error: this.props.courses.error,
+            success: this.state.success,
         };
 
         return (

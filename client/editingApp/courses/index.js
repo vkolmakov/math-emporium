@@ -33,7 +33,7 @@ class EditCourses extends Component {
         if (locations.selected) {
             const selectedLocation = locations.selected;
             const filteredCourses = courses.all.filter(
-                course => course.location.id === selectedLocation.id
+                course => course.location && course.location.id === selectedLocation.id
             );
             courses = {
                 ...courses,
@@ -78,7 +78,8 @@ class EditCourses extends Component {
                                 onChange={setCurrentLocation.bind(this)}
                                 placeholder={'Filter by location...'} />
               </div>
-              <CreateCourseForm locations={locations} />
+              <CreateCourseForm locations={locations}
+                                courses={courses} />
 
               <div className="list-wrap right-col">
                 <Table headers={tableHeaders}
@@ -95,6 +96,7 @@ function mapStateToProps(state) {
     return {
         courses: {
             all: state.courses.all,
+            error: state.courses.error,
         },
         locations: {
             all: state.locations.all,

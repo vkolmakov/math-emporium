@@ -17,6 +17,7 @@ $primary-color: #d9edf9;
 $secondary-color: white;
 $tertiary-color: #fefefe;
 $danger-color: #ff9999;
+$success-color: #8fbc8f;
 
 @mixin rounded-border {
     @include border-radius (5px);
@@ -25,6 +26,8 @@ $danger-color: #ff9999;
 
 @mixin set-font {
     font-family: $font-family;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 @mixin url {
@@ -42,14 +45,13 @@ body {
 
 nav {
     display: block;
-    max-width: $small-screen-width;
-    margin: 0 auto 0.5em auto;
+
     background-color: $secondary-color;
     border-bottom: 1px solid #eaeaea;
 
     @include breakpoint($medium-screen) {
         max-width: none;
-        margin-bottom: 1.5em;
+        /* margin-bottom: 1.5em; */
     }
 
     a {
@@ -79,9 +81,6 @@ nav {
 }
 
 .content {
-    max-width: $small-screen-width;
-    margin: 0 auto;
-
     @include breakpoint($medium-screen) {
         max-width: none;
     }
@@ -110,8 +109,6 @@ nav {
 
 .sidebar {
     @include clearfix();
-
-    max-width: $small-screen-width;
 
     margin: 0 auto 0.5em auto;
     background-color: $secondary-color;
@@ -176,10 +173,10 @@ nav {
 }
 
 .form-field {
-    margin: 1em auto;
-    &:last-child {
+    margin: 1.4em auto;
+    & > button {
         /* DANGER! possible react-select conflict */
-        @include clearfix();
+        @include float-right();
     }
 }
 
@@ -197,8 +194,14 @@ nav {
 
 .form-help {
     @include set-font();
-    @include float-right();
+    @include float-left();
     color: $danger-color;
+}
+
+.form-success {
+    @include set-font();
+    @include float-left();
+    color: $success-color;
     margin-bottom: 0.25em;
 }
 
@@ -305,9 +308,8 @@ nav {
 
         &.table-action {
             border: none;
-            @include float-right();
             @include breakpoint($medium-screen) {
-                @include reset-float();
+                width: 50px;
             }
 
             a {
@@ -359,6 +361,7 @@ nav {
 
     .form-wrap & {
         @include float-right();
+        @include clearfix();
         @include breakpoint($medium-screen) {
             @include clearfix();
         }
@@ -374,14 +377,96 @@ nav {
 }
 
 .auth-form-wrap {
-    max-width: $small-screen-width;
-    margin: 0 auto;
     @include breakpoint($medium-screen) {
+        margin: 0 auto;
         width: span(4 of 9);
     }
 
     h1 {
         color: darken($tertiary-color, 32%);
         font-weight: 400;
+    }
+}
+
+
+.container{
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1024px;
+}
+
+
+
+.hero {
+    $transition-duration: 0.5s;
+
+    @include clearfix();
+    &:before {
+        @include transition(all $transition-duration ease-in-out);
+        height: 100vh;
+        text-align: center;
+
+        @include filter(blur(4px) grayscale(99%));
+        background: #333 url('https://thechicagoblock.files.wordpress.com/2012/10/uic_006.jpg') no-repeat center center;
+        background-size: cover;
+        content: "";
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: -1;
+    }
+
+    .hero-content {
+        $hero-font-color: $tertiary-color;
+        @include text-shadow(black 2px 1px 0);
+        @include clearfix();
+        @include breakpoint($medium-screen) {
+            width: span(6 of 12);
+            margin: 100px auto;
+        }
+
+        h1, h2, a {
+            @include set-font();
+            color: $hero-font-color;
+            margin: 25px auto;
+        }
+
+        h1 {
+            font-size: 6em;
+            display: block;
+        }
+
+        h2 {
+            font-size: 2em;
+
+        }
+
+        a {
+            @include border-radius (5px);
+            background-color: transparent;
+            display: inline-block;
+            text-align: center;
+            font-weight: 400;
+            text-decoration: none;
+            border: 1px solid $hero-font-color;
+            padding: 14px;
+
+            @include transition(all $transition-duration ease-in-out);
+
+            &:hover {
+                opacity: 0.90;
+                color: black;
+                @include text-shadow(black 0 0 0);
+                font-weight: 300;
+                background-color: $primary-color;
+            }
+        }
+    }
+}
+
+.hero-focus {
+    @extend .hero;
+    &:before {
+        @include filter(blur(1px));
     }
 }

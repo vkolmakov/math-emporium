@@ -36,7 +36,7 @@ class EditTutors extends Component {
             const selectedLocation = locations.selected;
             const [filteredTutors, filteredCourses] = [tutors.all, courses.all].map(
                 list => list.filter(
-                    elem => elem.location.id == selectedLocation.id
+                    elem => elem.location && elem.location.id == selectedLocation.id
                 )
             );
 
@@ -86,7 +86,8 @@ class EditTutors extends Component {
                                 placeholder={'Filter by location...'} />
               </div>
               <CreateTutorForm locations={locations}
-                               courses={courses} />
+                               courses={courses}
+                               tutors={tutors} />
 
               <div className="list-wrap right-col">
                 <Table headers={tableHeaders}
@@ -107,6 +108,7 @@ function mapStateToProps(state) {
         },
         tutors: {
             all: state.tutors.all,
+            error: state.tutors.error,
         },
         courses: {
             all: state.courses.all,

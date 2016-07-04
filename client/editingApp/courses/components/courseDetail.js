@@ -29,7 +29,8 @@ class CourseDetail extends Component {
         return (
             <div className="content">
               <UpdateCourseForm locations={locations}
-                                selectedCourse={selectedCourse} />
+                                selectedCourse={selectedCourse}
+                                courses={courses}/>
             </div>
         );
     }
@@ -42,6 +43,7 @@ function mapStateToProps(state) {
         },
         courses: {
             all: state.courses.all,
+            error: state.courses.error,
         },
     };
 }
