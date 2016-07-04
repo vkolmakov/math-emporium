@@ -15,14 +15,13 @@ function connect() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
-    return db.connect(process.env.DB_URL || 'mathcenterappdb',
-                      process.env.DB_USER || 'postgres',
-                      process.env.DB_PASSWORD || '', {
-                          port: process.env.DB_PORT || null,
-                          logging: false,
-                          dialect: 'postgres',
-                          protocol: 'postgres',
-                      });
+    return db.connect(process.env.DB_URL || 'mathcenterappdb', {
+        dialect: 'postgres',
+        protocol: 'postgres',
+        port: process.env.DB_PORT || null,
+        host: process.env.DB_HOST || null,
+        logging: false,
+    });
 }
 
 (async () => {
