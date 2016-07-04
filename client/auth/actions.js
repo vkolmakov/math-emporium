@@ -49,6 +49,18 @@ export function signupUser({ email, password }) {
     return dispatch => {
         axios.post(`${BASE_URL}/signup`, { email, password })
             .then(response => {
+                browserHistory.push('/activate');
+            })
+            .catch(response => {
+                dispatch(authError(response.data.error));
+            });
+    };
+}
+
+export function activateUser({ activationToken }) {
+    return dispatch => {
+        axios.post(`${BASE_URL}/activate`, { token: activationToken })
+            .then(response => {
                 dispatch({ type: AUTH_USER });
                 addToken(response.data.token);
                 browserHistory.push('/');

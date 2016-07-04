@@ -47,8 +47,7 @@ function connect() {
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
     app.use('/api', createAuthRouter());
 
-    // const isDev = process.env.NODE_ENV !== 'production';
-    const isDev = false;
+    const isDev = process.env.NODE_ENV !== 'production';
 
     if (isDev) {
         const compiler = webpack(config);
