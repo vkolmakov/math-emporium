@@ -13,7 +13,10 @@ const localLogin = new LocalStrategy(localOptions, async (email, password, done)
     const User = db.models.user;
     try {
         const user = await User.findOne({
-            where: { email },
+            where: {
+                email,
+                active: true,
+            },
         });
 
         if (!user) {

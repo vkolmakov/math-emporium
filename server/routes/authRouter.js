@@ -11,6 +11,7 @@ export default function createAuthRouter() {
 
     router.post('/public/signin', requireSignin, controller.signin);
     router.post('/public/signup', controller.signup);
+    router.post('/public/activate', controller.activate);
 
     return router;
 }

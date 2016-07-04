@@ -18,7 +18,7 @@ function connect() {
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
     return db.connect('mathcenterappdb', 'postgres', '', {
-        force: false,
+        // force: true,
         logging: false,
         dialect: 'postgres',
     });
@@ -47,7 +47,8 @@ function connect() {
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
     app.use('/api', createAuthRouter());
 
-    const isDev = process.env.NODE_ENV !== 'production';
+    // const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = false;
 
     if (isDev) {
         const compiler = webpack(config);

@@ -33,7 +33,7 @@ export function signinUser({ email, password }) {
                 browserHistory.push('/');
             })
             .catch(() => {
-                dispatch(authError('Bad Login Info'));
+                dispatch(authError('Bad login info or an account that\'s not activated'));
             });
     };
 }

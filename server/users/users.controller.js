@@ -16,22 +16,59 @@ export const signup = async (req, res, next) => {
     }
     try {
         const existingUser = await User.findOne({
-            where: { email },
+            // TODO: Dont take inactive users
+            where: {
+                email,
+            },
         });
         if (existingUser) {
             res.status(422).send({ error: 'Email is in use' });
         }
 
-        const newUser = await User.create(req.body, {
-            fields: ['email', 'password'],
+        const newUser = await User.create({
+            email,
+            password,
+            activationToken: SECRET,
         });
-        res.status(201).json({ token: tokenForUser(newUser) });
+        await newUser.sendActivationEmail();
+        res.status(201).json({});
     } catch (err) {
         console.log(err);
-        res.status(500).send({ error: 'Something wrond happened...' });
+        res.status(500).send({ error: 'Something wrong happened...' });
     }
 };
 
 export const signin = (req, res, next) => {
     res.send({ token: tokenForUser(req.user) });
+};
+
+export const activate = async (req, res, next) => {
+    const { token } = req.body;
+    if (!token) {
+        res.status(422).send({ error: 'Must provide a token' });
+    }
+    try {
+        const user = await User.findOne({
+            where: {
+                active: false,
+                activationToken: token,
+                activationTokenExpiration: {
+                    $gte: Date.now(),
+                },
+            },
+        });
+
+        if (!user) {
+            return res.status(422).send({ error: 'This activation token is inactive or your account is already activated' });
+        }
+
+        const result = await user.update({
+            active: true,
+        });
+
+        res.status(200).json({ token: tokenForUser(result) });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ error: 'Something wrong happened...' });
+    }
 };
