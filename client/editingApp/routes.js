@@ -22,9 +22,9 @@ import ScheduleDetail from './schedules/components/scheduleDetail';
 import SchedulesOverview from './overviews/schedules/index';
 import TutorsOverview from './overviews/tutors/index';
 
-// <Route path={BASE_PATH} component={RequireAuth(EditingApp)}>
+
 export default (
-    <Route path={BASE_PATH} component={EditingApp}>
+    <Route path={BASE_PATH} component={RequireAuth(EditingApp)}>
       <Route path="locations" component={EditLocations} />
       <Route path="locations/:id" component={LocationDetail} />
       <Route path="courses" component={EditCourses} />

@@ -74,11 +74,11 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             sendActivationEmail() {
                 // TODO: Move HOSTNAME to server env variable;
-                const HOSTNAME = 'http://localhost:3000';
+                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
 
                 const user = this;
                 const token = user.getDataValue('activationToken');
-                const [serverEmail, serverEmailPass] = ['user%40gmail.com', 'pass'];
+                const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
                 const transporter = nodemailer.createTransport(`smtps://${serverEmail}:${serverEmailPass}@smtp.gmail.com`);
 
                 const mailOptions = {
