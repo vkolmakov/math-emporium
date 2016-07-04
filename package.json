@@ -61,9 +61,12 @@
     "susy": "^2.2.12",
     "webpack": "^1.13.1"
   },
-  "babel": {
+    "babel": {
     "presets": [
       "node5"
     ]
-  }
+  },
+    "engines": {
+        "node": "6.0.0"
+    }
 }

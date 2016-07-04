@@ -17,10 +17,10 @@ function connect() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
-    return db.connect('mathcenterappdb', 'postgres', '', {
-        // force: true,
+    return db.connect(process.env.DATABASE_URL || 'mathcenterappdb', 'postgres', '', {
         logging: false,
         dialect: 'postgres',
+        protocol: 'postgres',
     });
 }
 
@@ -32,7 +32,7 @@ function connect() {
     }
 
     const app = express();
-    const port = 3000;
+    const port = process.env.PORT || 3000;
 
     app.use(bodyParser.json());
     app.use(morgan('default', {}));
