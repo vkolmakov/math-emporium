@@ -1,7 +1,6 @@
 import jwt from 'jwt-simple';
 import db from 'sequelize-connect';
 
-const User = db.models.user;
 const SECRET = 'this is supersecret';
 
 export const tokenForUser = (user) => {
@@ -10,6 +9,7 @@ export const tokenForUser = (user) => {
 };
 
 export const signup = async (req, res, next) => {
+    const User = db.models.user;
     const { email, password } = req.body;
     if (!email || !password) {
         res.status(422).send({ error: 'You must provide email and password!' });
@@ -43,6 +43,7 @@ export const signin = (req, res, next) => {
 };
 
 export const activate = async (req, res, next) => {
+    const User = db.models.user;
     const { token } = req.body;
     if (!token) {
         res.status(422).send({ error: 'Must provide a token' });
