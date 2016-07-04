@@ -9,8 +9,6 @@ import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
 
 import webpack from 'webpack';
-import webpackMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from '../webpack.config';
 
 function connect() {
@@ -50,6 +48,8 @@ function connect() {
     const isDev = process.env.NODE_ENV !== 'production';
 
     if (isDev) {
+        const webpackMiddleware = require('webpack-dev-middleware');
+        const webpackHotMiddleware = require('webpack-hot-middleware');
         const compiler = webpack(config);
         const middleware = webpackMiddleware(compiler, {
             publicPath: config.output.publicPath,
