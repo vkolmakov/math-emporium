@@ -24,7 +24,7 @@ function connect() {
                           host: process.env.DB_HOST || null,
                           logging: false,
                           dialectOptions: {
-                              ssl: true,
+                              ssl: !!process.env.DB_NAME,
                           },
                       });
 }

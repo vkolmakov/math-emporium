@@ -80,7 +80,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const token = user.getDataValue('activationToken');
 
                 const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
-
+                console.log([serverEmail, serverEmailPass]);
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
