@@ -78,8 +78,16 @@ export default function createUserModel(sequelize, DataTypes) {
 
                 const user = this;
                 const token = user.getDataValue('activationToken');
+
                 const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
-                const transporter = nodemailer.createTransport(`smtps://${serverEmail}:${serverEmailPass.replace('@', '%40')}@smtp.gmail.com`);
+
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: serverEmail,
+                        pass: serverEmailPass,
+                    },
+                });
 
                 const mailOptions = {
                     from: serverEmail,
@@ -92,7 +100,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 transporter.sendMail(mailOptions, function(err, info) {
                     if (err) {
                         console.log(err);
-                        throw new Error('Failed to send an email');
+                        return err;
                     }
                     return info;
                 });
