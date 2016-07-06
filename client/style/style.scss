@@ -421,6 +421,7 @@ nav {
         $hero-font-color: $tertiary-color;
         @include text-shadow(black 2px 1px 0);
         @include clearfix();
+        margin: 0 5%;
         @include breakpoint($medium-screen) {
             width: span(6 of 12);
             margin: 100px auto;
