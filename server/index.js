@@ -3,7 +3,6 @@ import db from 'sequelize-connect';
 import bodyParser from 'body-parser';
 import path from 'path';
 import compression from 'compression';
-import morgan from 'morgan';
 
 import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
@@ -40,7 +39,6 @@ function connect() {
     const port = process.env.PORT || 3000;
 
     app.use(bodyParser.json());
-    app.use(morgan('default', {}));
 
     const crudRoutes = [
         ['locations', 'private'],

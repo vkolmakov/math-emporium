@@ -22,17 +22,17 @@ export default class Home extends Component {
     render() {
         const selectedClass = this.state.focus ? 'hero-focus' : 'hero';
         return (
-          <div className={selectedClass}>
-            <div className="hero-content">
-              <h1>Hello there.</h1>
-              <h2>We're super excited that you decided to try us out</h2>
-<div>
-              <Link to="/schedule"
-                    onMouseEnter={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}>Check out our schedule</Link>
-</div>
+            <div className={selectedClass}>
+              <div className="hero-content">
+                <h1>Hello there.</h1>
+                <h2>Much tutoring, so schedule</h2>
+                <div>
+                  <Link to="/schedule"
+                        onMouseEnter={this.onMouseEnter}
+                        onMouseLeave={this.onMouseLeave}>Check out our schedule</Link>
+                </div>
+              </div>
             </div>
-         </div>
         );
     }
 }

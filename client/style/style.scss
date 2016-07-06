@@ -37,10 +37,7 @@ $success-color: #8fbc8f;
 
 body {
     @include set-font();
-    margin: 1em;
-    @include breakpoint($medium-screen) {
-        margin: 0px;
-    }
+    margin: 0px;
 }
 
 nav {
@@ -78,6 +75,7 @@ nav {
 
 .wrap {
     @include container();
+    padding: 1.5%;
 }
 
 .content {
@@ -109,7 +107,6 @@ nav {
 
 .sidebar {
     @include clearfix();
-
     margin: 0 auto 0.5em auto;
     background-color: $secondary-color;
     border-bottom: 1px solid #eaeaea;
@@ -398,19 +395,23 @@ nav {
 
 
 .hero {
-    $transition-duration: 0.5s;
-
+    $transition-duration: 0.2s;
+    position: relative;
+    height: 100vh;
     @include clearfix();
     &:before {
-        @include transition(all $transition-duration ease-in-out);
+        @include breakpoint($medium-screen) {
+            @include transition(all $transition-duration ease-in-out);
+        }
+
         height: 100vh;
         text-align: center;
 
-        @include filter(blur(4px) grayscale(99%));
-        background: #333 url('https://thechicagoblock.files.wordpress.com/2012/10/uic_006.jpg') no-repeat center center;
+        @include filter(blur(2.5px) grayscale(85%));
+        background: $primary-color url('https://thechicagoblock.files.wordpress.com/2012/10/uic_006.jpg') no-repeat center center;
         background-size: cover;
         content: "";
-        position: fixed;
+        position: absolute;
         left: 0;
         right: 0;
         z-index: -1;
@@ -451,7 +452,10 @@ nav {
             border: 1px solid $hero-font-color;
             padding: 14px;
 
-            @include transition(all $transition-duration ease-in-out);
+            @include breakpoint($medium-screen) {
+                @include transition(all $transition-duration ease-in-out);
+            }
+
 
             &:hover {
                 opacity: 0.90;
@@ -467,6 +471,8 @@ nav {
 .hero-focus {
     @extend .hero;
     &:before {
-        @include filter(blur(1px));
+        @include breakpoint($medium-screen) {
+            @include filter(blur(1px));
+        }
     }
 }
