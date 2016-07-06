@@ -73,3 +73,26 @@ export const activate = async (req, res, next) => {
         res.status(500).send({ error: 'Something wrong happened...' });
     }
 };
+
+export const sendActivationEmail = async (req, res, next) => {
+    // purely for testing
+    const User = db.models.user;
+    const { email } = req.body;
+    const user = await User.findOne({
+        where: {
+            email,
+        },
+    });
+
+    if (!user) {
+        return res.status(422).json({ error: 'Invalid email' });
+    }
+
+    try {
+        await user.sendActivationEmail();
+    } catch (err) {
+        return res.status(422).json({ error: `Failed to send email: ${err}` });
+    }
+
+    return res.status(201).json({ message: 'Email was sent' });
+};

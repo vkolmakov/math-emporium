@@ -73,14 +73,12 @@ export default function createUserModel(sequelize, DataTypes) {
                 });
             },
             sendActivationEmail() {
-                // TODO: Move HOSTNAME to server env variable;
                 const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
 
                 const user = this;
                 const token = user.getDataValue('activationToken');
 
                 const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
-                console.log([serverEmail, serverEmailPass]);
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
@@ -96,14 +94,17 @@ export default function createUserModel(sequelize, DataTypes) {
                     text: `To activate your account at ... copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
                     html: `<p>To activate your account at ... click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
                 };
-
-                transporter.sendMail(mailOptions, function(err, info) {
-                    if (err) {
-                        console.log(err);
-                        return err;
-                    }
-                    return info;
-                });
+                try {
+                    transporter.sendMail(mailOptions, function(err, info) {
+                        if (err) {
+                            throw new Error(err);
+                        }
+                        return info;
+                    });
+                } catch (err) {
+                    // shady, yeah
+                    throw new Error(err);
+                }
             },
         },
     });
