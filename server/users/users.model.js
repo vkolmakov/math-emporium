@@ -94,17 +94,12 @@ export default function createUserModel(sequelize, DataTypes) {
                     text: `To activate your account at ... copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
                     html: `<p>To activate your account at ... click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
                 };
-                try {
-                    transporter.sendMail(mailOptions, function(err, info) {
-                        if (err) {
-                            throw new Error(err);
-                        }
-                        return info;
-                    });
-                } catch (err) {
-                    // shady, yeah
-                    throw new Error(err);
-                }
+                transporter.sendMail(mailOptions, function(err, info) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    return info;
+                });
             },
         },
     });
