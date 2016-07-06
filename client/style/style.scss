@@ -476,3 +476,70 @@ nav {
         }
     }
 }
+
+.section-home {
+    background-color: #fff;
+    min-height: 25vh;
+    @include clearfix();
+
+    @include breakpoint($medium-screen) {
+        @include container();
+    }
+
+    h1 {
+        margin: 0px;
+        font-weight: 300;
+        padding-top: 0.5em;
+        text-align: center;
+    }
+
+    > .section-home-item {
+        background-color: #fff;
+        $section-item-width: 325px;
+        max-width: $section-item-width;
+        margin: 1em auto;
+        padding: 2.7em 0;
+        @include border-radius(5px);
+
+        @include breakpoint($medium-screen) {
+            @include span(4 of 12 split)
+        }
+
+        $text-color-section-item: darken($primary-color, 25%);
+        > .fa-wrap {
+            width: 80px;
+            margin: 0 auto;
+            > i {
+                color: $text-color-section-item;
+            }
+        }
+        > p {
+            text-align: center;
+            font-weight: 600;
+            color: $text-color-section-item;
+        }
+    }
+}
+
+.info-home {
+    @include clearfix
+    padding-top: 2em;
+    background-color: darken($danger-color, 15%);
+
+    .fa-wrap {
+        width: 80px;
+        margin: 0 auto;
+    }
+
+    i, p, h1, a {
+        color: $tertiary-color;
+    }
+    p, h1 {
+        text-align: center;
+    }
+
+    > div {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
