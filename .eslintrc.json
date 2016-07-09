@@ -14,8 +14,10 @@
     "rules": {
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
+        "no-unused-vars": 1,
         "no-shadow": 0,
         "func-names": 0,
-        "indent": [2, 4]
+        "indent": [2, 4],
+        "max-len": [2, 125]
     }
 }

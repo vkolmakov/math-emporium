@@ -34,3 +34,13 @@ export function transformRequestToQuery(data) {
     }
     return queryParams;
 }
+
+export function set(obj, key, val) {
+    const addition = {};
+    addition[key] = val;
+
+    return {
+        ...obj,
+        ...addition,
+    };
+}
