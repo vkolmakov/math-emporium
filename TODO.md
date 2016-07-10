@@ -2,8 +2,8 @@
 
 ## Scheduling app ##
 
-* Finish up openSpots service and API endpoint **[server]**
-  - add Google Calendar connection
+* <del>Finish up openSpots service and API endpoint **[server]**</del>
+  - <del>add Google Calendar connection</del>
 
 * Build the front to display openSpots results **[client]**
 
