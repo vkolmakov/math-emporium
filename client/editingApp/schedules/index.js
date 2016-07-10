@@ -10,7 +10,7 @@ import { getSchedules, deleteSchedule, setCurrentWeekday } from './actions';
 import LoadingSpinner from '../components/loadingSpinner';
 import Table from '../components/table/index';
 import CreateScheduleForm from './components/createScheduleForm';
-import FilterControls from '../components/filterControls';
+import FilterControls from '../../components/filterControls';
 
 import { selectTransformOptions } from '../utils';
 

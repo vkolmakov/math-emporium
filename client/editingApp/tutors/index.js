@@ -10,7 +10,7 @@ import { getCourses } from '../courses/actions';
 import LoadingSpinner from '../components/loadingSpinner';
 import Table from '../components/table/index';
 import CreateTutorForm from './components/createTutorForm';
-import FilterControls from '../components/filterControls';
+import FilterControls from '../../components/filterControls';
 
 import { selectTransformOptions } from '../utils';
 
