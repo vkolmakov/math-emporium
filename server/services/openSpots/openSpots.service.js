@@ -1,7 +1,8 @@
 import db from 'sequelize-connect';
-
-import { set, createExtractDataValuesFunction } from '../aux';
 import cache from 'memory-cache';
+
+import { set, createExtractDataValuesFunction } from '../../aux';
+
 
 const collectData = () => new Promise(async (resolve, reject) => {
     const Location = db.models.location;
@@ -78,7 +79,7 @@ const getCachedData = () => new Promise(async (resolve, reject) => {
     resolve(data);
 })
 
-export const getOpenSpots = async (locationId, courseId, startTime, endTime) => {
+export const openSpots = async (locationId, courseId, startTime, endTime) => {
     // as of now course and location are passed in as a database ID
     const data = await getCachedData();
 
