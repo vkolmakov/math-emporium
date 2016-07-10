@@ -6,8 +6,8 @@ const Tutor = db.models.tutor;
 const Schedule = db.models.schedule;
 const Course = db.models.course;
 
-const allowedToRead = ['id', 'name'];
-const allowedToWrite = ['name'];
+const allowedToRead = ['id', 'name', 'calendarId'];
+const allowedToWrite = ['name', 'calendarId'];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 

@@ -7,11 +7,11 @@ import { selectTransformOptions } from '../../utils';
 
 import Form from '../../components/form/index';
 
+const FORM_FIELDS = ['name', 'calendarId']
+
 class CreateLocationForm extends Component {
     render() {
-        const { name } = this.props.fields;
-
-        const locationsOptions = selectTransformOptions()(this.props.locations.all);
+        const { name, calendarId } = this.props.fields;
 
         const onSubmit = (data) => {
             this.props.createLocation(data)
@@ -35,6 +35,12 @@ class CreateLocationForm extends Component {
                     type: 'text',
                     binding: name,
                 },
+            }, {
+                label: 'Google Calendar ID',
+                input: {
+                    type: 'text',
+                    binding: calendarId,
+                },
             },
         ];
 
@@ -57,6 +63,7 @@ function validate(values) {
     const errors = {};
     const requiredFields = {
         name: 'Enter a name',
+        calendarId: 'Enter a Google Calendar ID',
     };
 
     Object.keys(requiredFields).forEach(field => {
@@ -70,6 +77,6 @@ function validate(values) {
 
 export default reduxForm({
     form: 'CreateLocationForm',
-    fields: ['name'],
+    fields: FORM_FIELDS,
     validate,
 }, null, { createLocation, getLocations })(CreateLocationForm);

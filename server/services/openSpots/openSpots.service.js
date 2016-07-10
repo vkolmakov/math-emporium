@@ -15,7 +15,7 @@ const collectData = () => new Promise(async (resolve, reject) => {
     const Schedule = db.models.schedule;
     const Course = db.models.course;
 
-    const extractLocation = createExtractDataValuesFunction(['id', 'name']);
+    const extractLocation = createExtractDataValuesFunction(['id', 'name', 'calendarId']);
     const extractCourse = createExtractDataValuesFunction(['id', 'name', 'code', 'color']);
     const extractTutor = createExtractDataValuesFunction(['id', 'name', 'courses']);
     const extractSchedule = createExtractDataValuesFunction(['id', 'weekday', 'time', 'tutors']);

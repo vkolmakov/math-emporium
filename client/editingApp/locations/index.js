@@ -29,6 +29,9 @@ class EditLocations extends Component {
             {
                 dataKey: 'name',
                 label: 'Name',
+            }, {
+                dataKey: 'calendarId',
+                label: 'Calendar ID',
             },
         ];
 

@@ -5,6 +5,8 @@ import { updateLocation, getLocations } from '../actions';
 
 import Form from '../../components/form/index';
 
+const FORM_FIELDS = ['name', 'calendarId'];
+
 class UpdateLocationForm extends Component {
     constructor() {
         super();
@@ -18,11 +20,11 @@ class UpdateLocationForm extends Component {
 
         this.props.dispatch(initialize('UpdateLocationForm', {
             name,
-        }, ['name']));
+        }, FORM_FIELDS));
     }
 
     render() {
-        const { name } = this.props.fields;
+        const { name, calendarId } = this.props.fields;
 
         const onSubmit = (data) => {
             this.setState({ success: false });
@@ -46,6 +48,12 @@ class UpdateLocationForm extends Component {
                 input: {
                     type: 'text',
                     binding: name,
+                },
+            }, {
+                label: 'Calendar ID',
+                input: {
+                    type: 'text',
+                    binding: calendarId,
                 },
             },
         ];
@@ -82,6 +90,6 @@ function validate(values) {
 
 export default reduxForm({
     form: 'UpdateLocationForm',
-    fields: ['name'],
+    fields: FORM_FIELDS,
     validate,
 }, null, { updateLocation, getLocations })(UpdateLocationForm);
