@@ -12,7 +12,7 @@ export default class SchedulingApp extends Component {
             ['show', 'Show Schedule'],
             ['next', 'My Next Appointment'],
         ];
-
+        
         const sidebarConfig = {
             links,
             BASE_PATH,

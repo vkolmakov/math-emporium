@@ -7,7 +7,13 @@ export default function createLocationModel(sequelize, DataTypes) {
                 msg: 'Location name must be unique!',
             },
         },
-        // TODO: add one-to-many relationships
+        calendarId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: {
+                msg: 'Location calendar ID must be unique!',
+            },
+        }
     }, {
         timestamps: false,
         classMethods: {

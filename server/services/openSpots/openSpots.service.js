@@ -1,8 +1,13 @@
 import db from 'sequelize-connect';
 import cache from 'memory-cache';
+import moment from 'moment';
 
 import { set, createExtractDataValuesFunction } from '../../aux';
+import { CalendarService } from '../googleApis';
 
+const extractInfoFromSummary = summary => ({
+    tutor: summary,
+});
 
 const collectData = () => new Promise(async (resolve, reject) => {
     const Location = db.models.location;
@@ -80,27 +85,73 @@ const getCachedData = () => new Promise(async (resolve, reject) => {
 })
 
 export const openSpots = async (locationId, courseId, startTime, endTime) => {
+    /* locationId: Int,
+       courseId: Int,
+       startTime: moment Date,
+       endTime: moment Date,
+     */
+
     // as of now course and location are passed in as a database ID
-    const data = await getCachedData();
+    const data = await getCachedData()
 
     // select the correct data blob
     const locationData = data.find(d => d.location.id === locationId);
+
+    if (!locationData) {
+        throw new Error('Selected location does not exist');
+    }
 
     // find tutors that can tutor selected course
     const selectedTutors = locationData.tutors
               .filter(t => !!t.courses.find(c => c.id === courseId))
 
     // go through schedule and count tutors that are selected and present
-    const schedulesCount = locationData.schedules
+    const scheduleCounts = locationData.schedules
               .map(s => ({
                   weekday: s.weekday,
                   time: s.time,
                   count: s.tutors.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length,
               }));
 
-    // TODO: last step is go out to google calendar and grab all of the appointments b/w
-    // startTime and endTime, parse them out and convert them into a similar list
-    // + subtract the count of taken tutors from the schedulesCount counts
+    const calendarService = new CalendarService;
+    await calendarService.create();
 
-    return data;
+    const calendarId = locationData.location.calendarId;
+    const calItems = await calendarService.getCalendarEvents(calendarId, startTime.toISOString(), endTime.toISOString());
+
+    // convert weekday and hour from the ISO string to the DB format
+    // 1..7 for weekday, num_minutes since midnight for time
+    const calendarCounts = calItems.reduce((results, item) => {
+        const tutorName = extractInfoFromSummary(item.summary).tutor;
+        const time = moment(item.start.dateTime).hours() * 60 + moment(item.start.dateTime).minutes();
+        const weekday = parseInt(moment(item.start.dateTime).format('E'), 10);
+
+        let existingResult;
+        if (!!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase())) {
+            existingResult = results.find(r => r.weekday === weekday && r.time === time);
+            if (existingResult) {
+                existingResult.count += 1;
+            } else {
+                existingResult = {
+                    weekday,
+                    time,
+                    count: 1,
+                }
+                return results.concat(existingResult);
+            }
+        }
+        return results;
+    }, []);
+
+    const openSpots = scheduleCounts.map(sc => {
+        // find an appropriate calendarCount
+        const cc = calendarCounts.find(cc => sc.weekday === cc.weekday && sc.time === cc.time);
+        return {
+            ...sc,
+            // if a calendarCount was found we subtract it, otherwise just subtract 0
+            count: sc.count - (cc ? cc.count : 0),
+        }
+    });
+
+    return openSpots;
 }

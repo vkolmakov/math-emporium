@@ -4,8 +4,11 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import compression from 'compression';
 
+import errorHandler from './middleware/errorHandler';
+
 import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
+import createUtilRouter from './routes/utilRouter';
 
 import webpack from 'webpack';
 import config from '../webpack.config';
@@ -49,8 +52,11 @@ function connect() {
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
     app.use('/api', createAuthRouter());
+    app.use('/api', createUtilRouter());
 
     const isDev = process.env.NODE_ENV !== 'production';
+
+    app.use(errorHandler);
 
     if (isDev) {
         const webpackMiddleware = require('webpack-dev-middleware');
