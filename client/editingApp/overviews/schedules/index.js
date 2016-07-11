@@ -5,7 +5,7 @@ import { getSchedules } from '../../schedules/actions';
 import { getLocations, setCurrentLocation } from '../../locations/actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
-import FilterControls from '../../components/filterControls';
+import FilterControls from '../../../components/filterControls';
 
 import Weekday from './components/weekday';
 

@@ -12,8 +12,9 @@ import { Router, browserHistory } from 'react-router';
 import routes from './routes';
 import axios from 'axios';
 
-import style from './style/style.scss';
 import 'react-select/dist/react-select.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import style from './style/style.scss';
 
 const createStoreWithMiddleware = applyMiddleware(promise, reduxThunk)(createStore);
 const store = createStoreWithMiddleware(reducers);

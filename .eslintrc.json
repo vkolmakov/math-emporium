@@ -18,6 +18,7 @@
         "no-shadow": 0,
         "func-names": 0,
         "indent": [2, 4],
-        "max-len": [2, 125]
+        "max-len": [2, 125],
+        "no-case-declarations": 0
     }
 }
