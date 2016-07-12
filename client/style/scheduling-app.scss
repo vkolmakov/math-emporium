@@ -1,0 +1,113 @@
+@import "variables";
+@import "mixins";
+
+.show-schedule-controls {
+    > .select-filter-wrap {
+        @include breakpoint($medium-screen) {
+            @include span(3 of 9);
+            &:nth-child(3) {
+                @include span(3 of 9 last);
+            }
+
+            margin: 0 auto;
+            padding: 0.5em 0;
+            input {
+                @include set-font();
+                @include box-sizing(border-box);
+                width: 100%;
+            }
+        }
+    }
+
+    > .dual-datepicker-wrap {
+        $datepicker-height: 36px;
+
+        @include breakpoint($medium-screen) {
+            @include span(3 of 9);
+        }
+        margin: 0 auto;
+        padding: 0.5em 0;
+
+        .react-datepicker__input-container {
+            > input {
+                @include set-font();
+                @include box-sizing(border-box);
+                @include rounded-border();
+                width: 100%;
+                height: $datepicker-height;
+                font-size: 16px;
+                padding: 0.5em;
+            }
+
+            width: 50%;
+            height: $datepicker-height;
+        }
+
+    }
+
+}
+
+.react-datepicker {
+    @include set-font();
+}
+
+.react-datepicker__day--in-range {
+    background-color: $primary-color;
+    color: black;
+    &:hover {
+        background-color: darken($primary-color, 15%);
+    }
+}
+
+.react-datepicker__header {
+    background-color: $tertiary-color;
+}
+
+.react-datepicker__week {
+    &:hover {
+        background-color: darken($tertiary-color, 4%);
+    }
+}
+
+
+.open-spots-display {
+    .weekday {
+        p {
+            text-align: center;
+        }
+
+        @mixin spot() {
+            padding: 0.5em;
+            margin: 0.5em 0;
+            @include rounded-border();
+
+            a {
+                display: block;
+                text-align: center;
+                text-decoration: none;
+            }
+        }
+
+        .open-spot {
+            @include spot();
+            background-color: $primary-color;
+
+            a {
+                color: $primary-text-color;
+            }
+        }
+
+        .closed-spot {
+            @include spot();
+            background-color: $danger-color;
+
+            a {
+                color: $danger-text-color;
+            }
+        }
+    }
+}
+
+.weekday {
+
+}

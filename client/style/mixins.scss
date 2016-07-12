@@ -1,0 +1,15 @@
+@mixin rounded-border {
+    @include border-radius (5px);
+    border: 1px solid #ccc;
+}
+
+@mixin set-font {
+    font-family: $font-family;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@mixin url {
+    text-decoration: none;
+    text-transform: lowercase;
+}

@@ -2,38 +2,15 @@
 @import "~breakpoint-sass/stylesheets/breakpoint";
 @import "~compass-mixins/lib/compass";
 
+@import "variables";
+@import "mixins";
+@import "scheduling-app";
+
 $susy: (
     colums: 12,
     container: 1040px,
     global-box-sizing: border-box
 );
-
-$font-family: Optima;
-
-$medium-screen: 768px;
-$small-screen-width: 480px;
-
-$primary-color: #d9edf9;
-$secondary-color: white;
-$tertiary-color: #fefefe;
-$danger-color: #ff9999;
-$success-color: #8fbc8f;
-
-@mixin rounded-border {
-    @include border-radius (5px);
-    border: 1px solid #ccc;
-}
-
-@mixin set-font {
-    font-family: $font-family;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-@mixin url {
-    text-decoration: none;
-    text-transform: lowercase;
-}
 
 body {
     @include set-font();
@@ -160,74 +137,8 @@ nav {
     }
 }
 
-.show-schedule-controls {
-    @include span(9 of 9 nest);
-    > .select-filter-wrap {
-        @include breakpoint($medium-screen) {
-            @include span(3 of 9);
-            &:nth-child(3) {
-                @include span(3 of 9 last);
-            }
 
-            margin: 0 auto;
-            padding: 0.5em 0;
-            input {
-                @include set-font();
-                @include box-sizing(border-box);
-                width: 100%;
-            }
-        }
-    }
 
-    > .dual-datepicker-wrap {
-        $datepicker-height: 36px;
-
-        @include breakpoint($medium-screen) {
-            @include span(3 of 9);
-        }
-        margin: 0 auto;
-        padding: 0.5em 0;
-
-        .react-datepicker__input-container {
-            > input {
-                @include set-font();
-                @include box-sizing(border-box);
-                @include rounded-border();
-                width: 100%;
-                height: $datepicker-height;
-                font-size: 16px;
-                padding: 0.5em;
-            }
-
-            width: 50%;
-            height: $datepicker-height;
-        }
-
-    }
-
-}
-
-.react-datepicker {
-    @include set-font();
-}
-
-.react-datepicker__day--in-range {
-    background-color: $primary-color;
-    color: black;
-    &:hover {
-        background-color: darken($primary-color, 15%);
-    }
-}
-
-.react-datepicker__header {
-    background-color: $tertiary-color;
-}
-
-.react-datepicker__week {
-    &:hover {
-        background-color: darken($tertiary-color, 4%);
-    }
-}
 
 .form-wrap {
     @include breakpoint($medium-screen) {
@@ -593,7 +504,7 @@ nav {
 .info-home {
     @include clearfix
     padding-top: 2em;
-    background-color: darken($danger-color, 15%);
+    background-color: $danger-color;
 
     .fa-wrap {
         width: 80px;

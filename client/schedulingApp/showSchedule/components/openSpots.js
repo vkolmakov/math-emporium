@@ -59,7 +59,7 @@ class OpenSpots extends Component {
         return (
             openSpots.map(d => (
                 <div className="weekday" key={d.weekdayDisplay}>
-                  {d.weekdayDisplay}
+                  <p>{d.weekdayDisplay}</p>
                   {d.openSpots.map(os => this.renderOpenSpot(os))}
                 </div>
             ))
