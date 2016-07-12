@@ -10,11 +10,11 @@ import { SA_GET_OPEN_SPOTS,
 const INITIAL_STATE = {
     locations: {
         selected: null,
-        all: []
+        all: [],
     },
     courses: {
         selected: null,
-        all: []
+        all: [],
     },
     startDate: moment().startOf('isoWeek'),
     openSpots: [],
@@ -35,8 +35,8 @@ export default (state = INITIAL_STATE, action) => {
             locations: {
                 ...state.locations,
                 all: payload.data,
-            }
-        }
+            },
+        };
 
     case SA_GET_COURSES:
         return {
@@ -44,8 +44,8 @@ export default (state = INITIAL_STATE, action) => {
             courses: {
                 ...state.courses,
                 all: payload.data,
-            }
-        }
+            },
+        };
 
     case SA_SET_LOCATION:
         const selectedLocation = payload ? state.locations.all.find(l => l.id === payload.value) : null;
@@ -60,7 +60,7 @@ export default (state = INITIAL_STATE, action) => {
                 selected: selectedLocation,
             },
             openSpots: [],
-        }
+        };
 
     case SA_SET_COURSE:
         const selectedCourse = payload ? state.courses.all.find(c => c.id === payload.value) : null;
@@ -71,7 +71,7 @@ export default (state = INITIAL_STATE, action) => {
                 selected: selectedCourse,
             },
             openSpots: [],
-        }
+        };
 
     case SA_SET_START_DATE:
         // expect a moment object
@@ -79,9 +79,9 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             startDate: payload.startOf('isoWeek'),
             openSpots: [],
-        }
+        };
 
     default:
         return state;
     }
-}
+};

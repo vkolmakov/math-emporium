@@ -5,7 +5,7 @@
 * ~~Finish up openSpots service and API endpoint **[server]**~~
   - ~~add Google Calendar connection~~
 
-* Build the front to display openSpots results **[client]**
+* ~~Build the front to display openSpots results **[client]**~~
 
 * Add user-related API endpoints **[server]**
   - add more fields in the user model (next appointment date + calendar-id, etc)

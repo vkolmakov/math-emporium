@@ -71,43 +71,55 @@
 
 
 .open-spots-display {
-    .weekday {
-        p {
+    > .weekday {
+        @include breakpoint($medium-screen) {
+            @include span(3 of 9);
+            &:nth-child(3n) {
+                @include span(3 of 9 last);
+            }
+        }
+
+        > p {
             text-align: center;
         }
 
         @mixin spot() {
-            padding: 0.5em;
             margin: 0.5em 0;
             @include rounded-border();
 
-            a {
+            > a {
                 display: block;
                 text-align: center;
                 text-decoration: none;
+                padding: 0.5em;
             }
         }
 
-        .open-spot {
+        > .open-spot {
             @include spot();
             background-color: $primary-color;
 
-            a {
+            > a {
                 color: $primary-text-color;
             }
         }
 
-        .closed-spot {
+        > .closed-spot {
             @include spot();
             background-color: $danger-color;
 
-            a {
+            > a {
                 color: $danger-text-color;
             }
         }
+
+        > .expired-spot {
+            @include spot();
+            background-color: $tertiary-color;
+
+            > a {
+                color: lighten($primary-text-color, 64%);
+            }
+        }
     }
-}
-
-.weekday {
-
 }

@@ -22,10 +22,30 @@ class OpenSpots extends Component {
             ({ value, display }) => value === openSpot.time).display;
 
         const count = openSpot.count;
-        const [displayCount, displayClass] =
-                  count > 0 ? [`${count} avaiable`, 'open-spot'] : ['none available', 'closed-spot'];
 
-        // TODO: add an onClick to the link to save the selected appointment in the state
+        const isExpired =
+                  moment().isAfter(
+                      moment(this.props.startDate).add(openSpot.weekday - 1, 'days').add(openSpot.time, 'minutes')
+                  );
+
+        let displayCount;
+        let displayClass;
+
+        // TODO: add appropriate onClick events
+
+        if (isExpired) {
+            displayCount = count > 0 ? `${count} available` : 'none available';
+            displayClass = 'expired-spot';
+        } else if (count > 0) {
+            // not expired and have some spots
+            displayCount = `${count} available`;
+            displayClass = 'open-spot';
+        } else {
+            // not expired and has no spots
+            displayCount = 'none available';
+            displayClass = 'closed-spot';
+        }
+
         return (
             <div key={openSpot.time} className={displayClass}>
               <Link to={`/${BASE_PATH}/#`}>{displayTime}: {displayCount}</Link>
@@ -98,7 +118,7 @@ class OpenSpots extends Component {
 function mapStateToProps(state) {
     return {
         openSpots: state.showSchedule.openSpots,
-    }
+    };
 }
 
 export default connect(mapStateToProps, { getOpenSpots })(OpenSpots);
