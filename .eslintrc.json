@@ -19,6 +19,7 @@
         "func-names": 0,
         "indent": [2, 4],
         "max-len": [2, 125],
-        "no-case-declarations": 0
+        "no-case-declarations": 0,
+        "global-require": 0
     }
 }

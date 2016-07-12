@@ -54,11 +54,11 @@ function connect() {
     app.use('/api', createAuthRouter());
     app.use('/api', createUtilRouter());
 
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDevClient = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'serverdev';
 
     app.use(errorHandler);
 
-    if (isDev) {
+    if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');
         const compiler = webpack(config);
