@@ -58,7 +58,8 @@ export default (state = INITIAL_STATE, action) => {
             locations: {
                 ...state.locations,
                 selected: selectedLocation,
-            }
+            },
+            openSpots: [],
         }
 
     case SA_SET_COURSE:
@@ -68,7 +69,8 @@ export default (state = INITIAL_STATE, action) => {
             courses: {
                 ...state.courses,
                 selected: selectedCourse,
-            }
+            },
+            openSpots: [],
         }
 
     case SA_SET_START_DATE:
@@ -76,6 +78,7 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             startDate: payload.startOf('isoWeek'),
+            openSpots: [],
         }
 
     default:

@@ -31,13 +31,13 @@ export class CalendarService {
         this.calendar = googleapis.calendar('v3');
     }
 
-    getCalendarEvents(calendarId, startTime, endTime) {
+    getCalendarEvents(calendarId, startDate, endDate) {
         return new Promise((resolve, reject) => {
             this.calendar.events.list({
                 auth: this.auth,
                 calendarId,
-                timeMin: startTime,
-                timeMax: endTime,
+                timeMin: startDate,
+                timeMax: endDate,
             }, (err, result) => {
                 if (err) {
                     reject(err);

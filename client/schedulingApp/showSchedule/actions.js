@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 export const SA_GET_OPEN_SPOTS = 'SA_GET_OPEN_SPOTS';
 export const SA_GET_LOCATIONS = 'SA_GET_LOCATIONS';
@@ -11,14 +12,18 @@ const BASE_URL = '/api/public/open-spots'
 const BASE_URL_LOCATIONS = '/api/private/locations';
 const BASE_URL_COURSES = '/api/private/courses';
 
-export function getOpenSpots(location, course, startTime) {
-    const requestBody = {
-        location,
-        course,
-        startTime,
+export function getOpenSpots(location, course, startDate) {
+    const requestParams = {
+        locationId: location.id,
+        courseId: course.id,
+        startDate: startDate.format('YYYY-MM-DD'),
     };
 
-    const request = axios.get(BASE_URL, requestBody);
+    const request = axios.get(BASE_URL, {
+        params: {
+            ...requestParams,
+        }
+    });
 
     return {
         type: SA_GET_OPEN_SPOTS,
@@ -60,7 +65,6 @@ export function setCourse(course) {
 }
 
 export function setStartDate(date) {
-    console.log(date);
     return {
         type: SA_SET_START_DATE,
         payload: date,

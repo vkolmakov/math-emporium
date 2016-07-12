@@ -84,11 +84,11 @@ const getCachedData = () => new Promise(async (resolve, reject) => {
     resolve(data);
 })
 
-export const openSpots = async (locationId, courseId, startTime, endTime) => {
+export const openSpots = async (locationId, courseId, startDate, endDate) => {
     /* locationId: Int,
        courseId: Int,
-       startTime: moment Date,
-       endTime: moment Date,
+       startDate: moment Date,
+       endDate: moment Date,
      */
 
     // as of now course and location are passed in as a database ID
@@ -117,7 +117,7 @@ export const openSpots = async (locationId, courseId, startTime, endTime) => {
     await calendarService.create();
 
     const calendarId = locationData.location.calendarId;
-    const calItems = await calendarService.getCalendarEvents(calendarId, startTime.toISOString(), endTime.toISOString());
+    const calItems = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
 
     // convert weekday and hour from the ISO string to the DB format
     // 1..7 for weekday, num_minutes since midnight for time
@@ -152,6 +152,8 @@ export const openSpots = async (locationId, courseId, startTime, endTime) => {
             count: sc.count - (cc ? cc.count : 0),
         }
     });
+
+    console.log('finish doing open spots');
 
     return openSpots;
 }
