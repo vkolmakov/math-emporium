@@ -71,12 +71,16 @@
 
 
 .open-spots-display {
+    $col-size: 3;
+    $num-cols: 9;
+    @include span($num-cols of $num-cols nest);
     > .weekday {
         @include breakpoint($medium-screen) {
-            @include span(3 of 9);
-            &:nth-child(3n) {
-                @include span(3 of 9 last);
+            @include span($col-size of $num-cols);
+            &:nth-child(#{$col-size}n) {
+                @include span($col-size of $num-cols last);
             }
+            display: table-cell;
         }
 
         > p {
