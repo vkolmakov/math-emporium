@@ -18,6 +18,7 @@
 * Add group-based auth **[server]**
   - require group 2+ for schedule CRUD routes
   - group 0+ for user-related stuff
+  - Add a sidebar config property which will allow to display different things based on the access level
 
 * Complete server-side vefification for several models **[server]**
 

@@ -9,6 +9,7 @@ import errorHandler from './middleware/errorHandler';
 import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
 import createUtilRouter from './routes/utilRouter';
+import createUserRouter from './routes/userRouter';
 
 import webpack from 'webpack';
 import config from '../webpack.config';
@@ -51,6 +52,8 @@ function connect() {
     ];
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
+
+    app.use('/api', createUserRouter());
     app.use('/api', createAuthRouter());
     app.use('/api', createUtilRouter());
 
