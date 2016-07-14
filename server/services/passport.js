@@ -23,15 +23,13 @@ const localLogin = new LocalStrategy(localOptions, async (email, password, done)
             done(null, false);
         }
 
-        user.validatePassword(password, (err, isMatch) => {
-            if (err) {
-                done(err);
-            } else if (!isMatch) {
-                done(null, false);
-            } else {
-                done(null, user);
-            }
-        });
+        const isMatch = await user.validatePassword(password);
+
+        if (isMatch) {
+            done(null, user);
+        } else {
+            done(null, false);
+        }
     } catch (err) {
         console.log(err);
         return done(err);

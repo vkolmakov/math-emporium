@@ -36,7 +36,10 @@ export default function createUserModel(sequelize, DataTypes) {
                 });
             },
         },
-        name: {
+        firstName: {
+            type: DataTypes.STRING,
+        },
+        lastName: {
             type: DataTypes.STRING,
         },
         group: {
@@ -61,45 +64,65 @@ export default function createUserModel(sequelize, DataTypes) {
             type: DataTypes.DATE,
             defaultValue: Date.now() + 3600000 * 24,
         },
+        googleCalendarAppointmentId: {
+            type: DataTypes.STRING,
+        },
+        googleCalendarAppointmentDate: {
+            type: DataTypes.DATE,
+        },
     }, {
         timestamps: true,
+        classMethods: {
+            associate(models) {
+                user.belongsTo(models.location);
+                user.belongsTo(models.course);
+            },
+        },
         instanceMethods: {
-            validatePassword(password, callback) {
-                bcrypt.compare(password, this.getDataValue('password'), (err, isMatch) => {
-                    if (err) {
-                        return callback(err);
-                    }
-                    return callback(null, isMatch);
+            validatePassword(password, _) {
+                return new Promise((resolve, reject) => {
+                    bcrypt.compare(password, this.getDataValue('password'), (err, isMatch) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        resolve(isMatch);
+                    });
                 });
             },
             sendActivationEmail() {
-                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                return new Promise((resolve, reject) => {
+                    const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
 
-                const user = this;
-                const token = user.getDataValue('activationToken');
+                    const user = this;
+                    const token = user.getDataValue('activationToken');
 
-                const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS, process.env.EMAIL_PASSWORD];
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: serverEmail,
-                        pass: serverEmailPass,
-                    },
+                    const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS,
+                                                            process.env.EMAIL_PASSWORD];
+                    const transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: {
+                            user: serverEmail,
+                            pass: serverEmailPass,
+                        },
+                    });
+
+                    const mailOptions = {
+                        from: serverEmail,
+                        to: user.getDataValue('email'),
+                        subject: 'Hello from ...',
+                        text: `To activate your account at ... copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
+                        html: `<p>To activate your account at ... click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                    };
+                    transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        resolve(info);
+                    });
                 });
-
-                const mailOptions = {
-                    from: serverEmail,
-                    to: user.getDataValue('email'),
-                    subject: 'Hello from ...',
-                    text: `To activate your account at ... copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
-                    html: `<p>To activate your account at ... click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
-                };
-                transporter.sendMail(mailOptions, function(err, info) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    return info;
-                });
+            },
+            createGoogleCalendarAppointment({ time, course, location }) {
+                // TODO: get googleapis in and make that appointment
             },
         },
     });

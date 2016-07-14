@@ -6,8 +6,8 @@ const Location = db.models.location;
 const Tutor = db.models.tutor;
 const Course = db.models.course;
 
-const allowedToRead = ['id', 'name', 'location', 'courses']; // TODO: Add courses and schedules
-const allowedToWrite = ['name']; // TODO: Add courses and schedules
+const allowedToRead = ['id', 'name', 'location', 'courses'];
+const allowedToWrite = ['name'];
 const relatedModels = [Location, { model: Course, as: 'courses' }];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);

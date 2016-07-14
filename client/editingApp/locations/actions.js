@@ -6,7 +6,7 @@ export const SET_CURRENT_LOCATION = 'SET_CURRENT_LOCATION';
 export const DELETE_LOCATION = 'DELETE_LOCATION';
 export const UPDATE_LOCATION = 'UPDATE_LOCATION';
 
-const BASE_URL = '/api/private/locations';
+const BASE_URL = '/api/locations';
 
 export function getLocations() {
     const request = axios.get(BASE_URL);

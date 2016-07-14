@@ -5,7 +5,7 @@ export const CREATE_TUTOR = 'CREATE_TUTOR';
 export const DELETE_TUTOR = 'DELETE_TUTOR';
 export const UPDATE_TUTOR = 'UPDATE_TUTOR';
 
-const BASE_URL = '/api/private/tutors';
+const BASE_URL = '/api/tutors';
 
 export function getTutors() {
     const request = axios.get(BASE_URL);

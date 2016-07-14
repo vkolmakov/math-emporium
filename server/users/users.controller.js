@@ -1,98 +1,67 @@
-import jwt from 'jwt-simple';
 import db from 'sequelize-connect';
+import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
+import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 
-const SECRET = 'this is supersecret';
+const User = db.models.user;
+const Location = db.models.location;
+const Course = db.models.course;
+// Add an endpoint to post firstName, lastName and location + course for a user
+// store it under api/private/user
+export const updateUserProfile = async (req, res, next) => {
+    const allowedToWrite = ['firstName', 'lastName'];
+    const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId'];
+    const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
-export const tokenForUser = (user) => {
-    const timestamp = new Date().getTime();
-    return jwt.encode({ sub: user.dataValues.id, iat: timestamp }, SECRET);
-};
-
-export const signup = async (req, res, next) => {
-    const User = db.models.user;
-    const { email, password } = req.body;
-    if (!email || !password) {
-        res.status(422).send({ error: 'You must provide email and password!' });
-    }
     try {
-        const existingUser = await User.findOne({
-            // TODO: Dont take inactive users
-            where: {
-                email,
-            },
-        });
-        if (existingUser) {
-            res.status(422).send({ error: 'Email is in use' });
-        }
-
-        const newUser = await User.create({
-            email,
-            password,
-            activationToken: SECRET,
-        });
-        await newUser.sendActivationEmail();
-        res.status(201).json({});
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ error: 'Something wrong happened...' });
-    }
-};
-
-export const signin = (req, res, next) => {
-    res.send({ token: tokenForUser(req.user) });
-};
-
-export const activate = async (req, res, next) => {
-    const User = db.models.user;
-    const { token } = req.body;
-    if (!token) {
-        res.status(422).send({ error: 'Must provide a token' });
-    }
-    try {
+        const userId = req.user.dataValues.id;
         const user = await User.findOne({
-            where: {
-                active: false,
-                activationToken: token,
-                activationTokenExpiration: {
-                    $gte: Date.now(),
-                },
-            },
+            where: { id: userId },
         });
 
         if (!user) {
-            return res.status(422).send({ error: 'This activation token is inactive or your account is already activated' });
+            throw new Error('User not found');
         }
 
-        const result = await user.update({
-            active: true,
-        });
 
-        res.status(200).json({ token: tokenForUser(result) });
+        if (hasOneOf(req.body, 'location')) {
+            let location;
+            if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
+                location = await Location.findIfExists(req.body.location);
+
+                if (!location) {
+                    res.status(400).json(notFound('location'));
+                }
+            } else {
+                res.status(400).json(notFound('location'));
+            }
+            await user.setLocation(location);
+        }
+
+        if (hasOneOf(req.body, 'course')) {
+            let course;
+            if (isObject(req.body.course) && hasOneOf(req.body.course, 'id', 'name')) {
+                course = await Course.findOne({
+                    where: { id: req.body.course.id },
+                });
+
+                if (!course) {
+                    res.status(400).json(notFound('course'));
+                }
+            } else {
+                res.status(400).json(notFound('course'));
+            }
+            await user.setCourse(course);
+        }
+
+        const result = await user.update(req.body, {
+            fields: allowedToWrite,
+        })
+
+        res.status(200).json(extractDataValues(result));
     } catch (err) {
-        console.log(err);
-        res.status(500).send({ error: 'Something wrong happened...' });
+        next(err);
     }
-};
+}
 
-export const sendActivationEmail = async (req, res, next) => {
-    // purely for testing
-    const User = db.models.user;
-    const { email } = req.body;
-    const user = await User.findOne({
-        where: {
-            email,
-        },
-    });
-
-    if (!user) {
-        return res.status(422).json({ error: 'Invalid email' });
-    }
-
-    try {
-        await user.sendActivationEmail();
-    } catch (err) {
-        return res.status(422).json({ error: `Failed to send email: ${err}` });
-    }
-
-    return res.status(201).json({ message: 'Email was sent' });
-};
+// add an api endpoint to schedule an appointment, which will actually schedule one
+// and write down goolgleCalendarAppointmentId and goolgleCalendarAppointmentDate

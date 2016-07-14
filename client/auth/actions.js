@@ -5,7 +5,7 @@ export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
 
-const BASE_URL = '/api/public';
+const BASE_URL = '/api/auth';
 
 function addToken(token) {
     localStorage.setItem('token', token);

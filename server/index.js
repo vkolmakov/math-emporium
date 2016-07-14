@@ -44,10 +44,10 @@ function connect() {
     app.use(bodyParser.json());
 
     const crudRoutes = [
-        ['locations', 'private'],
-        ['courses', 'private'],
-        ['tutors', 'private'],
-        ['schedules', 'private'],
+        ['locations'],
+        ['courses'],
+        ['tutors'],
+        ['schedules'],
     ];
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));
@@ -55,7 +55,6 @@ function connect() {
     app.use('/api', createUtilRouter());
 
     const isDevClient = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'serverdev';
-
     app.use(errorHandler);
 
     if (isDevClient) {

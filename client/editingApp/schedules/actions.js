@@ -6,7 +6,7 @@ export const DELETE_SCHEDULE = 'DELETE_SCHEDULE';
 export const UPDATE_SCHEDULE = 'UPDATE_SCHEDULE';
 export const SET_CURRENT_WEEKDAY = 'SET_CURRENT_WEEKDAY';
 
-const BASE_URL = '/api/private/schedules';
+const BASE_URL = '/api/schedules';
 
 export function getSchedules() {
     const request = axios.get(BASE_URL);

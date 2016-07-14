@@ -8,9 +8,9 @@ export const SA_SET_LOCATION = 'SA_SET_LOCATION';
 export const SA_SET_COURSE = 'SA_SET_COURSE';
 export const SA_SET_START_DATE = 'SA_SET_START_DATE';
 
-const BASE_URL = '/api/public/open-spots'
-const BASE_URL_LOCATIONS = '/api/private/locations';
-const BASE_URL_COURSES = '/api/private/courses';
+const BASE_URL = '/api/open-spots'
+const BASE_URL_LOCATIONS = '/api/locations';
+const BASE_URL_COURSES = '/api/courses';
 
 export function getOpenSpots(location, course, startDate) {
     const requestParams = {

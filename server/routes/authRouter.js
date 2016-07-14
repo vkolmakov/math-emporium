@@ -6,13 +6,13 @@ import passportService from '../services/passport';
 const requireSignin = passport.authenticate('local', { session: false });
 
 export default function createAuthRouter() {
-    const controller = require('../users/users.controller');
+    const controller = require('../users/users.auth.controller');
     const router = express.Router();
 
-    router.post('/public/signin', requireSignin, controller.signin);
-    router.post('/public/signup', controller.signup);
-    router.post('/public/activate', controller.activate);
-    router.post('/public/sendActivationEmail', controller.sendActivationEmail);
+    router.post('/auth/signin', requireSignin, controller.signin);
+    router.post('/auth/signup', controller.signup);
+    router.post('/auth/activate', controller.activate);
+    router.post('/auth/sendActivationEmail', controller.sendActivationEmail);
 
     return router;
 }

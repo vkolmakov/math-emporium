@@ -5,7 +5,7 @@ export const CREATE_COURSE = 'CREATE_COURSE';
 export const DELETE_COURSE = 'DELETE_COURSE';
 export const UPDATE_COURSE = 'UPDATE_COURSE';
 
-const BASE_URL = '/api/private/courses';
+const BASE_URL = '/api/courses';
 
 export function getCourses() {
     const request = axios.get(BASE_URL);

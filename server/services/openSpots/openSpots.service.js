@@ -28,7 +28,7 @@ const collectData = () => new Promise(async (resolve, reject) => {
             const coursesRes = await Course.findAll({
                 where: {
                     locationId: location.id,
-                }
+                },
             });
 
             const courses = coursesRes
@@ -82,7 +82,7 @@ const getCachedData = () => new Promise(async (resolve, reject) => {
     }
 
     resolve(data);
-})
+});
 
 export const openSpots = async (locationId, courseId, startDate, endDate) => {
     /* locationId: Int,
@@ -92,7 +92,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
      */
 
     // as of now course and location are passed in as a database ID
-    const data = await getCachedData()
+    const data = await getCachedData();
 
     // select the correct data blob
     const locationData = data.find(d => d.location.id === locationId);
@@ -103,7 +103,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
 
     // find tutors that can tutor selected course
     const selectedTutors = locationData.tutors
-              .filter(t => !!t.courses.find(c => c.id === courseId))
+              .filter(t => !!t.courses.find(c => c.id === courseId));
 
     // go through schedule and count tutors that are selected and present
     const scheduleCounts = locationData.schedules
@@ -136,7 +136,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
                     weekday,
                     time,
                     count: 1,
-                }
+                };
                 return results.concat(existingResult);
             }
         }
@@ -150,10 +150,10 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
             ...sc,
             // if a calendarCount was found we subtract it, otherwise just subtract 0
             count: sc.count - (cc ? cc.count : 0),
-        }
+        };
     });
 
     console.log('finish doing open spots');
 
     return openSpots;
-}
+};
