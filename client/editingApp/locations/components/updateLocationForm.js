@@ -16,10 +16,11 @@ class UpdateLocationForm extends Component {
     }
 
     componentDidMount() {
-        const { name } = this.props.selectedLocation;
+        const { name, calendarId } = this.props.selectedLocation;
 
         this.props.dispatch(initialize('UpdateLocationForm', {
             name,
+            calendarId,
         }, FORM_FIELDS));
     }
 
