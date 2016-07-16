@@ -153,7 +153,5 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
         };
     });
 
-    console.log('finish doing open spots');
-
     return openSpots;
 };

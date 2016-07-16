@@ -1,31 +1,31 @@
-import { SA_GET_USER_PROFILE,
+import { SA_SET_USER_PROFILE,
          SA_UPDATE_USER_PROFILE } from './actions';
 
 const INITIAL_STATE = null;
 
 export default (state = INITIAL_STATE, action) => {
     const { payload, type } = action;
+    let data;
     switch (type) {
-    case SA_GET_USER_PROFILE:
-        const {
-            locationId,
-            courseId,
-            nextAppointment,
-            firstName,
-            lastName,
-        } = payload.data;
-
+    case SA_SET_USER_PROFILE:
+        data = payload.data;
         return {
-            location: { id: locationId },
-            course: { id: courseId },
-            nextAppointment,
-            firstName,
-            lastName,
+            location: data.locationId ? { id: data.locationId } : null,
+            course: data.courseId ? { id: data.courseId } : null,
+            nextAppointment: data.nextAppointment,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            googleCalendarAppointmentDate: data.googleCalendarAppointmentDate,
         };
 
     case SA_UPDATE_USER_PROFILE:
+        data = payload.data;
         return {
             ...state,
+            location: data.locationId ? { id: data.locationId } : null,
+            course: data.courseId ? { id: data.courseId } : null,
+            firstName: data.firstName,
+            lastName: data.lastName,
         };
 
     default:

@@ -32,10 +32,10 @@ export const updateProfile = async (req, res, next) => {
                 if (!location) {
                     res.status(400).json(notFound('location'));
                 }
+                await user.setLocation(location);
             } else {
-                res.status(400).json(notFound('location'));
+                await user.setLocation(null);
             }
-            await user.setLocation(location);
         }
 
         if (hasOneOf(req.body, 'course')) {
@@ -48,10 +48,10 @@ export const updateProfile = async (req, res, next) => {
                 if (!course) {
                     res.status(400).json(notFound('course'));
                 }
+                await user.setCourse(course);
             } else {
-                res.status(400).json(notFound('course'));
+                await user.setCourse(null);
             }
-            await user.setCourse(course);
         }
 
         const result = await user.update(req.body, {

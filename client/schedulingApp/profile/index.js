@@ -6,15 +6,9 @@ import UpdateProfileForm from './components/updateProfileForm';
 import LoadingSpinner from '../../components/loadingSpinner';
 
 import { getUserProfile } from './actions';
-import { getLocations, getCourses } from '../showSchedule/actions';
+import { getLocations, getCourses } from '../actions';
 
 class Profile extends Component {
-    componentWillMount() {
-        this.props.getUserProfile();
-        this.props.getLocations();
-        this.props.getCourses();
-    }
-
     render() {
         const { profile, courses, locations } = this.props;
 
@@ -35,12 +29,14 @@ class Profile extends Component {
 
 function mapStateToProps(state) {
     return {
-        profile: state.profile,
+        profile: state.scheduling.profile,
         locations: {
-            all: state.showSchedule.locations.all,
+            all: state.scheduling.shared.locations.all,
+            selected: state.scheduling.shared.locations.selected,
         },
         courses: {
-            all: state.showSchedule.courses.all,
+            all: state.scheduling.shared.courses.all,
+            selected: state.scheduling.shared.courses.selected,
         },
     };
 }

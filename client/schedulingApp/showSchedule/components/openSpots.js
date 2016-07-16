@@ -6,7 +6,16 @@ import moment from 'moment';
 import { getOpenSpots } from '../actions';
 import { TIME_OPTIONS, BASE_PATH } from '../../constants';
 
+import LoadingSpinner from '../../../components/loadingSpinner';
+
 class OpenSpots extends Component {
+    componentWillMount() {
+        const { location, startDate, course } = this.props;
+        if (location && startDate && course) {
+            this.props.getOpenSpots(location, course, startDate);
+        }
+    }
+
     componentDidUpdate(prevProps) {
         const { location, course, startDate, openSpots: currOpenSpots } = this.props;
         const prevOpenSpots = prevProps.openSpots;
@@ -107,6 +116,10 @@ class OpenSpots extends Component {
             );
         }
 
+        if (!this.props.openSpots) {
+            return <LoadingSpinner />;
+        }
+
         return (
             <div className="open-spots-display">
               {this.renderOpenSpots()}
@@ -117,7 +130,7 @@ class OpenSpots extends Component {
 
 function mapStateToProps(state) {
     return {
-        openSpots: state.showSchedule.openSpots,
+        openSpots: state.scheduling.showSchedule.openSpots,
     };
 }
 

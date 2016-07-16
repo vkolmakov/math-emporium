@@ -17,6 +17,7 @@
     "eslint-plugin-react": "^5.2.2",
     "mocha": "^2.4.5",
     "nodemon": "^1.9.2",
+    "redux-logger": "^2.6.1",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.10.0"
   },

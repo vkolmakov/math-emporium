@@ -11,18 +11,13 @@ import { getLocations,
          getCourses,
          setLocation,
          setCourse,
-         setStartDate } from './actions';
+         setStartDate } from '../actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 
 class ShowSchedule extends Component {
-    componentWillMount() {
-        this.props.getLocations();
-        this.props.getCourses();
-    }
-
     render() {
-        const { locations, courses, openSpots, startDate } = this.props;
+        const { locations, courses, startDate } = this.props;
         const locationsOptions = selectTransformOptions()(locations.all);
 
         let coursesOptions;
@@ -78,15 +73,15 @@ class ShowSchedule extends Component {
 function mapStateToProps(state) {
     return {
         locations: {
-            selected: state.showSchedule.locations.selected,
-            all: state.showSchedule.locations.all,
+            selected: state.scheduling.shared.locations.selected,
+            all: state.scheduling.shared.locations.all,
         },
         courses: {
-            selected: state.showSchedule.courses.selected,
-            all: state.showSchedule.courses.all,
+            selected: state.scheduling.shared.courses.selected,
+            all: state.scheduling.shared.courses.all,
         },
-        startDate: state.showSchedule.startDate,
-        openSpots: state.showSchedule.openSpots,
+        startDate: state.scheduling.showSchedule.startDate,
+        openSpots: state.scheduling.showSchedule.openSpots,
     };
 }
 
