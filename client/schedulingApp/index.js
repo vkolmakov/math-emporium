@@ -10,7 +10,6 @@ export default class SchedulingApp extends Component {
 
         const links = [
             ['show', 'Show Schedule'],
-            ['next', 'My Next Appointment'],
             ['profile', 'My Profile'],
         ];
 

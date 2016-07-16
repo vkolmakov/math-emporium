@@ -56,13 +56,13 @@ export const updateProfile = async (req, res, next) => {
 
         const result = await user.update(req.body, {
             fields: allowedToWrite,
-        })
+        });
 
         res.status(200).json(extractDataValues(result));
     } catch (err) {
         next(err);
     }
-}
+};
 
 export const getProfile = async (req, res, next) => {
     try {
@@ -75,8 +75,8 @@ export const getProfile = async (req, res, next) => {
             throw new Error('User not found');
         }
 
-        res.status(200).json(extractDataValues(user))
+        res.status(200).json(extractDataValues(user));
     } catch (err) {
         next(err);
     }
-}
+};

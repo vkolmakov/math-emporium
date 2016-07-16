@@ -127,3 +127,15 @@
         }
     }
 }
+
+.edit-profile-form-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(4 of 8 last);
+    }
+}
+
+.next-appointment-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(4 of 8);
+    }
+}

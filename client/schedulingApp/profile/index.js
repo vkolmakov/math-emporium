@@ -1,27 +1,52 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 
-import { getUserProfile, updateUserProfile } from './actions';
+import NextAppointment from './components/nextAppointment';
+import UpdateProfileForm from './components/updateProfileForm';
+import LoadingSpinner from '../../components/loadingSpinner';
 
+import { getUserProfile } from './actions';
+import { getLocations, getCourses } from '../showSchedule/actions';
 
 class Profile extends Component {
     componentWillMount() {
         this.props.getUserProfile();
+        this.props.getLocations();
+        this.props.getCourses();
     }
 
     render() {
+        const { profile, courses, locations } = this.props;
+
+        if (!(profile && courses.all && locations.all)) {
+            return <LoadingSpinner />;
+        }
+
         return (
             <div className="content">
-              <div className="middle-help-message-wrap">
-                <h1>WIP: this feature is coming soon!</h1>
-              </div>
+              <NextAppointment />
+              <UpdateProfileForm profile={profile}
+                                 locations={locations}
+                                 courses={courses} />
             </div>
         );
     }
 }
 
-export default connect(null, {
+function mapStateToProps(state) {
+    return {
+        profile: state.profile,
+        locations: {
+            all: state.showSchedule.locations.all,
+        },
+        courses: {
+            all: state.showSchedule.courses.all,
+        },
+    };
+}
+
+export default connect(mapStateToProps, {
     getUserProfile,
-    updateUserProfile,
+    getLocations,
+    getCourses,
 })(Profile);

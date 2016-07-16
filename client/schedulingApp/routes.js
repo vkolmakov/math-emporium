@@ -5,13 +5,11 @@ import { BASE_PATH } from './constants';
 
 import SchedulingApp from './index';
 import ShowSchedule from './showSchedule/index';
-import NextAppointment from './nextAppointment/index';
 import Profile from './profile/index';
 
 export default (
     <Route path={BASE_PATH} component={SchedulingApp}>
       <Route path="show" component={ShowSchedule} />
-      <Route path="next" component={NextAppointment} />
       <Route path="profile" component={Profile} />
     </Route>
 );
