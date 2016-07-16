@@ -3,7 +3,7 @@ import { reduxForm } from 'redux-form';
 
 import { signupUser } from '../actions';
 
-import Form from '../../editingApp/components/form/index';
+import Form from '../../components/form/index';
 
 class Signup extends Component {
     render() {

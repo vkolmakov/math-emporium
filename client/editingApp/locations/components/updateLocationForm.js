@@ -3,7 +3,7 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateLocation, getLocations } from '../actions';
 
-import Form from '../../components/form/index';
+import Form from '../../../components/form/index';
 
 const FORM_FIELDS = ['name', 'calendarId'];
 
@@ -64,6 +64,7 @@ class UpdateLocationForm extends Component {
             title,
             fields,
             error: this.props.locations.error,
+            success: this.state.success,
         };
 
         return (

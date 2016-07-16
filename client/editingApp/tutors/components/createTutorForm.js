@@ -5,7 +5,7 @@ import { createTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 
 import { selectTransformOptions } from '../../utils';
-import Form from '../../components/form/index';
+import Form from '../../../components/form/index';
 
 const FORM_NAME = 'CreateTutorForm';
 const FORM_FIELDS = ['name', 'location', 'courses'];

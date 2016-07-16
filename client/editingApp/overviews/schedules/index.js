@@ -4,14 +4,13 @@ import { connect } from 'react-redux';
 import { getSchedules } from '../../schedules/actions';
 import { getLocations, setCurrentLocation } from '../../locations/actions';
 
-import LoadingSpinner from '../../components/loadingSpinner';
+import LoadingSpinner from '../../../components/loadingSpinner';
 import FilterControls from '../../../components/filterControls';
 
 import Weekday from './components/weekday';
 
 import { selectTransformOptions } from '../../utils';
 
-import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
 
 class SchedulesOverview extends Component {
     componentWillMount() {

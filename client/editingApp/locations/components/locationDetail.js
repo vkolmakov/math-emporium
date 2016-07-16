@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { getLocations } from '../../locations/actions';
 
-import LoadingSpinner from '../../components/loadingSpinner';
+import LoadingSpinner from '../../../components/loadingSpinner';
 import UpdateLocationForm from './updateLocationForm';
 
 class LocationDetail extends Component {

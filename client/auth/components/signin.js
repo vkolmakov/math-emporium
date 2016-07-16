@@ -3,7 +3,7 @@ import { reduxForm } from 'redux-form';
 
 import { signinUser, authError } from '../actions';
 
-import Form from '../../editingApp/components/form/index';
+import Form from '../../components/form/index';
 
 class Signin extends Component {
     render() {

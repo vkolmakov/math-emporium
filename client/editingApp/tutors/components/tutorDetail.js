@@ -5,7 +5,7 @@ import { getLocations } from '../../locations/actions';
 import { getCourses } from '../../courses/actions';
 import { getTutors } from '../actions';
 
-import LoadingSpinner from '../../components/loadingSpinner';
+import LoadingSpinner from '../../../components/loadingSpinner';
 import UpdateTutorForm from './updateTutorForm';
 
 class TutorDetail extends Component {

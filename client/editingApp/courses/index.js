@@ -6,8 +6,8 @@ import { BASE_PATH } from '../constants';
 import { getCourses, deleteCourse } from './actions';
 import { getLocations, setCurrentLocation } from '../locations/actions';
 
-import LoadingSpinner from '../components/loadingSpinner';
-import Table from '../components/table/index';
+import LoadingSpinner from '../../components/loadingSpinner';
+import Table from '../../components/table/index';
 import CreateCourseForm from './components/createCourseForm';
 import FilterControls from '../../components/filterControls';
 

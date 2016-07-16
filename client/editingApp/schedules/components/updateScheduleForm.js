@@ -7,7 +7,7 @@ import { setCurrentLocation } from '../../locations/actions';
 import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
 
 import { selectTransformOptions } from '../../utils';
-import Form from '../../components/form/index';
+import Form from '../../../components/form/index';
 
 class UpdateScheduleForm extends Component {
     constructor() {

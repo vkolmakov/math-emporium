@@ -5,9 +5,9 @@ import { createLocation, getLocations } from '../actions';
 
 import { selectTransformOptions } from '../../utils';
 
-import Form from '../../components/form/index';
+import Form from '../../../components/form/index';
 
-const FORM_FIELDS = ['name', 'calendarId']
+const FORM_FIELDS = ['name', 'calendarId'];
 
 class CreateLocationForm extends Component {
     render() {

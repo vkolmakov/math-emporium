@@ -5,8 +5,8 @@ import { updateTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 import { selectTransformOptions } from '../../utils';
 
-import Form from '../../components/form/index';
-import LoadingSpinner from '../../components/loadingSpinner';
+import Form from '../../../components/form/index';
+import LoadingSpinner from '../../../components/loadingSpinner';
 
 class UpdateTutorForm extends Component {
     constructor() {

@@ -7,7 +7,6 @@ const BASE_URL = '/api/user';
 
 export function getUserProfile() {
     const request = axios.get(`${BASE_URL}/profile`);
-
     return {
         type: SA_GET_USER_PROFILE,
         payload: request,

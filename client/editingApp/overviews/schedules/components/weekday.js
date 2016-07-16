@@ -1,6 +1,6 @@
 import React from 'react';
-import Table from '../../../components/table/index';
-import { TIME_OPTIONS, WEEKDAY_OPTIONS } from '../../../constants';
+import Table from '../../../../components/table/index';
+import { TIME_OPTIONS, WEEKDAY_OPTIONS } from '../../../../constants';
 
 export default ({ weekday, schedule }) => {
     const tableHeaders = [

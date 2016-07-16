@@ -7,8 +7,8 @@ import { getLocations, setCurrentLocation } from '../locations/actions';
 import { getTutors } from '../tutors/actions';
 import { getSchedules, deleteSchedule, setCurrentWeekday } from './actions';
 
-import LoadingSpinner from '../components/loadingSpinner';
-import Table from '../components/table/index';
+import LoadingSpinner from '../../components/loadingSpinner';
+import Table from '../../components/table/index';
 import CreateScheduleForm from './components/createScheduleForm';
 import FilterControls from '../../components/filterControls';
 

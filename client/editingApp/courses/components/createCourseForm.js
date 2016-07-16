@@ -7,7 +7,7 @@ import { setCurrentLocation } from '../../locations/actions';
 import { GOOGLE_CALENDAR_COLORS } from '../../constants';
 
 import { selectTransformOptions } from '../../utils';
-import Form from '../../components/form/index';
+import Form from '../../../components/form/index';
 
 const FORM_NAME = 'CreateCourseForm';
 const FORM_FIELDS = ['code', 'name', 'color', 'location'];

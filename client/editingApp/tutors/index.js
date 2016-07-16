@@ -7,8 +7,8 @@ import { getLocations, setCurrentLocation } from '../locations/actions';
 import { getTutors, deleteTutor } from './actions';
 import { getCourses } from '../courses/actions';
 
-import LoadingSpinner from '../components/loadingSpinner';
-import Table from '../components/table/index';
+import LoadingSpinner from '../../components/loadingSpinner';
+import Table from '../../components/table/index';
 import CreateTutorForm from './components/createTutorForm';
 import FilterControls from '../../components/filterControls';
 

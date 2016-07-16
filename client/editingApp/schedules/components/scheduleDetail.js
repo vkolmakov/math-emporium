@@ -5,7 +5,7 @@ import { getLocations, setCurrentLocation } from '../../locations/actions';
 import { getTutors } from '../../tutors/actions';
 import { getSchedules } from '../actions';
 
-import LoadingSpinner from '../../components/loadingSpinner';
+import LoadingSpinner from '../../../components/loadingSpinner';
 import UpdateScheduleForm from './updateScheduleForm';
 
 class ScheduleDetail extends Component {
