@@ -25,3 +25,5 @@ export const WEEKDAY_OPTIONS = [
 ].map(
     ([value, display]) => ({ value, display })
 );
+
+export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';

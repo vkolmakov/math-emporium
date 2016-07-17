@@ -1,3 +1,5 @@
+export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
+
 export function isObject(obj) {
     return obj === Object(obj);
 }
