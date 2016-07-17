@@ -149,13 +149,14 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             getAppointmentSummary({ course, tutor }) {
                 const user = this;
-                return `${tutor.name} (${course.code}) ${user.firstName}`;
+                return `${tutor.name} (${user.firstName}) ${course.code}`;
             },
             getAppointmentDescription({ course, tutor }) {
                 const user = this;
-                return ['description',
-                        'for',
-                        `${user.firstName} ${user.lastName}`].join('\n');
+                return [`Student: ${user.firstName} ${user.lastName}`,
+                        `Course: ${course.code}: ${course.name}`,
+                        `Created on: ${moment().format('MM/DD/YYYY h:mm a')}`,
+                        `Created by: ${process.env.HOSTNAME}`].join('\n');
             },
         },
     });

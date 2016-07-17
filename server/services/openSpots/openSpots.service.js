@@ -6,10 +6,15 @@ import { set, createExtractDataValuesFunction } from '../../aux';
 import { CalendarService } from '../googleApis';
 
 const extractInfoFromSummary = summary => {
-    // TODO: add regex matching for the appointment
-    // summary and extract stuff from it
+    const appointmentRegex = /(\w.+?)\(.+?\).+/;
+    const match = summary.match(appointmentRegex);
+
+    if (!match) {
+        return null;
+    }
+
     return {
-        tutor: summary,
+        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
     };
 };
 
