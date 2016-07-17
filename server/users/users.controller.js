@@ -1,10 +1,14 @@
 import db from 'sequelize-connect';
-import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
+import moment from 'moment';
+
+import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT } from '../aux';
 import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
+import { findAvailableTutor } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
+const Tutor = db.models.tutor;
 
 const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'next', 'googleCalendarAppointmentDate'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
@@ -74,6 +78,56 @@ export const getProfile = async (req, res, next) => {
         if (!user) {
             throw new Error('User not found');
         }
+
+        res.status(200).json(extractDataValues(user));
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const scheduleAppointment = async (req, res, next) => {
+    /* required request params:
+
+     location: { id },
+     course: { id },
+     time: aux.TIMESTAMP_FORMAT: String,
+
+     */
+
+    try {
+        const user = req.user;
+        const {
+            time,
+            course,
+            location,
+        } = req.body;
+
+        const locationRes = await Location.findOne({
+            where: { id: location.id },
+        });
+
+        const courseRes = await Course.findOne({
+            where: { id: course.id },
+        });
+
+        const tutor = await findAvailableTutor({
+            time: moment(time, TIMESTAMP_FORMAT),
+            course,
+            location });
+
+        const result = await user.createGoogleCalendarAppointment({
+            time: moment(time, TIMESTAMP_FORMAT),
+            course: courseRes.dataValues,
+            location: locationRes.dataValues,
+            tutor,
+        });
+
+        await user.update({
+            googleCalendarAppointmentId: result.id,
+            googleCalendarAppointmentDate: result.start.dateTime,
+        }, {
+            fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate'],
+        });
 
         res.status(200).json(extractDataValues(user));
     } catch (err) {

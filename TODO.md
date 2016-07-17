@@ -8,8 +8,8 @@
 * ~~Build the front to display openSpots results **[client]**~~
 
 * Add user-related API endpoints **[server]**
-  - add more fields in the user model (next appointment date + calendar-id, etc)
-  - add ability to edit profile and create Google Calendar appointmnents
+  - ~~add more fields in the user model (next appointment date + calendar-id, etc)~~
+  - ~~add ability to edit profile and create Google Calendar appointmnents~~
 
 * Build front for user-related endpoints + add appropriate event listeners on the openSpot component **[client]**
 

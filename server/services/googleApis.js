@@ -24,7 +24,6 @@ function getAuth(resource) {
     });
 }
 
-
 export class CalendarService {
     async create() {
         this.auth = await getAuth('calendar');
@@ -43,6 +42,28 @@ export class CalendarService {
                     reject(err);
                 } else {
                     resolve(result.items);
+                }
+            });
+        });
+    }
+
+    createCalendarEvent({ calendarId, startTime, endTime, summary, description, colorId }) {
+        return new Promise((resolve, reject) => {
+            this.calendar.events.insert({
+                auth: this.auth,
+                calendarId,
+                resource: {
+                    colorId,
+                    description,
+                    summary,
+                    start: { dateTime: startTime },
+                    end: { dateTime: endTime },
+                },
+            }, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
                 }
             });
         });

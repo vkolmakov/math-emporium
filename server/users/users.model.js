@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import moment from 'moment';
+import { CalendarService } from '../services/googleApis';
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define('user', {
@@ -121,8 +123,39 @@ export default function createUserModel(sequelize, DataTypes) {
                     });
                 });
             },
-            createGoogleCalendarAppointment({ time, course, location }) {
-                // TODO: get googleapis in and make that appointment
+            createGoogleCalendarAppointment({ time, course, location, tutor }) {
+                const user = this;
+                return new Promise(async (resolve, reject) => {
+                    const calendarService = new CalendarService;
+                    await calendarService.create();
+
+                    const calendarId = location.calendarId;
+                    const startTime = time.toISOString();
+                    const endTime = moment(time).add(1, 'hours');
+                    const summary = user.getAppointmentSummary({ course, tutor });
+                    const description = user.getAppointmentDescription({ course, tutor });
+
+                    const result = await calendarService.createCalendarEvent({
+                        calendarId,
+                        startTime,
+                        endTime,
+                        summary,
+                        description,
+                        colorId: course.color,
+                    });
+
+                    resolve(result);
+                });
+            },
+            getAppointmentSummary({ course, tutor }) {
+                const user = this;
+                return `${tutor.name} (${course.code}) ${user.firstName}`;
+            },
+            getAppointmentDescription({ course, tutor }) {
+                const user = this;
+                return ['description',
+                        'for',
+                        `${user.firstName} ${user.lastName}`].join('\n');
             },
         },
     });

@@ -5,9 +5,23 @@ import moment from 'moment';
 import { set, createExtractDataValuesFunction } from '../../aux';
 import { CalendarService } from '../googleApis';
 
-const extractInfoFromSummary = summary => ({
-    tutor: summary,
-});
+const extractInfoFromSummary = summary => {
+    // TODO: add regex matching for the appointment
+    // summary and extract stuff from it
+    return {
+        tutor: summary,
+    };
+};
+
+const selectRandomTutor = tutors => {
+    if (tutors.length === 0) {
+        throw new Error('No available tutors');
+    }
+
+    const randomIndex = Math.floor(Math.random() * tutors.length);
+    return tutors[randomIndex];
+
+};
 
 const collectData = () => new Promise(async (resolve, reject) => {
     const Location = db.models.location;
@@ -122,7 +136,12 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     // convert weekday and hour from the ISO string to the DB format
     // 1..7 for weekday, num_minutes since midnight for time
     const calendarCounts = calItems.reduce((results, item) => {
-        const tutorName = extractInfoFromSummary(item.summary).tutor;
+        const appointmentInfo = extractInfoFromSummary(item.summary);
+        if (!appointmentInfo) {
+            // this this will happen if the appointment did not match regex test
+            return results;
+        }
+        const tutorName = appointmentInfo.tutor;
         const time = moment(item.start.dateTime).hours() * 60 + moment(item.start.dateTime).minutes();
         const weekday = parseInt(moment(item.start.dateTime).format('E'), 10);
 
@@ -154,4 +173,53 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     });
 
     return openSpots;
+};
+
+export const findAvailableTutor = async ({ time, course, location }) => {
+    const data = await getCachedData();
+    const locationData = data.find(d => d.location.id === location.id);
+
+    // Convert time into a format that is stored in the database schedule model
+    const timeRaw = moment(time).hours() * 60 + moment(time).minutes();
+    // Convert weekday into a format that is stored in the database schedule model
+    const weekdayRaw = parseInt(moment(time).format('E'), 10);
+
+    const selectedSchedule = locationData.schedules.find(s => s.weekday === weekdayRaw && s.time === timeRaw);
+    if (!selectedSchedule) {
+        throw new Error('Schedule not found');
+    }
+    // `join` scheduled tutors and location tutors, that is find a complete list of scheduled tutors with
+    // all the information
+    const scheduledTutors = selectedSchedule.tutors.map(
+        scheduledTutor => locationData.tutors.find(tutor => scheduledTutor.id === tutor.id)
+    );
+
+    // filter out tutors that can't tutor a required course
+    const filteredScheduledTutors = scheduledTutors.filter(
+        tutor => !!tutor.courses.find(c => c.id === course.id)
+    );
+
+    // go to google calendar and get a list of names of tutors that are
+    // scheduled at the selected time + find diff b/w filteredScheduledTutors and that list
+    // by name lowercased
+    const calendarService = new CalendarService;
+    await calendarService.create();
+
+    const calendarId = locationData.location.calendarId;
+    const calItems = await calendarService.getCalendarEvents(calendarId,
+                                                             time.toISOString(),
+                                                             moment(time).add(1, 'hours').toISOString());
+
+    const busyTutorsNames = calItems.reduce((results, item) => {
+        const appointmentInfo = extractInfoFromSummary(item.summary);
+        return appointmentInfo ? results.concat(appointmentInfo.tutor) : results;
+    }, []);
+
+    // Keep only tutors whose names are not in the busyTutorsNames array
+    const availableTutors = filteredScheduledTutors.filter(
+        tutor =>
+            !busyTutorsNames.find(name => name.toLowerCase() === tutor.name.toLowerCase())
+    );
+
+    return selectRandomTutor(availableTutors);
 };
