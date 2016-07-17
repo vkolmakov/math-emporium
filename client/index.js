@@ -8,6 +8,8 @@ import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import { AUTH_USER } from './auth/actions';
 
+import createLogger from 'redux-logger';
+
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
 import axios from 'axios';
@@ -16,7 +18,20 @@ import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import style from './style/style.scss';
 
-const createStoreWithMiddleware = applyMiddleware(promise, reduxThunk)(createStore);
+
+const middlewares = [promise, reduxThunk];
+
+if (process.env.NODE_ENV !== 'production') {
+    const logger = createLogger({
+        diff: true,
+        collapsed: true,
+    });
+
+    middlewares.push(logger);
+}
+
+
+const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 const store = createStoreWithMiddleware(reducers);
 const token = localStorage.getItem('token');
 
