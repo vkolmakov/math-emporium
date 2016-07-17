@@ -10,8 +10,9 @@ import OpenSpots from './components/openSpots';
 import { getLocations,
          getCourses,
          setLocation,
-         setCourse,
-         setStartDate } from '../actions';
+         setCourse } from '../actions';
+
+import { setStartDate } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 

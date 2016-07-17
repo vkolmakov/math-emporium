@@ -12,7 +12,6 @@ export default (state = INITIAL_STATE, action) => {
         return {
             location: data.locationId ? { id: data.locationId } : null,
             course: data.courseId ? { id: data.courseId } : null,
-            nextAppointment: data.nextAppointment,
             firstName: data.firstName,
             lastName: data.lastName,
             googleCalendarAppointmentDate: data.googleCalendarAppointmentDate,

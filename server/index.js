@@ -13,6 +13,8 @@ import createUserRouter from './routes/userRouter';
 
 import webpack from 'webpack';
 import config from '../webpack.config';
+import morgan from 'morgan';
+
 
 function connect() {
     db.discover = path.join(__dirname);
@@ -42,6 +44,11 @@ function connect() {
     const app = express();
     const port = process.env.PORT || 3000;
 
+    const isDev = process.env.NODE_ENV !== 'production';
+    if (isDev) {
+        app.use(morgan('dev'));
+    }
+
     app.use(bodyParser.json());
 
     const crudRoutes = [
@@ -58,7 +65,9 @@ function connect() {
     app.use('/api', createUtilRouter());
 
     const isDevClient = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'serverdev';
+
     app.use(errorHandler);
+
 
     if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
