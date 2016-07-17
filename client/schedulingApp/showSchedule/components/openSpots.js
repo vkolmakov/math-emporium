@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import moment from 'moment';
 
-import { getOpenSpots } from '../actions';
+import { getOpenSpots, resetOpenSpots } from '../actions';
 import { TIME_OPTIONS, BASE_PATH } from '../../constants';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
@@ -12,16 +12,19 @@ class OpenSpots extends Component {
     componentWillMount() {
         const { location, startDate, course } = this.props;
         if (location && startDate && course) {
+            this.props.resetOpenSpots();
             this.props.getOpenSpots(location, course, startDate);
         }
     }
 
     componentDidUpdate(prevProps) {
         const { location, course, startDate, openSpots: currOpenSpots } = this.props;
-        const prevOpenSpots = prevProps.openSpots;
 
-        if ([location, course, startDate].every(e => !!e) && currOpenSpots.length === 0) {
-            // TODO: Handle edge-case where there are no schedules defined
+        const isEverythingSelected = [location, course, startDate].every(e => !!e);
+        const isFirstRender = currOpenSpots.length === 0;
+        const isRerenderWithNewCourse = prevProps.course && course && prevProps.course.id !== course.id || !prevProps.course;
+
+        if (isEverythingSelected && (isFirstRender || isRerenderWithNewCourse)) {
             this.props.getOpenSpots(location, course, startDate);
         }
     }
@@ -116,7 +119,7 @@ class OpenSpots extends Component {
             );
         }
 
-        if (!this.props.openSpots) {
+        if (this.props.openSpots && this.props.openSpots.length == 0) {
             return <LoadingSpinner />;
         }
 
@@ -134,4 +137,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { getOpenSpots })(OpenSpots);
+export default connect(mapStateToProps, { getOpenSpots, resetOpenSpots })(OpenSpots);
