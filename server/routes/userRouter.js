@@ -12,7 +12,8 @@ export default function createUserRouter() {
     router.get('/user/profile', requireSignin, controller.getProfile);
     router.put('/user/profile', requireSignin, controller.updateProfile);
 
-    router.post('/user/schedule', requireSignin, controller.scheduleAppointment);
+    router.post('/user/appointment', requireSignin, controller.scheduleAppointment);
+    router.delete('/user/appointment', requireSignin, controller.deleteAppointment);
 
     return router;
 }

@@ -94,13 +94,29 @@ export const scheduleAppointment = async (req, res, next) => {
      time: aux.TIMESTAMP_FORMAT: String,
 
      */
+    const user = req.user;
+
     try {
-        const user = req.user;
+        if (!user.firstName || !user.lastName) {
+            throw new Error('First and last names are required.');
+        }
+
         const {
             time,
             course,
             location,
         } = req.body;
+
+        if (!time || !course || !location) {
+            throw new Error('Time, course and location are required');
+        }
+
+        // Check if user already has an upcomming appointment
+        const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
+        const now = moment();
+        if (nextAppointment.isAfter(now)) {
+            throw new Error('Must not have more than one appointment at the same time');
+        }
 
         const locationRes = await Location.findOne({
             where: { id: location.id },
@@ -140,7 +156,7 @@ export const deleteAppointment = async (req, res, next) => {
     const user = req.user;
 
     // Go to Google Calendar and remove the actual event
-    const result = await user.deleteGoogleCalendarAppointment();
+    await user.deleteGoogleCalendarAppointment();
 
     // Change calendarAppointmentId and nextAppointment in the user profile to null
     await user.update({

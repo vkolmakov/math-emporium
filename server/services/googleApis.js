@@ -68,4 +68,20 @@ export class CalendarService {
             });
         });
     }
+
+    deleteCalendarEvent({ calendarId, eventId }) {
+        return new Promise((resolve, reject) => {
+            this.calendar.events.delete({
+                auth: this.auth,
+                calendarId,
+                eventId,
+            }, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
 }
