@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT } from '../aux';
 import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
+import { successMessage } from '../services/messages';
 import { findAvailableTutor } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
@@ -93,7 +94,6 @@ export const scheduleAppointment = async (req, res, next) => {
      time: aux.TIMESTAMP_FORMAT: String,
 
      */
-
     try {
         const user = req.user;
         const {
@@ -125,12 +125,31 @@ export const scheduleAppointment = async (req, res, next) => {
         await user.update({
             googleCalendarAppointmentId: result.id,
             googleCalendarAppointmentDate: result.start.dateTime,
+            googleCalendarId: result.organizer.email,
         }, {
-            fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate'],
+            fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
         });
 
         res.status(200).json(extractDataValues(user));
     } catch (err) {
         next(err);
     }
+};
+
+export const deleteAppointment = async (req, res, next) => {
+    const user = req.user;
+
+    // Go to Google Calendar and remove the actual event
+    const result = await user.deleteGoogleCalendarAppointment();
+
+    // Change calendarAppointmentId and nextAppointment in the user profile to null
+    await user.update({
+        googleCalendarAppointmentId: null,
+        googleCalendarAppointmentDate: null,
+        googleCalendarId: null,
+    }, {
+        fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
+    });
+
+    res.status(200).json(successMessage());
 };

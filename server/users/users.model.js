@@ -72,6 +72,9 @@ export default function createUserModel(sequelize, DataTypes) {
         googleCalendarAppointmentDate: {
             type: DataTypes.DATE,
         },
+        googleCalendarId: {
+            type: DataTypes.STRING,
+        },
     }, {
         timestamps: true,
         classMethods: {
@@ -157,6 +160,20 @@ export default function createUserModel(sequelize, DataTypes) {
                         `Course: ${course.code}: ${course.name}`,
                         `Created on: ${moment().format('MM/DD/YYYY h:mm a')}`,
                         `Created by: ${process.env.HOSTNAME}`].join('\n');
+            },
+            deleteGoogleCalendarAppointment() {
+                const user = this;
+                return new Promise(async (resolve, reject) => {
+                    const calendarService = new CalendarService;
+                    await calendarService.create();
+
+                    const result = await calendarService.deleteCalendarEvent({
+                        calendarId: user.dataValues.googleCalendarId,
+                        eventId: user.dataValues.googleCalendarAppointmentId,
+                    });
+
+                    resolve(result);
+                });
             },
         },
     });

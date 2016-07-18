@@ -14,6 +14,7 @@ const extractInfoFromSummary = summary => {
     }
 
     return {
+        // strip trailing whitespace or `#` symbols
         tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
     };
 };
