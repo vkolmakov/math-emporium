@@ -18,7 +18,7 @@ class Profile extends Component {
 
         return (
             <div className="content">
-              <NextAppointment />
+              <NextAppointment profile={profile} />
               <UpdateProfileForm profile={profile}
                                  locations={locations}
                                  courses={courses} />

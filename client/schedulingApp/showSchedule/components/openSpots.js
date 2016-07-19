@@ -37,6 +37,10 @@ class OpenSpots extends Component {
 
         const isExpired =
                   moment().isAfter(
+                      // Add an ((ISO weekday number of a current spot) - 1)
+                      // to the start date (which has an ISO date of 1)
+                      // to get the actual weekday and just add a number of minutes
+                      // that is stored in time as a num of minutes after midnight
                       moment(this.props.startDate).add(openSpot.weekday - 1, 'days').add(openSpot.time, 'minutes')
                   );
 

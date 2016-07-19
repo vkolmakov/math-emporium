@@ -1,3 +1,6 @@
+
+@import "variables";
+
 @mixin rounded-border {
     @include border-radius (5px);
     border: 1px solid #ccc;
@@ -12,4 +15,38 @@
 @mixin url {
     text-decoration: none;
     text-transform: lowercase;
+}
+
+@mixin button() {
+    @include url();
+    @include rounded-border();
+    text-align: center;
+}
+
+@mixin destructive {
+    @include breakpoint($medium-screen) {
+        background-color: transparent;
+        color: $danger-color;
+    }
+    background-color: $danger-color;
+    color: $danger-text-color;
+
+    &:hover {
+        background-color: $danger-color;
+        color: $danger-text-color;
+    }
+}
+
+@mixin nondestructive {
+    @include breakpoint($medium-screen) {
+        background-color: transparent;
+        color: darken($primary-color, 25%);
+    }
+    background-color: $primary-color;
+    color: $primary-text-color;
+
+    &:hover {
+        color: $primary-text-color;
+        background-color: $primary-color;
+    }
 }

@@ -138,4 +138,44 @@
     @include breakpoint($medium-screen) {
         @include span(4 of 8);
     }
+
+    > .next-appointment {
+        @include clearfix();
+        > p {
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+
+        > a {
+            @include button();
+            @include destructive();
+            display: inline-block;
+            padding: 10px;
+            float: right;
+            width: 180px;
+
+
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+    }
+
+    > .faq {
+        > ul {
+            list-style-type: none;
+            padding-left: 0px;
+
+            > li {
+                > .question {
+                    font-weight: 600;
+                    margin-bottom: 0px;
+                }
+
+                > .answer {
+                    padding-left: 20px;
+                    margin-top: 0px;
+                }
+            }
+        }
+    }
 }

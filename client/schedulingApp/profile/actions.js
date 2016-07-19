@@ -59,3 +59,13 @@ export function updateUserProfile(values) {
             });
     };
 }
+
+export function deleteAppointment() {
+    return dispatch => {
+        axios.delete(`${BASE_URL}/appointment`)
+            .then(response => {
+                dispatch(getUserProfile());
+            });
+        return Promise.resolve();
+    };
+}

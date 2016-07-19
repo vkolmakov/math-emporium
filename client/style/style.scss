@@ -366,9 +366,9 @@ nav {
 
 
 .container{
-  margin: 0 auto;
-  width: 90%;
-  max-width: 1024px;
+    margin: 0 auto;
+    width: 90%;
+    max-width: 1024px;
 }
 
 
@@ -521,5 +521,69 @@ nav {
     > div {
         max-width: 500px;
         margin: 0 auto;
+    }
+}
+
+.confirmation-modal {
+    @include rounded-border();
+    @include clearfix();
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    @include breakpoint($medium-screen) {
+        max-width: 450px;
+        max-height: 200px;
+    }
+
+    max-width: 300px;
+    max-height: 175px;
+
+    margin: auto;
+
+    background-color: $secondary-color;
+
+    > h2 {
+        @include set-font();
+        text-align: center;
+        font-weight: 300;
+    }
+
+    > .buttons {
+        @include breakpoint($medium-screen) {
+            @include clearfix();
+            position:absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        > a {
+            @include button()
+            display: inline-block;
+            padding: 10px;
+            margin: 10px;
+            width: 60px;
+            font-weight: 600;
+
+            &.destructive {
+                @include destructive()
+            }
+
+            &.nondestructive {
+                @include nondestructive()
+            }
+
+            &.action {
+                float: left;
+            }
+
+            &.nonaction {
+                float: right;
+            }
+
+        }
     }
 }
