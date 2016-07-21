@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import Modal from 'react-modal';
 import moment from 'moment';
 
-import { BASE_PATH } from '../../constants';
+import { BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
 import { deleteAppointment } from '../actions';
 
 class NextAppointment extends Component {
@@ -95,7 +95,7 @@ class NextAppointment extends Component {
 
         let nextAppointmentDisplay;
         if (hasUpcommingAppointment) {
-            nextAppointmentDisplay = `Is on ${nextAppointment.format('dddd, M/DD [at] h:mm a')}`;
+            nextAppointmentDisplay = `Is on ${nextAppointment.format(TIMESTAMP_DISPLAY_FORMAT)}`;
         } else {
             nextAppointmentDisplay = 'You have no upcomming appointments';
         }

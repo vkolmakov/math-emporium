@@ -27,3 +27,4 @@ export const WEEKDAY_OPTIONS = [
 );
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
+export const TIMESTAMP_DISPLAY_FORMAT = 'dddd, M/DD [at] h:mm a';
