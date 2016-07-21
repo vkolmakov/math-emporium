@@ -13,7 +13,11 @@ class Profile extends Component {
         const { profile, courses, locations } = this.props;
 
         if (!(profile && courses.all && locations.all)) {
-            return <LoadingSpinner />;
+            return (
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
+            );
         }
 
         return (

@@ -28,7 +28,9 @@ class EditTutors extends Component {
 
         if (!tutors.all) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

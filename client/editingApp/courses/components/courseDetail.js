@@ -23,7 +23,11 @@ class CourseDetail extends Component {
         );
 
         if (!selectedCourse) {
-            return <LoadingSpinner />;
+            return (
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
+            );
         }
 
         return (

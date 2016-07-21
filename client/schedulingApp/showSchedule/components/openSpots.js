@@ -124,7 +124,9 @@ class OpenSpots extends Component {
         }
 
         if (this.props.openSpots && this.props.openSpots.length == 0) {
-            return <LoadingSpinner />;
+            return (
+                <LoadingSpinner />
+            );
         }
 
         return (

@@ -21,7 +21,9 @@ class EditLocations extends Component {
 
         if (!locations.all) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

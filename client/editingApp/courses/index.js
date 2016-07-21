@@ -26,7 +26,9 @@ class EditCourses extends Component {
 
         if (!courses.all) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

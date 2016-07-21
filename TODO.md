@@ -7,16 +7,17 @@
 
 * ~~Build the front to display openSpots results **[client]**~~
 
-* Add user-related API endpoints **[server]**
+* ~~Add user-related API endpoints **[server]**~~
   - ~~add more fields in the user model (next appointment date + calendar-id, etc)~~
   - ~~add ability to edit profile and create Google Calendar appointmnents~~
 
-* Build front for user-related endpoints + add appropriate event listeners on the openSpot component **[client]**
+* ~~Build front for user-related endpoints~~ + add appropriate event listeners on the openSpot component **[client]**
 
 ## General ##
 
 * Add group-based auth **[server]**
-  - require group 2+ for schedule CRUD routes
+  - require group 2+ for schedule C_UD routes
+  - require group 1+ for schedule _R__ routes
   - group 0+ for user-related stuff
   - Add a sidebar config property which will allow to display different things based on the access level
 

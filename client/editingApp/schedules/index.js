@@ -31,7 +31,9 @@ class EditSchedules extends Component {
 
         if (!schedules.all || !locations.all || !tutors.all) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

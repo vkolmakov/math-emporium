@@ -587,3 +587,28 @@ nav {
         }
     }
 }
+
+.loading {
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    $size: 24px;
+    $spin-duration: 0.5s;
+    border-radius: 50%;
+    width: $size;
+    height: $size;
+    border: .25rem solid $primary-color;
+    border-top-color: darken($primary-color, 15%);
+    animation: spin $spin-duration infinite;
+
+    margin: 1em auto;
+    @include breakpoint($medium-screen) {
+        margin: 25vh auto;
+    }
+}

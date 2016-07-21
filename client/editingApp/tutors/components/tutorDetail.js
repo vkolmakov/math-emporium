@@ -26,7 +26,9 @@ class TutorDetail extends Component {
 
         if (!selectedTutor) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

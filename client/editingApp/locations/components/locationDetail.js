@@ -21,7 +21,11 @@ class LocationDetail extends Component {
         );
 
         if (!selectedLocation) {
-            return <LoadingSpinner />;
+            return (
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
+            );
         }
 
         return (

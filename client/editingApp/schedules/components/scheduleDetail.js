@@ -26,7 +26,9 @@ class ScheduleDetail extends Component {
 
         if (!selectedSchedule) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 

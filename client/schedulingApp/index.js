@@ -36,7 +36,9 @@ class SchedulingApp extends Component {
             return (
                 <div className="wrap">
                   <Sidebar {...sidebarConfig} />
-                  <LoadingSpinner />
+                  <div className="content">
+                    <LoadingSpinner />
+                  </div>
                 </div>
             );
         }

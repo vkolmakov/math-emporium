@@ -24,7 +24,9 @@ class SchedulesOverview extends Component {
 
         if (!schedules || !locations) {
             return (
-                <LoadingSpinner />
+                <div className="content">
+                  <LoadingSpinner />
+                </div>
             );
         }
 
