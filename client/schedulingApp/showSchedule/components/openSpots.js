@@ -1,14 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Router, Link } from 'react-router';
 import moment from 'moment';
 
-import { getOpenSpots, resetOpenSpots } from '../actions';
-import { TIME_OPTIONS, BASE_PATH } from '../../constants';
+import { getOpenSpots, resetOpenSpots, scheduleAppointment } from '../actions';
+import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
+import Modal from 'react-modal';
 
 class OpenSpots extends Component {
+    constructor() {
+        super();
+        this.OPEN_SPOTS_PAGE_URL = `/${BASE_PATH}/show/#`;
+        this.PROFILE_PAGE_URL = `/${BASE_PATH}/profile/`;
+        this.state = {
+            displayProfileModal: false,
+            displayScheduleModal: false,
+            displaySuccessModal: false,
+            displayFailureModal: false,
+            error: null,
+            appointmentInfo: null,
+        };
+    }
+
     componentWillMount() {
         const { location, startDate, course } = this.props;
         if (location && startDate && course) {
@@ -29,42 +44,86 @@ class OpenSpots extends Component {
         }
     }
 
+    handleExpired() {
+        return () => {
+            // TODO: Display a little tooltip on click
+            console.log('this one is expired :(');
+        };
+    }
+
+    handleClosed() {
+        return () => {
+            // TODO: Display a little tooltip on click
+            console.log('this one is closed :(');
+        };
+    }
+
+    handleOpen(time) {
+        return () => {
+            const { location, course, profile } = this.props;
+            const appointmentInfo = {
+                location,
+                course,
+                time,
+            };
+
+            const isCompleteProfile = !!(profile.firstName && profile.lastName);
+            if (isCompleteProfile) {
+                this.setState({
+                    appointmentInfo,
+                    displayProfileModal: false,
+                    displayScheduleModal: true,
+                });
+            } else {
+                this.setState({
+                    appointmentInfo,
+                    displayProfileModal: false,
+                    displayScheduleModal: true,
+                });
+            }
+        };
+    }
+
     renderOpenSpot(openSpot) {
         const displayTime = TIME_OPTIONS.find(
             ({ value, display }) => value === openSpot.time).display;
 
         const count = openSpot.count;
 
-        const isExpired =
-                  moment().isAfter(
-                      // Add an ((ISO weekday number of a current spot) - 1)
-                      // to the start date (which has an ISO date of 1)
-                      // to get the actual weekday and just add a number of minutes
-                      // that is stored in time as a num of minutes after midnight
-                      moment(this.props.startDate).add(openSpot.weekday - 1, 'days').add(openSpot.time, 'minutes')
-                  );
+        // Add an ((ISO weekday number of a current spot) - 1)
+        // to the start date (which has an ISO date of 1)
+        // to get the actual weekday and just add a number of minutes
+        // that is stored in time as a num of minutes after midnight
+        const openSpotTime = moment(this.props.startDate)
+                  .add(openSpot.weekday - 1, 'days')
+                  .add(openSpot.time, 'minutes');
+
+        const isExpired = moment().isAfter(openSpotTime);
 
         let displayCount;
         let displayClass;
-
-        // TODO: add appropriate onClick events
+        let onClick;
 
         if (isExpired) {
             displayCount = count > 0 ? `${count} available` : 'none available';
             displayClass = 'expired-spot';
+            onClick = this.handleExpired();
         } else if (count > 0) {
             // not expired and have some spots
             displayCount = `${count} available`;
             displayClass = 'open-spot';
+            onClick = this.handleOpen(openSpotTime);
         } else {
             // not expired and has no spots
             displayCount = 'none available';
             displayClass = 'closed-spot';
+            onClick = this.handleClosed();
         }
 
         return (
             <div key={openSpot.time} className={displayClass}>
-              <Link to={`/${BASE_PATH}/#`}>{displayTime}: {displayCount}</Link>
+              <Link to={this.OPEN_SPOTS_PAGE_URL}
+                    onClick={onClick}>{displayTime}: {displayCount}</Link>
             </div>
         );
     }
@@ -102,6 +161,49 @@ class OpenSpots extends Component {
         );
     }
 
+    renderScheduleModal() {
+        if (!this.state.appointmentInfo) {
+            return <span></span>;
+        }
+
+        const { time, course, location } = this.state.appointmentInfo;
+
+        const displayTime = time.format(TIMESTAMP_DISPLAY_FORMAT);
+        const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
+
+        const onRequestClose = _ => (
+            this.setState({
+                displayScheduleModal: false,
+                displayProfileModal: false,
+                appointmentInfo: null,
+            })
+        );
+
+        const scheduleAppointment = e => {
+            e.preventDefault();
+            this.props.scheduleAppointment({ location, course, time })
+            // TODO: Add better appointment scheduling handling
+                .then(this.context.router.push(this.PROFILE_PAGE_URL));
+        };
+
+        return (
+            <Modal isOpen={this.state.displayScheduleModal}
+                   onRequestClose={onRequestClose}
+                   className="confirmation-modal">
+              <h2>Confirm your appointment details</h2>
+              <h2>{appointmentInfoDisplay}</h2>
+              <div className="buttons">
+                <Link to={this.OPEN_SPOTS_PAGE_URL}
+                      onClick={scheduleAppointment}
+                      className="nondestructive action">Schedule</Link>
+                <Link to={this.OPEN_SPOTS_PAGE_URL}
+                      onClick={onRequestClose}
+                      className="destructive nonaction">Cancel</Link>
+              </div>
+            </Modal>
+        );
+    }
+
     render() {
         const { location, course, startDate } = this.props;
 
@@ -130,8 +232,11 @@ class OpenSpots extends Component {
         }
 
         return (
-            <div className="open-spots-display">
-              {this.renderOpenSpots()}
+            <div>
+              {this.renderScheduleModal()}
+              <div className="open-spots-display">
+                {this.renderOpenSpots()}
+              </div>
             </div>
         );
     }
@@ -140,7 +245,16 @@ class OpenSpots extends Component {
 function mapStateToProps(state) {
     return {
         openSpots: state.scheduling.showSchedule.openSpots,
+        profile: state.scheduling.profile,
     };
 }
 
-export default connect(mapStateToProps, { getOpenSpots, resetOpenSpots })(OpenSpots);
+OpenSpots.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
+
+export default connect(mapStateToProps, {
+    getOpenSpots,
+    resetOpenSpots,
+    scheduleAppointment,
+})(OpenSpots);

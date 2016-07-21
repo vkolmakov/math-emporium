@@ -65,13 +65,14 @@ export const handlePost = async (req, res, next) => {
 
         // setting tutors, if provided
         if (hasOneOf(req.body, 'tutors')) {
-            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id') || req.body.courses.tutors === 0)) {
+            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id'))) {
                 // check if first element of the array is a valid tutor object
                 await createdSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
             } else {
-                // TODO: let user know that schedule was created, but tutors we're not added
-                res.status(422).json(actionFailed('process', 'tutors'));
+                res.status(422).json({ error: 'Created a schedule with no tutors' });
             }
+        } else {
+            res.status(422).json(actionFailed('process', 'tutors'));
         }
 
         res.status(201).json(extractDataValues(createdSchedule));
