@@ -557,12 +557,10 @@ nav {
     }
 
     > .buttons {
-        @include breakpoint($medium-screen) {
-            @include clearfix();
-            position:absolute;
-            bottom: 0;
-            width: 100%;
-        }
+        @include clearfix();
+        position:absolute;
+        bottom: 0;
+        width: 100%;
 
         > a {
             @include button()
@@ -570,7 +568,7 @@ nav {
             padding: 10px;
             margin: 10px;
             width: 60px;
-            font-weight: 600;
+            font-weight: 400;
 
             &.destructive {
                 @include destructive()

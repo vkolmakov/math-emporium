@@ -40,7 +40,7 @@
 @mixin nondestructive {
     @include breakpoint($medium-screen) {
         background-color: transparent;
-        color: darken($primary-color, 25%);
+        color: darken($primary-color, 15%);
     }
     background-color: $primary-color;
     color: $primary-text-color;
