@@ -24,6 +24,7 @@ class OpenSpots extends Component {
             displayProfileModal: false,
             displayScheduleModal: false,
             appointmentInfo: null,
+            forceLoadingSpinner: false,
         };
     }
 
@@ -88,9 +89,6 @@ class OpenSpots extends Component {
     }
 
     renderOpenSpot(openSpot) {
-        const displayTime = TIME_OPTIONS.find(
-            ({ value, display }) => value === openSpot.time).display;
-
         const count = openSpot.count;
 
         // Add an ((ISO weekday number of a current spot) - 1)
@@ -101,8 +99,8 @@ class OpenSpots extends Component {
                   .add(openSpot.weekday - 1, 'days')
                   .add(openSpot.time, 'minutes');
 
+        const displayTime = openSpotTime.format('hh:mm a');
         const isExpired = moment().isAfter(openSpotTime);
-
         let displayCount;
         let displayClass;
         let onClick;
@@ -208,19 +206,22 @@ class OpenSpots extends Component {
     renderProfileModal() {
         const onRequestClose = _ => {
             const { appointmentInfo } = this.state;
-
+            this.setState({
+                forceLoadingSpinner: true,
+            });
             this.timeout = setTimeout(() => {
                 // hacking my way through again
                 this.setState({
                     displayScheduleModal: false,
                     displayProfileModal: false,
                     appointmentInfo,
+                    forceLoadingSpinner: false,
                 });
                 this.props.setLocation(appointmentInfo.location);
                 this.props.setCourse(appointmentInfo.course);
                 this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
                 this.timeout = null;
-            }, 1200);
+            }, 1500);
         };
 
         return (
@@ -289,7 +290,9 @@ class OpenSpots extends Component {
             );
         }
 
-        if (this.props.openSpots && this.props.openSpots.length == 0) {
+        const isWaitingOnOpenSpots = this.props.openSpots && this.props.openSpots.length == 0;
+
+        if (isWaitingOnOpenSpots || this.state.forceLoadingSpinner) {
             return (
                 <LoadingSpinner />
             );
