@@ -9,11 +9,13 @@ export const SA_GET_OPEN_SPOTS = 'SA_GET_OPEN_SPOTS';
 export const SA_SET_START_DATE = 'SA_SET_START_DATE';
 export const SA_RESET_OPEN_SPOTS = 'SA_RESET_OPEN_SPOTS';
 export const SA_SCHEDULE_APPOINTMENT = 'SA_SCHEDULE_APPOINTMENT';
+export const SA_SCHEDULING_MESSAGE = 'SA_SCHEDULING_MESSAGE';
+export const SA_CLEAR_SCHEDULING_MESSAGE = 'SA_CLEAR_SCHEDULING_MESSAGE';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
 
-export function getOpenSpots(location, course, startDate) {
+export function getOpenSpots({ location, course, startDate }) {
     const requestParams = {
         locationId: location.id,
         courseId: course.id,
@@ -45,6 +47,19 @@ export function setStartDate(date) {
     };
 }
 
+export function schedulingMessage(err) {
+    return {
+        type: SA_SCHEDULING_MESSAGE,
+        payload: err,
+    };
+}
+
+export function clearSchedulingMessage() {
+    return {
+        type: SA_CLEAR_SCHEDULING_MESSAGE,
+    };
+}
+
 export function scheduleAppointment({ location, course, time }) {
     return dispatch => {
         const requestData = {
@@ -55,11 +70,14 @@ export function scheduleAppointment({ location, course, time }) {
 
         axios.post(BASE_URL_APPOINTMENT, requestData)
             .then(response => {
-                dispatch(getUserProfile());
+                const startMessages = ['Aww yiss', 'Great success', 'Super', 'Awesome'];
+                const messageStart = startMessages[Math.floor(Math.random() * startMessages.length)];
+                const successMessage = `${messageStart}, your appointment has been scheduled!`;
+                dispatch(schedulingMessage(successMessage));
             })
             .catch(err => {
-                // TODO: Dispatch an error to display
-                console.log(err);
+                const errorMessage = `Oops, ${err.data.error}`;
+                dispatch(schedulingMessage(errorMessage));
             });
         return Promise.resolve();
     };

@@ -98,7 +98,7 @@ export const scheduleAppointment = async (req, res, next) => {
 
     try {
         if (!user.firstName || !user.lastName) {
-            throw new Error('First and last names are required.');
+            throw new Error('VISIBLE::First and last names are required.');
         }
 
         const {
@@ -108,14 +108,14 @@ export const scheduleAppointment = async (req, res, next) => {
         } = req.body;
 
         if (!time || !course || !location) {
-            throw new Error('Time, course and location are required');
+            throw new Error('VISIBLE::Time, course and location are required');
         }
 
         // Check if user already has an upcomming appointment
         const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
         const now = moment();
         if (nextAppointment.isAfter(now)) {
-            throw new Error('Must not have more than one appointment at the same time');
+            throw new Error('VISIBLE::Must not have more than one appointment at the same time');
         }
 
         const locationRes = await Location.findOne({
@@ -148,6 +148,10 @@ export const scheduleAppointment = async (req, res, next) => {
 
         res.status(200).json(extractDataValues(user));
     } catch (err) {
+        if (err.message.startsWith('VISIBLE::')) {
+            // yes, I feel super hacky doing that
+            res.status(422).json({ error: err.message.split('::')[1] });
+        }
         next(err);
     }
 };

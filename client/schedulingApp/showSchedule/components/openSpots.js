@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Router, Link } from 'react-router';
 import moment from 'moment';
 
-import { getOpenSpots, resetOpenSpots, scheduleAppointment } from '../actions';
+import { getOpenSpots, resetOpenSpots, scheduleAppointment, clearSchedulingMessage } from '../actions';
 import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
@@ -17,9 +17,6 @@ class OpenSpots extends Component {
         this.state = {
             displayProfileModal: false,
             displayScheduleModal: false,
-            displaySuccessModal: false,
-            displayFailureModal: false,
-            error: null,
             appointmentInfo: null,
         };
     }
@@ -28,7 +25,7 @@ class OpenSpots extends Component {
         const { location, startDate, course } = this.props;
         if (location && startDate && course) {
             this.props.resetOpenSpots();
-            this.props.getOpenSpots(location, course, startDate);
+            this.props.getOpenSpots({ location, course, startDate });
         }
     }
 
@@ -40,7 +37,7 @@ class OpenSpots extends Component {
         const isRerenderWithNewCourse = prevProps.course && course && prevProps.course.id !== course.id || !prevProps.course;
 
         if (isEverythingSelected && (isFirstRender || isRerenderWithNewCourse)) {
-            this.props.getOpenSpots(location, course, startDate);
+            this.props.getOpenSpots({ location, course, startDate });
         }
     }
 
@@ -181,9 +178,7 @@ class OpenSpots extends Component {
 
         const scheduleAppointment = e => {
             e.preventDefault();
-            this.props.scheduleAppointment({ location, course, time })
-            // TODO: Add better appointment scheduling handling
-                .then(this.context.router.push(this.PROFILE_PAGE_URL));
+            this.props.scheduleAppointment({ location, course, time });
         };
 
         return (
@@ -204,11 +199,43 @@ class OpenSpots extends Component {
         );
     }
 
+    renderMessageModal(message) {
+        if (!message) {
+            return <span></span>;
+        }
+
+        const onRequestClose = _ => {
+            console.log('CLOSN');
+            const { appointmentInfo } = this.state;
+            console.log(appointmentInfo);
+            this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
+            this.setState({
+                displayProfileModal: false,
+                displayScheduleModal: false,
+                appointmentInfo,
+            });
+
+            this.props.clearSchedulingMessage();
+        };
+
+        return (
+            <Modal isOpen={!!message}
+                   onRequestClose={onRequestClose}
+                   className="confirmation-modal">
+              <h2>{message}</h2>
+              <div className="buttons">
+                <Link to={this.OPEN_SPOTS_PAGE_URL}
+                      onClick={onRequestClose}
+                      className="nondestructive nonaction">Close</Link>
+              </div>
+            </Modal>
+        );
+    }
+
     render() {
-        const { location, course, startDate } = this.props;
+        const { location, course, startDate, message } = this.props;
 
         let errorMessage;
-
         if (!startDate) {
             errorMessage = 'Select a location';
         } else if (!location) {
@@ -234,6 +261,7 @@ class OpenSpots extends Component {
         return (
             <div>
               {this.renderScheduleModal()}
+              {this.renderMessageModal(message)}
               <div className="open-spots-display">
                 {this.renderOpenSpots()}
               </div>
@@ -245,6 +273,7 @@ class OpenSpots extends Component {
 function mapStateToProps(state) {
     return {
         openSpots: state.scheduling.showSchedule.openSpots,
+        message: state.scheduling.showSchedule.message,
         profile: state.scheduling.profile,
     };
 }
@@ -257,4 +286,5 @@ export default connect(mapStateToProps, {
     getOpenSpots,
     resetOpenSpots,
     scheduleAppointment,
+    clearSchedulingMessage,
 })(OpenSpots);
