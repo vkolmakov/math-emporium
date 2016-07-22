@@ -177,3 +177,36 @@
         }
     }
 }
+
+.profile-form-modal {
+    @include rounded-border();
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    max-width: 600px;
+    max-height: 600px;
+
+    margin: auto;
+
+    background-color: $secondary-color;
+
+    > h2 {
+        width: 90%;
+        margin: 2em auto;
+        text-align: center;
+        font-weight: 300
+    }
+
+    > .edit-profile-form-wrap {
+        width: 90%;
+        float: none;
+        margin: 0 auto;
+        > form > h2 {
+            font-weight: 300;
+        }
+    }
+}

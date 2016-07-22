@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
+import TimerMixin from 'react-timer-mixin';
 import { connect } from 'react-redux';
 import { Router, Link } from 'react-router';
 import moment from 'moment';
+import reactMixin from 'react-mixin';
 
 import { getOpenSpots, resetOpenSpots, scheduleAppointment, clearSchedulingMessage } from '../actions';
+import { getUserProfile } from '../../profile/actions';
+import { setLocation, setCourse } from '../../actions';
+
 import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
 
+import UpdateProfileForm from '../../profile/components/updateProfileForm';
 import LoadingSpinner from '../../../components/loadingSpinner';
 import Modal from 'react-modal';
 
@@ -74,8 +80,8 @@ class OpenSpots extends Component {
             } else {
                 this.setState({
                     appointmentInfo,
-                    displayProfileModal: false,
-                    displayScheduleModal: true,
+                    displayProfileModal: true,
+                    displayScheduleModal: false,
                 });
             }
         };
@@ -199,16 +205,47 @@ class OpenSpots extends Component {
         );
     }
 
+    renderProfileModal() {
+        const onRequestClose = _ => {
+            const { appointmentInfo } = this.state;
+
+            this.timeout = setTimeout(() => {
+                // hacking my way through again
+                this.setState({
+                    displayScheduleModal: false,
+                    displayProfileModal: false,
+                    appointmentInfo,
+                });
+                this.props.setLocation(appointmentInfo.location);
+                this.props.setCourse(appointmentInfo.course);
+                this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
+                this.timeout = null;
+            }, 1200);
+        };
+
+        return (
+            <Modal isOpen={this.state.displayProfileModal}
+                   onRequestClose={onRequestClose}
+                   className="profile-form-modal">
+              <h2>Before we start scheduling appointments we need some more info about you...</h2>
+              <UpdateProfileForm profile={this.props.profile}
+                                 locations={this.props.locations}
+                                 courses={this.props.courses}
+                                 submitCallback={onRequestClose}/>
+            </Modal>
+        );
+    }
+
     renderMessageModal(message) {
         if (!message) {
             return <span></span>;
         }
 
         const onRequestClose = _ => {
-            console.log('CLOSN');
             const { appointmentInfo } = this.state;
-            console.log(appointmentInfo);
+
             this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
+
             this.setState({
                 displayProfileModal: false,
                 displayScheduleModal: false,
@@ -262,6 +299,7 @@ class OpenSpots extends Component {
             <div>
               {this.renderScheduleModal()}
               {this.renderMessageModal(message)}
+              {this.renderProfileModal()}
               <div className="open-spots-display">
                 {this.renderOpenSpots()}
               </div>
@@ -275,16 +313,20 @@ function mapStateToProps(state) {
         openSpots: state.scheduling.showSchedule.openSpots,
         message: state.scheduling.showSchedule.message,
         profile: state.scheduling.profile,
+        locations: state.scheduling.shared.locations,
+        courses: state.scheduling.shared.courses,
     };
 }
 
-OpenSpots.contextTypes = {
-    router: React.PropTypes.object.isRequired,
-};
+
+reactMixin(OpenSpots.prototype, TimerMixin);
 
 export default connect(mapStateToProps, {
     getOpenSpots,
     resetOpenSpots,
     scheduleAppointment,
     clearSchedulingMessage,
+    getUserProfile,
+    setLocation,
+    setCourse,
 })(OpenSpots);

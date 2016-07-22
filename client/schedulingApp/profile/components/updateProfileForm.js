@@ -51,6 +51,9 @@ class UpdateProfileForm extends Component {
         }
 
         const onSubmit = (data) => {
+            if (this.props.submitCallback) {
+                this.props.submitCallback();
+            }
             this.props.updateUserProfile(data);
             this.setState({ success: true });
         };
