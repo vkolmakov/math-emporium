@@ -165,14 +165,17 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 return new Promise(async (resolve, reject) => {
                     const calendarService = new CalendarService;
-                    await calendarService.create();
+                    try {
+                        await calendarService.create();
+                        const result = await calendarService.deleteCalendarEvent({
+                            calendarId: user.dataValues.googleCalendarId,
+                            eventId: user.dataValues.googleCalendarAppointmentId,
+                        });
 
-                    const result = await calendarService.deleteCalendarEvent({
-                        calendarId: user.dataValues.googleCalendarId,
-                        eventId: user.dataValues.googleCalendarAppointmentId,
-                    });
-
-                    resolve(result);
+                        resolve(result);
+                    } catch (err) {
+                        reject(err);
+                    }
                 });
             },
         },

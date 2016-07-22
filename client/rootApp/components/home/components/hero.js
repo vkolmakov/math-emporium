@@ -24,7 +24,7 @@ export default class Hero extends Component {
             <div className={this.state.focus ? 'hero-focus' : 'hero'}>
               <div className="hero-content">
                 <h1>Hello there.</h1>
-                <h2>Much tutoring, so schedule</h2>
+                <h2>Much tutoring, such schedule</h2>
                 <div>
                   <Link to="/schedule"
                         onMouseEnter={this.onMouseEnter}

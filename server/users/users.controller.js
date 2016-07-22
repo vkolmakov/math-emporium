@@ -159,8 +159,16 @@ export const scheduleAppointment = async (req, res, next) => {
 export const deleteAppointment = async (req, res, next) => {
     const user = req.user;
 
-    // Go to Google Calendar and remove the actual event
-    await user.deleteGoogleCalendarAppointment();
+    try {
+        // Go to Google Calendar and remove the actual event
+        await user.deleteGoogleCalendarAppointment();
+    } catch (err) {
+        // check if the appointment was deleted by hand
+        const isAlreadyDeleted = err.message.toLowerCase().indexOf('delete') > -1;
+        if (!isAlreadyDeleted) {
+            next(err);
+        }
+    }
 
     // Change calendarAppointmentId and nextAppointment in the user profile to null
     await user.update({
