@@ -9,6 +9,10 @@ import { getUserProfile } from './actions';
 import { getLocations, getCourses } from '../actions';
 
 class Profile extends Component {
+    componentWillMount() {
+        this.props.getUserProfile();
+    }
+
     render() {
         const { profile, courses, locations } = this.props;
 

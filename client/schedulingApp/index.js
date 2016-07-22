@@ -5,14 +5,14 @@ import Sidebar from '../components/sidebar';
 import LoadingSpinner from '../components/loadingSpinner';
 import { BASE_PATH } from './constants';
 import { getLocations, getCourses } from './actions';
-import { getUserProfile } from './profile/actions';
+import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 
 class SchedulingApp extends Component {
     componentWillMount() {
         // collect all the data at the start
         this.props.getLocations();
         this.props.getCourses();
-        this.props.getUserProfile();
+        this.props.getUserProfileAndSetOpenSpotsData();
     }
 
     render() {
@@ -68,5 +68,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getLocations,
     getCourses,
-    getUserProfile,
+    getUserProfileAndSetOpenSpotsData,
 })(SchedulingApp);

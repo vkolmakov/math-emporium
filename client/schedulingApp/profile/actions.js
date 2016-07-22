@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setCourse, setLocation } from '../actions';
 
-
 export const SA_GET_USER_PROFILE = 'SA_GET_USER_PROFILE';
 export const SA_UPDATE_USER_PROFILE = 'SA_UPDATE_USER_PROFILE';
 export const SA_SET_USER_PROFILE = 'SA_SET_USER_PROFILE';
@@ -9,6 +8,15 @@ export const SA_SET_USER_PROFILE = 'SA_SET_USER_PROFILE';
 const BASE_URL = '/api/user';
 
 export function getUserProfile() {
+    const request = axios.get(`${BASE_URL}/profile`);
+
+    return {
+        type: SA_SET_USER_PROFILE,
+        payload: request,
+    };
+}
+
+export function getUserProfileAndSetOpenSpotsData() {
     return dispatch => {
         axios.get(`${BASE_URL}/profile`)
             .then(response => {
