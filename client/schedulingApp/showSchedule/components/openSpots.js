@@ -23,6 +23,7 @@ class OpenSpots extends Component {
         this.state = {
             displayProfileModal: false,
             displayScheduleModal: false,
+            displayLoadingModal: false,
             appointmentInfo: null,
             forceLoadingSpinner: false,
         };
@@ -181,13 +182,20 @@ class OpenSpots extends Component {
             this.setState({
                 displayScheduleModal: false,
                 displayProfileModal: false,
-                appointmentInfo: null,
+                displayLoadingModal: false,
             })
         );
 
         const scheduleAppointment = e => {
             e.preventDefault();
-            this.props.scheduleAppointment({ location, course, time });
+            this.setState({
+                displayScheduleModal: false,
+                displayLoadingModal: true,
+            });
+            this.props.scheduleAppointment({ location, course, time })
+                .then(_ => {
+                    onRequestClose();
+                });
         };
 
         return (
@@ -238,6 +246,23 @@ class OpenSpots extends Component {
                                  locations={this.props.locations}
                                  courses={this.props.courses}
                                  submitCallback={onRequestClose}/>
+            </Modal>
+        );
+    }
+
+    renderLoadingModal() {
+        const onRequestClose = () => {
+            this.setState({
+                displayScheduleModal: false,
+                displayLoadingModal: false,
+            });
+        };
+
+        return (
+            <Modal isOpen={this.state.displayLoadingModal}
+                   onRequestClose={onRequestClose}
+                   className="confirmation-modal">
+              <LoadingSpinner />
             </Modal>
         );
     }
@@ -313,6 +338,7 @@ class OpenSpots extends Component {
               {this.renderScheduleModal()}
               {this.renderMessageModal(message)}
               {this.renderProfileModal()}
+              {this.renderLoadingModal()}
               <div className="open-spots-display">
                 {this.renderOpenSpots()}
               </div>

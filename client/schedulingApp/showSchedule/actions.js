@@ -68,7 +68,7 @@ export function scheduleAppointment({ location, course, time }) {
             time: time.format(TIMESTAMP_FORMAT),
         };
 
-        axios.post(BASE_URL_APPOINTMENT, requestData)
+        return axios.post(BASE_URL_APPOINTMENT, requestData)
             .then(response => {
                 const startMessages = ['Aww yiss', 'Great success', 'Super', 'Awesome'];
                 const messageStart = startMessages[Math.floor(Math.random() * startMessages.length)];
@@ -79,6 +79,5 @@ export function scheduleAppointment({ location, course, time }) {
                 const errorMessage = `Oops, ${err.data.error}`;
                 dispatch(schedulingMessage(errorMessage));
             });
-        return Promise.resolve();
     };
 }

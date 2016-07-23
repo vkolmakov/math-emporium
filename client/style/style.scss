@@ -545,6 +545,13 @@ nav {
 
     background-color: $secondary-color;
 
+    > .loading {
+        margin: 66px auto;
+        @include breakpoint($medium-screen) {
+            margin: 76px auto;
+        }
+    }
+
     > h2 {
         @include set-font();
         font-size: 1.2em;
