@@ -4,6 +4,8 @@ import { browserHistory } from 'react-router';
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
+export const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
+export const SIGNUP_USER = 'SIGNUP_USER';
 
 const BASE_URL = '/api/auth';
 
@@ -24,9 +26,15 @@ export function authError(error) {
     };
 }
 
+export function clearAuthError() {
+    return {
+        type: CLEAR_AUTH_ERROR,
+    };
+}
+
 export function signinUser({ email, password }) {
     return dispatch => {
-        axios.post(`${BASE_URL}/signin`, { email, password })
+        return axios.post(`${BASE_URL}/signin`, { email, password })
             .then(response => {
                 dispatch({ type: AUTH_USER });
                 addToken(response.data.token);
@@ -46,14 +54,10 @@ export function signoutUser() {
 }
 
 export function signupUser({ email, password }) {
-    return dispatch => {
-        axios.post(`${BASE_URL}/signup`, { email, password })
-            .then(response => {
-                browserHistory.push('/activate');
-            })
-            .catch(response => {
-                dispatch(authError(response.data.error));
-            });
+    const request = axios.post(`${BASE_URL}/signup`, { email, password });
+    return {
+        type: SIGNUP_USER,
+        payload: request,
     };
 }
 

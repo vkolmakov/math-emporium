@@ -1,16 +1,38 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 
-import { signupUser } from '../actions';
+import { signupUser, clearAuthError } from '../actions';
 
 import Form from '../../components/form/index';
+import LoadingSpinner from '../../components/loadingSpinner';
 
 class Signup extends Component {
+    constructor() {
+        super();
+        this.state = {
+            forceLoadingSpinner: false,
+            displayActivationEmailMessage: false,
+        };
+    }
+
+    componentWillMount() {
+        this.props.clearAuthError();
+    }
+
     render() {
         const { fields: { email, password, passwordConfirm } } = this.props;
 
         const onSubmit = ({ email, password }) => {
-            this.props.signupUser({ email, password });
+            this.setState({
+                forceLoadingSpinner: true,
+            });
+            this.props.signupUser({ email, password })
+                .then((_) => {
+                    this.setState({
+                        forceLoadingSpinner: false,
+                        dipslayActivationEmailMessage: true,
+                    });
+                });
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -38,6 +60,23 @@ class Signup extends Component {
                 },
             },
         ];
+
+        if (this.state.forceLoadingSpinner) {
+            return (
+                <div className="auth-form-wrap">
+                  <LoadingSpinner />
+                </div>
+            );
+        }
+
+
+        if (this.state.dipslayActivationEmailMessage) {
+            return (
+                <div className="auth-form-wrap">
+                  <h1>Check your email for a confirmation link</h1>
+                </div>
+            );
+        }
 
         const formConfig = {
             handleSubmit,
@@ -96,4 +135,4 @@ export default reduxForm({
     form: 'SignupForm',
     fields: ['email', 'password', 'passwordConfirm'],
     validate,
-}, mapStateToProps, { signupUser })(Signup);
+}, mapStateToProps, { signupUser, clearAuthError })(Signup);

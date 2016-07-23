@@ -1,16 +1,44 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 
-import { signinUser, authError } from '../actions';
+import { signinUser, authError, clearAuthError } from '../actions';
 
 import Form from '../../components/form/index';
+import LoadingSpinner from '../../components/loadingSpinner';
 
 class Signin extends Component {
+    constructor() {
+        super();
+        this.state = {
+            forceLoadingSpinner: false,
+        };
+    }
+
+    componentWillMount() {
+        this.props.clearAuthError();
+    }
+
     render() {
         const { fields: { email, password } } = this.props;
 
+        if (this.state.forceLoadingSpinner) {
+            return (
+                <div className="auth-form-wrap">
+                  <LoadingSpinner />
+                </div>
+            );
+        }
+
         const onSubmit = ({ email, password }) => {
-            this.props.signinUser({ email, password });
+            this.setState({
+                forceLoadingSpinner: true,
+            });
+            this.props.signinUser({ email, password })
+                .then((_) => {
+                    this.setState({
+                        forceLoadingSpinner: false,
+                    });
+                });
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -59,4 +87,4 @@ function mapStateToProps(state) {
 export default reduxForm({
     form: 'SigninForm',
     fields: ['email', 'password'],
-}, mapStateToProps, { signinUser, authError })(Signin);
+}, mapStateToProps, { signinUser, authError, clearAuthError })(Signin);

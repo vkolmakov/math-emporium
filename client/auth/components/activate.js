@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { activateUser } from '../actions';
+import { activateUser, authError } from '../actions';
 
 class Activate extends Component {
     componentWillMount() {
         const { activationToken } = this.props.params;
         const activateUser = this.props.activateUser;
-        if (activationToken) {
-            activateUser({ activationToken });
-        }
+        activateUser({ activationToken });
     }
 
     render() {
@@ -22,8 +20,6 @@ class Activate extends Component {
             message = error;
         } else if (activationToken) {
             message = 'Your account is now activated';
-        } else {
-            message = 'Check your email for an activation token';
         }
 
         return (
@@ -43,4 +39,4 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { activateUser })(Activate);
+    { activateUser, authError })(Activate);
