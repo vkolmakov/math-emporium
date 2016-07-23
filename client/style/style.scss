@@ -155,6 +155,11 @@ nav {
     }
 }
 
+.clearfix {
+    @include clearfix();
+}
+
+
 .form-input-group {
     > input {
         @include box-sizing(border-box);
