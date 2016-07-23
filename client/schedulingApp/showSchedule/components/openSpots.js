@@ -6,7 +6,7 @@ import moment from 'moment';
 import reactMixin from 'react-mixin';
 
 import { getOpenSpots, resetOpenSpots, scheduleAppointment, clearSchedulingMessage } from '../actions';
-import { getUserProfile } from '../../profile/actions';
+
 import { setLocation, setCourse } from '../../actions';
 
 import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
@@ -63,7 +63,8 @@ class OpenSpots extends Component {
     }
 
     handleOpen(time) {
-        return () => {
+        return (event) => {
+            event.preventDefault();
             const { location, course, profile } = this.props;
             const appointmentInfo = {
                 location,
@@ -71,19 +72,23 @@ class OpenSpots extends Component {
                 time,
             };
 
-            const isCompleteProfile = !!(profile.firstName && profile.lastName);
-            if (isCompleteProfile) {
-                this.setState({
-                    appointmentInfo,
-                    displayProfileModal: false,
-                    displayScheduleModal: true,
-                });
+            if (!this.props.authenticated) {
+                this.context.router.push('/signup');
             } else {
-                this.setState({
-                    appointmentInfo,
-                    displayProfileModal: true,
-                    displayScheduleModal: false,
-                });
+                const isCompleteProfile = !!(profile.firstName && profile.lastName);
+                if (isCompleteProfile) {
+                    this.setState({
+                        appointmentInfo,
+                        displayProfileModal: false,
+                        displayScheduleModal: true,
+                    });
+                } else {
+                    this.setState({
+                        appointmentInfo,
+                        displayProfileModal: true,
+                        displayScheduleModal: false,
+                    });
+                }
             }
         };
     }
@@ -318,18 +323,22 @@ function mapStateToProps(state) {
         profile: state.scheduling.profile,
         locations: state.scheduling.shared.locations,
         courses: state.scheduling.shared.courses,
+        authenticated: state.auth.authenticated,
     };
 }
 
 
 reactMixin(OpenSpots.prototype, TimerMixin);
 
+OpenSpots.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
+
 export default connect(mapStateToProps, {
     getOpenSpots,
     resetOpenSpots,
     scheduleAppointment,
     clearSchedulingMessage,
-    getUserProfile,
     setLocation,
     setCourse,
 })(OpenSpots);

@@ -123,6 +123,7 @@ nav {
 
 }
 
+
 .select-filter-wrap {
     @include breakpoint($medium-screen) {
         @include span(3 of 9 last);
@@ -136,8 +137,6 @@ nav {
         width: 100%;
     }
 }
-
-
 
 
 .form-wrap {

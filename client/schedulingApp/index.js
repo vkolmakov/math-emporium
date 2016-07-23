@@ -12,7 +12,9 @@ class SchedulingApp extends Component {
         // collect all the data at the start
         this.props.getLocations();
         this.props.getCourses();
-        this.props.getUserProfileAndSetOpenSpotsData();
+        if (this.props.authenticated) {
+            this.props.getUserProfileAndSetOpenSpotsData();
+        }
     }
 
     render() {
@@ -21,10 +23,17 @@ class SchedulingApp extends Component {
         const currPath = this.props.location.pathname;
         const selected = currPath.split('/').pop();
 
-        const links = [
-            ['show', 'Show Schedule'],
-            ['profile', 'My Profile'],
-        ];
+        let links;
+        if (this.props.authenticated) {
+            links = [
+                ['show', 'Show Schedule'],
+                ['profile', 'My Profile'],
+            ];
+        } else {
+            links = [
+                ['show', 'Show Schedule'],
+            ];
+        }
 
         const sidebarConfig = {
             links,
@@ -62,6 +71,7 @@ function mapStateToProps(state) {
             all: state.scheduling.shared.courses.all,
             selected: state.scheduling.shared.courses.selected,
         },
+        authenticated: state.auth.authenticated,
     };
 }
 
