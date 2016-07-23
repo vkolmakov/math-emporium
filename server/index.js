@@ -68,7 +68,6 @@ function connect() {
 
     app.use(errorHandler);
 
-
     if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');

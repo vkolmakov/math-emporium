@@ -54,13 +54,6 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         activationToken: {
             type: DataTypes.STRING,
-            set(secret) {
-                const user = this;
-                crypto.randomBytes(20, (err, buf) => {
-                    const token = buf.toString('hex');
-                    user.setDataValue('activationToken', token);
-                });
-            },
         },
         activationTokenExpiration: {
             type: DataTypes.DATE,
@@ -94,13 +87,25 @@ export default function createUserModel(sequelize, DataTypes) {
                     });
                 });
             },
-            sendActivationEmail() {
+
+            generateActivationTokenData(secret) {
                 return new Promise((resolve, reject) => {
-                    const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                    crypto.randomBytes(20, (err, buf) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        const token = buf.toString('hex');
+                        resolve({
+                            token,
+                            expiration: Date.now() + 3600000 * 24,
+                        });
+                    });
+                });
+            },
 
-                    const user = this;
-                    const token = user.getDataValue('activationToken');
-
+            sendEmail({ subject, text, html }) {
+                const user = this;
+                return new Promise((resolve, reject) => {
                     const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS,
                                                             process.env.EMAIL_PASSWORD];
 
@@ -115,10 +120,11 @@ export default function createUserModel(sequelize, DataTypes) {
                     const mailOptions = {
                         from: serverEmail,
                         to: user.getDataValue('email'),
-                        subject: `Hello from ${HOSTNAME}`,
-                        text: `To activate your account at ${HOSTNAME} copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
-                        html: `<p>To activate your account at ${HOSTNAME} click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                        subject,
+                        text,
+                        html,
                     };
+
                     transporter.sendMail(mailOptions, (err, info) => {
                         if (err) {
                             reject(err);
@@ -126,6 +132,20 @@ export default function createUserModel(sequelize, DataTypes) {
                         resolve(info);
                     });
                 });
+            },
+            async sendActivationEmail() {
+                const user = this;
+                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                const token = user.getDataValue('activationToken');
+
+                const mailOptions = {
+                    subject: `Hello from ${HOSTNAME}`,
+                    text: `To activate your account copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
+                    html: `<p>To activate your account click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                };
+
+                const result = await user.sendEmail(mailOptions);
+                return result;
             },
             createGoogleCalendarAppointment({ time, course, location, tutor }) {
                 const user = this;

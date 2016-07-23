@@ -1,7 +1,10 @@
 import jwt from 'jwt-simple';
 import db from 'sequelize-connect';
 
-const SECRET = 'this is supersecret';
+
+const User = db.models.user;
+const SECRET = process.env.SECRET || 'this is supersecret';
+
 
 export const tokenForUser = (user) => {
     const timestamp = new Date().getTime();
@@ -9,7 +12,6 @@ export const tokenForUser = (user) => {
 };
 
 export const signup = async (req, res, next) => {
-    const User = db.models.user;
     const { email, password } = req.body;
     if (!email || !password) {
         res.status(422).send({ error: 'You must provide email and password!' });
@@ -25,16 +27,22 @@ export const signup = async (req, res, next) => {
             res.status(422).send({ error: 'Email is in use' });
         }
 
-        const newUser = await User.create({
+        const newUser = User.build({
             email,
             password,
-            activationToken: SECRET,
         });
+        const activationTokenData = await newUser.generateActivationTokenData(SECRET);
+        newUser.set({
+            activationToken: activationTokenData.token,
+            activationTokenExpiration: activationTokenData.expiration,
+        });
+
+        await newUser.save();
+
         await newUser.sendActivationEmail();
         res.status(201).json({});
     } catch (err) {
-        console.log(err);
-        res.status(500).send({ error: 'Something wrong happened...' });
+        next(err);
     }
 };
 
@@ -43,7 +51,6 @@ export const signin = (req, res, next) => {
 };
 
 export const activate = async (req, res, next) => {
-    const User = db.models.user;
     const { token } = req.body;
     if (!token) {
         res.status(422).send({ error: 'Must provide a token' });
@@ -69,18 +76,19 @@ export const activate = async (req, res, next) => {
 
         res.status(200).json({ token: tokenForUser(result) });
     } catch (err) {
-        console.log(err);
-        res.status(500).send({ error: 'Something wrong happened...' });
+        next(err);
     }
 };
 
-export const sendActivationEmail = async (req, res, next) => {
-    // purely for testing
-    const User = db.models.user;
+export const resendActivationEmail = async (req, res, next) => {
+    // Reset activation token and send the activation email one more time
+    // if the account is not activated
     const { email } = req.body;
+
     const user = await User.findOne({
         where: {
             email,
+            active: false,
         },
     });
 
@@ -89,10 +97,15 @@ export const sendActivationEmail = async (req, res, next) => {
     }
 
     try {
+        const newActivationTokenData = await user.generateActivationTokenData(SECRET);
+        await user.update({
+            activationToken: newActivationTokenData.token,
+            activationTokenExpiration: newActivationTokenData.expiration,
+        });
+
         await user.sendActivationEmail();
     } catch (err) {
-        return res.status(422).json({ error: `Failed to send email: ${err}` });
+        return res.status(422).json({ error: `Failed to send the email` });
     }
-
     return res.status(201).json({ message: 'Email was sent' });
 };
