@@ -6,6 +6,7 @@ export const UNAUTH_USER = 'UNAUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
 export const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
 export const SIGNUP_USER = 'SIGNUP_USER';
+export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
 
 const BASE_URL = '/api/auth';
 
@@ -72,5 +73,11 @@ export function activateUser({ activationToken }) {
             .catch(response => {
                 dispatch(authError(response.data.error));
             });
+    };
+}
+
+export function resendActivationEmail({ email }) {
+    return dispatch => {
+        return axios.post(`${BASE_URL}/resend-activation-email`, { email });
     };
 }

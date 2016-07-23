@@ -357,14 +357,23 @@ nav {
 }
 
 .auth-form-wrap {
+    @include clearfix();
     @include breakpoint($medium-screen) {
         margin: 0 auto;
         width: span(4 of 9);
     }
 
-    h1 {
+    > h1 {
         color: darken($tertiary-color, 32%);
         font-weight: 400;
+    }
+
+    > p {
+        text-align: center;
+        > a {
+            text-decoration: none;
+            color: darken($primary-color, 25%);
+        }
     }
 }
 
