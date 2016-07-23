@@ -1,17 +1,18 @@
-import path from 'path';
-
 import googleapis from 'googleapis';
 
 
-const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT;
-const SERVICE_KEY = process.env.GOOGLE_SERVICE_KEY;
+function getServiceKeyBuffer(serviceKey) {
+    return Buffer.from(serviceKey);
+}
 
 function getAuth(resource) {
+    const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT;
+    const SERVICE_KEY_BUFFER = getServiceKeyBuffer(process.env.GOOGLE_SERVICE_KEY);
     return new Promise((resolve, reject) => {
         const authClient = new googleapis.auth.JWT(
             SERVICE_ACCOUNT_EMAIL,
             null,
-            SERVICE_KEY,
+            SERVICE_KEY_BUFFER,
             [`https://www.googleapis.com/auth/${resource}`]
         );
 
