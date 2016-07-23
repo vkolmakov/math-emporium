@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
+import { Link } from 'react-router';
 
 import { signinUser, authError, clearAuthError } from '../actions';
 
@@ -72,6 +73,7 @@ class Signin extends Component {
             <div className="wrap">
               <div className="auth-form-wrap">
                 <Form {...formConfig} />
+                <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
               </div>
             </div>
         );

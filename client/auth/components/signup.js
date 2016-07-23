@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
+import { Link } from 'react-router';
 
 import { signupUser, clearAuthError } from '../actions';
 
@@ -89,7 +90,10 @@ class Signup extends Component {
             <div className="wrap">
               <div className="auth-form-wrap">
                 <Form {...formConfig} />
+                <p>Already have an account? <Link to="/signin">Sign in</Link></p>
+                <p>Need to resend an activation email? <Link to="/resend-activation-email">Click here</Link></p>
               </div>
+
             </div>
         );
     }

@@ -74,7 +74,7 @@ class OpenSpots extends Component {
             };
 
             if (!this.props.authenticated) {
-                this.context.router.push('/signup');
+                this.context.router.push('/signin');
             } else {
                 const isCompleteProfile = !!(profile.firstName && profile.lastName);
                 if (isCompleteProfile) {
