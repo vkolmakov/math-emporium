@@ -276,6 +276,12 @@ class OpenSpots extends Component {
     }
 
     render() {
+        if (this.state.forceLoadingSpinner) {
+            return (
+                <LoadingSpinner />
+            );
+        }
+
         const { location, course, startDate, message } = this.props;
 
         let errorMessage;
@@ -296,8 +302,7 @@ class OpenSpots extends Component {
         }
 
         const isWaitingOnOpenSpots = this.props.openSpots && this.props.openSpots.length == 0;
-
-        if (isWaitingOnOpenSpots || this.state.forceLoadingSpinner) {
+        if (isWaitingOnOpenSpots) {
             return (
                 <LoadingSpinner />
             );
