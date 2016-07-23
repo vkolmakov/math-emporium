@@ -21,7 +21,7 @@ class Signup extends Component {
             {
                 label: 'email',
                 input: {
-                    type: 'text',
+                    type: 'email',
                     binding: email,
                 },
             }, {

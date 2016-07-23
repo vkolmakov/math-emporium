@@ -6,11 +6,17 @@ import ColorIcon from '../colorIcon';
 export default ({ type, binding, options, onSelect, controlValue, placeholder }) => {
     let inputElement;
 
-    if (type === 'text' || type === 'password') {
+    const textInputTypes = ['text', 'password', 'email'];
+    const isTextInput = !!textInputTypes.find(t => t === type);
+
+    const selectInputTypes = ['select', 'multiselect'];
+    const isSelectInput = options && !!selectInputTypes.find(t => t === type);
+
+    if (isTextInput) {
         inputElement = (
             <input type={type} {...binding} placeholder={placeholder}/>
         );
-    } else if (type === 'select' || type === 'multiselect' && options) {
+    } else if (isSelectInput) {
         let renderer = {};
 
         if (options[0] && options[0].color) {
