@@ -125,8 +125,18 @@ class UpdateProfileForm extends Component {
 }
 
 
-function validate() {
+function validate(values) {
     const errors = {};
+    const requiredFields = {
+        firstName: 'First name is required',
+        lastName: 'Last name is required',
+    };
+
+    Object.keys(requiredFields).forEach(
+        field => {
+            if (!values[field]) errors[field] = requiredFields[field];
+        }
+    );
 
     return errors;
 }
