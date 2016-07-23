@@ -2,15 +2,16 @@ import path from 'path';
 
 import googleapis from 'googleapis';
 
+
 const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT;
-const SERVICE_ACCOUNT_KEY_FILE = path.join(__dirname, 'google-privatekey.pem');
+const SERVICE_KEY = process.env.GOOGLE_SERVICE_KEY;
 
 function getAuth(resource) {
     return new Promise((resolve, reject) => {
         const authClient = new googleapis.auth.JWT(
             SERVICE_ACCOUNT_EMAIL,
-            SERVICE_ACCOUNT_KEY_FILE,
             null,
+            SERVICE_KEY,
             [`https://www.googleapis.com/auth/${resource}`]
         );
 

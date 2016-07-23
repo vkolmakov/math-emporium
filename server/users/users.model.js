@@ -103,6 +103,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                     const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS,
                                                             process.env.EMAIL_PASSWORD];
+
                     const transporter = nodemailer.createTransport({
                         service: 'gmail',
                         auth: {
@@ -114,9 +115,9 @@ export default function createUserModel(sequelize, DataTypes) {
                     const mailOptions = {
                         from: serverEmail,
                         to: user.getDataValue('email'),
-                        subject: 'Hello from ...',
-                        text: `To activate your account at ... copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
-                        html: `<p>To activate your account at ... click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                        subject: `Hello from ${HOSTNAME}`,
+                        text: `To activate your account at ${HOSTNAME} copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
+                        html: `<p>To activate your account at ${HOSTNAME} click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
                     };
                     transporter.sendMail(mailOptions, (err, info) => {
                         if (err) {
@@ -128,6 +129,7 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             createGoogleCalendarAppointment({ time, course, location, tutor }) {
                 const user = this;
+
                 return new Promise(async (resolve, reject) => {
                     const calendarService = new CalendarService;
                     await calendarService.create();
