@@ -76,7 +76,7 @@ class OpenSpots extends Component {
             if (!this.props.authenticated) {
                 this.context.router.push('/signin');
             } else {
-                const isCompleteProfile = !!(profile.firstName && profile.lastName);
+                const isCompleteProfile = !!(profile) && !!(profile.firstName && profile.lastName);
                 if (isCompleteProfile) {
                     this.setState({
                         appointmentInfo,
