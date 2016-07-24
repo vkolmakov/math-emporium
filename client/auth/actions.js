@@ -7,6 +7,7 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
 export const SIGNUP_USER = 'SIGNUP_USER';
 export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
+export const SET_USER_GROUP = 'SET_USER_GROUP';
 
 const BASE_URL = '/api/auth';
 
@@ -39,8 +40,10 @@ export function signinUser({ email, password }) {
     return dispatch => {
         return axios.post(`${BASE_URL}/signin`, { email, password })
             .then(response => {
+                const data = response.data;
                 dispatch({ type: AUTH_USER });
-                addTokenAndGroup(response.data);
+                dispatch({ type: SET_USER_GROUP, payload: data.group });
+                addTokenAndGroup(data);
                 browserHistory.push('/');
             })
             .catch(() => {
