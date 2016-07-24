@@ -3,7 +3,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 import db from 'sequelize-connect';
-const SECRET = 'this is supersecret';
+const SECRET = process.env.SECRET || 'this is supersecret';
 
 const localOptions = {
     usernameField: 'email',
