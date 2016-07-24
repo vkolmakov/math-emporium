@@ -26,5 +26,12 @@ export const WEEKDAY_OPTIONS = [
     ([value, display]) => ({ value, display })
 );
 
+export const AUTH_GROUPS = {
+    user: 0,
+    employee: 1,
+    employer: 2,
+    admin: 3,
+};
+
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_DISPLAY_FORMAT = 'dddd, M/DD [at] h:mm a';

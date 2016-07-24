@@ -15,7 +15,7 @@ export default (state = {}, action) => {
     case CLEAR_AUTH_ERROR:
         return { ...state, error: '' };
     case SET_USER_GROUP:
-        return { ...state, group: action.payload };
+        return { ...state, group: parseInt(action.payload, 10) };
     default: return state;
     }
 };

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-
+import { AUTH_GROUPS } from '../../../constants';
 
 class Navbar extends Component {
     renderAuthLinks() {
@@ -12,10 +12,15 @@ class Navbar extends Component {
                 <Link to="/signup" key={2}>Sign up</Link>,
             ];
         } else {
-            links = [
-                <Link to="/edit-schedule" key={2}>Edit-schedule</Link>,
-                <Link to="/signout" key={1}>Sign out</Link>,
-            ];
+            links = [];
+            switch (this.props.authGroup) {
+            case AUTH_GROUPS.employer:
+            case AUTH_GROUPS.employee:
+                links.push(<Link to="/edit-schedule" key={2}>Edit-schedule</Link>);
+            case AUTH_GROUPS.user:
+            default:
+                links.push(<Link to="/signout" key={1}>Sign out</Link>);
+            }
         }
 
         return links;
@@ -34,6 +39,7 @@ class Navbar extends Component {
 function mapStateToProps(state) {
     return {
         authenticated: state.auth.authenticated,
+        authGroup: state.auth.group,
     };
 }
 
