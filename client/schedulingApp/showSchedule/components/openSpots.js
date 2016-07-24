@@ -77,6 +77,7 @@ class OpenSpots extends Component {
                 this.context.router.push('/signin');
             } else {
                 const isCompleteProfile = !!(profile) && !!(profile.firstName && profile.lastName);
+
                 if (isCompleteProfile) {
                     this.setState({
                         appointmentInfo,
@@ -237,12 +238,17 @@ class OpenSpots extends Component {
             }, 1500);
         };
 
+        let profile = this.props.profile;
+        if (!profile) {
+            profile = {};
+        }
+
         return (
             <Modal isOpen={this.state.displayProfileModal}
                    onRequestClose={onRequestClose}
                    className="profile-form-modal">
               <h2>Before we start scheduling appointments we need some more info about you...</h2>
-              <UpdateProfileForm profile={this.props.profile}
+              <UpdateProfileForm profile={profile}
                                  locations={this.props.locations}
                                  courses={this.props.courses}
                                  submitCallback={onRequestClose}/>

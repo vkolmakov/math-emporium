@@ -27,8 +27,8 @@ class UpdateProfileForm extends Component {
     updateForm() {
         const { firstName, lastName, location, course } = this.props.profile;
         this.props.dispatch(initialize(FORM_NAME, {
-            firstName,
-            lastName,
+            firstName: firstName || '',
+            lastName: lastName || '',
             location: location ? location.id : null,
             course: course ? course.id : null,
         }, FORM_FIELDS));
