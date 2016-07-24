@@ -157,6 +157,8 @@ export default function createUserModel(sequelize, DataTypes) {
 
                     const calendarId = location.calendarId;
                     const timeWithTimezone = time.tz(TIMEZONE);
+                    console.log('before:', timeWithTimezone.format('YYYY-MM-DD HH:mm Z'));
+                    console.log('as ISO:', timeWithTimezone.toISOString());
                     const startTime = timeWithTimezone.toISOString();
                     const endTime = moment(timeWithTimezone).add(1, 'hours').toISOString();
                     const summary = user.getAppointmentSummary({ course, tutor });
