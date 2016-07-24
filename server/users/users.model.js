@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
+import { TIMEZONE } from '../aux';
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define('user', {
@@ -155,8 +156,9 @@ export default function createUserModel(sequelize, DataTypes) {
                     await calendarService.create();
 
                     const calendarId = location.calendarId;
-                    const startTime = time.toISOString();
-                    const endTime = moment(time).add(1, 'hours');
+                    const timeWithTimezone = time.tz(TIMEZONE);
+                    const startTime = timeWithTimezone.toISOString();
+                    const endTime = moment(timeWithTimezone).add(1, 'hours').toISOString();
                     const summary = user.getAppointmentSummary({ course, tutor });
                     const description = user.getAppointmentDescription({ course, tutor });
 
