@@ -51,7 +51,6 @@ export class CalendarService {
     }
 
     createCalendarEvent({ calendarId, startTime, endTime, summary, description, colorId }) {
-        console.log('in the calendar', startTime);
         return new Promise((resolve, reject) => {
             this.calendar.events.insert({
                 auth: this.auth,
