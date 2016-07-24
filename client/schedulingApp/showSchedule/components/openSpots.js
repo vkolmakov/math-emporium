@@ -150,7 +150,7 @@ class OpenSpots extends Component {
 
         // convert this object into a list of objects and add weekdayDisplay string
         return Object.keys(openSpotsByWeekdayObj).sort().map(weekday => ({
-            openSpots: openSpotsByWeekdayObj[weekday],
+            openSpots: openSpotsByWeekdayObj[weekday].sort((os1, os2) => os1.time - os2.time),
             // a hack here, we assume that startDate is monday
             weekdayDisplay: moment(this.props.startDate).add(weekday - 1, 'days').format('ddd, MM/DD'),
         }));
