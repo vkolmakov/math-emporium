@@ -1,7 +1,7 @@
 import db from 'sequelize-connect';
 import moment from 'moment';
 
-import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT } from '../aux';
+import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT, TIMEZONE } from '../aux';
 import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { findAvailableTutor } from '../services/openSpots/openSpots.service';
@@ -95,7 +95,7 @@ export const scheduleAppointment = async (req, res, next) => {
 
      */
     const user = req.user;
-
+    moment.tz.setDefault(TIMEZONE);
     try {
         if (!user.firstName || !user.lastName) {
             throw new Error('VISIBLE::first and last names are required.');

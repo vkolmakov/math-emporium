@@ -150,17 +150,16 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             createGoogleCalendarAppointment({ time, course, location, tutor }) {
                 const user = this;
-
+                moment.tz.setDefault(TIMEZONE);
                 return new Promise(async (resolve, reject) => {
                     const calendarService = new CalendarService;
                     await calendarService.create();
 
                     const calendarId = location.calendarId;
-                    const timeWithTimezone = time.tz(TIMEZONE);
-                    console.log('before:', timeWithTimezone.format('YYYY-MM-DD HH:mm Z'));
-                    console.log('as ISO:', timeWithTimezone.toISOString());
-                    const startTime = timeWithTimezone.toISOString();
-                    const endTime = moment(timeWithTimezone).add(1, 'hours').toISOString();
+                    console.log('before:', time.format('YYYY-MM-DD HH:mm Z'));
+                    console.log('as ISO:', time.toISOString());
+                    const startTime = time.toISOString();
+                    const endTime = moment(time).add(1, 'hours').toISOString();
                     const summary = user.getAppointmentSummary({ course, tutor });
                     const description = user.getAppointmentDescription({ course, tutor });
 
@@ -181,6 +180,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 return `${tutor.name} (${user.firstName}) ${course.code}`;
             },
             getAppointmentDescription({ course, tutor }) {
+                moment.tz.setDefault(TIMEZONE);
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,
                         `Course: ${course.code}: ${course.name}`,

@@ -2,7 +2,7 @@ import db from 'sequelize-connect';
 import cache from 'memory-cache';
 import moment from 'moment';
 
-import { set, createExtractDataValuesFunction } from '../../aux';
+import { set, createExtractDataValuesFunction, TIMEZONE } from '../../aux';
 import { CalendarService } from '../googleApis';
 
 const extractInfoFromSummary = summary => {
@@ -111,6 +111,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
        endDate: moment Date,
      */
 
+    moment.tz.setDefault(TIMEZONE);
     // as of now course and location are passed in as a database ID
     const data = await getCachedData();
 
@@ -182,6 +183,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
 };
 
 export const findAvailableTutor = async ({ time, course, location }) => {
+    moment.tz.setDefault(TIMEZONE);
     const data = await getCachedData();
     const locationData = data.find(d => d.location.id === location.id);
 

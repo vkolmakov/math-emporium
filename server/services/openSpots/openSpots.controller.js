@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { openSpots } from './openSpots.service';
-import { TIMESTAMP_FORMAT } from '../../aux';
+import { TIMESTAMP_FORMAT, TIMEZONE } from '../../aux';
 
 export const getOpenSpots = async (req, res, next) => {
     /* required request params:
@@ -11,6 +11,7 @@ export const getOpenSpots = async (req, res, next) => {
           startDate: aux.TIMESTAMP_FORMAT: String,
        }
      */
+    moment.tz.setDefault(TIMEZONE);
 
     const locationId = parseInt(req.query.locationId, 10);
     const courseId = parseInt(req.query.courseId, 10);
