@@ -174,13 +174,11 @@ nav {
 
 .form-help {
     @include set-font();
-    @include float-left();
     color: $danger-color;
 }
 
 .form-success {
     @include set-font();
-    @include float-left();
     color: $success-color;
     margin-bottom: 0.25em;
 }

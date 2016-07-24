@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 import { Link } from 'react-router';
 
-import { signupUser, clearAuthError } from '../actions';
+import { signupUser, clearAuthError, authError } from '../actions';
 
 import Form from '../../components/form/index';
 import LoadingSpinner from '../../components/loadingSpinner';
@@ -28,11 +28,18 @@ class Signup extends Component {
                 forceLoadingSpinner: true,
             });
             this.props.signupUser({ email, password })
-                .then((_) => {
+                .then(_ => {
                     this.setState({
                         forceLoadingSpinner: false,
                         dipslayActivationEmailMessage: true,
                     });
+                })
+                .catch(error => {
+                    const errorMessage = error.data.error;
+                    this.setState({
+                        forceLoadingSpinner: false,
+                    });
+                    this.props.authError(errorMessage);
                 });
         };
 
@@ -69,7 +76,6 @@ class Signup extends Component {
                 </div>
             );
         }
-
 
         if (this.state.dipslayActivationEmailMessage) {
             return (
@@ -139,4 +145,4 @@ export default reduxForm({
     form: 'SignupForm',
     fields: ['email', 'password', 'passwordConfirm'],
     validate,
-}, mapStateToProps, { signupUser, clearAuthError })(Signup);
+}, mapStateToProps, { signupUser, clearAuthError, authError })(Signup);

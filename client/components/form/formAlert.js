@@ -4,9 +4,9 @@ export default ({ error }) => {
     let AlertComponent;
     if (error) {
         AlertComponent = (
-            <span className="form-help">
+            <p className="form-help">
               <strong>Oops! </strong>{error}
-            </span>
+            </p>
         );
     } else {
         AlertComponent = <span></span>;

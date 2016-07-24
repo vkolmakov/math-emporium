@@ -55,10 +55,8 @@ export function signoutUser() {
 }
 
 export function signupUser({ email, password }) {
-    const request = axios.post(`${BASE_URL}/signup`, { email, password });
-    return {
-        type: SIGNUP_USER,
-        payload: request,
+    return dispatch => {
+        return axios.post(`${BASE_URL}/signup`, { email, password });
     };
 }
 
