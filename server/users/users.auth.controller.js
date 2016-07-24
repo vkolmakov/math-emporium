@@ -31,15 +31,18 @@ export const signup = async (req, res, next) => {
             email,
             password,
         });
+
         const activationTokenData = await newUser.generateActivationTokenData(SECRET);
+
         newUser.set({
             activationToken: activationTokenData.token,
             activationTokenExpiration: activationTokenData.expiration,
         });
 
+        await newUser.sendActivationEmail();
+
         await newUser.save();
 
-        await newUser.sendActivationEmail();
         res.status(201).json({});
     } catch (err) {
         next(err);
