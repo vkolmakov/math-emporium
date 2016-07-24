@@ -10,13 +10,15 @@ export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
 
 const BASE_URL = '/api/auth';
 
-function addToken(token) {
+function addTokenAndGroup({ token, group }) {
     localStorage.setItem('token', token);
+    localStorage.setItem('group', group);
     axios.defaults.headers.common['Authorization'] = token;
 }
 
-function removeToken() {
+function removeTokenAndGroup() {
     localStorage.removeItem('token');
+    localStorage.removeItem('group');
     axios.defaults.headers.common['Authorization'] = null;
 }
 
@@ -38,7 +40,7 @@ export function signinUser({ email, password }) {
         return axios.post(`${BASE_URL}/signin`, { email, password })
             .then(response => {
                 dispatch({ type: AUTH_USER });
-                addToken(response.data.token);
+                addTokenAndGroup(response.data);
                 browserHistory.push('/');
             })
             .catch(() => {
@@ -48,7 +50,7 @@ export function signinUser({ email, password }) {
 }
 
 export function signoutUser() {
-    removeToken();
+    removeTokenAndGroup();
     return {
         type: UNAUTH_USER,
     };
@@ -65,7 +67,7 @@ export function activateUser({ activationToken }) {
         axios.post(`${BASE_URL}/activate`, { token: activationToken })
             .then(response => {
                 dispatch({ type: AUTH_USER });
-                addToken(response.data.token);
+                addTokenAndGroup(response.data.token);
                 browserHistory.push('/');
             })
             .catch(response => {
