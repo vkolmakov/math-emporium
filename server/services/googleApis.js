@@ -1,5 +1,5 @@
 import googleapis from 'googleapis';
-
+import { TIMEZONE } from '../aux';
 
 function getServiceKeyBuffer(serviceKey) {
     return Buffer.from(serviceKey);
@@ -39,6 +39,7 @@ export class CalendarService {
                 calendarId,
                 timeMin: startDate,
                 timeMax: endDate,
+                timeZone: TIMEZONE,
             }, (err, result) => {
                 if (err) {
                     reject(err);
@@ -58,8 +59,14 @@ export class CalendarService {
                     colorId,
                     description,
                     summary,
-                    start: { dateTime: startTime },
-                    end: { dateTime: endTime },
+                    start: {
+                        dateTime: startTime,
+                        timeZone: TIMEZONE,
+                    },
+                    end: {
+                        dateTime: endTime,
+                        timeZone: TIMEZONE,
+                    },
                 },
             }, (err, result) => {
                 if (err) {

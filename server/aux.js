@@ -1,4 +1,5 @@
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
+export const TIMEZONE = 'US/Central';
 
 export function isObject(obj) {
     return obj === Object(obj);
