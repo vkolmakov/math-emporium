@@ -1,19 +1,17 @@
 import express from 'express';
 
-import passport from 'passport';
-import passportService from '../services/passport';
-
-const requireSignin = passport.authenticate('jwt', { session: false });
+import requireGroup from '../middleware/requireGroup';
+import { AUTH_GROUPS } from '../aux';
 
 export default function createUserRouter() {
     const controller = require('../users/users.controller');
     const router = express.Router();
 
-    router.get('/user/profile', requireSignin, controller.getProfile);
-    router.put('/user/profile', requireSignin, controller.updateProfile);
+    router.get('/user/profile', requireGroup(AUTH_GROUPS.user), controller.getProfile);
+    router.put('/user/profile', requireGroup(AUTH_GROUPS.user), controller.updateProfile);
 
-    router.post('/user/appointment', requireSignin, controller.scheduleAppointment);
-    router.delete('/user/appointment', requireSignin, controller.deleteAppointment);
+    router.post('/user/appointment', requireGroup(AUTH_GROUPS.user), controller.scheduleAppointment);
+    router.delete('/user/appointment', requireGroup(AUTH_GROUPS.user), controller.deleteAppointment);
 
     return router;
 }

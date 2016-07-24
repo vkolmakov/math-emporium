@@ -1,9 +1,7 @@
 import express from 'express';
 
-import passport from 'passport';
-import passportService from '../services/passport';
-
-const requireAuth = passport.authenticate('jwt', { session: false });
+import requireGroup from '../middleware/requireGroup';
+import { AUTH_GROUPS } from '../aux';
 
 export default function createCrudRouter(modelName) {
     const controller = require(`../${modelName}/${modelName}.controller`);
@@ -14,12 +12,12 @@ export default function createCrudRouter(modelName) {
     if (modelsWithPublicGet.indexOf(modelName) > -1) {
         router.get(`/${modelName}`, controller.handleGet);
     } else {
-        router.get(`/${modelName}`, requireAuth, controller.handleGet);
+        router.get(`/${modelName}`, requireGroup(AUTH_GROUPS.employee), controller.handleGet);
     }
-    router.get(`/${modelName}/:id`, requireAuth, controller.handleGetId);
-    router.post(`/${modelName}`, requireAuth, controller.handlePost);
-    router.delete(`/${modelName}/:id`, requireAuth, controller.handleDelete);
-    router.put(`/${modelName}/:id`, requireAuth, controller.handleUpdate);
+    router.get(`/${modelName}/:id`, requireGroup(AUTH_GROUPS.employer), controller.handleGetId);
+    router.post(`/${modelName}`, requireGroup(AUTH_GROUPS.employer), controller.handlePost);
+    router.delete(`/${modelName}/:id`, requireGroup(AUTH_GROUPS.employer), controller.handleDelete);
+    router.put(`/${modelName}/:id`, requireGroup(AUTH_GROUPS.employer), controller.handleUpdate);
 
     return router;
 }
