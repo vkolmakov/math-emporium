@@ -49,5 +49,5 @@ export const GOOGLE_CALENDAR_COLORS = [{
 }];
 
 export const TIME_OPTIONS = constants.TIME_OPTIONS;
-
 export const WEEKDAY_OPTIONS = constants.WEEKDAY_OPTIONS;
+export const AUTH_GROUPS = constants.AUTH_GROUPS;

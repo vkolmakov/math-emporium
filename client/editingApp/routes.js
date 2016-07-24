@@ -1,9 +1,9 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route } from 'react-router';
 
-import RequireAuth from '../auth/components/requireAuth';
+import RequireAuthGroup from '../auth/components/requireAuthGroup';
 
-import { BASE_PATH } from './constants';
+import { BASE_PATH, AUTH_GROUPS } from './constants';
 
 import EditingApp from './index';
 
@@ -24,7 +24,7 @@ import TutorsOverview from './overviews/tutors/index';
 
 
 export default (
-    <Route path={BASE_PATH} component={RequireAuth(EditingApp)}>
+    <Route path={BASE_PATH} component={RequireAuthGroup(AUTH_GROUPS.employee)(EditingApp)}>
       <Route path="locations" component={EditLocations} />
       <Route path="locations/:id" component={LocationDetail} />
       <Route path="courses" component={EditCourses} />

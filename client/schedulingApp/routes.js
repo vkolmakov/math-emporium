@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, IndexRedirect } from 'react-router';
 
-import RequireAuth from '../auth/components/requireAuth';
+import RequireAuthGroup from '../auth/components/requireAuthGroup';
 
-import { BASE_PATH } from './constants';
+import { BASE_PATH, AUTH_GROUPS } from './constants';
 
 import SchedulingApp from './index';
 import ShowSchedule from './showSchedule/index';
@@ -13,6 +13,6 @@ export default (
     <Route path={BASE_PATH} component={SchedulingApp}>
       <IndexRedirect to="show" />
       <Route path="show" component={ShowSchedule} />
-      <Route path="profile" component={RequireAuth(Profile)} />
+      <Route path="profile" component={RequireAuthGroup(AUTH_GROUPS.user)(Profile)} />
     </Route>
 );
