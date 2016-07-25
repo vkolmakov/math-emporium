@@ -17,6 +17,14 @@ export const signup = async (req, res, next) => {
         res.status(422).send({ error: 'You must provide email and password!' });
     }
     try {
+        if (!User.validateEmail(email)) {
+            throw new Error('Email does not satsfy all requirements');
+        }
+
+        if (!User.validatePassword(password)) {
+            throw new Error('Password does not satsfy all requirements');
+        }
+
         const existingUser = await User.findOne({
             // TODO: Dont take inactive users
             where: {
@@ -30,10 +38,6 @@ export const signup = async (req, res, next) => {
         const newUser = User.build({
             email,
         });
-
-        if (!newUser.validatePassword(password)) {
-            throw new Error('Password does not satsfy all requirements');
-        }
 
         const passwordHash = await newUser.hashAndSaltPassword(password);
         const activationTokenData = await newUser.generateActivationTokenData(SECRET);

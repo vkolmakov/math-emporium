@@ -15,10 +15,6 @@ export default function createUserModel(sequelize, DataTypes) {
             unique: {
                 msg: 'Email address must be unique!',
             },
-            validate: {
-                // TODO: Only accept school emails
-                isEmail: true,
-            },
         },
         password: {
             // salt + hash is stored, password validation is a class method
@@ -66,6 +62,14 @@ export default function createUserModel(sequelize, DataTypes) {
                 const minPasswordLength = 8;
                 const requirements = [
                     password.length >= minPasswordLength,
+                ];
+
+                return requirements.every(requirement => !!requirement);
+            },
+            validateEmail(email) {
+                const requirements = [
+                    email.match(/.+@.+\.\w+/),
+                    // TODO: add school email requirement
                 ];
 
                 return requirements.every(requirement => !!requirement);
