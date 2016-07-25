@@ -86,7 +86,36 @@ function mapStateToProps(state) {
     };
 }
 
+function validate(values) {
+    const errors = {};
+    const requiredFields = {
+        email: 'Enter an email address',
+        password: 'Enter a password',
+    };
+    const minPasswordLength = 8;
+
+    Object.keys(requiredFields).forEach(
+        field => {
+            if (!values[field]) {
+                errors[field] = requiredFields[field];
+            }
+        }
+    );
+
+    if (values.email && !values.email.match(/.+@.+\.\w+/)) {
+        errors.email = 'Use a valid email address';
+    }
+
+    if (values.password && values.password.length <= minPasswordLength) {
+        errors.password = `Your password was at least ${minPasswordLength} characters long`;
+    }
+
+    return errors;
+}
+
+
 export default reduxForm({
     form: 'SigninForm',
     fields: ['email', 'password'],
+    validate,
 }, mapStateToProps, { signinUser, authError, clearAuthError })(Signin);

@@ -94,6 +94,14 @@ class ResendActivationEmail extends Component {
 
 function validate(values) {
     const errors = {};
+    if (!values.email) {
+        errors.email = 'Must provide an email address';
+    }
+
+    if (values.email && !values.email.match(/.+@.+\.\w+/)) {
+        errors.email = 'Use a valid email address';
+    }
+
     return errors;
 }
 
