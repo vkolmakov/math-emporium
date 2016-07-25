@@ -129,6 +129,7 @@ function validate(values) {
     );
 
     if (values.email && !values.email.match(/.+@.+\.\w+/)) {
+        // TODO: Only accept school emails
         errors.email = 'Use a valid email address';
     }
 

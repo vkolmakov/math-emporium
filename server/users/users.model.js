@@ -3,7 +3,9 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE } from '../aux';
+import { TIMEZONE, AUTH_GROUPS } from '../aux';
+
+const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define('user', {
@@ -11,33 +13,17 @@ export default function createUserModel(sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false,
             unique: {
-                // TODO: make a custom validator ensure uniqueness only by location
                 msg: 'Email address must be unique!',
             },
             validate: {
-                // TODO: add validation http://docs.sequelizejs.com/en/latest/docs/models-definition/
+                // TODO: Only accept school emails
+                isEmail: true,
             },
         },
         password: {
+            // salt + hash is stored, password validation is a class method
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                // TODO: add validation http://docs.sequelizejs.com/en/latest/docs/models-definition/
-            },
-            set(password) {
-                const user = this;
-                bcrypt.genSalt(10, (err, salt) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    bcrypt.hash(password, salt, null, (err, hash) => {
-                        if (err) {
-                            console.log(err); // TODO: handle errors
-                        }
-                        user.setDataValue('password', hash);
-                    });
-                });
-            },
         },
         firstName: {
             type: DataTypes.STRING,
@@ -47,7 +33,7 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         group: {
             type: DataTypes.INTEGER,
-            defaultValue: 0, // TODO ADD IN CONFIG
+            defaultValue: AUTH_GROUPS.user,
         },
         active: {
             type: DataTypes.BOOLEAN,
@@ -58,7 +44,7 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         activationTokenExpiration: {
             type: DataTypes.DATE,
-            defaultValue: Date.now() + 3600000 * 24,
+            defaultValue: Date.now() + TOKEN_EXPIRATION_PERIOD,
         },
         googleCalendarAppointmentId: {
             type: DataTypes.STRING,
@@ -76,8 +62,32 @@ export default function createUserModel(sequelize, DataTypes) {
                 user.belongsTo(models.location);
                 user.belongsTo(models.course);
             },
+            validatePassword(password) {
+                const minPasswordLength = 8;
+                const requirements = [
+                    password.length >= minPasswordLength,
+                ];
+
+                return requirements.every(requirement => !!requirement);
+            },
         },
         instanceMethods: {
+            hashAndSaltPassword(password) {
+                return new Promise((resolve, reject) => {
+                    bcrypt.genSalt(10, (err, salt) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        bcrypt.hash(password, salt, null, (err, hash) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            resolve(hash);
+                        });
+                    });
+                });
+            },
+
             validatePassword(password, _) {
                 return new Promise((resolve, reject) => {
                     bcrypt.compare(password, this.getDataValue('password'), (err, isMatch) => {
@@ -98,7 +108,7 @@ export default function createUserModel(sequelize, DataTypes) {
                         const token = buf.toString('hex');
                         resolve({
                             token,
-                            expiration: Date.now() + 3600000 * 24,
+                            expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
                         });
                     });
                 });

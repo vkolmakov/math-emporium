@@ -103,6 +103,7 @@ function validate(values) {
     );
 
     if (values.email && !values.email.match(/.+@.+\.\w+/)) {
+        // TODO: add a tip for school email and require one
         errors.email = 'Use a valid email address';
     }
 

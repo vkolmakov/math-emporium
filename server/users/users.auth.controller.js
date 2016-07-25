@@ -29,12 +29,17 @@ export const signup = async (req, res, next) => {
 
         const newUser = User.build({
             email,
-            password,
         });
 
+        if (!newUser.validatePassword(password)) {
+            throw new Error('Password does not satsfy all requirements');
+        }
+
+        const passwordHash = await newUser.hashAndSaltPassword(password);
         const activationTokenData = await newUser.generateActivationTokenData(SECRET);
 
         newUser.set({
+            password: passwordHash,
             activationToken: activationTokenData.token,
             activationTokenExpiration: activationTokenData.expiration,
         });
