@@ -15,17 +15,17 @@
 
 ## General ##
 
-* Add group-based auth **[server]**
-  - require group 2+ for schedule C_UD routes
-  - require group 1+ for schedule _R__ routes
-  - group 0+ for user-related stuff
-  - Add a sidebar config property which will allow to display different things based on the access level
+* ~~Add group-based auth **[server + client]**~~
+  - ~~require group 2+ for schedule C_UD routes~~
+  - ~~require group 1+ for schedule _R__ routes~~
+  - ~~group 0+ for user-related stuff~~
+  - ~~Add a sidebar config property which will allow to display different things based on the access level~~
 
-* Add endpoints and views for editing user-related stuff
+* Add endpoints and views for editing user-related stuff **[server + client]**
 
-* Complete client-side verification for most routes
+* Complete client-side verification for most routes **[client]**
 
-* Add password reset functionality
+* Add password reset functionality **[server + client]**
 
 * Complete server-side vefification for several models **[server]**
 
