@@ -7,7 +7,9 @@ import { SA_GET_OPEN_SPOTS,
          SA_CLEAR_SCHEDULING_MESSAGE } from './actions';
 
 const INITIAL_STATE = {
-    startDate: moment().startOf('isoWeek'),
+    startDate: moment().isoWeekday() > 6 // check if it's Sunday
+        ? moment().add(1, 'days').startOf('isoWeek') // if it is, go to next week
+        : moment().startOf('isoWeek'), // otherwise stay on the current week
     openSpots: [],
     message: null,
 };
