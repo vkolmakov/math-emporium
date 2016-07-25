@@ -23,7 +23,7 @@
 
 * Add endpoints and views for editing user-related stuff **[server + client]**
 
-* Complete client-side verification for most routes **[client]**
+* ~~Complete client-side verification for most routes **[client]**~~
 
 * Add password reset functionality **[server + client]**
 

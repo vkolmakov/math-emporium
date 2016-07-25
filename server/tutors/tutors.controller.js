@@ -67,7 +67,6 @@ export const handlePost = async (req, res, next) => {
                 // check if first element of the array is a valid course
                 await createdTutor.setCourses(req.body.courses.map((course) => course.id));
             } else {
-                // TODO: inform user that tutor was created but with no courses set
                 res.status(422).json(actionFailed('process', 'courses'));
             }
         }

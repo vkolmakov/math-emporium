@@ -42,7 +42,6 @@ export const handleGetId = async (req, res, next) => {
 
 export const handlePost = async (req, res, next) => {
     try {
-        // TODO: add verification
         const createdLocation = await Location.create(req.body, {
             fields: allowedToWrite,
         });
@@ -62,11 +61,9 @@ export const handleDelete = async (req, res, next) => {
             where: { id: req.params.id },
         });
         if (removedLocation) {
-            // TODO: send proper success message
             res.status(200).json({ id: req.params.id });
         } else {
-            // TODO: send proper error message
-            res.status(404).json({});
+            res.status(404).json(actionFailed('remove', 'location'));
         }
     } catch (err) {
         next(err);

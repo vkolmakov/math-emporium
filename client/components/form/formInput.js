@@ -14,7 +14,7 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder })
 
     if (isTextInput) {
         inputElement = (
-            <input type={type} {...binding} placeholder={placeholder} formNoValidate/>
+            <input type={type} {...binding} placeholder={placeholder} />
         );
     } else if (isSelectInput) {
         let renderer = {};

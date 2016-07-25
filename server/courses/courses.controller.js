@@ -28,7 +28,6 @@ export const handleGet = async (req, res, next) => {
 
 export const handleGetId = async (req, res, next) => {
     try {
-        // TODO: verify id's an integer
         const course = await Course.findOne({
             include: relatedModels,
             where: { id: req.params.id },
