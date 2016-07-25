@@ -152,8 +152,11 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
         const time = moment(item.start.dateTime).hours() * 60 + moment(item.start.dateTime).minutes();
         const weekday = parseInt(moment(item.start.dateTime).format('E'), 10);
 
+        const isSelectedTutor = !!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
+        const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
         let existingResult;
-        if (!!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase())) {
+        if (isSelectedTutor || !isTutor) {
+            // play it safe, if something unknown was encountered just assume this spot is taken
             existingResult = results.find(r => r.weekday === weekday && r.time === time);
             if (existingResult) {
                 existingResult.count += 1;
