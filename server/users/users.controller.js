@@ -13,8 +13,7 @@ const Tutor = db.models.tutor;
 
 const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'next', 'googleCalendarAppointmentDate'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
-// Add an endpoint to post firstName, lastName and location + course for a user
-// store it under api/private/user
+
 export const updateProfile = async (req, res, next) => {
     const allowedToWrite = ['firstName', 'lastName'];
 
@@ -171,13 +170,17 @@ export const deleteAppointment = async (req, res, next) => {
     }
 
     // Change calendarAppointmentId and nextAppointment in the user profile to null
-    await user.update({
-        googleCalendarAppointmentId: null,
-        googleCalendarAppointmentDate: null,
-        googleCalendarId: null,
-    }, {
-        fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
-    });
+    try {
+        await user.update({
+            googleCalendarAppointmentId: null,
+            googleCalendarAppointmentDate: null,
+            googleCalendarId: null,
+        }, {
+            fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
+        });
+    } catch (err) {
+        next(err);
+    }
 
     res.status(200).json(successMessage());
 };
