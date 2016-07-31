@@ -7,6 +7,7 @@ import Home from './rootApp/components/home/index';
 import EditingAppRoutes from './editingApp/routes';
 import AuthRoutes from './auth/routes';
 import SchedulingAppRoutes from './schedulingApp/routes';
+import ManagingAppRoutes from './managingApp/routes';
 
 export default(
     <Route path="/" component={App}>
@@ -14,5 +15,6 @@ export default(
       {EditingAppRoutes}
       {AuthRoutes}
       {SchedulingAppRoutes}
+      {ManagingAppRoutes}
     </Route>
 );

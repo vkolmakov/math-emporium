@@ -8,18 +8,23 @@ class Navbar extends Component {
         let links;
         if (!this.props.authenticated) {
             links = [
-                <Link to="/signin" key={1}>Sign in</Link>,
-                <Link to="/signup" key={2}>Sign up</Link>,
+                <Link to="/signin" key={0}>Sign in</Link>,
+                <Link to="/signup" key={1}>Sign up</Link>,
             ];
         } else {
             links = [];
             switch (this.props.authGroup) {
             case AUTH_GROUPS.employer:
+                links.push(<Link to="/edit-schedule" key={3}>Edit-schedule</Link>);
+                links.push(<Link to="/manage-portal" key={4}>Manage-portal</Link>);
+                break;
             case AUTH_GROUPS.employee:
-                links.push(<Link to="/edit-schedule" key={2}>Edit-schedule</Link>);
+                links.push(<Link to="/edit-schedule" key={3}>Edit-schedule</Link>);
+                break;
             case AUTH_GROUPS.user:
             default:
-                links.push(<Link to="/signout" key={1}>Sign out</Link>);
+                links.push(<Link to="/signout" key={2}>Sign out</Link>);
+                break;
             }
         }
 

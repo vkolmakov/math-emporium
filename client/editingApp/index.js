@@ -38,7 +38,7 @@ class EditingApp extends Component {
 
         return (
             <div className="wrap">
-              <Sidebar {...sidebarConfig}/>
+              <Sidebar {...sidebarConfig} />
               {this.props.children}
             </div>
         );
