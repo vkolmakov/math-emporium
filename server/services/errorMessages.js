@@ -10,9 +10,9 @@ export function isRequired(item) {
     };
 }
 
-export function actionFailed(action, item='') {
+export function actionFailed(action, item = '', explanation = '') {
     return {
-        error: `Could not ${action} ${item}`,
+        error: `Could not ${action} ${item} ${!!explanation ? ': ' + explanation : ''}`,
     };
 }
 

@@ -10,6 +10,7 @@ import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
 import createUtilRouter from './routes/utilRouter';
 import createUserRouter from './routes/userRouter';
+import createManageUserRouter from './routes/manageUserRouter';
 
 import webpack from 'webpack';
 import config from '../webpack.config';
@@ -63,6 +64,7 @@ function connect() {
     app.use('/api', createUserRouter());
     app.use('/api', createAuthRouter());
     app.use('/api', createUtilRouter());
+    app.use('/api', createManageUserRouter());
 
     const isDevClient = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'serverdev';
 

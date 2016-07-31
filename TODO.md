@@ -30,5 +30,9 @@
 * Complete server-side vefification for several models **[server]**
 
 * Refactor + add more features in the edit-schedule app **[client]**
+  - Add ability to bulk-add schedules by submitting a list of times **[+server]**
+
+* Optimize some backend stuff **[server]**
+  - Optimize openSpots service
 
 * Add a model + endpoints for helpful resources (title, link, description, related courses) + front for them **[server + client]**
