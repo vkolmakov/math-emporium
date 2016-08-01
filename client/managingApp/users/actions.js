@@ -15,10 +15,12 @@ export function getUsers() {
 }
 
 export function updateUser(id, data) {
+    const { active, email, group } = data;
+
     const requestData = {
-        active: data.active.value,
-        email: data.email,
-        group: data.group.value,
+        active: JSON.parse(data.active),
+        email,
+        group,
     };
 
     const request = axios.put(`${BASE_URL}/${id}`, requestData);

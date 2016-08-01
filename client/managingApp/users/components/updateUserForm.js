@@ -22,24 +22,10 @@ class UpdateUserForm extends Component {
     componentDidMount() {
         const { email, active, group } = this.props.selectedUser;
 
-        const activeOption = {
-            value: active,
-            label: ACTIVE_OPTIONS.find(
-                ({ value, display }) => value === active
-            ).display,
-        };
-
-        const groupOption = {
-            value: group,
-            label: AUTH_GROUPS_OPTIONS.find(
-                ({ value, display }) => value === group
-            ).display,
-        };
-
         this.props.dispatch(initialize(FORM_NAME, {
             email,
-            active: activeOption,
-            group: groupOption,
+            active,
+            group,
         }, FORM_FIELDS));
     }
 
@@ -55,6 +41,8 @@ class UpdateUserForm extends Component {
                 .then(result => {
                     if (!result.error) {
                         this.setState({ success: true });
+                    } else {
+                        this.setState({ error: result.error });
                     }
                     return new Promise(resolve => resolve(null));
                 })
@@ -93,6 +81,8 @@ class UpdateUserForm extends Component {
             handleSubmit,
             title,
             fields,
+            error: this.state.error,
+            success: this.state.success,
         };
 
         return (

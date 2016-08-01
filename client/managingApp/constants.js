@@ -4,8 +4,8 @@ export const BASE_PATH = 'manage-portal';
 export const AUTH_GROUPS = constants.AUTH_GROUPS;
 
 export const ACTIVE_OPTIONS = [
-    [true, 'yes'],
-    [false, 'no'],
+    [JSON.stringify(true), 'yes'],
+    [JSON.stringify(false), 'no'],
 ].map(
     ([value, display]) => ({ value, display })
 );
