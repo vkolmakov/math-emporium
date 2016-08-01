@@ -95,6 +95,17 @@ class UpdateUserForm extends Component {
 
 function validate(values) {
     const errors = {};
+
+    const required = {
+        email: 'Must have an email',
+        active: 'Must select one status',
+        group: 'Must select one group',
+    };
+
+    Object.keys(required).forEach(key => {
+        if (!values[key]) errors[key] = required[key];
+    });
+
     return errors;
 }
 
