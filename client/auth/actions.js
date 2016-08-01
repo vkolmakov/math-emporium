@@ -69,8 +69,10 @@ export function activateUser({ activationToken }) {
     return dispatch => {
         axios.post(`${BASE_URL}/activate`, { token: activationToken })
             .then(response => {
+                const data = response.data;
                 dispatch({ type: AUTH_USER });
-                addTokenAndGroup(response.data.token);
+                dispatch({ type: SET_USER_GROUP, payload: data.group });
+                addTokenAndGroup(data);
                 browserHistory.push('/');
             })
             .catch(response => {

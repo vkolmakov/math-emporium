@@ -90,7 +90,10 @@ export const activate = async (req, res, next) => {
             active: true,
         });
 
-        res.status(200).json({ token: tokenForUser(result) });
+        res.status(200).json({
+            token: tokenForUser(result),
+            group: result.dataValues.group,
+        });
     } catch (err) {
         next(err);
     }
