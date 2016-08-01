@@ -23,6 +23,7 @@ class Navbar extends Component {
                 break;
             case AUTH_GROUPS.user:
             default:
+                break;
             }
             links.push(<Link to="/signout" key={2}>Sign out</Link>);
         }

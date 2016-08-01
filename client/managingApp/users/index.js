@@ -45,7 +45,6 @@ class ManageUsers extends Component {
             },
         ];
 
-
         return (
             <div className="content">
               <div className="content-nav">

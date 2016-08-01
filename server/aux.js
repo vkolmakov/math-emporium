@@ -2,10 +2,10 @@ export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMEZONE = 'US/Central';
 
 export const AUTH_GROUPS = {
-    user: 0,
-    employee: 1,
-    employer: 2,
-    admin: 3,
+    user: 1,
+    employee: 2,
+    employer: 3,
+    admin: 4,
 };
 
 export function isObject(obj) {
