@@ -14,6 +14,7 @@ class Navbar extends Component {
         } else {
             links = [];
             switch (this.props.authGroup) {
+            case AUTH_GROUPS.admin:
             case AUTH_GROUPS.employer:
                 links.push(<Link to="/edit-schedule" key={3}>Edit-schedule</Link>);
                 links.push(<Link to="/manage-portal" key={4}>Manage-portal</Link>);
