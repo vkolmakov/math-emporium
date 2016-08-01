@@ -17,7 +17,6 @@ class UpdateScheduleForm extends Component {
         };
     }
 
-
     componentDidMount() {
         const { weekday, time, location, tutors } = this.props.selectedSchedule;
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { BASE_PATH } from '../constants';
+import { BASE_PATH, AUTH_GROUPS_OPTIONS, ACTIVE_OPTIONS } from '../constants';
 import { getUsers } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
@@ -30,9 +30,11 @@ class ManageUsers extends Component {
             }, {
                 dataKey: 'active',
                 label: 'active',
+                mapValuesToLabels: ACTIVE_OPTIONS,
             }, {
                 dataKey: 'group',
                 label: 'group',
+                mapValuesToLabels: AUTH_GROUPS_OPTIONS,
             },
         ];
 
@@ -50,7 +52,7 @@ class ManageUsers extends Component {
                 <h2>Users</h2>
               </div>
 
-              <div className="list-wrap right-col">
+              <div className="list-wrap">
                 <Table headers={tableHeaders}
                        data={users.all}
                        actions={tableActions} />
@@ -61,7 +63,6 @@ class ManageUsers extends Component {
 }
 
 function mapStateToProps(state) {
-    console.log(state);
     return {
         users: {
             all: state.managing.users.all,
