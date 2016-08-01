@@ -18,10 +18,18 @@ class ManagingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
+        const displayElems = this.props.children || (
+            <div className="content">
+              <div className="middle-help-message-wrap">
+                <h1>Select an option</h1>
+              </div>
+            </div>
+        );
+
         return (
             <div className="wrap">
               <Sidebar {...sidebarConfig}/>
-              {this.props.children}
+              {displayElems}
             </div>
         );
     }
