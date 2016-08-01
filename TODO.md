@@ -21,7 +21,7 @@
   - ~~group 0+ for user-related stuff~~
   - ~~Add a sidebar config property which will allow to display different things based on the access level~~
 
-* Add endpoints and views for editing user-related stuff **[server + client]**
+* ~~Add endpoints and views for editing user-related stuff **[server + client]**~~
 
 * ~~Complete client-side verification for most routes **[client]**~~
 
@@ -34,5 +34,3 @@
 
 * Optimize some backend stuff **[server]**
   - Optimize openSpots service
-
-* Add a model + endpoints for helpful resources (title, link, description, related courses) + front for them **[server + client]**
