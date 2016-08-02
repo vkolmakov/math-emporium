@@ -11,6 +11,7 @@ class EditingApp extends Component {
 
         let links;
         switch (this.props.authGroup) {
+        case AUTH_GROUPS.admin:
         case AUTH_GROUPS.employer:
             links = [
                 ['locations', 'Locations'],
