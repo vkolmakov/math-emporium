@@ -76,9 +76,7 @@ export const activate = async (req, res, next) => {
             where: {
                 active: false,
                 activationToken: token,
-                activationTokenExpiration: {
-                    $gte: Date.now(),
-                },
+                activationTokenExpiration: { $gte: Date.now() },
             },
         });
 
@@ -129,7 +127,7 @@ export const resendActivationEmail = async (req, res, next) => {
     return res.status(201).json({ message: 'Email was sent' });
 };
 
-export const requestPasswordReset = async (req, res, next) => {
+export const requestResetPassword = async (req, res, next) => {
     const { email } = req.body;
     const user = await User.findOne({
         where: {
@@ -143,15 +141,48 @@ export const requestPasswordReset = async (req, res, next) => {
     }
 
     try {
-        const passwordResetData = await user.generatePasswordResetData(SECRET);
+        const resetPasswordData = await user.generateResetPasswordData(SECRET);
         await user.update({
-            passwordResetToken: passwordResetData.token,
-            passwordResetTokenExpiration: passwordResetData.expiration,
+            resetPasswordToken: resetPasswordData.token,
+            resetPasswordTokenExpiration: resetPasswordData.expiration,
         });
 
-        await user.sendPasswordResetEmail();
+        await user.sendResetPasswordEmail();
     } catch (err) {
         next(err);
     }
     return res.status(201).json({ message: 'Email was sent' });
+};
+
+export const resetPassword = async (req, res, next) => {
+    const { email, token, password: newPassword } = req.body;
+
+    const user = await User.findOne({
+        where: {
+            email,
+            resetPasswordToken: token,
+            resetPasswordTokenExpiration: { $gte: Date.now() },
+        },
+    });
+
+    if (!user) {
+        return res.status(422).json({ error: 'Invalid email or token' });
+    }
+
+    try {
+        if (!User.validatePassword(newPassword)) {
+            throw new Error('Password does not satsfy all requirements');
+        }
+
+        const passwordHash = await user.hashAndSaltPassword(newPassword);
+
+        await user.update({
+            password: passwordHash,
+            resetPasswordTokenExpiration: Date.now(),
+        });
+
+        return res.status(201).json({ message: 'Password was reset' });
+    } catch (err) {
+        next(err);
+    }
 };

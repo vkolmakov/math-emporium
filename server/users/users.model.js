@@ -41,10 +41,10 @@ export default function createUserModel(sequelize, DataTypes) {
         activationTokenExpiration: {
             type: DataTypes.DATE,
         },
-        passwordResetToken: {
+        resetPasswordToken: {
             type: DataTypes.STRING,
         },
-        passwordResetTokenExpiration: {
+        resetPasswordTokenExpiration: {
             type: DataTypes.DATE,
         },
         googleCalendarAppointmentId: {
@@ -128,7 +128,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 };
             },
 
-            async generatePasswordResetData(secret) {
+            async generateResetPasswordData(secret) {
                 const token = await this.generateRandomToken();
                 return {
                     token,
@@ -180,10 +180,10 @@ export default function createUserModel(sequelize, DataTypes) {
                 const result = await user.sendEmail(mailOptions);
                 return result;
             },
-            async sendPasswordResetEmail() {
+            async sendResetPasswordEmail() {
                 const user = this;
                 const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
-                const token = user.getDataValue('passwordResetToken');
+                const token = user.getDataValue('resetPasswordToken');
 
                 const mailOptions = {
                     subject: `Reset your password at ${HOSTNAME}`,
