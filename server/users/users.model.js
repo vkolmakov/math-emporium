@@ -40,7 +40,12 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         activationTokenExpiration: {
             type: DataTypes.DATE,
-            defaultValue: Date.now() + TOKEN_EXPIRATION_PERIOD,
+        },
+        passwordResetToken: {
+            type: DataTypes.STRING,
+        },
+        passwordResetTokenExpiration: {
+            type: DataTypes.DATE,
         },
         googleCalendarAppointmentId: {
             type: DataTypes.STRING,
@@ -103,19 +108,32 @@ export default function createUserModel(sequelize, DataTypes) {
                 });
             },
 
-            generateActivationTokenData(secret) {
+            generateRandomToken() {
                 return new Promise((resolve, reject) => {
-                    crypto.randomBytes(20, (err, buf) => {
+                    crypto.randomBytes(32, (err, buf) => {
                         if (err) {
                             reject(err);
                         }
                         const token = buf.toString('hex');
-                        resolve({
-                            token,
-                            expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
-                        });
+                        resolve(token);
                     });
                 });
+            },
+
+            async generateActivationTokenData(secret) {
+                const token = await this.generateRandomToken();
+                return {
+                    token,
+                    expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
+                };
+            },
+
+            async generateResetTokenData(secret) {
+                const token = await this.generateRandomToken();
+                return {
+                    token,
+                    expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
+                };
             },
 
             sendEmail({ subject, text, html }) {
