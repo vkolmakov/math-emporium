@@ -124,7 +124,34 @@ export const resendActivationEmail = async (req, res, next) => {
 
         await user.sendActivationEmail();
     } catch (err) {
-        return res.status(422).json({ error: `Failed to send the email` });
+        next(err);
+    }
+    return res.status(201).json({ message: 'Email was sent' });
+};
+
+export const requestPasswordReset = async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({
+        where: {
+            email,
+            active: true,
+        },
+    });
+
+    if (!user) {
+        return res.status(422).json({ error: 'Invalid email' });
+    }
+
+    try {
+        const passwordResetData = await user.generatePasswordResetData(SECRET);
+        await user.update({
+            passwordResetToken: passwordResetData.token,
+            passwordResetTokenExpiration: passwordResetData.expiration,
+        });
+
+        await user.sendPasswordResetEmail();
+    } catch (err) {
+        next(err);
     }
     return res.status(201).json({ message: 'Email was sent' });
 };

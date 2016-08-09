@@ -13,6 +13,7 @@ export default function createAuthRouter() {
     router.post('/auth/signup', controller.signup);
     router.post('/auth/activate', controller.activate);
     router.post('/auth/resend-activation-email', controller.resendActivationEmail);
+    router.post('/auth/send-password-reset-email', controller.requestPasswordReset);
 
     return router;
 }

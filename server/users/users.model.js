@@ -128,7 +128,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 };
             },
 
-            async generateResetTokenData(secret) {
+            async generatePasswordResetData(secret) {
                 const token = await this.generateRandomToken();
                 return {
                     token,
@@ -175,6 +175,20 @@ export default function createUserModel(sequelize, DataTypes) {
                     subject: `Hello from ${HOSTNAME}`,
                     text: `To activate your account copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
                     html: `<p>To activate your account click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                };
+
+                const result = await user.sendEmail(mailOptions);
+                return result;
+            },
+            async sendPasswordResetEmail() {
+                const user = this;
+                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                const token = user.getDataValue('passwordResetToken');
+
+                const mailOptions = {
+                    subject: `Reset your password at ${HOSTNAME}`,
+                    text: `To reset your password follow this link: ${HOSTNAME}/password-reset/${token}`,
+                    html: `<p>To reset your password click <a href="${HOSTNAME}/password-reset/${token}">here</a></p>`,
                 };
 
                 const result = await user.sendEmail(mailOptions);
