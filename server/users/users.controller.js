@@ -4,7 +4,7 @@ import moment from 'moment';
 import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT, TIMEZONE } from '../aux';
 import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
-import { findAvailableTutor } from '../services/openSpots/openSpots.service';
+import { findAvailableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
 const Location = db.models.location;
@@ -125,10 +125,12 @@ export const scheduleAppointment = async (req, res, next) => {
             where: { id: course.id },
         });
 
-        const tutor = await findAvailableTutor({
+        const tutors = await findAvailableTutors({
             time: moment(time, TIMESTAMP_FORMAT),
             course,
             location });
+
+        const tutor = selectRandomTutor(tutors);
 
         const result = await user.createGoogleCalendarAppointment({
             time: moment(time, TIMESTAMP_FORMAT),

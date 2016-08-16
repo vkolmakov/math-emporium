@@ -19,7 +19,7 @@ const extractInfoFromSummary = summary => {
     };
 };
 
-const selectRandomTutor = tutors => {
+export const selectRandomTutor = tutors => {
     if (tutors.length === 0) {
         throw new Error('No available tutors');
     }
@@ -185,7 +185,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     return openSpots;
 };
 
-export const findAvailableTutor = async ({ time, course, location }) => {
+export const findAvailableTutors = async ({ time, course, location }) => {
     moment.tz.setDefault(TIMEZONE);
     const data = await getCachedData();
     const locationData = data.find(d => d.location.id === location.id);
@@ -232,5 +232,5 @@ export const findAvailableTutor = async ({ time, course, location }) => {
             !busyTutorsNames.find(name => name.toLowerCase() === tutor.name.toLowerCase())
     );
 
-    return selectRandomTutor(availableTutors);
+    return availableTutors;
 };
