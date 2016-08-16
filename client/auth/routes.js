@@ -6,6 +6,7 @@ import Signout from './components/signout';
 import Signup from './components/signup';
 import Activate from './components/activate';
 import ResendActivationEmail from './components/resendActivationEmail';
+import RequestResetPassword from './components/requestResetPassword';
 
 export default [
     <Route path="signin" component={Signin} key={1}/>,
@@ -14,4 +15,5 @@ export default [
     <Route path="activate" component={Activate} key={4}/>,
     <Route path="activate/:activationToken" component={Activate} key={5}/>,
     <Route path="resend-activation-email" component={ResendActivationEmail} key={6}/>,
+    <Route path="request-reset-password" component={RequestResetPassword} key={7}/>,
 ];

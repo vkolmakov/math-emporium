@@ -82,7 +82,9 @@ export function activateUser({ activationToken }) {
 }
 
 export function resendActivationEmail({ email }) {
-    return dispatch => {
-        return axios.post(`${BASE_URL}/resend-activation-email`, { email });
-    };
+    return dispatch => axios.post(`${BASE_URL}/resend-activation-email`, { email });
+}
+
+export function sendResetPasswordEmail({ email }) {
+    return dispatch => axios.post(`${BASE_URL}/send-reset-password-email`, { email });
 }

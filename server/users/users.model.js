@@ -187,8 +187,8 @@ export default function createUserModel(sequelize, DataTypes) {
 
                 const mailOptions = {
                     subject: `Reset your password at ${HOSTNAME}`,
-                    text: `To reset your password follow this link: ${HOSTNAME}/password-reset/${token}`,
-                    html: `<p>To reset your password click <a href="${HOSTNAME}/password-reset/${token}">here</a></p>`,
+                    text: `To reset your password follow this link: ${HOSTNAME}/reset-password/${token}`,
+                    html: `<p>To reset your password click <a href="${HOSTNAME}/reset-password/${token}">here</a></p>`,
                 };
 
                 const result = await user.sendEmail(mailOptions);
