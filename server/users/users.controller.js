@@ -2,14 +2,13 @@ import db from 'sequelize-connect';
 import moment from 'moment';
 
 import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT, TIMEZONE } from '../aux';
-import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
+import { notFound } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { findAvailableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
-const Tutor = db.models.tutor;
 
 const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'next', 'googleCalendarAppointmentDate'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
@@ -92,9 +91,14 @@ export const scheduleAppointment = async (req, res, next) => {
      course: { id },
      time: aux.TIMESTAMP_FORMAT: String,
 
+     optional:
+
+     tutor: { id },
+
      */
     const user = req.user;
     moment.tz.setDefault(TIMEZONE);
+
     try {
         if (!user.firstName || !user.lastName) {
             throw new Error('VISIBLE::first and last names are required.');
@@ -104,6 +108,7 @@ export const scheduleAppointment = async (req, res, next) => {
             time,
             course,
             location,
+            tutor: requestedTutor,
         } = req.body;
 
         if (!time || !course || !location) {
@@ -128,9 +133,15 @@ export const scheduleAppointment = async (req, res, next) => {
         const tutors = await findAvailableTutors({
             time: moment(time, TIMESTAMP_FORMAT),
             course,
-            location });
+            location
+        });
 
-        const tutor = selectRandomTutor(tutors);
+        let tutor;
+        if (requestedTutor) {
+            tutor = tutors.find(t => t.id === requestedTutor.id);
+        } else {
+            tutor = selectRandomTutor(tutors);
+        }
 
         const result = await user.createGoogleCalendarAppointment({
             time: moment(time, TIMESTAMP_FORMAT),

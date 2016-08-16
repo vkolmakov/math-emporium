@@ -7,3 +7,4 @@ test
 dist
 restclient-examples
 *.pem
+.idea
