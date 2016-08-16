@@ -133,7 +133,7 @@ export const scheduleAppointment = async (req, res, next) => {
         const tutors = await findAvailableTutors({
             time: moment(time, TIMESTAMP_FORMAT),
             course,
-            location
+            location,
         });
 
         let tutor;
