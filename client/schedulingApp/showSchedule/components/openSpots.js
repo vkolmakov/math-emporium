@@ -5,15 +5,21 @@ import { Router, Link } from 'react-router';
 import moment from 'moment';
 import reactMixin from 'react-mixin';
 
-import { getOpenSpots, resetOpenSpots, scheduleAppointment, clearSchedulingMessage } from '../actions';
+import { getOpenSpots,
+         resetOpenSpots,
+         scheduleAppointment,
+         clearSchedulingMessage,
+         getAvailableTutors,
+         schedulingMessage } from '../actions';
 
 import { setLocation, setCourse } from '../../actions';
 
-import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
+import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 import UpdateProfileForm from '../../profile/components/updateProfileForm';
 import LoadingSpinner from '../../../components/loadingSpinner';
 import Modal from 'react-modal';
+import Select from '../../../components/select/reactSelectWrapper';
 
 class OpenSpots extends Component {
     constructor() {
@@ -80,9 +86,28 @@ class OpenSpots extends Component {
 
                 if (isCompleteProfile) {
                     this.setState({
-                        appointmentInfo,
-                        displayProfileModal: false,
-                        displayScheduleModal: true,
+                        displayLoadingModal: true,
+                    });
+                    this.props.getAvailableTutors({
+                        time,
+                        course,
+                        location,
+                    }).then(response => {
+                        const availableTutors = response.data;
+                        availableTutors.unshift(RANDOM_TUTOR);
+                        this.setState({
+                            appointmentInfo: {
+                                availableTutors,
+                                requestedTutor: RANDOM_TUTOR,
+                                ...appointmentInfo,
+                            },
+                            displayProfileModal: false,
+                            displayLoadingModal: false,
+                            displayScheduleModal: true,
+                        });
+                    })
+                    .catch(error => {
+                        this.props.schedulingMessage(error.error);
                     });
                 } else {
                     this.setState({
@@ -174,7 +199,7 @@ class OpenSpots extends Component {
             return <span></span>;
         }
 
-        const { time, course, location } = this.state.appointmentInfo;
+        const { time, course, location, availableTutors } = this.state.appointmentInfo;
 
         const displayTime = time.format(TIMESTAMP_DISPLAY_FORMAT);
         const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
@@ -193,11 +218,27 @@ class OpenSpots extends Component {
                 displayScheduleModal: false,
                 displayLoadingModal: true,
             });
-            this.props.scheduleAppointment({ location, course, time })
+
+            const { requestedTutor } = this.state.appointmentInfo;
+
+            this.props.scheduleAppointment({ location, course, time, requestedTutor })
                 .then(_ => {
                     onRequestClose();
                 });
         };
+
+        const selectTutor = tutorOption => {
+            const { appointmentInfo } = this.state;
+            this.setState({
+                appointmentInfo: {
+                    ...appointmentInfo,
+                    requestedTutor: appointmentInfo.availableTutors.find(t => t.id === tutorOption.value),
+                },
+            });
+        };
+
+        const tutorOptions = availableTutors.map(t => ({ label: t.name, value: t.id }));
+        const randomTutorValue = RANDOM_TUTOR.id;
 
         return (
             <Modal isOpen={this.state.displayScheduleModal}
@@ -205,6 +246,10 @@ class OpenSpots extends Component {
                    className="confirmation-modal">
               <h2>Confirm your appointment details</h2>
               <h2>{appointmentInfoDisplay}</h2>
+                <Select options={tutorOptions}
+                        value={this.state.appointmentInfo.requestedTutor.id}
+                        onChange={selectTutor}
+                        placeholder="Select a tutor..."/>
               <div className="buttons">
                 <Link to={this.OPEN_SPOTS_PAGE_URL}
                       onClick={scheduleAppointment}
@@ -378,4 +423,6 @@ export default connect(mapStateToProps, {
     clearSchedulingMessage,
     setLocation,
     setCourse,
+    getAvailableTutors,
+    schedulingMessage,
 })(OpenSpots);
