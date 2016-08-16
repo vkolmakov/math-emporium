@@ -42,7 +42,7 @@ export const getAvailableTutors = async (req, res, next) => {
             course,
             location,
         });
-        res.status(200).json(tutors);
+        res.status(200).json(tutors.map(tutor => ({ name: tutor.name, id: tutor.id })));
     } catch (err) {
         next(err);
     }
