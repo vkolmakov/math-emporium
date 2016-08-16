@@ -1,7 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 
-import { TIMESTAMP_FORMAT } from '../../constants';
+import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
 
 import { getUserProfile } from '../profile/actions';
 
@@ -14,6 +14,7 @@ export const SA_CLEAR_SCHEDULING_MESSAGE = 'SA_CLEAR_SCHEDULING_MESSAGE';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
+const BASE_URL_TUTORS = '/api/available-tutors';
 
 export function getOpenSpots({ location, course, startDate }) {
     const requestParams = {
@@ -23,9 +24,7 @@ export function getOpenSpots({ location, course, startDate }) {
     };
 
     const request = axios.get(BASE_URL, {
-        params: {
-            ...requestParams,
-        },
+        params: { ...requestParams },
     });
 
     return {
@@ -60,12 +59,16 @@ export function clearSchedulingMessage() {
     };
 }
 
-export function scheduleAppointment({ location, course, time }) {
+export function scheduleAppointment({ location, course, time, requestedTutor }) {
     return dispatch => {
+        const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
+        const tutor = isRandomTutor ? null : requestedTutor;
+
         const requestData = {
             location,
             course,
             time: time.format(TIMESTAMP_FORMAT),
+            tutor,
         };
 
         return axios.post(BASE_URL_APPOINTMENT, requestData)
@@ -81,3 +84,18 @@ export function scheduleAppointment({ location, course, time }) {
             });
     };
 }
+
+export function getAvailableTutors({ time, course, location }) {
+    return dispatch => {
+        const requestParams = {
+            time: time.format(TIMESTAMP_FORMAT),
+            courseId: course.id,
+            locationId: location.id,
+        };
+
+        return axios.get(BASE_URL_TUTORS, {
+            params: { ...requestParams },
+        });
+    };
+}
+
