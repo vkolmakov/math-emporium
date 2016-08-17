@@ -8,18 +8,21 @@ export const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
 export const SIGNUP_USER = 'SIGNUP_USER';
 export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
 export const SET_USER_GROUP = 'SET_USER_GROUP';
+export const SET_USER_EMAIL = 'SET_USER_EMAIL';
 
 const BASE_URL = '/api/auth';
 
-function addTokenAndGroup({ token, group }) {
+function addAuthData({ token, group, email }) {
     localStorage.setItem('token', token);
     localStorage.setItem('group', group);
+    localStorage.setItem('email', email);
     axios.defaults.headers.common['Authorization'] = token;
 }
 
-function removeTokenAndGroup() {
+function removeAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('group');
+    localStorage.removeItem('email');
     axios.defaults.headers.common['Authorization'] = null;
 }
 
@@ -40,10 +43,11 @@ export function signinUser({ email, password }) {
     return dispatch => {
         return axios.post(`${BASE_URL}/signin`, { email, password })
             .then(response => {
-                const data = response.data;
+                const { data } = response;
                 dispatch({ type: AUTH_USER });
                 dispatch({ type: SET_USER_GROUP, payload: data.group });
-                addTokenAndGroup(data);
+                dispatch({ type: SET_USER_EMAIL, payload: data.email })
+                addAuthData(data);
                 browserHistory.push('/');
             })
             .catch(() => {
@@ -53,7 +57,7 @@ export function signinUser({ email, password }) {
 }
 
 export function signoutUser() {
-    removeTokenAndGroup();
+    removeAuthData();
     return {
         type: UNAUTH_USER,
     };
@@ -72,7 +76,7 @@ export function activateUser({ activationToken }) {
                 const data = response.data;
                 dispatch({ type: AUTH_USER });
                 dispatch({ type: SET_USER_GROUP, payload: data.group });
-                addTokenAndGroup(data);
+                addAuthData(data);
                 browserHistory.push('/');
             })
             .catch(response => {

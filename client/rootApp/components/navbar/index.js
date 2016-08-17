@@ -26,7 +26,7 @@ class Navbar extends Component {
             default:
                 break;
             }
-            links.push(<Link to="/signout" key={2}>Sign out</Link>);
+            links.push(<Link to="/signout" key={2}>Sign out ({this.props.email})</Link>);
         }
 
         return links;
@@ -46,6 +46,7 @@ function mapStateToProps(state) {
     return {
         authenticated: state.auth.authenticated,
         authGroup: state.auth.group,
+        email: state.auth.email,
     };
 }
 

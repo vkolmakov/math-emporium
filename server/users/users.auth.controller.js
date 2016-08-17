@@ -60,8 +60,10 @@ export const signup = async (req, res, next) => {
 
 export const signin = (req, res, next) => {
     const user = req.user;
+    const { group, email } = user.dataValues;
     res.send({
-        group: user.dataValues.group,
+        group,
+        email,
         token: tokenForUser(user),
     });
 };

@@ -2,7 +2,8 @@ import { AUTH_USER,
          UNAUTH_USER,
          AUTH_ERROR,
          CLEAR_AUTH_ERROR,
-         SET_USER_GROUP } from './actions';
+         SET_USER_GROUP,
+         SET_USER_EMAIL} from './actions';
 
 export default (state = {}, action) => {
     switch (action.type) {
@@ -16,6 +17,8 @@ export default (state = {}, action) => {
         return { ...state, error: '' };
     case SET_USER_GROUP:
         return { ...state, group: parseInt(action.payload, 10) };
+    case SET_USER_EMAIL:
+        return { ...state, email: action.payload };
     default: return state;
     }
 };
