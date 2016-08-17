@@ -85,20 +85,22 @@ class OpenSpots extends Component {
                 const isCompleteProfile = !!(profile) && !!(profile.firstName && profile.lastName);
 
                 if (isCompleteProfile) {
-                    this.setState({
-                        displayLoadingModal: true,
-                    });
-                    this.props.getAvailableTutors({
-                        time,
-                        course,
-                        location,
-                    }).then(response => {
+                    this.setState({ displayLoadingModal: true });
+                    this.props.getAvailableTutors({ time, course, location }).then(response => {
                         const availableTutors = response.data;
-                        availableTutors.unshift(RANDOM_TUTOR);
+
+                        if (availableTutors.length < 1) {
+                            throw new Error('There are no tutor available');
+                        }
+
+                        if (availableTutors.length > 1) {
+                            availableTutors.unshift(RANDOM_TUTOR);
+                        }
+
                         this.setState({
                             appointmentInfo: {
                                 availableTutors,
-                                requestedTutor: RANDOM_TUTOR,
+                                requestedTutor: availableTutors.length > 1 ? RANDOM_TUTOR : availableTutors[0],
                                 ...appointmentInfo,
                             },
                             displayProfileModal: false,
@@ -107,7 +109,8 @@ class OpenSpots extends Component {
                         });
                     })
                     .catch(error => {
-                        this.props.schedulingMessage(error.error);
+                        console.dir(error);
+                        this.props.schedulingMessage(error.error || error.toString());
                     });
                 } else {
                     this.setState({
@@ -246,10 +249,15 @@ class OpenSpots extends Component {
                    className="confirmation-modal">
               <h2>Confirm your appointment details</h2>
               <h2>{appointmentInfoDisplay}</h2>
-                <Select options={tutorOptions}
+              <div className="select-wrapper">
+                  <h2>Select a tutor:</h2>
+                  <Select options={tutorOptions}
                         value={this.state.appointmentInfo.requestedTutor.id}
+                        clearable={false}
                         onChange={selectTutor}
                         placeholder="Select a tutor..."/>
+              </div>
+
               <div className="buttons">
                 <Link to={this.OPEN_SPOTS_PAGE_URL}
                       onClick={scheduleAppointment}
@@ -341,7 +349,7 @@ class OpenSpots extends Component {
             <Modal isOpen={!!message}
                    onRequestClose={onRequestClose}
                    className="confirmation-modal">
-              <h2>{message}</h2>
+              <h2 className="message">{message}</h2>
               <div className="buttons">
                 <Link to={this.OPEN_SPOTS_PAGE_URL}
                       onClick={onRequestClose}
