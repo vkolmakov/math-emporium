@@ -535,17 +535,17 @@ nav {
     }
 }
 
-.confirmation-modal {
-    @mixin modal-header-text {
-        @include set-font();
-        font-size: 1.2em;
-        @include breakpoint($medium-screen) {
-            font-size: 1.5em;
-        }
-        text-align: center;
-        font-weight: 300;
+@mixin modal-header-text {
+    @include set-font();
+    font-size: 1.2em;
+    @include breakpoint($medium-screen) {
+        font-size: 1.5em;
     }
+    text-align: center;
+    font-weight: 300;
+}
 
+.base-modal {
     @include rounded-border();
     @include clearfix();
 
@@ -555,68 +555,15 @@ nav {
     right: 0px;
     bottom: 0px;
 
-    @include breakpoint($medium-screen) {
-        max-width: 475px;
-        max-height: 300px;
-    }
-
-    max-width: 300px;
-    max-height: 300px;
-
     margin: auto;
 
     background-color: $secondary-color;
 
-
-    > .select-wrapper {
-        @include container();
-        margin: 0 5px;
-        @include breakpoint($medium-screen) {
-            margin: 0 65px;
-        }
-
-        > h2 {
-            @include modal-header-text();
-            padding-top: 3px;
-            margin: 0;
-
-            text-align: left;
-            @include span(4 of 4);
-
-            @include breakpoint($medium-screen) {
-                text-align: right;
-                @include span(2 of 4)
-            }
-        }
-
-        > .Select {
-            @include span (4 of 4 last);
-            @include breakpoint($medium-screen) {
-                @include span(2 of 4 last);
-            }
-
-            $select-height: 120px;
-            > .Select-menu-outer {
-                max-height: $select-height !important;
-                > .Select-menu {
-                    max-height: $select-height !important;
-                }
-            }
-        }
-    }
-
-
     > .loading {
-        margin: 116px auto;
+        margin: 66px auto;
         @include breakpoint($medium-screen) {
-            margin: 126px auto;
+            margin: 76px auto;
         }
-    }
-
-    > h2.message {
-        @include modal-header-text();
-        max-width: 300px;
-        margin: 106px auto;
     }
 
     > h2 {
@@ -653,6 +600,67 @@ nav {
                 float: right;
             }
 
+        }
+    }
+}
+
+.confirmation-modal {
+    @extend .base-modal;
+
+    @include breakpoint($medium-screen) {
+        max-width: 475px;
+        max-height: 200px;
+    }
+
+    max-width: 300px;
+    max-height: 175px;
+}
+
+.scheduling-modal {
+    @extend .base-modal;
+
+    @include breakpoint($medium-screen) {
+        max-width: 475px;
+        max-height: 300px;
+    }
+
+    max-width: 300px;
+    max-height: 300px;
+
+    > .select-wrapper {
+        @include container();
+        margin: 0 5px;
+        @include breakpoint($medium-screen) {
+            margin: 0 65px;
+        }
+
+        > h2 {
+            @include modal-header-text();
+            padding-top: 3px;
+            margin: 0;
+
+            text-align: left;
+            @include span(4 of 4);
+
+            @include breakpoint($medium-screen) {
+                text-align: right;
+                @include span(2 of 4)
+            }
+        }
+
+        > .Select {
+            @include span (4 of 4 last);
+            @include breakpoint($medium-screen) {
+                @include span(2 of 4 last);
+            }
+
+            $select-height: 120px;
+            > .Select-menu-outer {
+                max-height: $select-height !important;
+                > .Select-menu {
+                    max-height: $select-height !important;
+                }
+            }
         }
     }
 }

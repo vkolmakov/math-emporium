@@ -246,7 +246,7 @@ class OpenSpots extends Component {
         return (
             <Modal isOpen={this.state.displayScheduleModal}
                    onRequestClose={onRequestClose}
-                   className="confirmation-modal">
+                   className="scheduling-modal">
               <h2>Confirm your appointment details</h2>
               <h2>{appointmentInfoDisplay}</h2>
               <div className="select-wrapper">
