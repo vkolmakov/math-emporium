@@ -74,6 +74,7 @@ class Signin extends Component {
               <div className="auth-form-wrap">
                 <Form {...formConfig} />
                 <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+                <p>Forgot your password? <Link to="/request-reset-password">Reset password</Link></p>
               </div>
             </div>
         );

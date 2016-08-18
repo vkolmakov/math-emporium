@@ -157,11 +157,10 @@ export const requestResetPassword = async (req, res, next) => {
 };
 
 export const resetPassword = async (req, res, next) => {
-    const { email, token, password: newPassword } = req.body;
+    const { token, password: newPassword } = req.body;
 
     const user = await User.findOne({
         where: {
-            email,
             resetPasswordToken: token,
             resetPasswordTokenExpiration: { $gte: Date.now() },
         },
@@ -188,3 +187,4 @@ export const resetPassword = async (req, res, next) => {
         next(err);
     }
 };
+

@@ -64,9 +64,7 @@ export function signoutUser() {
 }
 
 export function signupUser({ email, password }) {
-    return dispatch => {
-        return axios.post(`${BASE_URL}/signup`, { email, password });
-    };
+    return dispatch => axios.post(`${BASE_URL}/signup`, { email, password });
 }
 
 export function activateUser({ activationToken }) {
@@ -91,4 +89,8 @@ export function resendActivationEmail({ email }) {
 
 export function sendResetPasswordEmail({ email }) {
     return dispatch => axios.post(`${BASE_URL}/send-reset-password-email`, { email });
+}
+
+export function resetPassword({ password, token }) {
+    return dispatch => axios.post(`${BASE_URL}/reset-password`, { password, token });
 }
