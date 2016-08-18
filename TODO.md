@@ -13,7 +13,7 @@
 
 * ~~Build front for user-related endpoints + add appropriate event listeners on the openSpot component **[client]**~~
 
-* Add ability to leave additional comments as a user for a scheduled appointment
+* ~~Add ability to leave additional comments as a user for a scheduled appointment~~
 
 * Email reminders for scheduled appointments
 

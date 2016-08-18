@@ -59,16 +59,18 @@ export function clearSchedulingMessage() {
     };
 }
 
-export function scheduleAppointment({ location, course, time, requestedTutor }) {
+export function scheduleAppointment({ location, course, time, requestedTutor, additionalComments }) {
     return dispatch => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
         const tutor = isRandomTutor ? null : requestedTutor;
+        const comments = additionalComments || null;
 
         const requestData = {
             location,
             course,
             time: time.format(TIMESTAMP_FORMAT),
             tutor,
+            comments,
         };
 
         return axios.post(BASE_URL_APPOINTMENT, requestData)

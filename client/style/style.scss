@@ -627,11 +627,27 @@ nav {
     max-width: 300px;
     max-height: 300px;
 
-    > .select-wrapper {
+    > .controls-wrapper {
         @include container();
         margin: 0 5px;
         @include breakpoint($medium-screen) {
             margin: 0 65px;
+        }
+
+        > textarea {
+            @include set-font();
+            @include rounded-border();
+            font-size: 16px;
+            padding: 4px;
+            resize: none;
+            margin: 6px auto;
+
+            width: 97%;
+            height: 40px;
+            @include breakpoint($medium-screen) {
+                width: 99%;
+                height: 65px;
+            }
         }
 
         > h2 {

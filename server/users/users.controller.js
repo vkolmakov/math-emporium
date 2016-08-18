@@ -94,6 +94,7 @@ export const scheduleAppointment = async (req, res, next) => {
      optional:
 
      tutor: { id },
+     comments: String,
 
      */
     const user = req.user;
@@ -109,6 +110,7 @@ export const scheduleAppointment = async (req, res, next) => {
             course,
             location,
             tutor: requestedTutor,
+            comments,
         } = req.body;
 
         if (!time || !course || !location) {
@@ -148,6 +150,7 @@ export const scheduleAppointment = async (req, res, next) => {
             course: courseRes.dataValues,
             location: locationRes.dataValues,
             tutor,
+            comments,
         });
 
         await user.update({

@@ -194,7 +194,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const result = await user.sendEmail(mailOptions);
                 return result;
             },
-            createGoogleCalendarAppointment({ time, course, location, tutor }) {
+            createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 return new Promise(async (resolve, reject) => {
@@ -205,7 +205,7 @@ export default function createUserModel(sequelize, DataTypes) {
                     const startTime = time.toISOString();
                     const endTime = moment(time).add(1, 'hours').toISOString();
                     const summary = user.getAppointmentSummary({ course, tutor });
-                    const description = user.getAppointmentDescription({ course, tutor });
+                    const description = user.getAppointmentDescription({ course, tutor, comments });
 
                     const result = await calendarService.createCalendarEvent({
                         calendarId,
@@ -223,13 +223,14 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 return `${tutor.name} (${user.firstName}) ${course.code}`;
             },
-            getAppointmentDescription({ course, tutor }) {
+            getAppointmentDescription({ course, tutor, comments }) {
                 moment.tz.setDefault(TIMEZONE);
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,
                         `Course: ${course.code}: ${course.name}`,
                         `Created on: ${moment().format('MM/DD/YYYY h:mm a')}`,
-                        `Created by: ${process.env.HOSTNAME}`].join('\n');
+                        `Created by: ${process.env.HOSTNAME}`,
+                        comments ? `Comments: ${comments}` : ''].join('\n');
             },
             deleteGoogleCalendarAppointment() {
                 const user = this;

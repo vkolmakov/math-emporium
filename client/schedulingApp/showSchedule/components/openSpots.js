@@ -222,9 +222,9 @@ class OpenSpots extends Component {
                 displayLoadingModal: true,
             });
 
-            const { requestedTutor } = this.state.appointmentInfo;
+            const { requestedTutor, additionalComments } = this.state.appointmentInfo;
 
-            this.props.scheduleAppointment({ location, course, time, requestedTutor })
+            this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
                 .then(_ => {
                     onRequestClose();
                 });
@@ -240,8 +240,18 @@ class OpenSpots extends Component {
             });
         };
 
+        const updateAdditionalComments = e => {
+            const additionalComments = e.target.value;
+            const appointmentInfo = this.state.appointmentInfo;
+            this.setState({
+                appointmentInfo: {
+                    ...appointmentInfo,
+                    additionalComments,
+                },
+            });
+        }
+
         const tutorOptions = availableTutors.map(t => ({ label: t.name, value: t.id }));
-        const randomTutorValue = RANDOM_TUTOR.id;
 
         return (
             <Modal isOpen={this.state.displayScheduleModal}
@@ -249,13 +259,16 @@ class OpenSpots extends Component {
                    className="scheduling-modal">
               <h2>Confirm your appointment details</h2>
               <h2>{appointmentInfoDisplay}</h2>
-              <div className="select-wrapper">
+              <div className="controls-wrapper">
                   <h2>Select a tutor:</h2>
                   <Select options={tutorOptions}
                         value={this.state.appointmentInfo.requestedTutor.id}
                         clearable={false}
                         onChange={selectTutor}
                         placeholder="Select a tutor..."/>
+                  <textarea value={this.state.appointmentInfo.additionalComments}
+                            onChange={updateAdditionalComments}
+                            placeholder="Additional comments..."/>
               </div>
 
               <div className="buttons">
