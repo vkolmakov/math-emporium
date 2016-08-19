@@ -47,6 +47,11 @@ nav {
             background: $primary-color;
             font-weight: bold;
         }
+        &.auth-link {
+            @include breakpoint($medium-screen) {
+                float: right;
+            }
+        }
     }
 }
 

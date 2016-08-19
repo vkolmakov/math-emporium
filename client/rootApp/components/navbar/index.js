@@ -8,8 +8,8 @@ class Navbar extends Component {
         let links;
         if (!this.props.authenticated) {
             links = [
-                <Link to="/signin" key={0}>Sign in</Link>,
-                <Link to="/signup" key={1}>Sign up</Link>,
+                <Link to="/signin" key={0} className="auth-link">Sign in</Link>,
+                <Link to="/signup" key={1} className="auth-link">Sign up</Link>,
             ];
         } else {
             links = [];
@@ -26,7 +26,7 @@ class Navbar extends Component {
             default:
                 break;
             }
-            links.push(<Link to="/signout" key={2}>Sign out ({this.props.email})</Link>);
+            links.push(<Link to="/signout" key={2} className="auth-link">Sign out ({this.props.email})</Link>);
         }
 
         return links;
