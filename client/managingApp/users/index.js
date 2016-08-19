@@ -1,19 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { selectTransformOptions } from '../../editingApp/utils';
 import { BASE_PATH, AUTH_GROUPS_OPTIONS, ACTIVE_OPTIONS } from '../constants';
 import { getUsers } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
+import FilterControls from '../../components/filterControls';
 
 class ManageUsers extends Component {
+    constructor() {
+        super();
+        this.state = {
+            selectedGroup: null,
+        };
+    }
+
     componentWillMount() {
         this.props.getUsers();
     }
 
+    setSelectedGroup(groupOption) {
+        if (groupOption) {
+            const selectedGroup = AUTH_GROUPS_OPTIONS.find(g => g.value === groupOption.value);
+            this.setState({ selectedGroup });
+        } else {
+            this.setState({ selectedGroup: null });
+        }
+    }
+
     render() {
-        const { users } = this.props;
+        let { users } = this.props;
+
+        const groupOptions = selectTransformOptions('value', 'display')(AUTH_GROUPS_OPTIONS);
 
         if (!users.all) {
             return (
@@ -21,6 +41,15 @@ class ManageUsers extends Component {
                   <LoadingSpinner />
                 </div>
             );
+        }
+
+        if (this.state.selectedGroup) {
+            const { selectedGroup } = this.state;
+            const filteredUsers = users.all.filter(u => u.group === selectedGroup.value);
+            users = {
+                ...users,
+                all: filteredUsers,
+            };
         }
 
         const tableHeaders = [
@@ -49,6 +78,10 @@ class ManageUsers extends Component {
             <div className="content">
               <div className="content-nav">
                 <h2>Users</h2>
+                <FilterControls options={groupOptions}
+                                currentValue={this.state.selectedGroup ? this.state.selectedGroup.value : null}
+                                onChange={this.setSelectedGroup.bind(this)}
+                                placeholder={'Filter by group...'} />
               </div>
 
               <div className="list-wrap">
