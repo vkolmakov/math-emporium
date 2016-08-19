@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
+import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, pickOneFrom } from '../aux';
 
 const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
@@ -166,33 +166,30 @@ export default function createUserModel(sequelize, DataTypes) {
                     });
                 });
             },
-            async sendActivationEmail() {
+            sendActivationEmail() {
                 const user = this;
-                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                const HOSTNAME = process.env.HOSTNAME;
                 const token = user.getDataValue('activationToken');
+                const emailBody = `To activate your account click on this link:\n${HOSTNAME}/activate/${token}\n`;
 
                 const mailOptions = {
                     subject: `Hello from ${HOSTNAME}`,
-                    text: `To activate your account copy and paste this link into your browser ${HOSTNAME}/activate/${token}`,
-                    html: `<p>To activate your account click <a href="${HOSTNAME}/activate/${token}">here</a></p>`,
+                    ...user.composeEmail(emailBody),
                 };
 
-                const result = await user.sendEmail(mailOptions);
-                return result;
+                return user.sendEmail(mailOptions);
             },
-            async sendResetPasswordEmail() {
+            sendResetPasswordEmail() {
                 const user = this;
-                const HOSTNAME = process.env.HOSTNAME || 'http://localhost:3000';
+                const HOSTNAME = process.env.HOSTNAME;
                 const token = user.getDataValue('resetPasswordToken');
-
+                const emailBody = `To reset your password follow this link:\n${HOSTNAME}/reset-password/${token}\n`;
                 const mailOptions = {
                     subject: `Reset your password at ${HOSTNAME}`,
-                    text: `To reset your password follow this link: ${HOSTNAME}/reset-password/${token}`,
-                    html: `<p>To reset your password click <a href="${HOSTNAME}/reset-password/${token}">here</a></p>`,
+                    ...user.composeEmail(emailBody),
                 };
 
-                const result = await user.sendEmail(mailOptions);
-                return result;
+                return user.sendEmail(mailOptions);
             },
             createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
                 const user = this;
@@ -227,10 +224,10 @@ export default function createUserModel(sequelize, DataTypes) {
                 moment.tz.setDefault(TIMEZONE);
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,
-                        `Course: ${course.code}: ${course.name}`,
-                        `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
-                        `Created by: ${process.env.HOSTNAME}`,
-                        comments ? `Comments: ${comments}` : ''].join('\n');
+                    `Course: ${course.code}: ${course.name}`,
+                    `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
+                    `Created by: ${process.env.HOSTNAME}`,
+                    comments ? `Comments: ${comments}` : ''].join('\n');
             },
             deleteGoogleCalendarAppointment() {
                 const user = this;
@@ -253,11 +250,11 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 const formattedTime = time.format(TIMESTAMP_VISIBLE_FORMAT);
+                const emailBody = `We'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}`;
 
                 const mailOptions = {
                     subject: `Appointment reminder: ${location.name} on ${formattedTime}`,
-                    text: `Hello ${user.dataValues.firstName},\n\nWe'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}\n\nBest,\n${process.env.HOSTNAME}`,
-                    html: `<p>Hello ${user.dataValues.firstName},</p><p>We'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}</p><p>Best,<br />${process.env.HOSTNAME}</p>`,
+                    ...user.composeEmail(emailBody),
                 };
 
                 return user.sendEmail(mailOptions);
@@ -266,16 +263,43 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 const formattedTime = appointmentTime.format(TIMESTAMP_VISIBLE_FORMAT);
+                const emailBody = `We've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!`;
 
                 const mailOptions = {
                     subject: 'Your appointment was successfully cancelled',
-                    text: `Hello ${user.dataValues.firstName},\n\nWe've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!\n\nBest,\n${process.env.HOSTNAME}`,
-                    html: `<p>Hello ${user.dataValues.firstName},</p><p>We've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!</p><p>Best,<br />${process.env.HOSTNAME}</p>`,
+                    ...user.composeEmail(emailBody),
                 };
 
                 return user.sendEmail(mailOptions);
+            },
+            composeEmail(body) {
+                function htmlify(sentence) {
+                    const handleNewlines = s => s.replace(/\n/, '<br />');
+                    const handleLinks = s => {
+                        const linkRegex = new RegExp(`.*?(${process.env.HOSTNAME}.*?)\\s`, 'gi');
+                        return s.replace(linkRegex, '<a href="$1">$1</a> ');
+                    };
+
+                    const handlers = [handleNewlines, handleLinks];
+                    return handlers.reduce((result, handler) => handler(result), sentence);
+                }
+
+                const user = this;
+                const openers = ['Hello', 'Hi', 'Greetings', 'Salut'];
+                const greeting = `${pickOneFrom(openers)} ${user.dataValues.firstName || user.dataValues.email.split('@')[0]},`;
+
+                const closers = ['Bye', 'Best', 'Thanks', 'Cheers'];
+                const valediction = `${pickOneFrom(closers)},\n${process.env.HOSTNAME}`;
+
+                const message = [greeting, body, valediction];
+
+                return {
+                    text: message.join('\n\n'),
+                    html: message.map(sentence => `<p>${htmlify(sentence)}</p>`).join(''),
+                };
             },
         },
     });
     return user;
 }
+
