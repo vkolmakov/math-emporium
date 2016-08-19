@@ -46,7 +46,7 @@ export function signinUser({ email, password }) {
                 const { data } = response;
                 dispatch({ type: AUTH_USER });
                 dispatch({ type: SET_USER_GROUP, payload: data.group });
-                dispatch({ type: SET_USER_EMAIL, payload: data.email })
+                dispatch({ type: SET_USER_EMAIL, payload: data.email });
                 addAuthData(data);
                 browserHistory.push('/');
             })
@@ -74,6 +74,7 @@ export function activateUser({ activationToken }) {
                 const data = response.data;
                 dispatch({ type: AUTH_USER });
                 dispatch({ type: SET_USER_GROUP, payload: data.group });
+                dispatch({ type: SET_USER_EMAIL, payload: data.email });
                 addAuthData(data);
                 browserHistory.push('/');
             })

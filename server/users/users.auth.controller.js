@@ -33,6 +33,7 @@ export const signup = async (req, res, next) => {
         });
         if (existingUser) {
             res.status(422).send({ error: 'Email is in use' });
+            throw new Error('Email is in use');
         }
 
         const newUser = User.build({
@@ -90,9 +91,12 @@ export const activate = async (req, res, next) => {
             active: true,
         });
 
+        const { group, email } = result.dataValues;
+
         res.status(200).json({
+            group,
+            email,
             token: tokenForUser(result),
-            group: result.dataValues.group,
         });
     } catch (err) {
         next(err);
