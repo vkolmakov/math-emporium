@@ -109,7 +109,6 @@ class OpenSpots extends Component {
                         });
                     })
                     .catch(error => {
-                        console.dir(error);
                         this.props.schedulingMessage(error.error || error.toString());
                     });
                 } else {
@@ -198,7 +197,7 @@ class OpenSpots extends Component {
     }
 
     renderScheduleModal() {
-        if (!this.state.appointmentInfo) {
+        if (!this.state.appointmentInfo || !this.state.displayScheduleModal) {
             return <span></span>;
         }
 
