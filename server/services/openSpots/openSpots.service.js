@@ -2,7 +2,7 @@ import db from 'sequelize-connect';
 import cache from 'memory-cache';
 import moment from 'moment';
 
-import { set, createExtractDataValuesFunction, TIMEZONE } from '../../aux';
+import { set, createExtractDataValuesFunction, TIMEZONE, pickOneFrom } from '../../aux';
 import { CalendarService } from '../googleApis';
 
 const extractInfoFromSummary = summary => {
@@ -24,9 +24,7 @@ export const selectRandomTutor = tutors => {
         throw new Error('No available tutors');
     }
 
-    const randomIndex = Math.floor(Math.random() * tutors.length);
-    return tutors[randomIndex];
-
+    return pickOneFrom(tutors);
 };
 
 const collectData = () => new Promise(async (resolve, reject) => {

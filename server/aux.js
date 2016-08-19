@@ -55,3 +55,8 @@ export function set(obj, key, val) {
         ...addition,
     };
 }
+
+export function pickOneFrom(list) {
+    const randomIndex = Math.floor(Math.random() * list.length);
+    return list[randomIndex];
+}
