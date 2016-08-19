@@ -161,6 +161,13 @@ export const scheduleAppointment = async (req, res, next) => {
             fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
         });
 
+        await user.sendAppointmentReminder({
+            time: moment(result.start.dateTime),
+            location,
+            tutor,
+            course,
+        });
+
         res.status(200).json(extractDataValues(user));
     } catch (err) {
         if (err.message.startsWith('VISIBLE::')) {
@@ -187,6 +194,7 @@ export const deleteAppointment = async (req, res, next) => {
 
     // Change calendarAppointmentId and nextAppointment in the user profile to null
     try {
+        const appointmentTime = moment(user.dataValues.googleCalendarAppointmentDate);
         await user.update({
             googleCalendarAppointmentId: null,
             googleCalendarAppointmentDate: null,
@@ -194,6 +202,8 @@ export const deleteAppointment = async (req, res, next) => {
         }, {
             fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
         });
+
+        await user.sendAppoinmentRemovalConfirmation({ appointmentTime });
     } catch (err) {
         next(err);
     }

@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS } from '../aux';
+import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
 
 const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
@@ -228,7 +228,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,
                         `Course: ${course.code}: ${course.name}`,
-                        `Created on: ${moment().format('MM/DD/YYYY h:mm a')}`,
+                        `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
                         `Created by: ${process.env.HOSTNAME}`,
                         comments ? `Comments: ${comments}` : ''].join('\n');
             },
@@ -248,6 +248,32 @@ export default function createUserModel(sequelize, DataTypes) {
                         reject(err);
                     }
                 });
+            },
+            sendAppointmentReminder({ time, location, course, tutor }) {
+                const user = this;
+                moment.tz.setDefault(TIMEZONE);
+                const formattedTime = time.format(TIMESTAMP_VISIBLE_FORMAT);
+
+                const mailOptions = {
+                    subject: `Appointment reminder: ${location.name} on ${formattedTime}`,
+                    text: `Hello ${user.dataValues.firstName},\n\nWe'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}\n\nBest,\n${process.env.HOSTNAME}`,
+                    html: `<p>Hello ${user.dataValues.firstName},</p><p>We'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}</p><p>Best,<br />${process.env.HOSTNAME}</p>`,
+                };
+
+                return user.sendEmail(mailOptions);
+            },
+            sendAppoinmentRemovalConfirmation({ appointmentTime }) {
+                const user = this;
+                moment.tz.setDefault(TIMEZONE);
+                const formattedTime = appointmentTime.format(TIMESTAMP_VISIBLE_FORMAT);
+
+                const mailOptions = {
+                    subject: 'Your appointment was successfully cancelled',
+                    text: `Hello ${user.dataValues.firstName},\n\nWe've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!\n\nBest,\n${process.env.HOSTNAME}`,
+                    html: `<p>Hello ${user.dataValues.firstName},</p><p>We've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!</p><p>Best,<br />${process.env.HOSTNAME}</p>`,
+                };
+
+                return user.sendEmail(mailOptions);
             },
         },
     });

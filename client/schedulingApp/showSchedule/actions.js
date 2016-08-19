@@ -3,8 +3,6 @@ import moment from 'moment';
 
 import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
 
-import { getUserProfile } from '../profile/actions';
-
 export const SA_GET_OPEN_SPOTS = 'SA_GET_OPEN_SPOTS';
 export const SA_SET_START_DATE = 'SA_SET_START_DATE';
 export const SA_RESET_OPEN_SPOTS = 'SA_RESET_OPEN_SPOTS';
