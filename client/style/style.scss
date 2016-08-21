@@ -5,6 +5,9 @@
 @import "variables";
 @import "mixins";
 @import "scheduling-app";
+@import "modal";
+@import "nav";
+@import "sidebar";
 
 $susy: (
     colums: 12,
@@ -15,44 +18,6 @@ $susy: (
 body {
     @include set-font();
     margin: 0px;
-}
-
-nav {
-    display: block;
-
-    background-color: $secondary-color;
-    border-bottom: 1px solid #eaeaea;
-
-    @include breakpoint($medium-screen) {
-        max-width: none;
-        /* margin-bottom: 1.5em; */
-    }
-
-    a {
-        display: block;
-        padding: 0.5em;
-        @include set-font();
-        @include url();
-
-        @include breakpoint($medium-screen) {
-            display: inline-block;
-            padding: 0.75em;
-        }
-
-        color: black;
-
-        font-size: 1.2em;
-
-        &:hover {
-            background: $primary-color;
-            font-weight: bold;
-        }
-        &.auth-link {
-            @include breakpoint($medium-screen) {
-                float: right;
-            }
-        }
-    }
 }
 
 .wrap {
@@ -85,47 +50,6 @@ nav {
             margin: span(3 of 12) span(4 of 12); // kinda centered
         }
     }
-}
-
-.sidebar {
-    @include clearfix();
-    margin: 0 auto 0.5em auto;
-    background-color: $secondary-color;
-    border-bottom: 1px solid #eaeaea;
-
-    @include breakpoint($medium-screen) {
-        @include span(3 of 12);
-        height: 100vh;
-    }
-
-    ul {
-        padding: 0;
-        margin: 0;
-        list-style-type: none;
-
-        li {
-            margin: 0.25em;
-
-            a {
-                @include set-font();
-                text-decoration: none;
-                padding: 0.5em;
-                color: black;
-                display: block;
-
-                &.selected {
-                    font-weight: bold;
-                }
-
-            }
-            &:hover {
-                background-color: $primary-color;
-                font-weight: bold;
-
-            }
-        }
-    }
-
 }
 
 
@@ -537,176 +461,5 @@ nav {
     > div {
         max-width: 500px;
         margin: 0 auto;
-    }
-}
-
-@mixin modal-header-text {
-    @include set-font();
-    font-size: 1.2em;
-    @include breakpoint($medium-screen) {
-        font-size: 1.5em;
-    }
-    text-align: center;
-    font-weight: 300;
-}
-
-.base-modal {
-    @include rounded-border();
-    @include clearfix();
-
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-
-    margin: auto;
-
-    background-color: $secondary-color;
-
-    > .loading {
-        margin: 66px auto;
-        @include breakpoint($medium-screen) {
-            margin: 76px auto;
-        }
-    }
-
-    > h2 {
-        @include modal-header-text();
-    }
-
-    > .buttons {
-        @include clearfix();
-        position:absolute;
-        bottom: 0;
-        width: 100%;
-
-        > a {
-            @include button()
-            display: inline-block;
-            padding: 10px;
-            margin: 10px;
-            width: 60px;
-            font-weight: 400;
-
-            &.destructive {
-                @include destructive()
-            }
-
-            &.nondestructive {
-                @include nondestructive()
-            }
-
-            &.action {
-                float: left;
-            }
-
-            &.nonaction {
-                float: right;
-            }
-
-        }
-    }
-}
-
-.confirmation-modal {
-    @extend .base-modal;
-
-    @include breakpoint($medium-screen) {
-        max-width: 475px;
-        max-height: 200px;
-    }
-
-    max-width: 300px;
-    max-height: 175px;
-}
-
-.scheduling-modal {
-    @extend .base-modal;
-
-    @include breakpoint($medium-screen) {
-        max-width: 475px;
-        max-height: 300px;
-    }
-
-    max-width: 300px;
-    max-height: 300px;
-
-    > .controls-wrapper {
-        @include container();
-        margin: 0 5px;
-        @include breakpoint($medium-screen) {
-            margin: 0 65px;
-        }
-
-        > textarea {
-            @include set-font();
-            @include rounded-border();
-            font-size: 16px;
-            padding: 4px;
-            resize: none;
-            margin: 6px auto;
-
-            width: 97%;
-            height: 40px;
-            @include breakpoint($medium-screen) {
-                width: 99%;
-                height: 65px;
-            }
-        }
-
-        > h2 {
-            @include modal-header-text();
-            padding-top: 3px;
-            margin: 0;
-
-            text-align: left;
-            @include span(4 of 4);
-
-            @include breakpoint($medium-screen) {
-                text-align: right;
-                @include span(2 of 4)
-            }
-        }
-
-        > .Select {
-            @include span (4 of 4 last);
-            @include breakpoint($medium-screen) {
-                @include span(2 of 4 last);
-            }
-
-            $select-height: 120px;
-            > .Select-menu-outer {
-                max-height: $select-height !important;
-                > .Select-menu {
-                    max-height: $select-height !important;
-                }
-            }
-        }
-    }
-}
-
-.loading {
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    $size: 24px;
-    $spin-duration: 0.5s;
-    border-radius: 50%;
-    width: $size;
-    height: $size;
-    border: .25rem solid $primary-color;
-    border-top-color: darken($primary-color, 15%);
-    animation: spin $spin-duration infinite;
-
-    margin: 1em auto;
-    @include breakpoint($medium-screen) {
-        margin: 25vh auto;
     }
 }

@@ -1,0 +1,43 @@
+@import "variables";
+@import "mixins";
+
+.sidebar {
+    @include clearfix();
+    margin: 0 auto 0.5em auto;
+    background-color: $secondary-color;
+    border-bottom: 1px solid #eaeaea;
+
+    @include breakpoint($medium-screen) {
+        @include span(3 of 12);
+        height: 100vh;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+
+        li {
+            margin: 0.25em;
+
+            a {
+                @include set-font();
+                text-decoration: none;
+                padding: 0.5em;
+                color: black;
+                display: block;
+
+                &.selected {
+                    font-weight: bold;
+                }
+
+            }
+            &:hover {
+                background-color: $primary-color;
+                font-weight: bold;
+
+            }
+        }
+    }
+
+}
