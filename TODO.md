@@ -9,13 +9,13 @@
 
 * ~~Add user-related API endpoints **[server]**~~
   - ~~add more fields in the user model (next appointment date + calendar-id, etc)~~
-  - ~~add ability to edit profile and create Google Calendar appointmnents~~
+  - ~~add ability to edit profile and create Google Calendar appointments~~
 
 * ~~Build front for user-related endpoints + add appropriate event listeners on the openSpot component **[client]**~~
 
 * ~~Add ability to leave additional comments as a user for a scheduled appointment~~
 
-* Email reminders for scheduled appointments
+* ~~Email reminders for scheduled appointments~~
 
 
 ## Editing app ##
@@ -26,7 +26,7 @@
 
 ## Managing app ##
 
-* Better navigation (filter users by access groups)
+* ~~Better navigation (filter users by access groups)~~
 
 * Ability to search through users
 
@@ -44,8 +44,8 @@
 
 * ~~Add password reset functionality **[server + client]**~~
 
-* Complete server-side vefification for several models **[server]**
-  - Check the existance of one-to-many relationships on any object before allowing to remove it
+* Complete server-side verification for several models **[server]**
+  - Check the existence of one-to-many relationships on any object before allowing to remove it
 
 * Refactor + add more features in the edit-schedule app **[client]**
   - Add ability to bulk-add schedules by submitting a list of times **[+server]**
