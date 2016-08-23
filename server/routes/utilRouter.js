@@ -1,11 +1,11 @@
 import express from 'express';
-import { getOpenSpots, getAvailableTutors } from '../services/openSpots/openSpots.controller';
+import { handleGetOpenSpots, handleGetAvailableTutors } from '../services/openSpots/openSpots.controller';
 
 export default function createUtilRouter() {
     const router = express.Router();
 
-    router.get('/open-spots', getOpenSpots);
-    router.get('/available-tutors', getAvailableTutors);
+    router.get('/open-spots', handleGetOpenSpots);
+    router.get('/available-tutors', handleGetAvailableTutors);
 
     return router;
 }
