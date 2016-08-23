@@ -62,7 +62,7 @@ export function pickOneFrom(list) {
 }
 
 export const extractInfoFromSummary = summary => {
-    const appointmentRegex = /(\w.+?)\(.+?\).+/;
+    const appointmentRegex = /(\w.+?)\((.+?)\)(.+)/;
     const match = summary.match(appointmentRegex);
 
     if (!match) {
@@ -72,6 +72,8 @@ export const extractInfoFromSummary = summary => {
     return {
         // strip trailing whitespace or `#` symbols
         tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
+        student: match[2],
+        course: match[3],
     };
 };
 
