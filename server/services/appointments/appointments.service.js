@@ -18,16 +18,22 @@ export const getAppointments = async ({ locationId, startDate, endDate }) => {
     const calendarId = location.calendarId;
     const calItems = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
 
-    const appointments = calItems.map(calItem => {
-        const startDateTime = moment(calItem.start.dateTime);
+    const appointments = calItems.reduce((results, item) => {
+        const appointmentInfo = extractInfoFromSummary(item.summary);
+        if (!appointmentInfo) {
+            return results;
+        }
 
-        return {
-            ...extractInfoFromSummary(calItem.summary),
+        const startDateTime = moment(item.start.dateTime);
+        const appointment = {
+            ...appointmentInfo,
             startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
             weekday: parseInt(startDateTime.format('E'), 10),
             time: startDateTime.hours() * 60 + startDateTime.minutes(),
         };
-    });
+
+        return results.concat(appointment);
+    }, []);
 
     return appointments;
 };
