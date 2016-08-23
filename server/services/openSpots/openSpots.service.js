@@ -2,20 +2,6 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, extractInfoFromSummary } from '../../aux';
 import { CalendarService } from '../googleApis';
-
-const extractInfoFromSummary = summary => {
-    const appointmentRegex = /(\w.+?)\(.+?\).+/;
-    const match = summary.match(appointmentRegex);
-
-    if (!match) {
-        return null;
-    }
-
-    return {
-        // strip trailing whitespace or `#` symbols
-        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
-    };
-};
 import { getCachedData } from '../appData';
 
 export const selectRandomTutor = tutors => {

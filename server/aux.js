@@ -60,3 +60,18 @@ export function pickOneFrom(list) {
     const randomIndex = Math.floor(Math.random() * list.length);
     return list[randomIndex];
 }
+
+export const extractInfoFromSummary = summary => {
+    const appointmentRegex = /(\w.+?)\(.+?\).+/;
+    const match = summary.match(appointmentRegex);
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        // strip trailing whitespace or `#` symbols
+        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
+    };
+};
+
