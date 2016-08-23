@@ -1,8 +1,8 @@
 import moment from 'moment';
 
-import { TIMEZONE, pickOneFrom, extractInfoFromSummary } from '../../aux';
-import { CalendarService } from '../googleApis';
+import { TIMEZONE, pickOneFrom } from '../../aux';
 import { getCachedData } from '../appData';
+import { getAppointments } from '../appointments/appointments.service';
 
 export const selectRandomTutor = tutors => {
     if (tutors.length === 0) {
@@ -35,33 +35,20 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
               .filter(t => !!t.courses.find(c => c.id === courseId));
 
     // go through schedule and count tutors that are selected and present
-    const scheduleCounts = locationData.schedules
+    const initialCounts = locationData.schedules
               .map(s => ({
                   weekday: s.weekday,
                   time: s.time,
                   count: s.tutors.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length,
               }));
 
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = locationData.location.calendarId;
-    const calItems = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
-
-    // convert weekday and hour from the ISO string to the DB format
-    // 1..7 for weekday, num_minutes since midnight for time
-    const calendarCounts = calItems.reduce((results, item) => {
-        const appointmentInfo = extractInfoFromSummary(item.summary);
-        if (!appointmentInfo) {
-            // this this will happen if the appointment did not match regex test
-            return results;
-        }
-        const tutorName = appointmentInfo.tutor;
-        const time = moment(item.start.dateTime).hours() * 60 + moment(item.start.dateTime).minutes();
-        const weekday = parseInt(moment(item.start.dateTime).format('E'), 10);
+    const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
+    const scheduledCounts = appointments.reduce((results, item) => {
+        const { tutor: tutorName, time, weekday } = item;
 
         const isSelectedTutor = !!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
         const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
+
         let existingResult;
         if (isSelectedTutor || !isTutor) {
             // play it safe, if something unknown was encountered just assume this spot is taken
@@ -80,9 +67,9 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
         return results;
     }, []);
 
-    const openSpots = scheduleCounts.map(sc => {
+    const openSpots = initialCounts.map(sc => {
         // find an appropriate calendarCount
-        const cc = calendarCounts.find(cc => sc.weekday === cc.weekday && sc.time === cc.time);
+        const cc = scheduledCounts.find(cc => sc.weekday === cc.weekday && sc.time === cc.time);
         return {
             ...sc,
             // if a calendarCount was found we subtract it, otherwise just subtract 0
@@ -118,21 +105,12 @@ export const findAvailableTutors = async ({ time, course, location }) => {
         tutor => !!tutor.courses.find(c => c.id === course.id)
     );
 
-    // go to google calendar and get a list of names of tutors that are
-    // scheduled at the selected time + find diff b/w filteredScheduledTutors and that list
-    // by name lowercased
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = locationData.location.calendarId;
-    const calItems = await calendarService.getCalendarEvents(calendarId,
-                                                             time.toISOString(),
-                                                             moment(time).add(1, 'hours').toISOString());
-
-    const busyTutorsNames = calItems.reduce((results, item) => {
-        const appointmentInfo = extractInfoFromSummary(item.summary);
-        return appointmentInfo ? results.concat(appointmentInfo.tutor) : results;
-    }, []);
+    const appointments = await getAppointments({
+        locationId: locationData.location.id,
+        startDate: time,
+        endDate: moment(time).add(1, 'hours'),
+    });
+    const busyTutorsNames = appointments.map(appointment => appointment.tutor);
 
     // Keep only tutors whose names are not in the busyTutorsNames array
     const availableTutors = filteredScheduledTutors.filter(
