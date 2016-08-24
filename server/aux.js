@@ -47,12 +47,9 @@ export function transformRequestToQuery(data) {
 }
 
 export function set(obj, key, val) {
-    const addition = {};
-    addition[key] = val;
-
     return {
         ...obj,
-        ...addition,
+        [key]: val,
     };
 }
 
@@ -70,8 +67,7 @@ export const extractInfoFromSummary = summary => {
     }
 
     return {
-        // strip trailing whitespace or `#` symbols
-        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''),
+        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''), // strip trailing whitespace or `#` symbols
         student: match[2],
         course: match[3],
     };
