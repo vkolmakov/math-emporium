@@ -13,7 +13,7 @@ export default function createUtilRouter() {
     router.get('/available-tutors', handleGetAvailableTutors);
 
     router.get('/appointments', requireGroup(AUTH_GROUPS.employer), handleGetAppointments);
-    router.get('/chrome-extension-data', handleGetChromeExtensionData);
+    router.get('/chrome-extension-data', requireGroup(AUTH_GROUPS.employer), handleGetChromeExtensionData);
 
     return router;
 }
