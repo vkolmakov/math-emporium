@@ -280,8 +280,8 @@ export default function createUserModel(sequelize, DataTypes) {
                         return s.replace(linkRegex, '<a href="$1">$1</a> ');
                     };
 
-                    const handlers = [handleNewlines, handleLinks];
-                    return handlers.reduce((result, handler) => handler(result), sentence);
+                    const handlers = [handleLinks, handleNewlines];
+                    return `<p>${handlers.reduce((result, handler) => handler(result), sentence)}</p>`;
                 }
 
                 const user = this;
@@ -295,7 +295,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                 return {
                     text: message.join('\n\n'),
-                    html: message.map(sentence => `<p>${htmlify(sentence)}</p>`).join(''),
+                    html: message.map(htmlify).join(''),
                 };
             },
         },
