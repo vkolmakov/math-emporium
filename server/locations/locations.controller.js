@@ -57,13 +57,23 @@ export const handlePost = async (req, res, next) => {
 
 export const handleDelete = async (req, res, next) => {
     try {
-        const removedLocation = await Location.destroy({
+        const locationToDelete = await Location.findOne({
             where: { id: req.params.id },
         });
-        if (removedLocation) {
-            res.status(200).json({ id: req.params.id });
+
+        const isSafeToDelete = await locationToDelete.isSafeToDelete();
+
+        if (isSafeToDelete) {
+            const removedLocation = await Location.destroy({
+                where: { id: req.params.id },
+            });
+            if (removedLocation) {
+                res.status(200).json({ id: req.params.id });
+            } else {
+                res.status(404).json(actionFailed('remove', 'location'));
+            }
         } else {
-            res.status(404).json(actionFailed('remove', 'location'));
+            res.status(422).json(actionFailed('remove', 'location', 'there are some tutors/courses/schedules associated with this location'));
         }
     } catch (err) {
         next(err);

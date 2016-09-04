@@ -31,6 +31,22 @@ export default function createLocationModel(sequelize, DataTypes) {
                 return loc;
             },
         },
+        instanceMethods: {
+            async hasAny(model) {
+                const hasAny = await model.findOne({
+                    where: { locationId: this.id },
+                });
+
+                return !!hasAny;
+            },
+
+            async isSafeToDelete() {
+                const { tutor: Tutor, course: Course, schedule: Schedule } = sequelize.models;
+                const conditions = await Promise.all([Tutor, Course, Schedule].map(this.hasAny.bind(this)));
+
+                return conditions.every(c => c === false);
+            }
+        },
     });
     return location;
 }
