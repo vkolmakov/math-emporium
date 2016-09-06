@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom } from '../../aux';
 import { getCachedData } from '../appData';
-import { getAppointments } from '../appointments/appointments.service';
+import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 
 export const selectRandomTutor = tutors => {
     if (tutors.length === 0) {
@@ -35,14 +35,32 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
               .filter(t => !!t.courses.find(c => c.id === courseId));
 
     // go through schedule and count tutors that are selected and present
+    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate});
+
     const initialCounts = locationData.schedules
-              .map(s => ({
-                  weekday: s.weekday,
-                  time: s.time,
-                  count: s.tutors.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length,
-              }));
+              .map(s => {
+                  const relatedSpecialInstructions = specialInstructions.find(item => item.weekday === s.weekday && item.time === s.time);
+                  const hasSpecialInstructions = !!relatedSpecialInstructions;
+
+                  let tutorPool;
+                  let count;
+                  if (hasSpecialInstructions) {
+                      tutorPool = relatedSpecialInstructions.overwriteTutors;
+                      count = tutorPool.filter(t => !!selectedTutors.find(ti => t.name.toLowerCase() === ti.name.toLowerCase())).length;
+                  } else {
+                      tutorPool = s.tutors;
+                      count = tutorPool.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length;
+                  }
+
+                  return {
+                      weekday: s.weekday,
+                      time: s.time,
+                      count,
+                  };
+              });
 
     const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
+
     const scheduledCounts = appointments.reduce((results, item) => {
         const { tutor: tutorName, time, weekday } = item;
 
@@ -94,11 +112,34 @@ export const findAvailableTutors = async ({ time, course, location }) => {
     if (!selectedSchedule) {
         throw new Error('Schedule not found');
     }
-    // `join` scheduled tutors and location tutors, that is find a complete list of scheduled tutors with
-    // all the information
-    const scheduledTutors = selectedSchedule.tutors.map(
-        scheduledTutor => locationData.tutors.find(tutor => scheduledTutor.id === tutor.id)
-    );
+
+
+    let scheduledTutors;
+    // try to find any special instructions related to this time and date
+    const specialInstructions = await getSpecialInstructions({
+        locationId: locationData.location.id,
+        startDate: time,
+        endDate: moment(time).add(1, 'hours'),
+    });
+    const hasSpecialInstructions = specialInstructions.length > 0;
+    if (hasSpecialInstructions) {
+        // `join` scheduled tutors and location tutors, that is find a complete list of scheduled tutors with
+        // all the information
+        scheduledTutors = specialInstructions[0].overwriteTutors.reduce(
+            (results, scheduledTutor) => {
+                const tutor = locationData.tutors.find(tutor => scheduledTutor.name.toLowerCase() === tutor.name.toLowerCase());
+                if (!tutor) {
+                    return results;
+                }
+
+                return results.concat(tutor);
+            }, []);
+    } else {
+        // same here
+        scheduledTutors = selectedSchedule.tutors.map(
+            scheduledTutor => locationData.tutors.find(tutor => scheduledTutor.id === tutor.id)
+        );
+    }
 
     // filter out tutors that can't tutor a required course
     const filteredScheduledTutors = scheduledTutors.filter(

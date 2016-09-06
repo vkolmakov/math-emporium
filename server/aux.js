@@ -73,3 +73,16 @@ export const extractInfoFromSummary = summary => {
     };
 };
 
+export const extractSpecialInstructions = summary => {
+    const instructionsRegex = /^_\d+\*\((.+?)\)$/;
+    const match = summary.match(instructionsRegex);
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        overwriteTutors: match[1].split('-').map(tutorName => ({ name: tutorName })),
+    };
+};
+
