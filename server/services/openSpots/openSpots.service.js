@@ -127,6 +127,7 @@ export const findAvailableTutors = async ({ time, course, location }) => {
         // all the information
         scheduledTutors = specialInstructions[0].overwriteTutors.reduce(
             (results, scheduledTutor) => {
+                // with special instructions try to find tutor by name
                 const tutor = locationData.tutors.find(tutor => scheduledTutor.name.toLowerCase() === tutor.name.toLowerCase());
                 if (!tutor) {
                     return results;
@@ -137,6 +138,7 @@ export const findAvailableTutors = async ({ time, course, location }) => {
     } else {
         // same here
         scheduledTutors = selectedSchedule.tutors.map(
+            // without special instructions just get tutors by id
             scheduledTutor => locationData.tutors.find(tutor => scheduledTutor.id === tutor.id)
         );
     }

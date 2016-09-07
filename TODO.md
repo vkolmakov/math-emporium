@@ -20,15 +20,17 @@
 
 ## Editing app ##
 
-* Real-time calendar representation in edit-schedule
+* Real-time calendar representation in edit-schedule **[~~server~~ + client]**
 
-* Useful tutor overview page
+* Useful tutor overview page **[client]**
+
+* Display server-side errors on top of the table **[client]**
 
 ## Managing app ##
 
 * ~~Better navigation (filter users by access groups)~~
 
-* Ability to search through users
+* Ability to search through users **[client]**
 
 ## General ##
 
@@ -45,12 +47,10 @@
 * ~~Add password reset functionality **[server + client]**~~
 
 * Complete server-side verification for several models **[server]**
-  - Check the existence of one-to-many relationships on any object before allowing to remove it
+  - Check the existence of one-to-many relationships on any object before allowing to remove it (~~Locations~~, Courses?, Tutors?, Schedules?)
 
 * Refactor + add more features in the edit-schedule app **[client]**
   - Add ability to bulk-add schedules by submitting a list of times **[+server]**
 
 * Optimize some backend stuff **[server]**
   - Optimize openSpots service
-
-* Tutor profile page
