@@ -32,6 +32,42 @@ class ShowSchedule extends Component {
             }));
         }
 
+        const onSelectChange = (prevVal, handler, key = 'id') => (nextVal) => {
+            let isValChange;
+            if (key) {
+                isValChange = !(prevVal && nextVal) || prevVal[key] !== nextVal[key];
+            } else {
+                isValChange = !(prevVal && nextVal) || (prevVal !== nextVal);
+            }
+
+            if (isValChange) {
+                handler(nextVal);
+            }
+        };
+
+        const onCourseChange = (courseOption) => {
+            const prevCourse = courses.selected;
+            const nextCourse = courseOption ? courses.all.find(c => courseOption.value === c.id) : null;
+
+            return onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
+        };
+
+        const onLocationChange = (locationOption) => {
+            const prevLocation = locations.selected;
+            const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
+
+            return onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
+        };
+
+        const onStartDateChange = (startDateOption) => {
+            const prevStartDate = startDate;
+            const nextStartDate = moment(startDateOption.startOf('isoWeek'));
+
+            if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
+                this.props.setStartDate(nextStartDate);
+            }
+        };
+
         return (
             <div className="content">
 
@@ -43,7 +79,7 @@ class ShowSchedule extends Component {
                               endDate={moment(startDate).endOf('isoWeek')}
                               locale="en-gb"
                               dateFormat="MM/DD/YYYY"
-                              onChange={this.props.setStartDate} />
+                              onChange={onStartDateChange} />
 
                   <DatePicker selected={moment(startDate).endOf('isoWeek')}
                               locale="en-gb"
@@ -54,12 +90,12 @@ class ShowSchedule extends Component {
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
                                 placeholder="Select a location"
-                                onChange={this.props.setLocation} />
+                                onChange={onLocationChange} />
 
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
                                 placeholder="Select a course"
-                                onChange={this.props.setCourse} />
+                                onChange={onCourseChange} />
 
               </div>
 

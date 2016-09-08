@@ -44,13 +44,12 @@ class OpenSpots extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { location, course, startDate, openSpots: currOpenSpots } = this.props;
-
+        const { location, course, startDate } = this.props;
         const isEverythingSelected = [location, course, startDate].every(e => !!e);
-        const isFirstRender = currOpenSpots.length === 0;
         const isRerenderWithNewCourse = prevProps.course && course && prevProps.course.id !== course.id || !prevProps.course;
+        const isRerenderWithNewDate = prevProps.startDate && startDate && prevProps.startDate !== startDate;
 
-        if (isEverythingSelected && (isFirstRender || isRerenderWithNewCourse)) {
+        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate)) {
             this.props.getOpenSpots({ location, course, startDate });
         }
     }
@@ -248,7 +247,7 @@ class OpenSpots extends Component {
                     additionalComments,
                 },
             });
-        }
+        };
 
         const tutorOptions = availableTutors.map(t => ({ label: t.name, value: t.id }));
 
