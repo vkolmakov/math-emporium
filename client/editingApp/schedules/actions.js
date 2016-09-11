@@ -43,12 +43,12 @@ export function deleteSchedule(id) {
 }
 
 export function createSchedule(data) {
-    const requestData = {
-        time: data.time,
+    const requestData = data.time.map(time => ({
+        time: time.value,
         weekday: data.weekday,
         location: { id: data.location },
         tutors: data.tutors.map(tutor => ({ id: tutor.value })),
-    };
+    }));
 
     const request = axios.post(BASE_URL, requestData);
 

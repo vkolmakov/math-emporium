@@ -45,37 +45,41 @@ export const handleGetId = async (req, res, next) => {
 
 export const handlePost = async (req, res, next) => {
     try {
-        if (!isObject(req.body.location)) {
+        const schedules = req.body;
+        const firstSchedule = schedules[0];
+
+        if (!isObject(firstSchedule.location)) {
             throw Error('"location" object (with "name" or "id" field) is required');
         }
 
-        const location = await Location.findIfExists(req.body.location);
+        const location = await Location.findIfExists(firstSchedule.location);
+        const hasTutors = hasOneOf(firstSchedule, 'tutors')
+                       && isObject(firstSchedule.tutors)
+                       && (hasOneOf(firstSchedule.tutors[0], 'id'));
 
         if (!location) {
             res.status(422).json(notFound('location'));
         }
 
-        const createdSchedule = Schedule.build(req.body, {
-            fields: allowedToWrite,
+        const createdSchedulesPromise = schedules.map(schedule => {
+            return new Promise(async (resolve, reject) => {
+                const createdSchedule = Schedule.build(schedule, {
+                    fields: allowedToWrite,
+                });
+
+                await createdSchedule.setLocation(location, { save: false });
+                await createdSchedule.save();
+
+                if (hasTutors) {
+                    await createdSchedule.setTutors(schedule.tutors.map((tutor) => tutor.id));
+                }
+
+                resolve(createdSchedule);
+            });
         });
 
-        await createdSchedule.setLocation(location, { save: false });
-
-        await createdSchedule.save();
-
-        // setting tutors, if provided
-        if (hasOneOf(req.body, 'tutors')) {
-            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id'))) {
-                // check if first element of the array is a valid tutor object
-                await createdSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
-            } else {
-                res.status(422).json({ error: 'Created a schedule with no tutors' });
-            }
-        } else {
-            res.status(422).json(actionFailed('process', 'tutors'));
-        }
-
-        res.status(201).json(extractDataValues(createdSchedule));
+        const createdSchedules = await Promise.all(createdSchedulesPromise);
+        res.status(201).json(createdSchedules.map(extractDataValues));
     } catch (err) {
         if (err.message) {
             // this is a validation error!

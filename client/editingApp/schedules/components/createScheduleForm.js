@@ -87,7 +87,7 @@ class CreateScheduleForm extends Component {
             }, {
                 label: 'Time',
                 input: {
-                    type: 'select',
+                    type: 'multiselect',
                     binding: time,
                     options: timeOptions,
                 },
