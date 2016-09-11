@@ -79,6 +79,7 @@ class ShowSchedule extends Component {
                               endDate={moment(startDate).endOf('isoWeek')}
                               locale="en-gb"
                               dateFormat="MM/DD/YYYY"
+                              readOnly={true}
                               onChange={onStartDateChange} />
 
                   <DatePicker selected={moment(startDate).endOf('isoWeek')}
