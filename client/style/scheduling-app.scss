@@ -161,17 +161,17 @@
     > .faq {
         > ul {
             list-style-type: none;
-            padding-left: 0px;
+            padding-left: 0;
 
             > li {
                 > .question {
                     font-weight: 600;
-                    margin-bottom: 0px;
+                    margin-bottom: 0;
                 }
 
                 > .answer {
                     padding-left: 20px;
-                    margin-top: 0px;
+                    margin-top: 0;
                 }
             }
         }
@@ -182,10 +182,10 @@
     @include rounded-border();
 
     position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     max-width: 600px;
     max-height: 600px;
