@@ -30,6 +30,12 @@ module.exports = {
         }, {
             test: /\.css$/,
             loader: ExtractTextPlugin.extract('!css'),
+        }, {
+            test: /\.(png|jpg|gif|svg)$/,
+            loader: 'file',
+            query: {
+                name: '[name].[ext]?[hash]',
+            },
         }],
     },
     plugins: [
