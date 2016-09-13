@@ -81,6 +81,7 @@ class UpdateProfileForm extends Component {
                     type: 'select',
                     binding: location,
                     options: locationsOptions,
+                    searchable: false,
                     onSelect: (value) => {
                         this.props.dispatch(change(FORM_NAME, 'course', null));
                         this.setState({
@@ -97,6 +98,7 @@ class UpdateProfileForm extends Component {
                     type: 'select',
                     binding: course,
                     options: coursesOptions,
+                    searchable: false,
                     onSelect: (value) => {
                         this.setState({
                             ...this.state,

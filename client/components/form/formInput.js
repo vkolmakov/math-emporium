@@ -3,7 +3,7 @@ import Select from '../select/reactSelectWrapper';
 
 import ColorIcon from '../colorIcon';
 
-export default ({ type, binding, options, onSelect, controlValue, placeholder }) => {
+export default ({ type, binding, options, onSelect, controlValue, placeholder, ...rest }) => {
     let inputElement;
 
     const textInputTypes = ['text', 'password', 'email'];
@@ -62,8 +62,9 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder })
             <Select options={options}
                     binding={binding}
                     multi={type === 'multiselect'}
+                    onChange={onSelectHandler}
                     {...renderer}
-                    onChange={onSelectHandler}/>
+                    {...rest} />
         ); // Ugly workaround to make redux-form and custom event handler work together
     }
 
