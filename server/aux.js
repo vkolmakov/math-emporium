@@ -1,6 +1,7 @@
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY h:mm a';
 export const TIMEZONE = 'US/Central';
+export const USER_EMAIL_REGEX = /.+@(?:student.)?ccc\.edu$/;
 
 export const AUTH_GROUPS = {
     user: 1,

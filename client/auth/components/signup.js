@@ -7,6 +7,8 @@ import { signupUser, clearAuthError, authError } from '../actions';
 import Form from '../../components/form/index';
 import LoadingSpinner from '../../components/loadingSpinner';
 
+import { validateEmail } from '../../constants';
+
 class Signup extends Component {
     constructor() {
         super();
@@ -128,9 +130,8 @@ function validate(values) {
         }
     );
 
-    if (values.email && !values.email.match(/.+@.+\.\w+/)) {
-        // TODO: Only accept school emails
-        errors.email = 'Use a valid email address';
+    if (values.email && !validateEmail(values.email)) {
+        errors.email = 'Please use a valid school (ccc.edu or student.ccc.edu) email address';
     }
 
     if (values.password && values.password.length <= minPasswordLength) {

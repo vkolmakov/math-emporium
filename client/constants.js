@@ -35,3 +35,6 @@ export const AUTH_GROUPS = {
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_DISPLAY_FORMAT = 'dddd, M/DD [at] h:mm a';
+export const USER_EMAIL_REGEX = /.+@(?:student.)?ccc\.edu$/;
+
+export const validateEmail = (email) => !!email.match(USER_EMAIL_REGEX);

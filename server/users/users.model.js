@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, pickOneFrom } from '../aux';
+import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, pickOneFrom, USER_EMAIL_REGEX } from '../aux';
 
 const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
@@ -73,7 +73,7 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             validateEmail(email) {
                 const requirements = [
-                    email.match(/.+@.+\.\w+/),
+                    email.match(USER_EMAIL_REGEX),
                     // TODO: add school email requirement
                 ];
 

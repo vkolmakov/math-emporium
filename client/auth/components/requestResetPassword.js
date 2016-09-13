@@ -92,8 +92,9 @@ class RequestResetPassword extends Component {
 
 function validate(values) {
     const errors = {};
+    const email = { values };
 
-    if (!values.email) {
+    if (!email) {
         errors.email = 'Must provide an email address';
     }
 
