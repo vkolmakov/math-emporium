@@ -135,14 +135,34 @@
             @include breakpoint($medium-screen) {
                 @include span(2 of 4 last);
             }
+            @include set-react-select-selection-area-size(120px);
+        }
+    }
+}
 
-            $select-height: 120px;
-            > .Select-menu-outer {
-                max-height: $select-height !important;
-                > .Select-menu {
-                    max-height: $select-height !important;
-                }
-            }
+.profile-form-modal {
+    h2 {
+        margin: 0 0.5em;
+    }
+    form > h2 {
+        margin: 0;
+    }
+
+    .Select {
+        @include set-react-select-selection-area-size(90px);
+    }
+
+
+    @include breakpoint($medium-screen) {
+        h2 {
+            margin: 1em;
+        }
+        form > h2 {
+            margin: 0.2em 0;
+        }
+
+        .Select {
+            @include set-react-select-selection-area-size(240px);
         }
     }
 }

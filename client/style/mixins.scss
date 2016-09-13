@@ -50,3 +50,12 @@
         background-color: $primary-color;
     }
 }
+
+@mixin set-react-select-selection-area-size($size) {
+    > .Select-menu-outer {
+        max-height: $size !important;
+        > .Select-menu {
+            max-height: $size !important;
+        }
+    }
+}
