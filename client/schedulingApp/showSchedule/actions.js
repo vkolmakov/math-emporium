@@ -73,7 +73,7 @@ export function scheduleAppointment({ location, course, time, requestedTutor, ad
 
         return axios.post(BASE_URL_APPOINTMENT, requestData)
             .then(response => {
-                const startMessages = ['Aww yiss', 'Great success', 'Super', 'Awesome'];
+                const startMessages = ['Great']; // no more fun times :(
                 const messageStart = startMessages[Math.floor(Math.random() * startMessages.length)];
                 const successMessage = `${messageStart}, your appointment has been scheduled!`;
                 dispatch(schedulingMessage(successMessage));

@@ -10,7 +10,7 @@ class Signout extends Component {
 
     render() {
         return (
-            <div className="auth-form-wrap"><h1>Buh-bye!</h1></div>
+            <div className="auth-form-wrap"><h1>Goodbye!</h1></div>
         );
     }
 }
