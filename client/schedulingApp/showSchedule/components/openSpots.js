@@ -260,13 +260,14 @@ class OpenSpots extends Component {
               <div className="controls-wrapper">
                   <h2>Select a tutor:</h2>
                   <Select options={tutorOptions}
-                        value={this.state.appointmentInfo.requestedTutor.id}
-                        clearable={false}
-                        onChange={selectTutor}
-                        placeholder="Select a tutor..."/>
+                          value={this.state.appointmentInfo.requestedTutor.id}
+                          searchable={false}
+                          clearable={false}
+                          onChange={selectTutor}
+                          placeholder="Select a tutor..." />
                   <textarea value={this.state.appointmentInfo.additionalComments}
                             onChange={updateAdditionalComments}
-                            placeholder="Additional comments..."/>
+                            placeholder="Additional comments..." />
               </div>
 
               <div className="buttons">
