@@ -10,9 +10,7 @@ export const AUTH_GROUPS = {
     admin: 4,
 };
 
-export function isObject(obj) {
-    return obj === Object(obj);
-}
+export const isObject = (obj) => obj === Object(obj);
 
 export function hasOneOf(obj, ...keys) {
     return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
@@ -87,3 +85,6 @@ export const extractSpecialInstructions = summary => {
     };
 };
 
+export const range = (start, end) => [...Array(end).keys()].slice(start);
+export const first = (list) => list[0];
+export const contains = (list, elem) => list.indexOf(elem) > -1;

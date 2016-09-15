@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { TIMEZONE, pickOneFrom } from '../../aux';
+import { TIMEZONE, pickOneFrom, range, first, contains } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 
@@ -10,6 +10,22 @@ export const selectRandomTutor = tutors => {
     }
 
     return pickOneFrom(tutors);
+};
+
+const predictTutorName = (rawName, options) => {
+    const [searchFromIdx, searchUpToIdx] = [2, 6];
+
+    const candidateLists = range(searchFromIdx, searchUpToIdx).reduce((result, num) => {
+        const candidates = options.filter(name => name.toLowerCase().startsWith(rawName.toLowerCase().slice(0, num)));
+        return candidates.length > 0 ? result.concat([candidates]) : result;
+    }, []);
+
+    if (candidateLists.length < 1) {
+        return rawName;
+    } else {
+        const candidates = first(candidateLists.sort((l1, l2) => l1.length - l2.length));
+        return selectRandomTutor(candidates);
+    }
 };
 
 export const openSpots = async (locationId, courseId, startDate, endDate) => {
@@ -35,41 +51,49 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
               .filter(t => !!t.courses.find(c => c.id === courseId));
 
     // go through schedule and count tutors that are selected and present
-    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate});
+    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate });
 
-    const initialCounts = locationData.schedules
-              .map(s => {
-                  const relatedSpecialInstructions = specialInstructions.find(item => item.weekday === s.weekday && item.time === s.time);
-                  const hasSpecialInstructions = !!relatedSpecialInstructions;
+    const initialCounts = locationData.schedules.map(s => {
+        const relatedSpecialInstructions = specialInstructions.find(item => item.weekday === s.weekday && item.time === s.time);
+        const hasSpecialInstructions = !!relatedSpecialInstructions;
 
-                  let tutorPool;
-                  let count;
-                  if (hasSpecialInstructions) {
-                      tutorPool = relatedSpecialInstructions.overwriteTutors;
-                      count = tutorPool.filter(t => !!selectedTutors.find(ti => t.name.toLowerCase() === ti.name.toLowerCase())).length;
-                  } else {
-                      tutorPool = s.tutors;
-                      count = tutorPool.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length;
-                  }
+        let tutorPool;
+        let count;
+        if (hasSpecialInstructions) {
+            tutorPool = relatedSpecialInstructions.overwriteTutors;
+            count = tutorPool.filter(t => !!selectedTutors.find(ti => t.name.toLowerCase() === ti.name.toLowerCase())).length;
+        } else {
+            tutorPool = s.tutors;
+            count = tutorPool.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length;
+        }
 
-                  return {
-                      weekday: s.weekday,
-                      time: s.time,
-                      count,
-                  };
-              });
+        return {
+            weekday: s.weekday,
+            time: s.time,
+            count,
+        };
+    });
 
     const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
 
     const scheduledCounts = appointments.reduce((results, item) => {
-        const { tutor: tutorName, time, weekday } = item;
+        const { tutor: rawTutorName, time, weekday } = item;
 
-        const isSelectedTutor = !!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
-        const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
+        const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === rawTutorName.toLowerCase());
+        let tutorName;
+        if (!isTutor) {
+            tutorName = predictTutorName(rawTutorName, locationData.tutors.map(t => t.name));
+        } else {
+            tutorName = rawTutorName;
+        }
+
+        // check if this is in fact a known tutor after trying to predict a name based on spelling
+        const isValidTutorName = !isTutor && tutorName !== rawTutorName;
+        const isSelectedTutor = isValidTutorName && !!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
 
         let existingResult;
-        if (isSelectedTutor || !isTutor) {
-            // play it safe, if something unknown was encountered just assume this spot is taken
+        // play it safe, if something unknown was encountered just assume this spot is taken
+        if (isSelectedTutor || !isValidTutorName) {
             existingResult = results.find(r => r.weekday === weekday && r.time === time);
             if (existingResult) {
                 existingResult.count += 1;
@@ -153,7 +177,15 @@ export const findAvailableTutors = async ({ time, course, location }) => {
         startDate: time,
         endDate: moment(time).add(1, 'hours'),
     });
-    const busyTutorsNames = appointments.map(appointment => appointment.tutor);
+
+    const busyTutorsNames = appointments.map(appointment => {
+        const { tutor: rawTutorName } = appointment;
+        const scheduledTutorNames = scheduledTutors.map(t => t.name);
+
+        return contains(scheduledTutorNames.map(name => name.toLowerCase()), rawTutorName.toLowerCase())
+               ? rawTutorName
+               : predictTutorName(rawTutorName, scheduledTutorNames);
+    });
 
     // Keep only tutors whose names are not in the busyTutorsNames array
     const availableTutors = filteredScheduledTutors.filter(
