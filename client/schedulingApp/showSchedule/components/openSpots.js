@@ -214,7 +214,10 @@ class OpenSpots extends Component {
         );
 
         const scheduleAppointment = e => {
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+            }
+
             this.setState({
                 displayScheduleModal: false,
                 displayLoadingModal: true,
@@ -299,8 +302,11 @@ class OpenSpots extends Component {
                 this.props.setLocation(appointmentInfo.location);
                 this.props.setCourse(appointmentInfo.course);
                 this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
+
+                this.handleOpen(appointmentInfo.time)();
+
                 this.timeout = null;
-            }, 1500);
+            }, 2000);
         };
 
         let profile = this.props.profile;
