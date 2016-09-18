@@ -26,12 +26,13 @@
 
     background-color: $secondary-color;
 
-    > .loading {
-        margin: 66px auto;
-        @include breakpoint($medium-screen) {
-            margin: 76px auto;
-        }
+     @include breakpoint($medium-screen) {
+        max-width: 500px;
+        max-height: 300px;
     }
+
+    max-width: 300px;
+    max-height: 300px;
 
     > h2 {
         @include modal-header-text();
@@ -85,14 +86,6 @@
 
 .scheduling-modal {
     @extend .base-modal;
-
-    @include breakpoint($medium-screen) {
-        max-width: 475px;
-        max-height: 300px;
-    }
-
-    max-width: 300px;
-    max-height: 300px;
 
     > .controls-wrapper {
         @include container();
@@ -168,27 +161,12 @@
     }
 }
 
-.loading {
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    $size: 24px;
-    $spin-duration: 0.5s;
-    border-radius: 50%;
-    width: $size;
-    height: $size;
-    border: .25rem solid $primary-color;
-    border-top-color: darken($primary-color, 15%);
-    animation: spin $spin-duration infinite;
-
-    margin: 1em auto;
-    @include breakpoint($medium-screen) {
-        margin: 25vh auto;
+.loading-modal {
+   @extend .base-modal;
+   > .loading {
+       margin: 128px auto;
+       @include breakpoint($medium-screen) {
+           margin: 128px auto;
+       }
     }
 }

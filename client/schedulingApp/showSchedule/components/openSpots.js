@@ -299,9 +299,11 @@ class OpenSpots extends Component {
                 this.setState({
                     displayScheduleModal: false,
                     displayProfileModal: false,
-                    appointmentInfo,
+                    displayLoadingModal: false,
                     forceLoadingSpinner: false,
+                    appointmentInfo,
                 });
+
                 this.props.setLocation(appointmentInfo.location);
                 this.props.setCourse(appointmentInfo.course);
                 this.props.getOpenSpots({ ...appointmentInfo, startDate: this.props.startDate });
@@ -341,7 +343,7 @@ class OpenSpots extends Component {
         return (
             <Modal isOpen={this.state.displayLoadingModal}
                    onRequestClose={onRequestClose}
-                   className="confirmation-modal">
+                   className="loading-modal">
               <LoadingSpinner />
             </Modal>
         );
@@ -406,7 +408,7 @@ class OpenSpots extends Component {
             );
         }
 
-        const isWaitingOnOpenSpots = this.props.openSpots && this.props.openSpots.length == 0;
+        const isWaitingOnOpenSpots = this.props.openSpots && this.props.openSpots.length === 0;
         if (isWaitingOnOpenSpots) {
             return (
                 <LoadingSpinner />
