@@ -285,10 +285,10 @@ export default function createUserModel(sequelize, DataTypes) {
                 }
 
                 const user = this;
-                const openers = ['Hello', 'Hi', 'Greetings', 'Salut'];
+                const openers = ['Hello', 'Hi', 'Greetings'];
                 const greeting = `${pickOneFrom(openers)} ${user.dataValues.firstName || user.dataValues.email.split('@')[0]},`;
 
-                const closers = ['Bye', 'Best', 'Thanks', 'Cheers'];
+                const closers = ['Bye', 'Best', 'Thanks'];
                 const valediction = `${pickOneFrom(closers)},\n${process.env.HOSTNAME}`;
 
                 const message = [greeting, body, valediction];

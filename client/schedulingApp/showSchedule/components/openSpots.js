@@ -70,7 +70,10 @@ class OpenSpots extends Component {
 
     handleOpen(time) {
         return (event) => {
-            event.preventDefault();
+            if (event) {
+                event.preventDefault();
+            }
+
             const { location, course, profile } = this.props;
             const appointmentInfo = {
                 location,
