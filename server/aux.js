@@ -58,7 +58,7 @@ export function pickOneFrom(list) {
 }
 
 export const extractInfoFromSummary = summary => {
-    const appointmentRegex = /(\w.+?)\((.+?)\)(.+)/;
+    const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
     const match = summary.match(appointmentRegex);
 
     if (!match) {
