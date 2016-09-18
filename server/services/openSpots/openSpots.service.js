@@ -59,7 +59,7 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
 
         let tutorPool;
         let count;
-        if (hasSpecialInstructions) {
+        if (hasSpecialInstructions && relatedSpecialInstructions.overwriteTutors) {
             tutorPool = relatedSpecialInstructions.overwriteTutors;
             count = tutorPool.filter(t => !!selectedTutors.find(ti => t.name.toLowerCase() === ti.name.toLowerCase())).length;
         } else {
@@ -109,13 +109,13 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
         return results;
     }, []);
 
-    const openSpots = initialCounts.map(sc => {
-        // find an appropriate calendarCount
-        const cc = scheduledCounts.find(cc => sc.weekday === cc.weekday && sc.time === cc.time);
+    const openSpots = initialCounts.map(ic => {
+        // find an appropriate scheduledCount
+        const sc = scheduledCounts.find(sc => ic.weekday === sc.weekday && ic.time === sc.time);
         return {
-            ...sc,
-            // if a calendarCount was found we subtract it, otherwise just subtract 0
-            count: sc.count - (cc ? cc.count : 0),
+            ...ic,
+            // if a scheduledCount was found we subtract it, otherwise just subtract 0
+            count: ic.count - (sc ? sc.count : 0),
         };
     });
 
