@@ -81,7 +81,7 @@ export const extractSpecialInstructions = summary => {
     }
 
     return {
-        overwriteTutors: match[1].split('-').map(tutorName => ({ name: tutorName })),
+        overwriteTutors: match[1].split('_').map(tutorName => ({ name: tutorName })),
     };
 };
 
