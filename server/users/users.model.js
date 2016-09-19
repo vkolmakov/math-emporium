@@ -250,7 +250,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 const formattedTime = time.format(TIMESTAMP_VISIBLE_FORMAT);
-                const emailBody = `We'll see you at ${location.name} for your ${course.code} appointment with ${tutor.name} on ${formattedTime}`;
+                const emailBody = `Your appointment has been scheduled for ${course.code} on ${formattedTime} with ${tutor.name} in the ${location.name}.`;
 
                 const mailOptions = {
                     subject: `Appointment reminder: ${location.name} on ${formattedTime}`,
@@ -274,7 +274,7 @@ export default function createUserModel(sequelize, DataTypes) {
             },
             composeEmail(body) {
                 function htmlify(sentence) {
-                    const handleNewlines = s => s.replace(/\n/, '<br />');
+                    const handleNewlines = s => s.replace(/\n/g, '<br />');
                     const handleLinks = s => {
                         const linkRegex = new RegExp(`.*?(${process.env.HOSTNAME}.*?)\\s`, 'gi');
                         return s.replace(linkRegex, '<a href="$1">$1</a> ');
@@ -285,10 +285,10 @@ export default function createUserModel(sequelize, DataTypes) {
                 }
 
                 const user = this;
-                const openers = ['Hello', 'Hi', 'Greetings'];
+                const openers = ['Hello'];
                 const greeting = `${pickOneFrom(openers)} ${user.dataValues.firstName || user.dataValues.email.split('@')[0]},`;
 
-                const closers = ['Bye', 'Best', 'Thanks'];
+                const closers = ['Have a great day!\nTutoring@Wright'];
                 const valediction = `${pickOneFrom(closers)},\n${process.env.HOSTNAME}`;
 
                 const message = [greeting, body, valediction];
