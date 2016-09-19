@@ -59,3 +59,19 @@
         }
     }
 }
+
+@mixin mobile-vh($vh) {
+  @media (max-device-aspect-ratio: 3/4) {
+    height: 100vw * (1.333 * $vh / 100);
+  }
+  @media (max-device-aspect-ratio: 2/3) {
+    height: 100vw * (1.5 * $vh / 100);
+  }
+  @media (max-device-aspect-ratio: 10/16) {
+    height: 100vw * (1.6 * $vh / 100);
+  }
+  @media (max-device-aspect-ratio: 9/16) {
+    height: 100vw * (1.778 * $vh / 100);
+  }
+  height: 100vh;
+}
