@@ -326,7 +326,7 @@ body {
         height: 100vh;
         text-align: center;
 
-        @include filter(blur(2.5px) grayscale(85%));
+        @include filter(blur(1px));
         background: $primary-color url('../assets/lowres.jpg') no-repeat center center;
         background-size: cover;
         content: "";
