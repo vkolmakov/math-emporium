@@ -50,9 +50,10 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     const selectedTutors = locationData.tutors
               .filter(t => !!t.courses.find(c => c.id === courseId));
 
-    // go through schedule and count tutors that are selected and present
+
     const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate });
 
+    // go through schedule and count tutors that are selected and present
     const initialCounts = locationData.schedules.map(s => {
         const relatedSpecialInstructions = specialInstructions.find(item => item.weekday === s.weekday && item.time === s.time);
         const hasSpecialInstructions = !!relatedSpecialInstructions;
@@ -82,13 +83,16 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
         const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === rawTutorName.toLowerCase());
         let tutorName;
         if (!isTutor) {
-            tutorName = predictTutorName(rawTutorName, locationData.tutors.map(t => t.name));
+            const schedule = locationData.schedules.find(s => s.weekday === weekday && s.time === time);
+            // if there is a schedule get scheduled tutors, otherwise get everyone
+            const tutorOptions = schedule ? schedule.tutors.map(t => t.name) : locationData.tutors.map(t => t.name);
+            tutorName = predictTutorName(rawTutorName, tutorOptions);
         } else {
             tutorName = rawTutorName;
         }
 
         // check if this is in fact a known tutor after trying to predict a name based on spelling
-        const isValidTutorName = !isTutor && tutorName !== rawTutorName;
+        const isValidTutorName = isTutor || (!isTutor && tutorName !== rawTutorName);
         const isSelectedTutor = isValidTutorName && !!selectedTutors.find(t => t.name.toLowerCase() === tutorName.toLowerCase());
 
         let existingResult;

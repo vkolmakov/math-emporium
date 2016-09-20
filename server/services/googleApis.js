@@ -38,6 +38,7 @@ export class CalendarService {
                 auth: this.auth,
                 calendarId,
                 maxResults: 1500,
+                singleEvents: true,
                 timeMin: startDate,
                 timeMax: endDate,
                 timeZone: TIMEZONE,
