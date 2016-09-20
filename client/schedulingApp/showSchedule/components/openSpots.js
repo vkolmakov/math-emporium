@@ -83,8 +83,10 @@ class OpenSpots extends Component {
 
             if (!this.props.authenticated) {
                 this.context.router.push('/signin');
+                // TODO: Save the appointment info into redux state and pull it out later
             } else {
                 const isCompleteProfile = !!(profile) && !!(profile.firstName && profile.lastName);
+                this.setState({ appointmentInfo });
 
                 if (isCompleteProfile) {
                     this.setState({ displayLoadingModal: true });
@@ -92,7 +94,7 @@ class OpenSpots extends Component {
                         const availableTutors = response.data;
 
                         if (availableTutors.length < 1) {
-                            throw new Error('There are no tutor available');
+                            throw new Error('There are no tutors available');
                         }
 
                         if (availableTutors.length > 1) {
@@ -362,6 +364,7 @@ class OpenSpots extends Component {
             this.setState({
                 displayProfileModal: false,
                 displayScheduleModal: false,
+                displayLoadingModal: false,
                 appointmentInfo,
             });
 
