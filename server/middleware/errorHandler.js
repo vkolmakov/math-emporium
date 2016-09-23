@@ -1,9 +1,15 @@
-import chalk from 'chalk';
+import { errorMessage } from '../services/errorMessages';
 
 export default (err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
-    console.log(chalk.red(err));
-    res.status(500).json({ error: 'An internal server error occured' });
+
+    console.error(err);
+
+    switch (err.status) {
+    case 404: res.status(err.status).json(err); break;
+    case 422: res.status(err.status).json(err); break;
+    default: res.status(500).json(errorMessage('An internal server error occured', 500)); break;
+    }
 };
