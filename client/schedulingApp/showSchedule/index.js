@@ -10,7 +10,8 @@ import OpenSpots from './components/openSpots';
 import { setLocation,
          setCourse } from '../actions';
 
-import { setStartDate } from './actions';
+import { setStartDate,
+         getOpenSpots } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 
@@ -59,6 +60,20 @@ class ShowSchedule extends Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        const location = this.props.locations.selected;
+        const [prevCourse, course] = [prevProps.courses.selected, this.props.courses.selected];
+        const [prevStartDate, startDate] = [prevProps.startDate, this.props.startDate];
+
+        const isEverythingSelected = [location, course, startDate].every(e => !!e);
+        const isRerenderWithNewCourse = prevCourse && course && prevCourse.id !== course.id || !prevCourse;
+        const isRerenderWithNewDate = prevStartDate && startDate && prevStartDate !== startDate;
+
+        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate)) {
+            this.props.getOpenSpots({ location, course, startDate });
+        }
+    }
+
     render() {
         const { locations, courses, startDate } = this.props;
         const locationsOptions = selectTransformOptions()(locations.all);
@@ -67,9 +82,10 @@ class ShowSchedule extends Component {
         if (!locations.selected) {
             coursesOptions = [];
         } else {
+            const transformCourseToOption = c => ({ value: c.id, label: `${c.code}: ${c.name}` });
             coursesOptions = courses.all
                 .filter(c => c.location.id === locations.selected.id)
-                .map(c => ({ value: c.id, label: `${c.code}: ${c.name}` }));
+                .map(transformCourseToOption);
         }
 
         return (
@@ -131,4 +147,5 @@ export default connect(mapStateToProps, {
     setLocation,
     setCourse,
     setStartDate,
+    getOpenSpots,
 })(ShowSchedule);

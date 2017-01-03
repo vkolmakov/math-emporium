@@ -35,25 +35,6 @@ class OpenSpots extends Component {
         };
     }
 
-    componentWillMount() {
-        const { location, startDate, course } = this.props;
-        if (location && startDate && course) {
-            this.props.resetOpenSpots();
-            this.props.getOpenSpots({ location, course, startDate });
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        const { location, course, startDate } = this.props;
-        const isEverythingSelected = [location, course, startDate].every(e => !!e);
-        const isRerenderWithNewCourse = prevProps.course && course && prevProps.course.id !== course.id || !prevProps.course;
-        const isRerenderWithNewDate = prevProps.startDate && startDate && prevProps.startDate !== startDate;
-
-        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate)) {
-            this.props.getOpenSpots({ location, course, startDate });
-        }
-    }
-
     handleExpired() {
         return () => {
             // TODO: Display a little tooltip on click
@@ -395,7 +376,7 @@ class OpenSpots extends Component {
 
         const { location, course, startDate, message } = this.props;
 
-        let errorMessage;
+        let errorMessage = null;
         if (!startDate) {
             errorMessage = 'Select a location';
         } else if (!location) {
