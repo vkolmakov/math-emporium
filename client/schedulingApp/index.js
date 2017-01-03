@@ -18,13 +18,13 @@ class SchedulingApp extends Component {
     }
 
     render() {
-        const { locations, courses } = this.props;
+        const { authenticated } = this.props;
 
         const currPath = this.props.location.pathname;
         const selected = currPath.split('/').pop();
 
         let links;
-        if (this.props.authenticated) {
+        if (authenticated) {
             links = [
                 ['show', 'Show Schedule'],
                 ['profile', 'My Profile'],
@@ -41,17 +41,6 @@ class SchedulingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
-        if (!(locations && courses)) {
-            return (
-                <div className="wrap">
-                  <Sidebar {...sidebarConfig} />
-                  <div className="content">
-                    <LoadingSpinner />
-                  </div>
-                </div>
-            );
-        }
-
         return (
             <div className="wrap">
               <Sidebar {...sidebarConfig} />
@@ -63,14 +52,6 @@ class SchedulingApp extends Component {
 
 function mapStateToProps(state) {
     return {
-        locations: {
-            all: state.scheduling.shared.locations.all,
-            selected: state.scheduling.shared.locations.selected,
-        },
-        courses: {
-            all: state.scheduling.shared.courses.all,
-            selected: state.scheduling.shared.courses.selected,
-        },
         authenticated: state.auth.authenticated,
     };
 }

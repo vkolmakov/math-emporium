@@ -7,9 +7,7 @@ import DatePicker from 'react-datepicker';
 import FilterControls from '../../components/filterControls';
 import OpenSpots from './components/openSpots';
 
-import { getLocations,
-         getCourses,
-         setLocation,
+import { setLocation,
          setCourse } from '../actions';
 
 import { setStartDate } from './actions';
@@ -17,22 +15,8 @@ import { setStartDate } from './actions';
 import { selectTransformOptions } from '../../editingApp/utils';
 
 class ShowSchedule extends Component {
-    render() {
-        const { locations, courses, startDate } = this.props;
-        const locationsOptions = selectTransformOptions()(locations.all);
-
-        let coursesOptions;
-        if (!locations.selected) {
-            coursesOptions = [];
-        } else {
-            const filteredCourses = courses.all.filter(c => c.location.id === locations.selected.id);
-            coursesOptions = filteredCourses.map(c => ({
-                value: c.id,
-                label: `${c.code}: ${c.name}`,
-            }));
-        }
-
-        const onSelectChange = (prevVal, handler, key = 'id') => (nextVal) => {
+    onSelectChange(prevVal, handler, key = 'id') {
+        return (nextVal) => {
             let isValChange;
             if (key) {
                 isValChange = !(prevVal && nextVal) || prevVal[key] !== nextVal[key];
@@ -44,29 +28,49 @@ class ShowSchedule extends Component {
                 handler(nextVal);
             }
         };
+    }
 
-        const onCourseChange = (courseOption) => {
-            const prevCourse = courses.selected;
-            const nextCourse = courseOption ? courses.all.find(c => courseOption.value === c.id) : null;
+    onCourseChange(courseOption) {
+        const { courses } = this.props;
 
-            return onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
-        };
+        const prevCourse = courses.selected;
+        const nextCourse = courseOption ? courses.all.find(c => courseOption.value === c.id) : null;
 
-        const onLocationChange = (locationOption) => {
-            const prevLocation = locations.selected;
-            const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
+        return this.onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
+    }
 
-            return onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
-        };
+    onLocationChange(locationOption) {
+        const { locations } = this.props;
 
-        const onStartDateChange = (startDateOption) => {
-            const prevStartDate = startDate;
-            const nextStartDate = moment(startDateOption.startOf('isoWeek'));
+        const prevLocation = locations.selected;
+        const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
 
-            if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
-                this.props.setStartDate(nextStartDate);
-            }
-        };
+        return this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
+    }
+
+    onStartDateChange(startDateOption) {
+        const { startDate } = this.props;
+
+        const prevStartDate = startDate;
+        const nextStartDate = moment(startDateOption.startOf('isoWeek'));
+
+        if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
+            this.props.setStartDate(nextStartDate);
+        }
+    }
+
+    render() {
+        const { locations, courses, startDate } = this.props;
+        const locationsOptions = selectTransformOptions()(locations.all);
+
+        let coursesOptions;
+        if (!locations.selected) {
+            coursesOptions = [];
+        } else {
+            coursesOptions = courses.all
+                .filter(c => c.location.id === locations.selected.id)
+                .map(c => ({ value: c.id, label: `${c.code}: ${c.name}` }));
+        }
 
         return (
             <div className="content">
@@ -80,7 +84,7 @@ class ShowSchedule extends Component {
                               locale="en-gb"
                               dateFormat="MM/DD/YYYY"
                               readOnly={true}
-                              onChange={onStartDateChange} />
+                              onChange={this.onStartDateChange.bind(this)} />
 
                   <DatePicker selected={moment(startDate).endOf('isoWeek')}
                               locale="en-gb"
@@ -91,12 +95,12 @@ class ShowSchedule extends Component {
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
                                 placeholder="Select a location"
-                                onChange={onLocationChange} />
+                                onChange={this.onLocationChange.bind(this)} />
 
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
                                 placeholder="Select a course"
-                                onChange={onCourseChange} />
+                                onChange={this.onCourseChange.bind(this)} />
 
               </div>
 
@@ -124,8 +128,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-    getLocations,
-    getCourses,
     setLocation,
     setCourse,
     setStartDate,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import TimerMixin from 'react-timer-mixin';
 import { connect } from 'react-redux';
-import { Router, Link } from 'react-router';
+import { Link } from 'react-router';
 import moment from 'moment';
 import reactMixin from 'react-mixin';
 
@@ -14,7 +14,7 @@ import { getOpenSpots,
 
 import { setLocation, setCourse } from '../../actions';
 
-import { TIME_OPTIONS, BASE_PATH, TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
+import { BASE_PATH, TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 import UpdateProfileForm from '../../profile/components/updateProfileForm';
 import LoadingSpinner from '../../../components/loadingSpinner';
@@ -210,6 +210,7 @@ class OpenSpots extends Component {
         const displayTime = time.format(TIMESTAMP_DISPLAY_FORMAT);
         const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
 
+        // this comes
         const onRequestClose = _ => (
             this.setState({
                 displayScheduleModal: false,
