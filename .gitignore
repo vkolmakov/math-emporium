@@ -3,8 +3,6 @@ logs
 node_modules
 .npm
 .tern-port
-test
 dist
-restclient-examples
 *.pem
 .idea

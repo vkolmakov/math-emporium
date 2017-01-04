@@ -7,17 +7,15 @@
     "postinstall": "webpack --config ./webpack.production.config.js",
     "production": "NODE_ENV=production npm run start",
     "dev": "NODE_ENV=serverdev nodemon -w ./ -x npm run start",
-    "test": "mocha test/**/*.test.js --require babel-register --silent"
+    "test": "jest"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
-    "chai": "^3.5.0",
-    "chai-http": "^2.0.1",
     "eslint": "^2.9.0",
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-react": "^5.2.2",
-    "mocha": "^2.4.5",
+    "jest-cli": "^18.1.0",
     "nodemon": "^1.9.2",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.10.0"
@@ -61,6 +59,7 @@
     "react-redux": "^4.4.5",
     "react-router": "^2.4.1",
     "react-select": "^1.0.0-beta13",
+    "react-test-renderer": "^15.4.1",
     "react-timer-mixin": "^0.13.3",
     "redux": "^3.5.2",
     "redux-form": "^5.2.4",
@@ -77,7 +76,7 @@
   },
   "babel": {
     "presets": [
-      "node5"
+      "node5", "react"
     ]
   },
   "engines": {
