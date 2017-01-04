@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-const SingleOpenSpot = ({ startDate, openSpot }) => {
+const SingleOpenSpot = ({ startDate, openSpot, now }) => {
     const count = openSpot.count;
 
     // Add an ((ISO weekday number of a current spot) - 1)
@@ -13,7 +13,7 @@ const SingleOpenSpot = ({ startDate, openSpot }) => {
               .add(openSpot.time, 'minutes');
 
 
-    const isExpired = moment().isAfter(openSpotTime);
+    const isExpired = now.isAfter(openSpotTime);
     const isAvailable = count > 0;
 
     const openSpotText = `${openSpotTime.format('hh:mm a')}: ${isAvailable ? `${count} available` : 'none available'}`;
@@ -29,9 +29,9 @@ const SingleOpenSpot = ({ startDate, openSpot }) => {
     );
 };
 
-export default ({ startDate, weekdayDisplay, openSpots }) => (
-    <div className="weekday" key={weekdayDisplay}>
+export default ({ startDate, weekdayDisplay, openSpots, now }) => (
+    <div className="weekday">
         <p>{weekdayDisplay}</p>
-        {openSpots.map(os => <SingleOpenSpot startDate={startDate} openSpot={os} key={os.time} />)}
+        {openSpots.map(os => <SingleOpenSpot startDate={startDate} openSpot={os} now={now} key={os.time} />)}
     </div>
 );

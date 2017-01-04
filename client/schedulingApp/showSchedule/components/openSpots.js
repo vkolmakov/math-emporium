@@ -25,7 +25,7 @@ function partitionOpenSpotsByWeekday(openSpots, startDate) {
     }));
 }
 
-export default ({ openSpots, startDate, isLocationSelected, isCourseSelected }) => {
+export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, now }) => {
     if (!isLocationSelected) {
         return (<ErrorMessage message='Select a Location' />);
     }
@@ -42,12 +42,13 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected }) 
         <Weekday startDate={startDate}
                  weekdayDisplay={weekdayDisplay}
                  openSpots={openSpots}
+                 now={now}
                  key={weekdayDisplay} />
     );
 
     return (
         <div className="open-spots-display">
-            {partitionOpenSpotsByWeekday(openSpots).map(renderWeekday)}
+            {partitionOpenSpotsByWeekday(openSpots, startDate).map(renderWeekday)}
         </div>
     );
 };
