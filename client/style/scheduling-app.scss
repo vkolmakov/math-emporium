@@ -91,7 +91,7 @@
             margin: 0.5em 0;
             @include rounded-border();
 
-            > a {
+            > span {
                 display: block;
                 text-align: center;
                 text-decoration: none;
@@ -103,7 +103,7 @@
             @include spot();
             background-color: $primary-color;
 
-            > a {
+            > span {
                 color: $primary-text-color;
             }
         }
@@ -112,7 +112,7 @@
             @include spot();
             background-color: $danger-color;
 
-            > a {
+            > span {
                 color: $danger-text-color;
             }
         }
@@ -121,7 +121,7 @@
             @include spot();
             background-color: $tertiary-color;
 
-            > a {
+            > span {
                 color: lighten($primary-text-color, 64%);
             }
         }

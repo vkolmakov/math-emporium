@@ -75,7 +75,7 @@ class ShowSchedule extends Component {
     }
 
     render() {
-        const { locations, courses, startDate } = this.props;
+        const { locations, courses, startDate, openSpots } = this.props;
         const locationsOptions = selectTransformOptions()(locations.all);
 
         let coursesOptions;
@@ -120,9 +120,10 @@ class ShowSchedule extends Component {
 
               </div>
 
-              <OpenSpots course={courses.selected}
-                         location={locations.selected}
-                         startDate={startDate} />
+              <OpenSpots isCourseSelected={!!courses.selected}
+                         isLocationSelected={!!locations.selected}
+                         startDate={startDate}
+                         openSpots={openSpots} />
             </div>
         );
     }
