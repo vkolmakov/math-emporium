@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
-const SingleOpenSpot = ({ startDate, openSpot, now }) => {
+const SingleOpenSpot = ({ startDate, openSpot, now, handlers }) => {
     const count = openSpot.count;
 
     // Add an ((ISO weekday number of a current spot) - 1)
@@ -17,21 +17,21 @@ const SingleOpenSpot = ({ startDate, openSpot, now }) => {
     const isAvailable = count > 0;
 
     const openSpotText = `${openSpotTime.format('hh:mm a')}: ${isAvailable ? `${count} available` : 'none available'}`;
-    const openSpotClass =
+    const [openSpotClass, openSpotHandler] =
         isExpired
-            ? 'expired-spot'
-            : isAvailable ? 'open-spot' : 'closed-spot';
+            ? ['expired-spot', handlers.expired]
+            : isAvailable ? ['open-spot', handlers.available] : ['closed-spot', handlers.closed];
 
     return (
         <div className={openSpotClass}>
-            <span>{openSpotText}</span>
+            <span onClick={openSpotHandler(openSpotTime)}>{openSpotText}</span>
         </div>
     );
 };
 
-export default ({ startDate, weekdayDisplay, openSpots, now }) => (
+export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
     <div className="weekday">
         <p>{weekdayDisplay}</p>
-        {openSpots.map(os => <SingleOpenSpot startDate={startDate} openSpot={os} now={now} key={os.time} />)}
+        {openSpots.map(os => <SingleOpenSpot startDate={startDate} openSpot={os} now={now} key={os.time} handlers={handlers} />)}
     </div>
 );

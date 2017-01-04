@@ -8,13 +8,15 @@ exports[`OpenSpots component applies correct classes to empty and expired spots 
     </p>
     <div
       className="expired-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         09:00 am: 2 available
       </span>
     </div>
     <div
       className="expired-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         10:00 am: none available
       </span>
     </div>
@@ -26,7 +28,8 @@ exports[`OpenSpots component applies correct classes to empty and expired spots 
     </p>
     <div
       className="closed-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         10:00 am: none available
       </span>
     </div>
@@ -44,7 +47,8 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
     </p>
     <div
       className="open-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         10:00 am: 2 available
       </span>
     </div>
@@ -56,7 +60,8 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
     </p>
     <div
       className="open-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         09:00 am: 2 available
       </span>
     </div>
@@ -68,13 +73,15 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
     </p>
     <div
       className="open-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         10:00 am: 1 available
       </span>
     </div>
     <div
       className="open-spot">
-      <span>
+      <span
+        onClick={[Function]}>
         11:00 am: 5 available
       </span>
     </div>

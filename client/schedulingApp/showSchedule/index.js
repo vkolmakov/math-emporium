@@ -89,6 +89,12 @@ class ShowSchedule extends Component {
                 .map(transformCourseToOption);
         }
 
+        const openSpotHandlers = {
+            available: time => e => console.log('available', time, e),
+            expired: time => e => console.log('expired', time, e),
+            closed: time => e => console.log('closed', time, e),
+        };
+
         return (
             <div className="content">
 
@@ -125,7 +131,8 @@ class ShowSchedule extends Component {
                          isLocationSelected={!!locations.selected}
                          startDate={startDate}
                          now={now}
-                         openSpots={openSpots} />
+                         openSpots={openSpots}
+                         handlers={openSpotHandlers} />
             </div>
         );
     }

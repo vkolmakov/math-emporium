@@ -6,12 +6,19 @@ import OpenSpots from '../../../../client/schedulingApp/showSchedule/components/
 describe('OpenSpots component', () => {
     const startDate = moment('2017-01-02 00:00:00');
     const now = moment('2017-01-03 06:00:00');
+    const handlers = {
+        available: time => e => 'available',
+        expired: time => e => 'expired',
+        closed: time => e => 'closed',
+    };
+
     it('renders an appropriate error message if location is missing', () => {
         let component = renderer.create(
             <OpenSpots isLocationSelected={false}
                        isCourseSelected={false}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={[]} />
         );
 
@@ -23,6 +30,7 @@ describe('OpenSpots component', () => {
                        isCourseSelected={true}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={[]} />
         );
 
@@ -36,6 +44,7 @@ describe('OpenSpots component', () => {
                        isCourseSelected={false}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={[]} />
         );
 
@@ -48,6 +57,7 @@ describe('OpenSpots component', () => {
                        isCourseSelected={true}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={[]} />
         );
 
@@ -67,6 +77,7 @@ describe('OpenSpots component', () => {
                        isCourseSelected={true}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={openSpots} />
         );
 
@@ -85,6 +96,7 @@ describe('OpenSpots component', () => {
                        isCourseSelected={true}
                        startDate={startDate}
                        now={now}
+                       handlers={handlers}
                        openSpots={openSpots} />
         );
 
