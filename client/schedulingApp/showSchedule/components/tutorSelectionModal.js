@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Modal from 'react-modal';
-import { Link } from 'react-router';
 
 import Select from '../../../components/select/reactSelectWrapper';
 
 import { clearOpenSpotSelection } from '../actions';
-import { TIMESTAMP_DISPLAY_FORMAT } from '../../constants';
+import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 class TutorSelectionModal extends Component {
     constructor() {
@@ -15,24 +14,36 @@ class TutorSelectionModal extends Component {
         this.state = {
             additionalInfo: '',
             selectedTutor: null,
+            tutors: [],
         };
+    }
+
+    componentWillMount() {
+        const { selectedOpenSpotInfo } = this.props;
+
+        const tutors = selectedOpenSpotInfo.tutors.length > 1
+            ? [RANDOM_TUTOR, ...selectedOpenSpotInfo.tutors]
+            : selectedOpenSpotInfo.tutors;
+
+        this.setState({ tutors, selectedTutor: tutors[0] });
     }
 
     render() {
         const { selectedOpenSpotInfo } = this.props;
-        const { course, location, time, tutors } = selectedOpenSpotInfo;
+        const { course, location, time } = selectedOpenSpotInfo;
+        const { tutors } = this.state;
 
         const tutorOptions = tutors.map(t => ({ label: t.name, value: t.id }));
+
         const displayTime = time.format(TIMESTAMP_DISPLAY_FORMAT);
         const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
-
-        const selectedTutor = null;
 
         const onRequestClose = this.props.clearOpenSpotSelection;
         const onTutorSelect = tutorOption => this.setState({ selectedTutor: tutors.find(t => t.id === tutorOption.value) });
         const onAdditionalCommentsChange = e => this.setState({ additionalInfo: e.target.value });
-
-        const onScheduleAppointment = () => console.log('Scheduling an appointment...');
+        const onScheduleAppointment = () => {
+            const { selectedTutor, additionalInfo } = this.state;
+        };
 
         return (
             <Modal isOpen={true}
@@ -55,12 +66,10 @@ class TutorSelectionModal extends Component {
                 </div>
 
                 <div className="buttons">
-                    <Link to="#"
-                          onClick={onScheduleAppointment}
-                          className="nondestructive action">Schedule</Link>
-                    <Link to="#"
-                          onClick={onRequestClose}
-                          className="destructive nonaction">Cancel</Link>
+                    <span onClick={onScheduleAppointment}
+                          className="nondestructive action">Schedule</span>
+                    <span onClick={onRequestClose}
+                          className="destructive nonaction">Cancel</span>
                 </div>
             </Modal>
         );
