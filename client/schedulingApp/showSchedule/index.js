@@ -6,7 +6,12 @@ import DatePicker from 'react-datepicker';
 
 import FilterControls from '../../components/filterControls';
 import OpenSpots from './components/openSpots';
+
 import TutorSelectionModal from './components/tutorSelectionModal';
+import LoadingModal from './components/loadingModal';
+import ProfileModal from './components/profileModal';
+
+import { MODAL_LIFECYCLE } from './constants';
 
 import { setLocation,
          setCourse } from '../actions';
@@ -14,7 +19,9 @@ import { setLocation,
 import { setStartDate,
          getOpenSpots,
          selectOpenSpot,
-         clearOpenSpotSelection } from './actions';
+         clearOpenSpotSelection,
+         getAvailableTutors,
+         displayTutorSelectionModal } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 
@@ -78,17 +85,26 @@ class ShowSchedule extends Component {
     }
 
     selectModal(currentModalStatus) {
+
         return () => {
-            return (
-                <TutorSelectionModal onRequestClose={_ => _}
-                                     onScheduleAppointment={_ =>  _}
-                                     tutorOptions={[]}/>
-                );
+            switch (currentModalStatus) {
+            case MODAL_LIFECYCLE.SELECTING_TUTOR:
+                return (<TutorSelectionModal />);
+
+            case MODAL_LIFECYCLE.LOADING:
+                return (<LoadingModal onRequestClose={clearOpenSpotSelection} />);
+
+            case MODAL_LIFECYCLE.MISSING_PROFILE:
+                return (<ProfileModal onRequestClose={clearOpenSpotSelection} />);
+
+            default:
+                return (<span />);
+            }
         };
     }
 
     render() {
-        const { locations, courses, startDate, openSpots, selectedOpenSpotInfo, modalInfo } = this.props;
+        const { locations, courses, startDate, openSpots, modalInfo } = this.props;
         const now = moment();
         const locationsOptions = selectTransformOptions()(locations.all);
 
@@ -103,15 +119,20 @@ class ShowSchedule extends Component {
         }
 
         const openSpotHandlers = {
-            available: time => e =>
-                this.props.selectOpenSpot({ time, course: courses.selected, location: locations.selected }),
+            available: time => e => {
+                const [course, location] = [courses.selected, locations.selected];
+                this.props.selectOpenSpot({ time, course, location });
+                this.props.getAvailableTutors({ time, course, location })
+                    .then(res => res.data)
+                    .then(tutors => this.props.displayTutorSelectionModal({ tutors }));
+            },
             expired: time => e => this.props.clearOpenSpotSelection(),
             closed: time => e => this.props.clearOpenSpotSelection(),
         };
 
         const MaybeModal = modalInfo.displayModal
-            ? this.selectModal(modalInfo.status)
-            : () => (<span></span>);
+            ? this.selectModal(modalInfo.status).bind(this)
+            : () => (<span />);
 
         return (
             <div className="content">
@@ -170,7 +191,6 @@ function mapStateToProps(state) {
         },
         startDate: state.scheduling.showSchedule.startDate,
         openSpots: state.scheduling.showSchedule.openSpots,
-        selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
         modalInfo: state.scheduling.showSchedule.modalInfo,
     };
 }
@@ -182,4 +202,6 @@ export default connect(mapStateToProps, {
     getOpenSpots,
     selectOpenSpot,
     clearOpenSpotSelection,
+    getAvailableTutors,
+    displayTutorSelectionModal,
 })(ShowSchedule);
