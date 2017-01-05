@@ -92,10 +92,10 @@ class ShowSchedule extends Component {
                 return (<TutorSelectionModal />);
 
             case MODAL_LIFECYCLE.LOADING:
-                return (<LoadingModal onRequestClose={clearOpenSpotSelection} />);
+                return (<LoadingModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
-                return (<ProfileModal onRequestClose={clearOpenSpotSelection} />);
+                return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             default:
                 return (<span />);

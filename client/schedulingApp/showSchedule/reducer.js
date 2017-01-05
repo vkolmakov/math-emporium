@@ -9,7 +9,8 @@ import { SA_GET_OPEN_SPOTS,
          SA_CLEAR_SCHEDULING_MESSAGE,
          SA_SELECT_OPEN_SPOT,
          SA_CLEAR_OPEN_SPOT_SELECTION,
-         SA_DISPLAY_TUTOR_SELECTION_MODAL } from './actions';
+         SA_DISPLAY_TUTOR_SELECTION_MODAL,
+         SA_DISPLAY_LOADING_MODAL } from './actions';
 
 const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
@@ -88,6 +89,12 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.SELECTING_TUTOR },
             selectedOpenSpotInfo: { ...state.selectedOpenSpotInfo, tutors: payload },
+        };
+
+    case SA_DISPLAY_LOADING_MODAL:
+        return {
+            ...state,
+            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.LOADING },
         };
 
     default:

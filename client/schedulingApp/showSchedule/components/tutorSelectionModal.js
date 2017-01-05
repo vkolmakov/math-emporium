@@ -5,15 +5,18 @@ import Modal from 'react-modal';
 
 import Select from '../../../components/select/reactSelectWrapper';
 
-import { clearOpenSpotSelection } from '../actions';
+import { clearOpenSpotSelection,
+         scheduleAppointment,
+         displayLoadingModal } from '../actions';
+
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 class TutorSelectionModal extends Component {
     constructor() {
         super();
         this.state = {
-            additionalInfo: '',
-            selectedTutor: null,
+            additionalComments: '',
+            requestedTutor: null,
             tutors: [],
         };
     }
@@ -25,7 +28,7 @@ class TutorSelectionModal extends Component {
             ? [RANDOM_TUTOR, ...selectedOpenSpotInfo.tutors]
             : selectedOpenSpotInfo.tutors;
 
-        this.setState({ tutors, selectedTutor: tutors[0] });
+        this.setState({ tutors, requestedTutor: tutors[0] });
     }
 
     render() {
@@ -39,10 +42,13 @@ class TutorSelectionModal extends Component {
         const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
 
         const onRequestClose = this.props.clearOpenSpotSelection;
-        const onTutorSelect = tutorOption => this.setState({ selectedTutor: tutors.find(t => t.id === tutorOption.value) });
-        const onAdditionalCommentsChange = e => this.setState({ additionalInfo: e.target.value });
+        const onTutorSelect = tutorOption => this.setState({ requestedTutor: tutors.find(t => t.id === tutorOption.value) });
+        const onAdditionalCommentsChange = e => this.setState({ additionalComments: e.target.value });
         const onScheduleAppointment = () => {
-            const { selectedTutor, additionalInfo } = this.state;
+            const { requestedTutor, additionalComments } = this.state;
+            this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
+                .then(res => console.log(res));
+            this.props.displayLoadingModal();
         };
 
         return (
@@ -55,7 +61,7 @@ class TutorSelectionModal extends Component {
                 <div className="controls-wrapper">
                     <h2>Select a tutor:</h2>
                     <Select options={tutorOptions}
-                            value={this.state.selectedTutor ? this.state.selectedTutor.id : null}
+                            value={this.state.requestedTutor ? this.state.requestedTutor.id : null}
                             searchable={false}
                             clearable={false}
                             onChange={onTutorSelect}
@@ -84,4 +90,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     clearOpenSpotSelection,
+    scheduleAppointment,
+    displayLoadingModal,
 })(TutorSelectionModal);

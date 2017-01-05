@@ -11,6 +11,7 @@ export const SA_CLEAR_SCHEDULING_MESSAGE = 'SA_CLEAR_SCHEDULING_MESSAGE';
 export const SA_SELECT_OPEN_SPOT = 'SA_SELECT_OPEN_SPOT';
 export const SA_CLEAR_OPEN_SPOT_SELECTION = 'SA_CLEAR_OPEN_SPOT_SELECTION';
 export const SA_DISPLAY_TUTOR_SELECTION_MODAL = 'SA_DISPLAY_TUTOR_SELECTION_MODAL';
+export const SA_DISPLAY_LOADING_MODAL = 'SA_DISPLAY_LOADING_MODAL';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
@@ -76,6 +77,12 @@ export function displayTutorSelectionModal({ tutors }) {
     return {
         type: SA_DISPLAY_TUTOR_SELECTION_MODAL,
         payload: tutors,
+    };
+}
+
+export function displayLoadingModal() {
+    return {
+        type: SA_DISPLAY_LOADING_MODAL,
     };
 }
 
