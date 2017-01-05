@@ -4,7 +4,15 @@ import { SA_GET_OPEN_SPOTS,
          SA_SET_START_DATE,
          SA_RESET_OPEN_SPOTS,
          SA_SCHEDULING_MESSAGE,
-         SA_CLEAR_SCHEDULING_MESSAGE } from './actions';
+         SA_CLEAR_SCHEDULING_MESSAGE,
+         SA_SELECT_OPEN_SPOT,
+         SA_CLEAR_OPEN_SPOT_SELECTION } from './actions';
+
+export const MODAL_LIFECYCLE = {
+    LOADING: 'LOADING',
+    MISSING_PROFILE: 'MISSING_PROFILE',
+    SELECTING_TUTOR: 'SELECTING_TUTOR',
+};
 
 const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
@@ -12,6 +20,15 @@ const INITIAL_STATE = {
         : moment().startOf('isoWeek'), // otherwise stay on the current week
     openSpots: [],
     message: null,
+    modalInfo: {
+        displayModal: false,
+        status: MODAL_LIFECYCLE.LOADING,
+    },
+    selectedOpenSpotInfo: {
+        time: null,
+        course: null,
+        location: null,
+    },
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -47,6 +64,25 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             message: null,
+        };
+
+    case SA_SELECT_OPEN_SPOT:
+        return {
+            ...state,
+            selectedOpenSpotInfo: { ...payload },
+            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.LOADING },
+        };
+
+    case SA_CLEAR_OPEN_SPOT_SELECTION:
+        return {
+            ...state,
+            selectedOpenSpotInfo: {
+                displayModal: false,
+                time: null,
+                course: null,
+                location: null,
+            },
+            modalInfo: { displayModal: false, status: MODAL_LIFECYCLE.LOADING },
         };
 
     default:

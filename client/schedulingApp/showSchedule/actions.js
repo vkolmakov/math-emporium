@@ -1,5 +1,4 @@
 import axios from 'axios';
-import moment from 'moment';
 
 import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
 
@@ -9,6 +8,8 @@ export const SA_RESET_OPEN_SPOTS = 'SA_RESET_OPEN_SPOTS';
 export const SA_SCHEDULE_APPOINTMENT = 'SA_SCHEDULE_APPOINTMENT';
 export const SA_SCHEDULING_MESSAGE = 'SA_SCHEDULING_MESSAGE';
 export const SA_CLEAR_SCHEDULING_MESSAGE = 'SA_CLEAR_SCHEDULING_MESSAGE';
+export const SA_SELECT_OPEN_SPOT = 'SA_SELECT_OPEN_SPOT';
+export const SA_CLEAR_OPEN_SPOT_SELECTION = 'SA_CLEAR_OPEN_SPOT_SELECTION';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
@@ -57,6 +58,19 @@ export function clearSchedulingMessage() {
     };
 }
 
+export function selectOpenSpot({ time, course, location }) {
+    return {
+        type: SA_SELECT_OPEN_SPOT,
+        payload: { time, course, location },
+    };
+}
+
+export function clearOpenSpotSelection() {
+    return {
+        type: SA_CLEAR_OPEN_SPOT_SELECTION,
+    };
+}
+
 export function scheduleAppointment({ location, course, time, requestedTutor, additionalComments }) {
     return dispatch => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
@@ -98,4 +112,3 @@ export function getAvailableTutors({ time, course, location }) {
         });
     };
 }
-
