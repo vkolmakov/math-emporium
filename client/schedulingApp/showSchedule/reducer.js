@@ -1,18 +1,15 @@
 import moment from 'moment';
 
+import { MODAL_LIFECYCLE } from './constants';
+
 import { SA_GET_OPEN_SPOTS,
          SA_SET_START_DATE,
          SA_RESET_OPEN_SPOTS,
          SA_SCHEDULING_MESSAGE,
          SA_CLEAR_SCHEDULING_MESSAGE,
          SA_SELECT_OPEN_SPOT,
-         SA_CLEAR_OPEN_SPOT_SELECTION } from './actions';
-
-export const MODAL_LIFECYCLE = {
-    LOADING: 'LOADING',
-    MISSING_PROFILE: 'MISSING_PROFILE',
-    SELECTING_TUTOR: 'SELECTING_TUTOR',
-};
+         SA_CLEAR_OPEN_SPOT_SELECTION,
+         SA_DISPLAY_TUTOR_SELECTION_MODAL } from './actions';
 
 const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
@@ -28,6 +25,7 @@ const INITIAL_STATE = {
         time: null,
         course: null,
         location: null,
+        tutors: [],
     },
 };
 
@@ -69,7 +67,7 @@ export default (state = INITIAL_STATE, action) => {
     case SA_SELECT_OPEN_SPOT:
         return {
             ...state,
-            selectedOpenSpotInfo: { ...payload },
+            selectedOpenSpotInfo: { ...state.selectedOpenSpotInfo, ...payload },
             modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.LOADING },
         };
 
@@ -77,12 +75,19 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             selectedOpenSpotInfo: {
-                displayModal: false,
                 time: null,
                 course: null,
                 location: null,
+                tutors: [],
             },
             modalInfo: { displayModal: false, status: MODAL_LIFECYCLE.LOADING },
+        };
+
+    case SA_DISPLAY_TUTOR_SELECTION_MODAL:
+        return {
+            ...state,
+            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.SELECTING_TUTOR },
+            selectedOpenSpotInfo: { ...state.selectedOpenSpotInfo, tutors: payload },
         };
 
     default:
