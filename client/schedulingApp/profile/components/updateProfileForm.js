@@ -20,7 +20,7 @@ class UpdateProfileForm extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.updateForm();
     }
 
@@ -36,7 +36,6 @@ class UpdateProfileForm extends Component {
 
     render() {
         const { firstName, lastName, location, course } = this.props.fields;
-
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
 
         let coursesOptions;
