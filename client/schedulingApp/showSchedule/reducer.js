@@ -11,7 +11,8 @@ import { SA_GET_OPEN_SPOTS,
          SA_CLEAR_OPEN_SPOT_SELECTION,
          SA_DISPLAY_TUTOR_SELECTION_MODAL,
          SA_DISPLAY_LOADING_MODAL,
-         SA_DISPLAY_MESSAGE_MODAL } from './actions';
+         SA_DISPLAY_MESSAGE_MODAL,
+         SA_DISPLAY_PROFILE_MODAL } from './actions';
 
 const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
@@ -103,6 +104,12 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             message: payload,
             modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.DISPLAYING_MESSAGE },
+        };
+
+    case SA_DISPLAY_PROFILE_MODAL:
+        return {
+            ...state,
+            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.MISSING_PROFILE },
         };
 
     default:

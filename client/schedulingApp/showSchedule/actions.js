@@ -13,6 +13,7 @@ export const SA_CLEAR_OPEN_SPOT_SELECTION = 'SA_CLEAR_OPEN_SPOT_SELECTION';
 export const SA_DISPLAY_TUTOR_SELECTION_MODAL = 'SA_DISPLAY_TUTOR_SELECTION_MODAL';
 export const SA_DISPLAY_LOADING_MODAL = 'SA_DISPLAY_LOADING_MODAL';
 export const SA_DISPLAY_MESSAGE_MODAL = 'SA_DISPLAY_MESSAGE_MODAL';
+export const SA_DISPLAY_PROFILE_MODAL = 'SA_DISPLAY_PROFILE_MODAL';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
@@ -91,6 +92,12 @@ export function displayMessageModal({ message }) {
     return {
         type: SA_DISPLAY_MESSAGE_MODAL,
         payload: message,
+    };
+}
+
+export function displayProfileModal() {
+    return {
+        type: SA_DISPLAY_PROFILE_MODAL,
     };
 }
 

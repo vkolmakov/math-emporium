@@ -22,7 +22,8 @@ import { setStartDate,
          selectOpenSpot,
          clearOpenSpotSelection,
          getAvailableTutors,
-         displayTutorSelectionModal } from './actions';
+         displayTutorSelectionModal,
+         displayProfileModal } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 
@@ -95,7 +96,9 @@ class ShowSchedule extends Component {
                 return (<LoadingModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
-                return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
+                return (
+                    <ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />
+                );
 
             case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
                 return (
@@ -110,7 +113,7 @@ class ShowSchedule extends Component {
     }
 
     render() {
-        const { locations, courses, startDate, openSpots, modalInfo } = this.props;
+        const { locations, courses, startDate, openSpots, modalInfo, profile } = this.props;
         const now = moment();
         const locationsOptions = selectTransformOptions()(locations.all);
 
@@ -126,11 +129,17 @@ class ShowSchedule extends Component {
 
         const openSpotHandlers = {
             available: time => e => {
+                const isCompleteProfile = profile.firstName && profile.lastName;
                 const [course, location] = [courses.selected, locations.selected];
                 this.props.selectOpenSpot({ time, course, location });
-                this.props.getAvailableTutors({ time, course, location })
-                    .then(res => res.data)
-                    .then(tutors => this.props.displayTutorSelectionModal({ tutors }));
+
+                if (isCompleteProfile) {
+                    this.props.getAvailableTutors({ time, course, location })
+                        .then(res => res.data)
+                        .then(tutors => this.props.displayTutorSelectionModal({ tutors }));
+                } else {
+                    this.props.displayProfileModal();
+                }
             },
             expired: time => e => this.props.clearOpenSpotSelection(),
             closed: time => e => this.props.clearOpenSpotSelection(),
@@ -199,6 +208,7 @@ function mapStateToProps(state) {
         openSpots: state.scheduling.showSchedule.openSpots,
         modalInfo: state.scheduling.showSchedule.modalInfo,
         modalMessage: state.scheduling.showSchedule.message,
+        profile: state.scheduling.profile,
     };
 }
 
@@ -211,4 +221,5 @@ export default connect(mapStateToProps, {
     clearOpenSpotSelection,
     getAvailableTutors,
     displayTutorSelectionModal,
+    displayProfileModal,
 })(ShowSchedule);
