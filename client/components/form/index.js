@@ -15,10 +15,11 @@ export default ({ handleSubmit,
                      key={field.label} />
       ))}
 
-      <div className="form-field clearfix">
+      <div className="form-field submit-field">
         <button className="button" type="submit">Submit</button>
+        <Alert error={error}/>
+        <Success success={success} />
+
       </div>
-      <Alert error={error}/>
-      <Success success={success} />
-      </form>
+    </form>
 );

@@ -135,6 +135,7 @@
 }
 
 .profile-form-modal {
+    @extend .base-modal;
     h2 {
         margin: 0 0.5em;
     }
@@ -148,11 +149,8 @@
 
 
     @include breakpoint($medium-screen) {
-        h2 {
-            margin: 1em;
-        }
         form > h2 {
-            margin: 0.2em 0;
+            margin: 1.2em 0;
         }
 
         .Select {

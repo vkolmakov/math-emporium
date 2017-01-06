@@ -77,10 +77,13 @@ body {
 }
 
 .form-field {
+    display: flex;
+    flex-flow: row wrap;
     margin: 1.4em auto;
-    & > button {
-        /* DANGER! possible react-select conflict */
-        @include float-right();
+    &.submit-field {
+        flex-flow: row-reverse wrap;
+        align-items: center;
+        justify-content: space-between;
     }
 }
 
@@ -90,6 +93,7 @@ body {
 
 
 .form-input-group {
+    width: 100%;
     > input {
         @include box-sizing(border-box);
         @include rounded-border();
