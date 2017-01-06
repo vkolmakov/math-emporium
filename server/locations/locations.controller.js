@@ -28,12 +28,17 @@ export const getLocation = (id) => new Promise(async (resolve, reject) => {
 });
 
 
-export const createLocation = (body) => new Promise(async (resolve) => {
-    const createdLocation = await Location.create(body, {
-        fields: allowedToWrite,
-    });
-
-    resolve(extractDataValues(createdLocation));
+export const createLocation = (body) => new Promise(async (resolve, reject) => {
+    try {
+        const createdLocation = await Location.create(body, {
+            fields: allowedToWrite,
+        });
+        resolve(extractDataValues(createdLocation));
+    } catch (err) {
+        if (err.message) {
+            reject(actionFailed('create', 'location', err.message));
+        }
+    }
 });
 
 
@@ -60,10 +65,17 @@ export const deleteLocation = (id) => new Promise(async (resolve, reject) => {
 
 
 export const updateLocation = (id, body) => new Promise(async (resolve, reject) => {
-    const updatedLocation = await Location.update(body, {
-        fields: allowedToWrite,
-        where: { id },
-    });
+    try {
+        const updatedLocation = await Location.update(body, {
+            fields: allowedToWrite,
+            where: { id },
+        });
+    } catch (err) {
+        if (err.message) {
+            reject(actionFailed('update', 'location', err.message));
+        }
+    }
+
 
     if (updatedLocation[0]) {
         resolve({ id, name: body.name });
