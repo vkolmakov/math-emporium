@@ -10,6 +10,7 @@ import OpenSpots from './components/openSpots';
 import TutorSelectionModal from './components/tutorSelectionModal';
 import LoadingModal from './components/loadingModal';
 import ProfileModal from './components/profileModal';
+import MessageModal from './components/messageModal';
 
 import { MODAL_LIFECYCLE } from './constants';
 
@@ -85,7 +86,6 @@ class ShowSchedule extends Component {
     }
 
     selectModal(currentModalStatus) {
-
         return () => {
             switch (currentModalStatus) {
             case MODAL_LIFECYCLE.SELECTING_TUTOR:
@@ -96,6 +96,12 @@ class ShowSchedule extends Component {
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
                 return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
+
+            case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
+                return (
+                    <MessageModal onRequestClose={this.props.clearOpenSpotSelection}
+                                  message={this.props.modalMessage} />
+                );
 
             default:
                 return (<span />);
@@ -192,6 +198,7 @@ function mapStateToProps(state) {
         startDate: state.scheduling.showSchedule.startDate,
         openSpots: state.scheduling.showSchedule.openSpots,
         modalInfo: state.scheduling.showSchedule.modalInfo,
+        modalMessage: state.scheduling.showSchedule.message,
     };
 }
 

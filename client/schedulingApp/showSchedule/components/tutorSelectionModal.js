@@ -7,7 +7,8 @@ import Select from '../../../components/select/reactSelectWrapper';
 
 import { clearOpenSpotSelection,
          scheduleAppointment,
-         displayLoadingModal } from '../actions';
+         displayLoadingModal,
+         displayMessageModal } from '../actions';
 
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
@@ -47,7 +48,14 @@ class TutorSelectionModal extends Component {
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
-                .then(res => console.log(res));
+                .then(res => this.props.displayMessageModal({ message: 'Your appointment was successfully scheduled!' }),
+                      err => {
+                          if (err.data && err.data.error) {
+                              this.props.displayMessageModal({ message: `Oops... ${err.data.error}` });
+                          } else {
+                              this.props.displayMessageModal({ message: 'Oops... Something went wrong, please try again.' });
+                          }
+                      });
             this.props.displayLoadingModal();
         };
 
@@ -92,4 +100,5 @@ export default connect(mapStateToProps, {
     clearOpenSpotSelection,
     scheduleAppointment,
     displayLoadingModal,
+    displayMessageModal,
 })(TutorSelectionModal);

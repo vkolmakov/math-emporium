@@ -12,6 +12,7 @@ export const SA_SELECT_OPEN_SPOT = 'SA_SELECT_OPEN_SPOT';
 export const SA_CLEAR_OPEN_SPOT_SELECTION = 'SA_CLEAR_OPEN_SPOT_SELECTION';
 export const SA_DISPLAY_TUTOR_SELECTION_MODAL = 'SA_DISPLAY_TUTOR_SELECTION_MODAL';
 export const SA_DISPLAY_LOADING_MODAL = 'SA_DISPLAY_LOADING_MODAL';
+export const SA_DISPLAY_MESSAGE_MODAL = 'SA_DISPLAY_MESSAGE_MODAL';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
@@ -86,6 +87,13 @@ export function displayLoadingModal() {
     };
 }
 
+export function displayMessageModal({ message }) {
+    return {
+        type: SA_DISPLAY_MESSAGE_MODAL,
+        payload: message,
+    };
+}
+
 export function scheduleAppointment({ location, course, time, requestedTutor, additionalComments }) {
     return dispatch => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
@@ -100,17 +108,7 @@ export function scheduleAppointment({ location, course, time, requestedTutor, ad
             comments,
         };
 
-        return axios.post(BASE_URL_APPOINTMENT, requestData)
-            .then(response => {
-                const startMessages = ['Great']; // no more fun times :(
-                const messageStart = startMessages[Math.floor(Math.random() * startMessages.length)];
-                const successMessage = `${messageStart}, your appointment has been scheduled!`;
-                dispatch(schedulingMessage(successMessage));
-            })
-            .catch(err => {
-                const errorMessage = `Oops, ${err.data.error}`;
-                dispatch(schedulingMessage(errorMessage));
-            });
+        return axios.post(BASE_URL_APPOINTMENT, requestData);
     };
 }
 

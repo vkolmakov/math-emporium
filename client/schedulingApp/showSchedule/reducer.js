@@ -10,14 +10,15 @@ import { SA_GET_OPEN_SPOTS,
          SA_SELECT_OPEN_SPOT,
          SA_CLEAR_OPEN_SPOT_SELECTION,
          SA_DISPLAY_TUTOR_SELECTION_MODAL,
-         SA_DISPLAY_LOADING_MODAL } from './actions';
+         SA_DISPLAY_LOADING_MODAL,
+         SA_DISPLAY_MESSAGE_MODAL } from './actions';
 
 const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
         ? moment().add(1, 'days').startOf('isoWeek') // if it is, go to next week
         : moment().startOf('isoWeek'), // otherwise stay on the current week
     openSpots: [],
-    message: null,
+    message: '',
     modalInfo: {
         displayModal: false,
         status: MODAL_LIFECYCLE.LOADING,
@@ -95,6 +96,13 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.LOADING },
+        };
+
+    case SA_DISPLAY_MESSAGE_MODAL:
+        return {
+            ...state,
+            message: payload,
+            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.DISPLAYING_MESSAGE },
         };
 
     default:
