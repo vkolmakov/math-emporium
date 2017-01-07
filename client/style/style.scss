@@ -60,6 +60,16 @@ body {
     margin: 0 auto;
     padding: 0.5em 0;
 
+    &.select-filter-error .Select-control {
+        border-color: $danger-color;
+        color: $danger-color;
+    }
+
+    &.select-filter-error .Select-arrow {
+        border-color: $danger-color transparent transparent;
+        color: $danger-color;
+    }
+
     input {
         @include set-font();
         @include box-sizing(border-box);
