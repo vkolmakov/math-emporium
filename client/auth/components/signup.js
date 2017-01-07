@@ -104,7 +104,6 @@ class Signup extends Component {
                 <p>Already have an account? <Link to="/signin">Sign in</Link></p>
                 <p>Need to resend an activation email? <Link to="/resend-activation-email">Click here</Link></p>
               </div>
-
             </div>
         );
     }
