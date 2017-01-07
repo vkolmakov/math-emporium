@@ -55,15 +55,13 @@ export function updateUserProfile(values) {
             lastName,
         };
 
-        dispatch(setLocation(location));
-        dispatch(setCourse(course));
-
-        axios.put(`${BASE_URL}/profile`, requestBody)
+        return axios.put(`${BASE_URL}/profile`, requestBody)
             .then(response => {
                 dispatch({
                     type: SA_SET_USER_PROFILE,
                     payload: response,
                 });
+                return response;
             });
     };
 }

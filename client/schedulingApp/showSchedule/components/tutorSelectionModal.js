@@ -51,9 +51,9 @@ class TutorSelectionModal extends Component {
                 .then(res => this.props.displayMessageModal({ message: 'Your appointment was successfully scheduled!' }),
                       err => {
                           if (err.data && err.data.error) {
-                              this.props.displayMessageModal({ message: `Oops... ${err.data.error}` });
+                              this.props.displayMessageModal({ message: `${err.data.error}` });
                           } else {
-                              this.props.displayMessageModal({ message: 'Oops... Something went wrong, please try again.' });
+                              this.props.displayMessageModal({ message: 'Something went wrong, please try again.' });
                           }
                       });
             this.props.displayLoadingModal();

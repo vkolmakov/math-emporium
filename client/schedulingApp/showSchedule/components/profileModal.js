@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Modal from 'react-modal';
 
 import Form from '../../../components/form/index';
+import { updateUserProfile } from '../../profile/actions';
+import { displayLoadingModal,
+         displayMessageModal,
+         displayTutorSelectionModal,
+         getAvailableTutors } from '../actions';
 
 class MiniProfileForm extends Component {
     constructor() {
@@ -11,16 +17,38 @@ class MiniProfileForm extends Component {
             firstName: '',
             lastName: '',
             success: false,
-            error: false,
+            error: null,
         };
     }
 
     render() {
-        const handleSubmit = e => {
+        const onSubmit = e => {
             e.preventDefault();
-            console.log('submitted');
+            const { firstName, lastName } = this.state;
+
+            if (firstName && lastName) {
+                const { time, course, location } = this.props.selectedOpenSpotInfo;
+                this.setState({ error: null });
+                this.props.displayLoadingModal();
+                this.props.updateUserProfile({ firstName, lastName }).then(
+                    res => this.props.getAvailableTutors({ time, course, location }),
+                    err => this.props.displayMessageModal({ message: 'Something went wrong, please try again.' })
+                ).then(
+                    res => res.data,
+                    err => this.props.displayMessageModal({
+                        message: err.data && err.data.error
+                            ? `${err.data.error}`
+                            : 'Something went wrong, please try again.',
+                    })
+                ).then(tutors => tutors.length > 0
+                       ? this.props.displayTutorSelectionModal({ tutors })
+                       : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
+            } else {
+                this.setState({ error: 'Please enter your first and last name' });
+            }
         };
 
+        const handleSubmit = onSubmit.bind(this);
         const config = {
             handleSubmit,
             title: 'Update your profile',
@@ -41,7 +69,7 @@ class MiniProfileForm extends Component {
                     },
                 },
             }],
-            error: null,
+            error: this.state.error,
             success: false,
         };
 
@@ -53,11 +81,25 @@ class MiniProfileForm extends Component {
     }
 }
 
-export default ({ onRequestClose, onSubmitSuccess }) => (
+function mapStateToProps(state) {
+    return {
+        selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
+    };
+}
+
+const ConnectedMiniProfileForm = connect(mapStateToProps, {
+    updateUserProfile,
+    displayLoadingModal,
+    displayMessageModal,
+    displayTutorSelectionModal,
+    getAvailableTutors,
+})(MiniProfileForm);
+
+export default ({ onRequestClose }) => (
     <Modal isOpen={true}
            contentLabel="Profile Modal"
            onRequestClose={onRequestClose}
            className="profile-form-modal">
-        <MiniProfileForm onSubmitSuccess={onSubmitSuccess} />
+        <ConnectedMiniProfileForm />
     </Modal>
 );

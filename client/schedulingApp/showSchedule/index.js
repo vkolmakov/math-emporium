@@ -96,9 +96,7 @@ class ShowSchedule extends Component {
                 return (<LoadingModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
-                return (
-                    <ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />
-                );
+                return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
                 return (
@@ -136,7 +134,9 @@ class ShowSchedule extends Component {
                 if (isCompleteProfile) {
                     this.props.getAvailableTutors({ time, course, location })
                         .then(res => res.data)
-                        .then(tutors => this.props.displayTutorSelectionModal({ tutors }));
+                        .then(tutors => tutors.length > 0
+                              ? this.props.displayTutorSelectionModal({ tutors })
+                              : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
                 } else {
                     this.props.displayProfileModal();
                 }
