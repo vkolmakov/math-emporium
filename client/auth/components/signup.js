@@ -18,8 +18,11 @@ class Signup extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.clearAuthError();
+        if (this.props.authenticated) {
+            this.context.router.push('/');
+        }
     }
 
     render() {
@@ -110,6 +113,7 @@ class Signup extends Component {
 function mapStateToProps(state) {
     return {
         errorMessage: state.auth.error,
+        authenticated: state.auth.authenticated,
     };
 }
 
@@ -142,6 +146,10 @@ function validate(values) {
 
     return errors;
 }
+
+Signup.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
 
 export default reduxForm({
     form: 'SignupForm',

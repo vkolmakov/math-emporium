@@ -40,21 +40,24 @@ export function clearAuthError() {
 }
 
 export function signinUser({ email, password }) {
-    return dispatch => {
-        return axios.post(`${BASE_URL}/signin`, { email, password })
-            .then(response => {
+    return dispatch =>
+        axios.post(`${BASE_URL}/signin`, { email, password }).then(
+            response => {
                 const { data } = response;
                 dispatch({ type: AUTH_USER });
                 dispatch({ type: SET_USER_GROUP, payload: data.group });
                 dispatch({ type: SET_USER_EMAIL, payload: data.email });
                 addAuthData(data);
-                browserHistory.push('/');
-            })
-            .catch(() => {
-                dispatch(authError('Bad login info or an account that\'s not activated'));
-            });
-    };
+                browserHistory.push('/schedule/show');
+                return Promise.resolve();
+            },
+            err => {
+                dispatch(authError('Bad login info or an account that\'s not activated'))
+                return Promise.reject();
+            }
+        );
 }
+
 
 export function signoutUser() {
     removeAuthData();

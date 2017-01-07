@@ -15,8 +15,11 @@ class Signin extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.clearAuthError();
+        if (this.props.authenticated) {
+            this.context.router.push('/');
+        }
     }
 
     render() {
@@ -31,15 +34,11 @@ class Signin extends Component {
         }
 
         const onSubmit = ({ email, password }) => {
-            this.setState({
-                forceLoadingSpinner: true,
-            });
+            this.setState({ forceLoadingSpinner: true });
             this.props.signinUser({ email, password })
-                .then((_) => {
-                    this.setState({
-                        forceLoadingSpinner: false,
-                    });
-                });
+                .then(_ => _,
+                      err => this.setState({ forceLoadingSpinner: false }));
+
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -84,6 +83,7 @@ class Signin extends Component {
 function mapStateToProps(state) {
     return {
         errorMessage: state.auth.error,
+        authenticated: state.auth.authenticated,
     };
 }
 
@@ -115,6 +115,9 @@ function validate(values) {
     return errors;
 }
 
+Signin.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
 
 export default reduxForm({
     form: 'SigninForm',
