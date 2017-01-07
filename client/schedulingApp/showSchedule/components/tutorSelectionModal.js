@@ -32,6 +32,10 @@ class TutorSelectionModal extends Component {
         this.setState({ tutors, requestedTutor: tutors[0] });
     }
 
+    successMessage({ location, course, time }) {
+        return `Your appointment for ${course.code} at ${location.name} on ${time.format(TIMESTAMP_DISPLAY_FORMAT)} was successfully scheduled!`;
+    }
+
     render() {
         const { selectedOpenSpotInfo } = this.props;
         const { course, location, time } = selectedOpenSpotInfo;
@@ -48,7 +52,7 @@ class TutorSelectionModal extends Component {
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
-                .then(res => this.props.displayMessageModal({ message: 'Your appointment was successfully scheduled!' }),
+                .then(res => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }) }),
                       err => {
                           if (err.data && err.data.error) {
                               this.props.displayMessageModal({ message: `${err.data.error}` });
