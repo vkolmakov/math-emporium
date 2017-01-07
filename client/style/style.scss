@@ -81,7 +81,7 @@ body {
     flex-flow: row wrap;
     margin: 1.4em auto;
     &.submit-field {
-        flex-flow: row-reverse wrap;
+        flex-flow: row-reverse nowrap;
         align-items: center;
         justify-content: space-between;
     }
@@ -321,7 +321,7 @@ body {
     $transition-duration: 0.2s;
     position: relative;
     @include breakpoint($medium-screen) {
-        height: 100vh;
+        height: 70vh;
     }
     @include mobile-vh(100);
 
@@ -427,11 +427,14 @@ body {
 
 .section-home {
     background-color: #fff;
-    min-height: 25vh;
     @include clearfix();
 
     @include breakpoint($medium-screen) {
         @include container();
+        height: 25vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     h1 {
