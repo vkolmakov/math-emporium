@@ -25,13 +25,13 @@ export function getUserProfileAndSetOpenSpotsData() {
                 const location = locationId ? { id: locationId } : null;
                 const course = courseId ? { id: courseId } : null;
 
-                dispatch(setLocation(location));
-                dispatch(setCourse(course));
-
                 dispatch({
                     type: SA_SET_USER_PROFILE,
                     payload: response,
                 });
+
+                dispatch(setLocation(location));
+                dispatch(setCourse(course));
             });
     };
 }

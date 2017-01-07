@@ -8,7 +8,7 @@ import { getLocations, getCourses } from './actions';
 import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 
 class SchedulingApp extends Component {
-    componentWillMount() {
+    componentDidMount() {
         // collect all the data at the start
         this.props.getLocations();
         this.props.getCourses();
@@ -18,7 +18,7 @@ class SchedulingApp extends Component {
     }
 
     render() {
-        const { authenticated } = this.props;
+        const { authenticated, profile } = this.props;
 
         const currPath = this.props.location.pathname;
         const selected = currPath.split('/').pop();
@@ -41,10 +41,12 @@ class SchedulingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
+        const isReady = (authenticated && profile) || !authenticated;
+
         return (
             <div className="wrap">
               <Sidebar {...sidebarConfig} />
-              {this.props.children}
+              {isReady ? this.props.children : <span/>}
             </div>
         );
     }
@@ -53,6 +55,7 @@ class SchedulingApp extends Component {
 function mapStateToProps(state) {
     return {
         authenticated: state.auth.authenticated,
+        profile: state.scheduling.profile,
     };
 }
 

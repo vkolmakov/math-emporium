@@ -28,6 +28,14 @@ import { setStartDate,
 import { selectTransformOptions } from '../../editingApp/utils';
 
 class ShowSchedule extends Component {
+    componentDidMount() {
+        const { selectedOpenSpotInfo } = this.props;
+        const { time, course, location } = selectedOpenSpotInfo;
+        if (time && course && location) {
+            this.createAvailableOpenSpotHandler(time, course, location)();
+        }
+    }
+
     onSelectChange(prevVal, handler, key = 'id') {
         return (nextVal) => {
             let isValChange;
@@ -110,11 +118,7 @@ class ShowSchedule extends Component {
         };
     }
 
-    render() {
-        const { locations, courses, startDate, openSpots, modalInfo, profile } = this.props;
-        const now = moment();
-        const locationsOptions = selectTransformOptions()(locations.all);
-
+    createCoursesOptions(courses, locations) {
         let coursesOptions;
         if (!locations.selected) {
             coursesOptions = [];
@@ -125,22 +129,46 @@ class ShowSchedule extends Component {
                 .map(transformCourseToOption);
         }
 
-        const openSpotHandlers = {
-            available: time => e => {
-                const isCompleteProfile = profile.firstName && profile.lastName;
-                const [course, location] = [courses.selected, locations.selected];
-                this.props.selectOpenSpot({ time, course, location });
+        return coursesOptions;
+    }
 
-                if (isCompleteProfile) {
-                    this.props.getAvailableTutors({ time, course, location })
-                        .then(res => res.data)
-                        .then(tutors => tutors.length > 0
-                              ? this.props.displayTutorSelectionModal({ tutors })
-                              : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
-                } else {
-                    this.props.displayProfileModal();
-                }
-            },
+    createLocationsOptions(locations) {
+        return selectTransformOptions()(locations.all);
+    }
+
+    createAvailableOpenSpotHandler(time, course, location) {
+        const { authenticated, profile } = this.props;
+
+        return e => {
+            this.props.selectOpenSpot({ time, course, location });
+
+            if (!authenticated) {
+                return this.context.router.push('/signin');
+            }
+
+            const isCompleteProfile = profile && profile.firstName && profile.lastName;
+
+            if (!isCompleteProfile) {
+                return this.props.displayProfileModal();
+            }
+
+            return this.props.getAvailableTutors({ time, course, location })
+                .then(res => res.data)
+                .then(tutors => tutors.length > 0
+                      ? this.props.displayTutorSelectionModal({ tutors })
+                      : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
+        };
+    }
+
+    render() {
+        const { locations, courses, startDate, openSpots, modalInfo } = this.props;
+        const now = moment();
+
+        const locationsOptions = this.createLocationsOptions(locations);
+        const coursesOptions = this.createCoursesOptions(courses, locations);
+
+        const openSpotHandlers = {
+            available: time => this.createAvailableOpenSpotHandler(time, courses.selected, locations.selected),
             expired: time => e => this.props.clearOpenSpotSelection(),
             closed: time => e => this.props.clearOpenSpotSelection(),
         };
@@ -209,8 +237,14 @@ function mapStateToProps(state) {
         modalInfo: state.scheduling.showSchedule.modalInfo,
         modalMessage: state.scheduling.showSchedule.message,
         profile: state.scheduling.profile,
+        selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
+        authenticated: state.auth.authenticated,
     };
 }
+
+ShowSchedule.contextTypes = {
+    router: React.PropTypes.object.isRequired,
+};
 
 export default connect(mapStateToProps, {
     setLocation,
