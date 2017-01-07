@@ -199,13 +199,13 @@ class ShowSchedule extends Component {
 
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
-                                placeholder="Select a location"
+                                placeholder="Select a Location"
                                 error={!locations.selected}
                                 onChange={this.onLocationChange.bind(this)} />
 
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
-                                placeholder="Select a course"
+                                placeholder="Select a Course"
                                 error={locations.selected && !courses.selected}
                                 onChange={this.onCourseChange.bind(this)} />
 
