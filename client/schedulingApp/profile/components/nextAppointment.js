@@ -52,12 +52,10 @@ class NextAppointment extends Component {
                    key={2}>
               <h2>Are you sure you want to cancel your appointment?</h2>
               <div className="buttons">
-                <Link to={this.PROFILE_PAGE_URL}
-                      onClick={this.deleteAppointment.bind(this)}
-                      className="destructive action">Yes</Link>
-                <Link to={this.PROFILE_PAGE_URL}
-                      onClick={this.closeModal.bind(this)}
-                      className="nondestructive nonaction">No</Link>
+                <span onClick={this.deleteAppointment.bind(this)}
+                      className="destructive action">Yes</span>
+                <span onClick={this.closeModal.bind(this)}
+                      className="nondestructive nonaction">No</span>
               </div>
             </Modal>,
         ];
