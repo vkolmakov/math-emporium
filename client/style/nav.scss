@@ -4,10 +4,6 @@
 nav {
     display: block;
 
-    @include breakpoint($medium-screen) {
-        height: 5.2vh;
-    }
-
     background-color: $secondary-color;
     border-bottom: 1px solid #eaeaea;
 
