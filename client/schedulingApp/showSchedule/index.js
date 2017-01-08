@@ -26,6 +26,7 @@ import { setStartDate,
          displayProfileModal } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
+import { redirectTo } from '../../utils';
 
 class ShowSchedule extends Component {
     componentDidMount() {
@@ -107,8 +108,14 @@ class ShowSchedule extends Component {
                 return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
 
             case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
+                const onRequestClose = () => {
+                    this.props.clearOpenSpotSelection();
+                    if (this.props.modalInfo.redirectToAfterClosing) {
+                        redirectTo(this.props.modalInfo.redirectToAfterClosing);
+                    }
+                };
                 return (
-                    <MessageModal onRequestClose={this.props.clearOpenSpotSelection}
+                    <MessageModal onRequestClose={onRequestClose}
                                   message={this.props.modalMessage} />
                 );
 

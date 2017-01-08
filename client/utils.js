@@ -1,3 +1,5 @@
+import { browserHistory } from 'react-router';
+
 export const courseComparator = (course1, course2) => {
     const getCourseCodeNameAndNumber = code => {
         const courseCodeRegexp = /([a-z]+)([0-9]+)/;
@@ -31,5 +33,11 @@ export const courseComparator = (course1, course2) => {
     }
 };
 
+
 export const locationComparator = (location1, location2) =>
     location1.name.toLowerCase() > location2.name.toLowerCase() ? 1 : -1;
+
+
+export const redirectTo = page => browserHistory.push(page);
+
+export const noop = _ => _;

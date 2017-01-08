@@ -52,7 +52,7 @@ class TutorSelectionModal extends Component {
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
-                .then(res => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }) }),
+                .then(res => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' }),
                       err => {
                           if (err.data && err.data.error) {
                               this.props.displayMessageModal({ message: `${err.data.error}` });

@@ -23,6 +23,7 @@ const INITIAL_STATE = {
     modalInfo: {
         displayModal: false,
         status: MODAL_LIFECYCLE.LOADING,
+        redirectToAfterClosing: '',
     },
     selectedOpenSpotInfo: {
         time: null,
@@ -102,8 +103,12 @@ export default (state = INITIAL_STATE, action) => {
     case SA_DISPLAY_MESSAGE_MODAL:
         return {
             ...state,
-            message: payload,
-            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.DISPLAYING_MESSAGE },
+            message: payload.message,
+            modalInfo: {
+                displayModal: true,
+                status: MODAL_LIFECYCLE.DISPLAYING_MESSAGE,
+                redirectToAfterClosing: payload.redirectToAfterClosing,
+            },
         };
 
     case SA_DISPLAY_PROFILE_MODAL:

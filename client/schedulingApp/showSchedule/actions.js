@@ -88,10 +88,13 @@ export function displayLoadingModal() {
     };
 }
 
-export function displayMessageModal({ message }) {
+export function displayMessageModal({ message, redirectToAfterClosing }) {
     return {
         type: SA_DISPLAY_MESSAGE_MODAL,
-        payload: message,
+        payload: {
+            message,
+            redirectToAfterClosing,
+        },
     };
 }
 
