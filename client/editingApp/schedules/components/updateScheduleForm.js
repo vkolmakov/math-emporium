@@ -4,7 +4,8 @@ import { reduxForm, initialize } from 'redux-form';
 import { updateSchedule, getSchedules, setCurrentWeekday } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 
-import { WEEKDAY_OPTIONS, TIME_OPTIONS } from '../../constants';
+import { redirectTo, noop } from '../../../utils';
+import { WEEKDAY_OPTIONS, TIME_OPTIONS, ROUTES } from '../../constants';
 
 import { selectTransformOptions } from '../../utils';
 import Form from '../../../components/form/index';
@@ -35,7 +36,7 @@ class UpdateScheduleForm extends Component {
             weekday,
             time,
             location: location.id,
-            tutors: tutors.map(tutor => ({value: tutor.id, label: tutor.name})),
+            tutors: tutors.map(tutor => ({ value: tutor.id, label: tutor.name })),
         }, ['weekday', 'time', 'location', 'tutors']));
     }
 
@@ -52,13 +53,8 @@ class UpdateScheduleForm extends Component {
         const onSubmit = (data) => {
             this.setState({ success: false });
             this.props.updateSchedule(this.props.selectedSchedule.id, data)
-                .then(result => {
-                    if (!result.error) {
-                        this.setState({ success: true });
-                    }
-                    return new Promise(resolve => resolve(null));
-                })
-                .then(getSchedules);
+                .then(result => redirectTo(ROUTES.SCHEDULES),
+                      noop);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

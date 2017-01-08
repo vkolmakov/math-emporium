@@ -3,10 +3,10 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
-import { selectTransformOptions } from '../../utils';
+import { ROUTES } from '../../constants';
+import { selectTransformOptions, redirectTo, noop } from '../../../utils';
 
 import Form from '../../../components/form/index';
-import LoadingSpinner from '../../../components/loadingSpinner';
 
 class UpdateTutorForm extends Component {
     constructor() {
@@ -36,13 +36,8 @@ class UpdateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.updateTutor(this.props.selectedTutor.id, data)
-                .then(result => {
-                    if (!result.error) {
-                        this.setState({ success: true });
-                    }
-                    return new Promise(resolve => resolve(null));
-                })
-                .then(this.props.getTutors);
+                .then(result => redirectTo(ROUTES.TUTORS),
+                      noop);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

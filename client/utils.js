@@ -33,10 +33,22 @@ export const courseComparator = (course1, course2) => {
     }
 };
 
+export const selectTransformOptions = (valueKey = 'id', labelKey = 'name', colorKey = null) => options =>
+    options.map(
+        option => Object.keys(option).reduce((result, key) => {
+            if (key === valueKey) {
+                result.value = option[key];
+            } else if (key === labelKey) {
+                result.label = option[key];
+            } else if (colorKey && key === colorKey) {
+                result.color = option[key];
+            }
+            return result;
+        }, {})
+    );
 
 export const locationComparator = (location1, location2) =>
     location1.name.toLowerCase() > location2.name.toLowerCase() ? 1 : -1;
-
 
 export const redirectTo = page => browserHistory.push(page);
 

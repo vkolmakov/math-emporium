@@ -3,8 +3,10 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateCourse, getCourses } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
+import { redirectTo, noop } from '../../../utils';
 
-import { GOOGLE_CALENDAR_COLORS } from '../../constants';
+
+import { GOOGLE_CALENDAR_COLORS, ROUTES } from '../../constants';
 
 import { selectTransformOptions } from '../../utils';
 import Form from '../../../components/form/index';
@@ -39,13 +41,8 @@ class UpdateCourseForm extends Component {
         const onSubmit = (data) => {
             this.setState({ success: false });
             this.props.updateCourse(this.props.selectedCourse.id, data)
-                .then((result) => {
-                    if (!result.error) {
-                        this.setState({ success: true });
-                    }
-                    return new Promise(resolve => resolve(null));
-                })
-                .then(this.props.getCourses);
+                .then(result => redirectTo(ROUTES.COURSES),
+                      noop);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

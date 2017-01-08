@@ -43,10 +43,14 @@ export function deleteLocation(id) {
 }
 
 export function updateLocation(id, data) {
-    const request = axios.put(`${BASE_URL}/${id}`, data);
-
-    return {
-        type: UPDATE_LOCATION,
-        payload: request,
-    };
+    return dispatch => axios.put(`${BASE_URL}/${id}`, data).then(
+        res => {
+            dispatch({ type: UPDATE_LOCATION, payload: res });
+            return Promise.resolve();
+        },
+        err => {
+            dispatch({ type: UPDATE_LOCATION, payload: err });
+            return Promise.reject();
+        }
+    );
 }

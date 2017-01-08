@@ -43,19 +43,25 @@ export function deleteCourse(id) {
 }
 
 export function updateCourse(id, data) {
-    const locationId = data.location;
+    return dispatch => {
+        const locationId = data.location;
 
-    const requestData = {
-        ...data,
-        location: {
-            id: locationId,
-        },
-    };
+        const requestData = {
+            ...data,
+            location: {
+                id: locationId,
+            },
+        };
 
-    const request = axios.put(`${BASE_URL}/${id}`, requestData);
-
-    return {
-        type: UPDATE_COURSE,
-        payload: request,
+        return axios.put(`${BASE_URL}/${id}`, requestData).then(
+            res => {
+                dispatch({ type: UPDATE_COURSE, payload: res });
+                return Promise.resolve();
+            },
+            err => {
+                dispatch({ type: UPDATE_COURSE, payload: err });
+                return Promise.reject();
+            }
+        );
     };
 }

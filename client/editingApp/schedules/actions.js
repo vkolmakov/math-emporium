@@ -18,18 +18,24 @@ export function getSchedules() {
 }
 
 export function updateSchedule(id, data) {
-    const requestData = {
-        time: data.time,
-        weekday: data.weekday,
-        location: { id: data.location },
-        tutors: data.tutors.map(tutor => ({ id: tutor.value })),
-    };
+    return dispatch => {
+        const requestData = {
+            time: data.time,
+            weekday: data.weekday,
+            location: { id: data.location },
+            tutors: data.tutors.map(tutor => ({ id: tutor.value })),
+        };
 
-    const request = axios.put(`${BASE_URL}/${id}`, requestData);
-
-    return {
-        type: UPDATE_SCHEDULE,
-        payload: request,
+        return axios.put(`${BASE_URL}/${id}`, requestData).then(
+            res => {
+                dispatch({ type: UPDATE_SCHEDULE, payload: res });
+                return Promise.resolve();
+            },
+            err => {
+                dispatch({ type: UPDATE_SCHEDULE, payload: err });
+                return Promise.reject();
+            }
+        );
     };
 }
 

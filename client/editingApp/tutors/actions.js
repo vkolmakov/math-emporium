@@ -41,16 +41,22 @@ export function deleteTutor(id) {
 }
 
 export function updateTutor(id, data) {
-    const requestData = {
-        name: data.name,
-        location: { id: data.location },
-        courses: data.courses.map(course => ({ id: course.value })),
-    };
+    return dispatch => {
+        const requestData = {
+            name: data.name,
+            location: { id: data.location },
+            courses: data.courses.map(course => ({ id: course.value })),
+        };
 
-    const request = axios.put(`${BASE_URL}/${id}`, requestData);
-
-    return {
-        type: UPDATE_TUTOR,
-        payload: request,
+        return axios.put(`${BASE_URL}/${id}`, requestData).then(
+            res => {
+                dispatch({ type: UPDATE_TUTOR, payload: res });
+                return Promise.resolve();
+            },
+            err => {
+                dispatch({ type: UPDATE_TUTOR, payload: err });
+                return Promise.reject();
+            }
+        );
     };
 }
