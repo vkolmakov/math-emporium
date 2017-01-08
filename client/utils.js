@@ -30,3 +30,6 @@ export const courseComparator = (course1, course2) => {
         return 0;
     }
 };
+
+export const locationComparator = (location1, location2) =>
+    location1.name.toLowerCase() > location2.name.toLowerCase() ? 1 : -1;
