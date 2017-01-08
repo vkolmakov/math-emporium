@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 
 import ShowScheduleReducer from './showSchedule/reducer';
 import ProfileReducer from './profile/reducer';
+import { courseComparator } from '../utils';
 
 import { SA_GET_LOCATIONS,
          SA_GET_COURSES,
@@ -38,7 +39,7 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
             ...state,
             courses: {
                 selected: null,
-                all: payload.data,
+                all: payload.data.sort(courseComparator),
             },
         };
 
