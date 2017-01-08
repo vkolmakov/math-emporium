@@ -70,17 +70,16 @@ export const updateLocation = (id, body) => new Promise(async (resolve, reject) 
             fields: allowedToWrite,
             where: { id },
         });
+
+        if (updatedLocation[0]) {
+            resolve({ id, name: body.name });
+        } else {
+            reject(notFound('location'));
+        }
     } catch (err) {
         if (err.message) {
             reject(actionFailed('update', 'location', err.message));
         }
-    }
-
-
-    if (updatedLocation[0]) {
-        resolve({ id, name: body.name });
-    } else {
-        reject(notFound('location'));
     }
 });
 
@@ -123,7 +122,7 @@ export const handleDelete = async (req, res, next) => {
 
 export const handleUpdate = async (req, res, next) => {
     try {
-        const updatedLocation = updateLocation(req.params.id, req.body);
+        const updatedLocation = await updateLocation(req.params.id, req.body);
         res.status(200).json(updatedLocation);
     } catch (err) {
         next(err);
