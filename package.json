@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "sequelize": "node_modules/.bin/sequelize",
-    "postinstall": "webpack --config ./webpack.production.config.js",
+    "postinstall": "node node_modules/node-sass/scripts/install.js && npm rebuild node-sass && webpack --config ./webpack.production.config.js",
     "production": "NODE_ENV=production npm run start",
     "dev": "NODE_ENV=serverdev nodemon -w ./ -x npm run start",
     "test": "jest"
