@@ -44,7 +44,7 @@ class UpdateUserForm extends Component {
                     } else {
                         this.setState({ error: result.error });
                     }
-                    return new Promise(resolve => resolve(null));
+                    return Promise.resolve();
                 })
                 .then(this.props.getUsers);
         };

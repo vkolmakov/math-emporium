@@ -60,8 +60,9 @@ class CreateScheduleForm extends Component {
             this.props.createSchedule(data)
                 .then(result => {
                     if (result.error) {
-                        return new Promise(resolve => resolve(null));
+                        return Promise.resolve();
                     }
+
                     return this.props.dispatch(initialize(FORM_NAME, {
                         location: this.props.locations.selected ? this.props.locations.selected.id : null,
                         weekday: this.props.schedules.selectedWeekday || null,

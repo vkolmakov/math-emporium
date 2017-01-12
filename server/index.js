@@ -21,7 +21,7 @@ function connect() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
-    return db.connect(process.env.DB_NAME || 'mathcenterappdb',
+    return db.connect(process.env.DB_NAME || 'mathcenterapp_dev',
                       process.env.DB_USER || 'postgres',
                       process.env.DB_PASSWORD || '', {
                           dialect: 'postgres',

@@ -17,7 +17,7 @@ class CreateLocationForm extends Component {
             this.props.createLocation(data)
                 .then(result => {
                     if (result.error) {
-                        return new Promise(resolve => resolve(null));
+                        return Promise.resolve();
                     }
                     return this.props.resetForm;
                 })
