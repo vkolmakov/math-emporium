@@ -349,7 +349,7 @@ body {
         text-align: center;
 
         @include filter(blur(1px));
-        background: $primary-color url('../assets/lowres.jpg') no-repeat center center;
+        background: $primary-color url('../assets/hero_lowres.jpg') no-repeat center center;
         background-size: cover;
         content: "";
         position: absolute;
