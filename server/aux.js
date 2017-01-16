@@ -95,4 +95,5 @@ export const extractSpecialInstructions = summary => {
 
 export const range = (start, end) => [...Array(end).keys()].slice(start);
 export const first = (list) => list[0];
+export const last = (list) => list[list.length - 1];
 export const contains = (list, elem) => list.indexOf(elem) > -1;

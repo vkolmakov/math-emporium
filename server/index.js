@@ -2,9 +2,9 @@ import express from 'express';
 import db from 'sequelize-connect';
 import bodyParser from 'body-parser';
 import path from 'path';
-import compression from 'compression';
 
 import errorHandler from './middleware/errorHandler';
+import serveCompressed from './middleware/serveCompressed';
 
 import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
@@ -94,11 +94,11 @@ function connect() {
             res.end();
         });
     } else {
-        app.use(compression());
+        app.get('*.js', serveCompressed);
+        app.get('*.css', serveCompressed);
+
         app.use(express.static(path.join(__dirname, '../dist')));
-        app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, '../dist/index.html'));
-        });
+        app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../dist/index.html')));
     }
     app.listen(port, () => console.log(`Running on port ${port}`));
 })();
