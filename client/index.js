@@ -16,7 +16,8 @@ import axios from 'axios';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import style from './style/style.scss';
+import './style/style.scss';
+import './assets/favicon.ico';
 
 
 const middlewares = [promise, reduxThunk];
