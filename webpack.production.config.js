@@ -1,25 +1,38 @@
-'use strict';
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const VENDOR_LIBS = [
+    'axios',
+    'moment',
+    'react',
+    'react-datepicker',
+    'react-dom',
+    'react-modal',
+    'react-redux',
+    'react-router',
+    'react-select',
+    'redux-form',
+    'redux-promise',
+    'redux-thunk',
+];
 
 module.exports = {
-    entry: [
-        path.join(__dirname, 'client/index.js'),
-    ],
+    entry: {
+        bundle: './client/index.js',
+        vendor: VENDOR_LIBS,
+    },
     output: {
-        path: path.join(__dirname, '/dist/'),
-        filename: '[name]-[hash].min.js',
+        path: path.resolve(__dirname, 'dist/'),
+        filename: '[name].[chunkhash].min.js',
         publicPath: '/',
     },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
         new HtmlWebpackPlugin({
             template: 'client/index.template.html',
             inject: 'body',
-            filename: 'index.html',
         }),
         new webpack.DefinePlugin({
             'process.env': {
@@ -27,34 +40,52 @@ module.exports = {
             },
         }),
         new webpack.optimize.UglifyJsPlugin({
-            compressor: {
+            compress: {
                 warnings: false,
                 screw_ie8: true,
             },
+            output: {
+                comments: false,
+            },
         }),
-        new ExtractTextPlugin('public/style.css', {
+        new ExtractTextPlugin({
+            filename: 'style.[chunkhash].css',
             allChunks: true,
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            names: ['vendor', 'manifest'],
+        }),
+        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en-gb)$/),
+        new CompressionPlugin({
+            asset: '[path].gz[query]',
+            algorithm: 'gzip',
+            test: /\.(js|css)$/,
+            minRatio: 0,
         }),
     ],
     module: {
-        loaders: [{
+        rules: [{
             test: /\.jsx?$/,
             exclude: /node_modules/,
-            loader: 'babel',
-            query: {
+            loader: 'babel-loader',
+            options: {
                 presets: ['react', 'es2015'],
             },
         }, {
             test: /\.scss$/,
-            loader: ExtractTextPlugin.extract('!css!sass'),
+            loader: ExtractTextPlugin.extract({
+                loader: ['css-loader', 'sass-loader'],
+            }),
         }, {
             test: /\.css$/,
-            loader: ExtractTextPlugin.extract('!css'),
+            loader: ExtractTextPlugin.extract({
+                loader: ['css-loader'],
+            }),
         }, {
             test: /\.(png|jpg|gif|svg)$/,
-            loader: 'file',
-            query: {
-                name: '[name].[ext]?[hash]',
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]',
             },
         }],
     },
