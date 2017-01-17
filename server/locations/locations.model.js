@@ -13,9 +13,9 @@ export default function createLocationModel(sequelize, DataTypes) {
             unique: {
                 msg: 'Location calendar ID must be unique!',
             },
-        }
+        },
     }, {
-        timestamps: false,
+        timestamps: true,
         classMethods: {
             findIfExists: (locationRequest) => {
                 // given a location request object return a promise with result
@@ -45,7 +45,7 @@ export default function createLocationModel(sequelize, DataTypes) {
                 const conditions = await Promise.all([Tutor, Course, Schedule].map(this.hasAny.bind(this)));
 
                 return conditions.every(c => c === false);
-            }
+            },
         },
     });
     return location;

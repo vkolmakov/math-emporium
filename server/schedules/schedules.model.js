@@ -10,7 +10,7 @@ export default function createScheduleModel(sequelize, DataTypes) {
             allowNull: false,
         },
     }, {
-        timestamps: false,
+        timestamps: true,
         indexes: [{
             unique: true,
             fields: ['weekday', 'time', 'locationId'],
