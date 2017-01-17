@@ -1,6 +1,7 @@
 import jwt from 'jwt-simple';
 import db from 'sequelize-connect';
 
+import { successMessage } from '../services/messages';
 
 const User = db.models.user;
 const SECRET = process.env.SECRET || 'this is supersecret';
@@ -192,3 +193,15 @@ export const resetPassword = async (req, res, next) => {
     }
 };
 
+export const recordSignin = async (req, res, next) => {
+    const user = req.user;
+    const now = Date.now();
+
+    try {
+        await user.update({ lastSigninAt: now });
+    } catch (err) {
+        return next(err);
+    }
+
+    return res.status(200).json(successMessage());
+};

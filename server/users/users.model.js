@@ -56,6 +56,9 @@ export default function createUserModel(sequelize, DataTypes) {
         googleCalendarId: {
             type: DataTypes.STRING,
         },
+        lastSigninAt: {
+            type: DataTypes.DATE,
+        },
     }, {
         timestamps: true,
         classMethods: {
