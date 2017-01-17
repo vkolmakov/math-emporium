@@ -9,14 +9,19 @@ export const SIGNUP_USER = 'SIGNUP_USER';
 export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
 export const SET_USER_GROUP = 'SET_USER_GROUP';
 export const SET_USER_EMAIL = 'SET_USER_EMAIL';
+export const RECORD_USER_SIGNIN = 'RECORD_USER_SIGNIN';
 
 const BASE_URL = '/api/auth';
+
+export function startUsingAuthToken(token) {
+    axios.defaults.headers.common['Authorization'] = token;
+}
 
 function addAuthData({ token, group, email }) {
     localStorage.setItem('token', token);
     localStorage.setItem('group', group);
     localStorage.setItem('email', email);
-    axios.defaults.headers.common['Authorization'] = token;
+    startUsingAuthToken(token);
 }
 
 function removeAuthData() {
@@ -97,4 +102,31 @@ export function sendResetPasswordEmail({ email }) {
 
 export function resetPassword({ password, token }) {
     return dispatch => axios.post(`${BASE_URL}/reset-password`, { password, token });
+}
+
+export function setUserAuthGroup(authGroup) {
+    return {
+        type: SET_USER_GROUP,
+        payload: authGroup,
+    };
+}
+
+export function setUserEmail(email) {
+    return {
+        type: SET_USER_EMAIL,
+        payload: email,
+    };
+}
+
+export function authorizeUser() {
+    return {
+        type: AUTH_USER,
+    };
+}
+
+export function recordUserSignin() {
+    return {
+        type: RECORD_USER_SIGNIN,
+        payload: axios.post(`${BASE_URL}/record-signin`),
+    };
 }

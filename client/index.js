@@ -6,13 +6,12 @@ import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
-import { AUTH_USER, SET_USER_GROUP, SET_USER_EMAIL } from './auth/actions';
+import { authorizeUser, setUserAuthGroup, setUserEmail, recordUserSignin, startUsingAuthToken } from './auth/actions';
 
 import createLogger from 'redux-logger';
 
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
-import axios from 'axios';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -31,7 +30,6 @@ if (process.env.NODE_ENV !== 'production') {
     middlewares.push(logger);
 }
 
-
 const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 const store = createStoreWithMiddleware(reducers);
 
@@ -40,10 +38,11 @@ const authGroup = localStorage.getItem('group');
 const email = localStorage.getItem('email');
 
 if (token && authGroup && email) {
-    store.dispatch({ type: AUTH_USER });
-    store.dispatch({ type: SET_USER_GROUP, payload: authGroup });
-    store.dispatch({ type: SET_USER_EMAIL, payload: email });
-    axios.defaults.headers.common['Authorization'] = token;
+    startUsingAuthToken(token);
+    store.dispatch(authorizeUser());
+    store.dispatch(recordUserSignin());
+    store.dispatch(setUserAuthGroup(authGroup));
+    store.dispatch(setUserEmail(email));
 }
 
 ReactDOM.render(
