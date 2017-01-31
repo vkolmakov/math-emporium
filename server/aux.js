@@ -23,7 +23,9 @@ export function createExtractDataValuesFunction(allowedFields) {
         let data = sequelizeRes;
         // Grab only the allowed fields
         return allowedFields.reduce((result, fieldName) => {
-            result[fieldName] = data.get(fieldName);
+            if (data.get) {
+                result[fieldName] = data.get(fieldName);
+            }
             return result;
         }, {});
     };
