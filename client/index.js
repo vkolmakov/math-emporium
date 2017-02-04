@@ -8,8 +8,6 @@ import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import { authorizeUser, setUserAuthGroup, setUserEmail, recordUserSignin, startUsingAuthToken } from './auth/actions';
 
-import createLogger from 'redux-logger';
-
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
 
@@ -22,6 +20,7 @@ import './assets/favicon.ico';
 const middlewares = [promise, reduxThunk];
 
 if (process.env.NODE_ENV !== 'production') {
+    const createLogger = require('redux-logger');
     const logger = createLogger({
         diff: true,
         collapsed: true,
