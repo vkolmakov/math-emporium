@@ -60,9 +60,12 @@ body {
     margin: 0 auto;
     padding: 0.5em 0;
 
-    &.select-filter-error .Select-control {
+    &.select-filter-error > select {
         border-color: $danger-color;
-        color: $danger-color;
+    }
+
+    &.select-filter-empty > select {
+        color: #aaa;
     }
 
     &.select-filter-error .Select-arrow {
@@ -70,9 +73,14 @@ body {
         color: $danger-color;
     }
 
-    input {
-        @include set-font();
+    select {
         @include box-sizing(border-box);
+        @include rounded-border();
+        @include set-font();
+        background-color: white;
+        padding: 0.5em;
+        font-size: 16px;
+        height:34px;
         width: 100%;
     }
 }
