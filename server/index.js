@@ -46,11 +46,11 @@ function connect() {
     const port = process.env.PORT || 3000;
 
     const isDev = process.env.NODE_ENV !== 'production';
+
+    app.use(bodyParser.json());
     if (isDev) {
         app.use(morgan('dev'));
     }
-
-    app.use(bodyParser.json());
 
     const crudRoutes = [
         ['locations'],
