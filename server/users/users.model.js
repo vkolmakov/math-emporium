@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, pickOneFrom, USER_EMAIL_REGEX } from '../aux';
+import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, USER_EMAIL_REGEX } from '../aux';
+import * as email from '../services/email';
 
 const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
@@ -139,61 +139,38 @@ export default function createUserModel(sequelize, DataTypes) {
                 };
             },
 
-            sendEmail({ subject, text, html }) {
+            sendEmail({ subjectConstructor, emailBodyConstructor }) {
                 const user = this;
-                return new Promise((resolve, reject) => {
-                    const [serverEmail, serverEmailPass] = [process.env.EMAIL_ADDRESS,
-                                                            process.env.EMAIL_PASSWORD];
-
-                    const transporter = nodemailer.createTransport({
-                        service: 'gmail',
-                        auth: {
-                            user: serverEmail,
-                            pass: serverEmailPass,
-                        },
-                    });
-
-                    const mailOptions = {
-                        from: serverEmail,
-                        to: user.getDataValue('email'),
-                        subject,
-                        text,
-                        html,
-                    };
-
-                    transporter.sendMail(mailOptions, (err, info) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        resolve(info);
-                    });
-                });
+                const emailAddress = user.getDataValue('email');
+                const firstName = user.getDataValue('firstName');
+                const client = email.createClient();
+                return email.send(client,
+                                  { email: emailAddress, firstName },
+                                  { subjectConstructor, emailBodyConstructor });
             },
+
             sendActivationEmail() {
                 const user = this;
-                const HOSTNAME = process.env.HOSTNAME;
                 const token = user.getDataValue('activationToken');
-                const emailBody = `To activate your account click on this link:\n${HOSTNAME}/activate/${token}\n`;
 
-                const mailOptions = {
-                    subject: `Hello from ${HOSTNAME}`,
-                    ...user.composeEmail(emailBody),
-                };
+                const emailBodyConstructor = (_, host) =>
+                      `To activate your account click on this link:\n${host}/activate/${token}\n`;
+                const subjectConstructor = orgName => `Hello from ${orgName}`;
 
-                return user.sendEmail(mailOptions);
+                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
+
             sendResetPasswordEmail() {
                 const user = this;
-                const HOSTNAME = process.env.HOSTNAME;
                 const token = user.getDataValue('resetPasswordToken');
-                const emailBody = `To reset your password follow this link:\n${HOSTNAME}/reset-password/${token}\n`;
-                const mailOptions = {
-                    subject: `Reset your password at ${HOSTNAME}`,
-                    ...user.composeEmail(emailBody),
-                };
 
-                return user.sendEmail(mailOptions);
+                const emailBodyConstructor = (_, host) =>
+                      `To reset your password follow this link:\n${host}/reset-password/${token}\n`;
+                const subjectConstructor = orgName => `Reset your password at ${orgName}`;
+
+                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
+
             createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
@@ -219,10 +196,12 @@ export default function createUserModel(sequelize, DataTypes) {
                     resolve(result);
                 });
             },
+
             getAppointmentSummary({ course, tutor }) {
                 const user = this;
                 return `${tutor.name} (${user.firstName}) ${course.code}`;
             },
+
             getAppointmentDescription({ course, tutor, comments }) {
                 moment.tz.setDefault(TIMEZONE);
                 const user = this;
@@ -232,6 +211,7 @@ export default function createUserModel(sequelize, DataTypes) {
                     `Created by: ${process.env.HOSTNAME}`,
                     comments ? `Comments: ${comments}` : ''].join('\n');
             },
+
             deleteGoogleCalendarAppointment() {
                 const user = this;
                 return new Promise(async (resolve, reject) => {
@@ -249,57 +229,26 @@ export default function createUserModel(sequelize, DataTypes) {
                     }
                 });
             },
+
             sendAppointmentReminder({ time, location, course, tutor }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 const formattedTime = time.format(TIMESTAMP_VISIBLE_FORMAT);
-                const emailBody = `Your appointment has been scheduled for ${course.code} on ${formattedTime} with ${tutor.name} in the ${location.name}.`;
-
-                const mailOptions = {
-                    subject: `Appointment reminder: ${location.name} on ${formattedTime}`,
-                    ...user.composeEmail(emailBody),
-                };
-
-                return user.sendEmail(mailOptions);
+                const emailBodyConstructor = () =>
+                      `Your appointment for ${course.code} with ${tutor.name} on ${formattedTime} in the ${location.name} has been scheduled.`;
+                const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
+                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
+
             sendAppoinmentRemovalConfirmation({ appointmentTime }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 const formattedTime = appointmentTime.format(TIMESTAMP_VISIBLE_FORMAT);
-                const emailBody = `We've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!`;
+                const emailBodyConstructor = () =>
+                      `We've successfully cancelled your appointment on ${formattedTime}. Feel free to reschedule anytime!`;
+                const subjectConstructor = () => 'Your appointment was successfully cancelled';
 
-                const mailOptions = {
-                    subject: 'Your appointment was successfully cancelled',
-                    ...user.composeEmail(emailBody),
-                };
-
-                return user.sendEmail(mailOptions);
-            },
-            composeEmail(body) {
-                function htmlify(sentence) {
-                    const handleNewlines = s => s.replace(/\n/g, '<br />');
-                    const handleLinks = s => {
-                        const linkRegex = new RegExp(`.*?(${process.env.HOSTNAME}.*?)\\s`, 'gi');
-                        return s.replace(linkRegex, '<a href="$1">$1</a> ');
-                    };
-
-                    const handlers = [handleLinks, handleNewlines];
-                    return `<p>${handlers.reduce((result, handler) => handler(result), sentence)}</p>`;
-                }
-
-                const user = this;
-                const openers = ['Hello'];
-                const greeting = `${pickOneFrom(openers)} ${user.dataValues.firstName || user.dataValues.email.split('@')[0]},`;
-
-                const closers = ['Have a great day!\nTutoring@Wright'];
-                const valediction = `${pickOneFrom(closers)},\n${process.env.HOSTNAME}`;
-
-                const message = [greeting, body, valediction];
-
-                return {
-                    text: message.join('\n\n'),
-                    html: message.map(htmlify).join(''),
-                };
+                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
         },
     });
