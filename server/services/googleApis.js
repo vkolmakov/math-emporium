@@ -1,13 +1,14 @@
 import googleapis from 'googleapis';
 import { TIMEZONE } from '../aux';
+import config from '../config';
 
 function getServiceKeyBuffer(serviceKey) {
     return Buffer.from(serviceKey);
 }
 
 function getAuth(resource) {
-    const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT;
-    const SERVICE_KEY_BUFFER = getServiceKeyBuffer(process.env.GOOGLE_SERVICE_KEY);
+    const SERVICE_ACCOUNT_EMAIL = config.google.SERVICE_ACCOUNT;
+    const SERVICE_KEY_BUFFER = getServiceKeyBuffer(config.google.SERVICE_KEY);
     return new Promise((resolve, reject) => {
         const authClient = new googleapis.auth.JWT(
             SERVICE_ACCOUNT_EMAIL,

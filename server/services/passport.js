@@ -1,9 +1,9 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
+import config from '../config';
 
 import db from 'sequelize-connect';
-const SECRET = process.env.SECRET || 'this is supersecret';
 
 const localOptions = {
     usernameField: 'email',
@@ -38,7 +38,7 @@ const localLogin = new LocalStrategy(localOptions, async (email, password, done)
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: SECRET,
+    secretOrKey: config.SECRET,
 };
 
 

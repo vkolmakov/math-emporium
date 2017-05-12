@@ -45,9 +45,9 @@ function connect() {
     }
 
     const app = express();
-    const port = process.env.PORT || 3000;
+    const port = config.PORT;
 
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = !config.IS_PRODUCTION;
 
     app.use(bodyParser.json());
     if (isDev) {
@@ -68,7 +68,7 @@ function connect() {
     app.use('/api', createUtilRouter());
     app.use('/api', createManageUserRouter());
 
-    const isDevClient = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'serverdev';
+    const isDevClient = !config.IS_PRODUCITON && process.env.NODE_ENV !== 'serverdev';
 
     app.use(errorHandler);
 

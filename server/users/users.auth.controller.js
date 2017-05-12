@@ -2,9 +2,10 @@ import jwt from 'jwt-simple';
 import db from 'sequelize-connect';
 
 import { successMessage } from '../services/messages';
+import config from '../config';
 
 const User = db.models.user;
-const SECRET = process.env.SECRET || 'this is supersecret';
+const SECRET = config.SECRET;
 
 
 export const tokenForUser = (user) => {

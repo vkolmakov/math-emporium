@@ -208,7 +208,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 return [`Student: ${user.firstName} ${user.lastName}`,
                     `Course: ${course.code}: ${course.name}`,
                     `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
-                    `Created by: ${process.env.HOSTNAME}`,
+                    'Created online',
                     comments ? `Comments: ${comments}` : ''].join('\n');
             },
 
