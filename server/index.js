@@ -13,24 +13,26 @@ import createUserRouter from './routes/userRouter';
 import createManageUserRouter from './routes/manageUserRouter';
 
 import webpack from 'webpack';
-import config from '../webpack.config';
+import webpackConfig from '../webpack.config';
 import morgan from 'morgan';
+
+import config from './config';
 
 
 function connect() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
-    return db.connect(process.env.DB_NAME || 'mathcenterapp_dev',
-                      process.env.DB_USER || 'postgres',
-                      process.env.DB_PASSWORD || '', {
+    return db.connect(config.db.NAME,
+                      config.db.USER,
+                      config.db.PASSWORD, {
                           dialect: 'postgres',
                           protocol: 'postgres',
-                          port: process.env.DB_PORT || null,
-                          host: process.env.DB_HOST || null,
+                          port: config.db.PORT,
+                          host: config.db.HOST,
                           logging: false,
                           dialectOptions: {
-                              ssl: !!process.env.DB_NAME,
+                              ssl: config.IS_PRODUCTION,
                           },
                       });
 }
@@ -73,9 +75,9 @@ function connect() {
     if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');
-        const compiler = webpack(config);
+        const compiler = webpack(webpackConfig);
         const middleware = webpackMiddleware(compiler, {
-            publicPath: config.output.publicPath,
+            publicPath: webpackConfig.output.publicPath,
             contentBase: 'src',
             stats: {
                 colors: true,
