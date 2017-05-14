@@ -19,4 +19,9 @@ export default {
         SERVICE_ACCOUNT: process.env.GOOGLE_SERVICE_ACCOUNT,
         SERVICE_KEY: process.env.GOOGLE_SERVICE_KEY,
     },
+    azure: {
+        SECRET: process.env.AZURE_SECRET,
+        CLIENT_ID: process.env.AZURE_CLIENT_ID,
+        CALLBACK: process.env.AZURE_CALLBACK,
+    },
 };

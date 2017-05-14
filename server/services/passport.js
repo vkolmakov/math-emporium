@@ -1,40 +1,11 @@
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { Strategy as LocalStrategy } from 'passport-local';
-import config from '../config';
-
+import { Strategy as AzureAdOAuth2Strategy } from 'passport-azure-ad-oauth2';
+import jwt from 'jsonwebtoken';
 import db from 'sequelize-connect';
 
-const localOptions = {
-    usernameField: 'email',
-};
+import config from '../config';
 
-const localLogin = new LocalStrategy(localOptions, async (email, password, done) => {
-    const User = db.models.user;
-    try {
-        const user = await User.findOne({
-            where: {
-                email,
-                active: true,
-            },
-        });
-
-        if (!user) {
-            done(null, false);
-        }
-
-        const isMatch = await user.validatePassword(password);
-
-        if (isMatch) {
-            done(null, user);
-        } else {
-            done(null, false);
-        }
-    } catch (err) {
-        console.log(err);
-        return done(err);
-    }
-});
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromHeader('authorization'),
@@ -55,6 +26,31 @@ const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
     }
 });
 
+const azureOptions = {
+    clientID: config.azure.CLIENT_ID,
+    clientSecret: config.azure.SECRET,
+    callbackURL: config.azure.CALLBACK,
+    response_type: 'id_token',
+    scope: ['openid', 'profile'],
+    scopeSeparator: '+',
+};
+
+const azureAdOAuth2Login = new AzureAdOAuth2Strategy(azureOptions, async (_aT, _rT, params, _p, done) => {
+    const User = db.models.user;
+    const userProfile = jwt.decode(params.id_token);
+
+    const email = userProfile.upn;
+    const firstName = userProfile.given_name;
+    const lastName = userProfile.family_name;
+
+    try {
+        const userWithStatus = await User.findOrCreate({ where: { email }, defaults: { firstName, lastName } });
+        const [user, _] = userWithStatus;
+        return done(null, user);
+    } catch (err) {
+        return done(err);
+    }
+});
 
 passport.use(jwtLogin);
-passport.use(localLogin);
+passport.use(azureAdOAuth2Login);
