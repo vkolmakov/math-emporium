@@ -5,18 +5,21 @@ import passportService from '../services/passport';
 import requireGroup from '../middleware/requireGroup';
 import { AUTH_GROUPS } from '../aux';
 
-const requireSignin = passport.authenticate('local', { session: false });
+function requireSignin() {
+    const oauthOptions = {
+        failureRedirect: '/',
+        session: false,
+    };
+    return passport.authenticate('azure_ad_oauth2', oauthOptions);
+}
 
 export default function createAuthRouter() {
     const controller = require('../users/users.auth.controller');
     const router = express.Router();
 
-    router.post('/auth/signin', requireSignin, controller.signin);
-    router.post('/auth/signup', controller.signup);
-    router.post('/auth/activate', controller.activate);
-    router.post('/auth/resend-activation-email', controller.resendActivationEmail);
-    router.post('/auth/send-reset-password-email', controller.requestResetPassword);
-    router.post('/auth/reset-password', controller.resetPassword);
+    router.get('/auth/oauth2/signin', requireSignin());
+    router.get('/auth/oauth2/callback', requireSignin(), controller.signin);
+
     router.post('/auth/record-signin', requireGroup(AUTH_GROUPS.user), controller.recordSignin);
 
     return router;
