@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
+import { BASE_URL } from './constants';
 
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
@@ -11,7 +12,6 @@ export const SET_USER_GROUP = 'SET_USER_GROUP';
 export const SET_USER_EMAIL = 'SET_USER_EMAIL';
 export const RECORD_USER_SIGNIN = 'RECORD_USER_SIGNIN';
 
-const BASE_URL = '/api/auth';
 
 export function startUsingAuthToken(token) {
     axios.defaults.headers.common['Authorization'] = token;
