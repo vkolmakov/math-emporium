@@ -6,7 +6,10 @@ import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
-import { authorizeUser, setUserAuthGroup, setUserEmail, recordUserSignin, startUsingAuthToken, hasNewUserJustSignedIn, addAuthDataFromCookiesAndCleanup } from './auth/actions';
+import { authorizeUser, setUserAuthGroup, setUserEmail,
+         recordUserSignin, startUsingAuthToken,
+         hasNewUserJustSignedIn, addAuthDataFromCookies,
+         cleanupAuthDataFromCookies } from './auth/actions';
 
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
@@ -17,7 +20,7 @@ import './style/style.scss';
 import './assets/favicon.ico';
 
 
-const middlewares = [promise, reduxThunk];
+let middlewares = [promise, reduxThunk];
 
 if (process.env.NODE_ENV !== 'production') {
     const createLogger = require('redux-logger');
@@ -26,14 +29,15 @@ if (process.env.NODE_ENV !== 'production') {
         collapsed: true,
     });
 
-    middlewares.push(logger);
+    middlewares = middlewares.concat([logger]);
 }
 
 const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 const store = createStoreWithMiddleware(reducers);
 
 if (hasNewUserJustSignedIn()) {
-    addAuthDataFromCookiesAndCleanup();
+    addAuthDataFromCookies();
+    cleanupAuthDataFromCookies();
 }
 
 const token = localStorage.getItem('token');

@@ -33,6 +33,10 @@ function removeAuthData() {
     axios.defaults.headers.common['Authorization'] = null;
 }
 
+function authCookieKeys() {
+    return ['token', 'group', 'email'];
+}
+
 export function authError(error) {
     return {
         type: AUTH_ERROR,
@@ -134,15 +138,17 @@ export function recordUserSignin() {
 }
 
 export function hasNewUserJustSignedIn() {
-    const cookieKeys = ['token', 'group', 'email'];
+    const cookieKeys = authCookieKeys();
     const cookies = parseCookies(cookieKeys, document.cookie);
     return cookieKeys.every(k => k in cookies);
 }
 
-export function addAuthDataFromCookiesAndCleanup() {
-    const cookieKeys = ['token', 'group', 'email'];
-    const cookies = parseCookies(cookieKeys, document.cookie);
+export function addAuthDataFromCookies() {
+    const cookies = parseCookies(authCookieKeys(), document.cookie);
     addAuthData(cookies);
+}
+
+export function cleanupAuthDataFromCookies() {
     const setCookie = newCookie => document.cookie = newCookie;
-    cleanCookies(cookieKeys, document.cookie).forEach(setCookie);
+    cleanCookies(authCookieKeys(), document.cookie).forEach(setCookie);
 }
