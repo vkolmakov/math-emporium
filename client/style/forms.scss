@@ -44,9 +44,11 @@
 .auth-form-wrap {
     @include clearfix();
     max-width: 50em;
+    padding: 1em;
     margin: 0 auto;
 
     display: flex;
+    flex-flow: column wrap;
     justify-content: center;
 
     .oauth2-link {
@@ -56,7 +58,12 @@
     }
 
     h1 {
-        color: darken($tertiary-color, 32%);
+        color: darken($tertiary-color, 50%);
+        font-weight: normal;
+    }
+
+    h2 {
+        color: darken($tertiary-color, 50%);
         font-weight: normal;
     }
 
@@ -70,9 +77,10 @@
         align-items: center;
         max-width: 22.5em;
         padding: 1em;
+        margin: 0 auto;
 
         @include breakpoint($medium-screen) {
-            margin-top: 3em;
+            margin: 3em auto;
         }
 
         > img {
