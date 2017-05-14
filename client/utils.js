@@ -52,4 +52,4 @@ export const locationComparator = (location1, location2) =>
 
 export const redirectTo = page => browserHistory.push(page);
 
-export const noop = _ => _;
+export const id = x => x;

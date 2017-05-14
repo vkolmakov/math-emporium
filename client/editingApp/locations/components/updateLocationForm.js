@@ -3,7 +3,7 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateLocation, getLocations } from '../actions';
 import { ROUTES } from '../../constants';
-import { redirectTo, noop } from '../../../utils';
+import { redirectTo, id } from '../../../utils';
 
 import Form from '../../../components/form/index';
 
@@ -33,7 +33,7 @@ class UpdateLocationForm extends Component {
             this.setState({ success: false });
             this.props.updateLocation(this.props.selectedLocation.id, data)
                 .then(result => redirectTo(ROUTES.LOCATIONS),
-                      noop);
+                      id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

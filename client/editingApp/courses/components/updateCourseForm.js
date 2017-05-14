@@ -3,7 +3,7 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateCourse, getCourses } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
-import { redirectTo, noop } from '../../../utils';
+import { redirectTo, id } from '../../../utils';
 
 
 import { GOOGLE_CALENDAR_COLORS, ROUTES } from '../../constants';
@@ -42,7 +42,7 @@ class UpdateCourseForm extends Component {
             this.setState({ success: false });
             this.props.updateCourse(this.props.selectedCourse.id, data)
                 .then(result => redirectTo(ROUTES.COURSES),
-                      noop);
+                      id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

@@ -4,7 +4,7 @@ import { reduxForm, initialize } from 'redux-form';
 import { updateTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 import { ROUTES } from '../../constants';
-import { selectTransformOptions, redirectTo, noop } from '../../../utils';
+import { selectTransformOptions, redirectTo, id } from '../../../utils';
 
 import Form from '../../../components/form/index';
 
@@ -37,7 +37,7 @@ class UpdateTutorForm extends Component {
         const onSubmit = (data) => {
             this.props.updateTutor(this.props.selectedTutor.id, data)
                 .then(result => redirectTo(ROUTES.TUTORS),
-                      noop);
+                      id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
