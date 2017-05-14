@@ -52,4 +52,23 @@ export const locationComparator = (location1, location2) =>
 
 export const redirectTo = page => browserHistory.push(page);
 
+export function setKey(obj, key, val) {
+    obj[key] = val;
+    return obj;
+}
+
 export const id = x => x;
+
+export function parseCookies(onlyKeys, cookies) {
+    return cookies.split('; ')
+        .map(s => s.split('='))
+        .reduce((acc, [k, v]) => onlyKeys.includes(k) ? setKey(acc, k, v) : acc, {});
+}
+
+export function cleanCookies(onlyKeys, cookies) {
+    const expiration = (new Date(0)).toUTCString();
+    const createExpiredCookie = key => `${key}=;expires=${expiration}`;
+
+    return Object.keys(parseCookies(onlyKeys, cookies))
+        .map(createExpiredCookie);
+}

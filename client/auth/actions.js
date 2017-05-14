@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
 import { BASE_URL } from './constants';
+import { parseCookies, cleanCookies } from '../utils';
 
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
@@ -20,7 +21,8 @@ export function startUsingAuthToken(token) {
 function addAuthData({ token, group, email }) {
     localStorage.setItem('token', token);
     localStorage.setItem('group', group);
-    localStorage.setItem('email', email);
+    // replace in case an encoded value comes from a cookie
+    localStorage.setItem('email', email.replace('%40', '@'));
     startUsingAuthToken(token);
 }
 
@@ -129,4 +131,18 @@ export function recordUserSignin() {
         type: RECORD_USER_SIGNIN,
         payload: axios.post(`${BASE_URL}/record-signin`),
     };
+}
+
+export function hasNewUserJustSignedIn() {
+    const cookieKeys = ['token', 'group', 'email'];
+    const cookies = parseCookies(cookieKeys, document.cookie);
+    return cookieKeys.every(k => k in cookies);
+}
+
+export function addAuthDataFromCookiesAndCleanup() {
+    const cookieKeys = ['token', 'group', 'email'];
+    const cookies = parseCookies(cookieKeys, document.cookie);
+    addAuthData(cookies);
+    const setCookie = newCookie => document.cookie = newCookie;
+    cleanCookies(cookieKeys, document.cookie).forEach(setCookie);
 }

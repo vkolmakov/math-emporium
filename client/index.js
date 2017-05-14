@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
-import { authorizeUser, setUserAuthGroup, setUserEmail, recordUserSignin, startUsingAuthToken } from './auth/actions';
+import { authorizeUser, setUserAuthGroup, setUserEmail, recordUserSignin, startUsingAuthToken, hasNewUserJustSignedIn, addAuthDataFromCookiesAndCleanup } from './auth/actions';
 
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
@@ -31,6 +31,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 const store = createStoreWithMiddleware(reducers);
+
+if (hasNewUserJustSignedIn()) {
+    addAuthDataFromCookiesAndCleanup();
+}
 
 const token = localStorage.getItem('token');
 const authGroup = localStorage.getItem('group');
