@@ -55,6 +55,11 @@
         font-size: 22px;
     }
 
+    h1 {
+        color: darken($tertiary-color, 32%);
+        font-weight: normal;
+    }
+
     .oauth2-wrap {
         @include box-sizing(border-box);
         @include rounded-border();
