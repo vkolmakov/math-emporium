@@ -1,11 +1,8 @@
-import bcrypt from 'bcrypt-nodejs';
-import crypto from 'crypto';
 import moment from 'moment';
 import { CalendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT, USER_EMAIL_REGEX } from '../aux';
+import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
 import * as email from '../services/email';
 
-const TOKEN_EXPIRATION_PERIOD = 3600000 * 24;
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define('user', {
@@ -16,11 +13,6 @@ export default function createUserModel(sequelize, DataTypes) {
                 msg: 'Email address must be unique!',
             },
         },
-        password: {
-            // salt + hash is stored, password validation is a class method
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
         firstName: {
             type: DataTypes.STRING,
         },
@@ -30,22 +22,6 @@ export default function createUserModel(sequelize, DataTypes) {
         group: {
             type: DataTypes.INTEGER,
             defaultValue: AUTH_GROUPS.user,
-        },
-        active: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
-        activationToken: {
-            type: DataTypes.STRING,
-        },
-        activationTokenExpiration: {
-            type: DataTypes.DATE,
-        },
-        resetPasswordToken: {
-            type: DataTypes.STRING,
-        },
-        resetPasswordTokenExpiration: {
-            type: DataTypes.DATE,
         },
         googleCalendarAppointmentId: {
             type: DataTypes.STRING,
@@ -66,79 +42,8 @@ export default function createUserModel(sequelize, DataTypes) {
                 user.belongsTo(models.location);
                 user.belongsTo(models.course);
             },
-            validatePassword(password) {
-                const minPasswordLength = 8;
-                const requirements = [
-                    password.length >= minPasswordLength,
-                ];
-
-                return requirements.every(requirement => !!requirement);
-            },
-            validateEmail(email) {
-                const requirements = [
-                    email.match(USER_EMAIL_REGEX),
-                    // TODO: add school email requirement
-                ];
-
-                return requirements.every(requirement => !!requirement);
-            },
         },
         instanceMethods: {
-            hashAndSaltPassword(password) {
-                return new Promise((resolve, reject) => {
-                    bcrypt.genSalt(10, (err, salt) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        bcrypt.hash(password, salt, null, (err, hash) => {
-                            if (err) {
-                                reject(err);
-                            }
-                            resolve(hash);
-                        });
-                    });
-                });
-            },
-
-            validatePassword(password, _) {
-                return new Promise((resolve, reject) => {
-                    bcrypt.compare(password, this.getDataValue('password'), (err, isMatch) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        resolve(isMatch);
-                    });
-                });
-            },
-
-            generateRandomToken() {
-                return new Promise((resolve, reject) => {
-                    crypto.randomBytes(32, (err, buf) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        const token = buf.toString('hex');
-                        resolve(token);
-                    });
-                });
-            },
-
-            async generateActivationTokenData(secret) {
-                const token = await this.generateRandomToken();
-                return {
-                    token,
-                    expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
-                };
-            },
-
-            async generateResetPasswordData(secret) {
-                const token = await this.generateRandomToken();
-                return {
-                    token,
-                    expiration: Date.now() + TOKEN_EXPIRATION_PERIOD,
-                };
-            },
-
             sendEmail({ subjectConstructor, emailBodyConstructor }) {
                 const user = this;
                 const emailAddress = user.getDataValue('email');
@@ -147,28 +52,6 @@ export default function createUserModel(sequelize, DataTypes) {
                 return email.send(client,
                                   { email: emailAddress, firstName },
                                   { subjectConstructor, emailBodyConstructor });
-            },
-
-            sendActivationEmail() {
-                const user = this;
-                const token = user.getDataValue('activationToken');
-
-                const emailBodyConstructor = (_, host) =>
-                      `To activate your account click on this link:\n${host}/activate/${token}\n`;
-                const subjectConstructor = orgName => `Hello from ${orgName}`;
-
-                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
-            },
-
-            sendResetPasswordEmail() {
-                const user = this;
-                const token = user.getDataValue('resetPasswordToken');
-
-                const emailBodyConstructor = (_, host) =>
-                      `To reset your password follow this link:\n${host}/reset-password/${token}\n`;
-                const subjectConstructor = orgName => `Reset your password at ${orgName}`;
-
-                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
 
             createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
