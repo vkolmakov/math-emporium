@@ -5,6 +5,7 @@
 @import "variables";
 @import "mixins";
 @import "scheduling-app";
+@import "forms";
 @import "modal";
 @import "nav";
 @import "sidebar";
@@ -86,53 +87,10 @@ body {
 }
 
 
-.form-wrap {
-    @include breakpoint($medium-screen) {
-        @include span(3 of 9);
-        margin: 0 auto;
-    }
-    margin: 0.5em 0;
-}
-
-.form-field {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 1.4em auto;
-    &.submit-field {
-        flex-flow: row-reverse nowrap;
-        align-items: center;
-        justify-content: space-between;
-    }
-}
-
 .clearfix {
     @include clearfix();
 }
 
-
-.form-input-group {
-    width: 100%;
-    > input {
-        @include box-sizing(border-box);
-        @include rounded-border();
-        @include set-font();
-        padding: 0.5em;
-        font-size: 16px;
-        height:34px;
-        width: 100%;
-    }
-}
-
-.form-help {
-    @include set-font();
-    color: $danger-color;
-}
-
-.form-success {
-    @include set-font();
-    color: $success-color;
-    margin-bottom: 0.25em;
-}
 
 .color-icon {
     @include rounded-border();
@@ -305,35 +263,11 @@ body {
     display: block;
 }
 
-.auth-form-wrap {
-    @include clearfix();
-    @include breakpoint($medium-screen) {
-        margin: 0 auto;
-        width: span(4 of 9);
-    }
-
-    > h1 {
-        color: darken($tertiary-color, 32%);
-        font-weight: 400;
-    }
-
-    > p {
-        text-align: center;
-        > a {
-            text-decoration: none;
-            color: darken($primary-color, 25%);
-        }
-    }
-}
-
-
 .container{
     margin: 0 auto;
     width: 90%;
     max-width: 1024px;
 }
-
-
 
 .hero {
     position: relative;

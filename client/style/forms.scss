@@ -1,0 +1,78 @@
+.form-wrap {
+    @include breakpoint($medium-screen) {
+        @include span(3 of 9);
+        margin: 0 auto;
+    }
+    margin: 0.5em 0;
+}
+
+.form-field {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 1.4em auto;
+    &.submit-field {
+        flex-flow: row-reverse nowrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.form-input-group {
+    width: 100%;
+    > input {
+        @include box-sizing(border-box);
+        @include rounded-border();
+        @include set-font();
+        padding: 0.5em;
+        font-size: 16px;
+        height:34px;
+        width: 100%;
+    }
+}
+
+.form-help {
+    @include set-font();
+    color: $danger-color;
+}
+
+.form-success {
+    @include set-font();
+    color: $success-color;
+    margin-bottom: 0.25em;
+}
+
+.auth-form-wrap {
+    @include clearfix();
+    max-width: 50em;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: center;
+
+    .oauth2-link {
+        text-decoration: none;
+        color: $primary-text-color;
+        font-size: 22px;
+    }
+
+    .oauth2-wrap {
+        @include box-sizing(border-box);
+        @include rounded-border();
+        @include set-font();
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 22.5em;
+        padding: 1em;
+
+        @include breakpoint($medium-screen) {
+            margin-top: 3em;
+        }
+
+        > img {
+            height: 1.5em;
+            padding-right: 0.5em;
+        }
+    }
+}
