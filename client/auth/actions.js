@@ -50,64 +50,12 @@ export function clearAuthError() {
     };
 }
 
-export function signinUser({ email, password }) {
-    return dispatch =>
-        axios.post(`${BASE_URL}/signin`, { email, password }).then(
-            response => {
-                const { data } = response;
-                dispatch({ type: AUTH_USER });
-                dispatch({ type: SET_USER_GROUP, payload: data.group });
-                dispatch({ type: SET_USER_EMAIL, payload: data.email });
-                addAuthData(data);
-                browserHistory.push('/schedule/show');
-                return Promise.resolve();
-            },
-            err => {
-                dispatch(authError('Bad login info or an account that\'s not activated'))
-                return Promise.reject();
-            }
-        );
-}
-
-
 export function signoutUser() {
     removeAuthData();
+    cleanupAuthDataFromCookies();
     return {
         type: UNAUTH_USER,
     };
-}
-
-export function signupUser({ email, password }) {
-    return dispatch => axios.post(`${BASE_URL}/signup`, { email, password });
-}
-
-export function activateUser({ activationToken }) {
-    return dispatch => {
-        axios.post(`${BASE_URL}/activate`, { token: activationToken })
-            .then(response => {
-                const data = response.data;
-                dispatch({ type: AUTH_USER });
-                dispatch({ type: SET_USER_GROUP, payload: data.group });
-                dispatch({ type: SET_USER_EMAIL, payload: data.email });
-                addAuthData(data);
-                browserHistory.push('/');
-            })
-            .catch(response => {
-                dispatch(authError(response.data.error));
-            });
-    };
-}
-
-export function resendActivationEmail({ email }) {
-    return dispatch => axios.post(`${BASE_URL}/resend-activation-email`, { email });
-}
-
-export function sendResetPasswordEmail({ email }) {
-    return dispatch => axios.post(`${BASE_URL}/send-reset-password-email`, { email });
-}
-
-export function resetPassword({ password, token }) {
-    return dispatch => axios.post(`${BASE_URL}/reset-password`, { password, token });
 }
 
 export function setUserAuthGroup(authGroup) {

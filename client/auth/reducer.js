@@ -3,7 +3,7 @@ import { AUTH_USER,
          AUTH_ERROR,
          CLEAR_AUTH_ERROR,
          SET_USER_GROUP,
-         SET_USER_EMAIL} from './actions';
+         SET_USER_EMAIL } from './actions';
 
 export default (state = {}, action) => {
     switch (action.type) {
