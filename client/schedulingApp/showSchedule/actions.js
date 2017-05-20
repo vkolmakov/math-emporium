@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
 
@@ -14,10 +15,13 @@ export const SA_DISPLAY_TUTOR_SELECTION_MODAL = 'SA_DISPLAY_TUTOR_SELECTION_MODA
 export const SA_DISPLAY_LOADING_MODAL = 'SA_DISPLAY_LOADING_MODAL';
 export const SA_DISPLAY_MESSAGE_MODAL = 'SA_DISPLAY_MESSAGE_MODAL';
 export const SA_DISPLAY_PROFILE_MODAL = 'SA_DISPLAY_PROFILE_MODAL';
+export const SA_SAVE_SELECTED_OPEN_SPOT = 'SA_SAVE_SELECTED_OPEN_SPOT';
 
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
 const BASE_URL_TUTORS = '/api/available-tutors';
+
+const SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY = 'selectedOpenSpotInfo';
 
 export function getOpenSpots({ location, course, startDate }) {
     const requestParams = {
@@ -134,4 +138,37 @@ export function getAvailableTutors({ time, course, location }) {
             params: { ...requestParams },
         });
     };
+}
+
+export function saveSelectedOpenSpotInLocalStorage({ course, location, time }) {
+    const serialized = JSON.stringify({
+        course,
+        location,
+        time: time.valueOf(),
+    });
+
+    localStorage.setItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY, serialized);
+
+    return {
+        type: SA_SAVE_SELECTED_OPEN_SPOT,
+    };
+}
+
+export function hasNewUserSelectedOpenSpotBeforeSignIn() {
+    return !!localStorage.getItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY);
+}
+
+export function retrieveSelectedOpenSpotFromLocalStorage() {
+    const { course, location, time } =
+          JSON.parse(localStorage.getItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY));
+
+    return {
+        course,
+        location,
+        time: moment(time),
+    };
+}
+
+export function cleanupSelectedOpenSpotFromLocalStorage() {
+    return localStorage.removeItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY);
 }

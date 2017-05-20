@@ -11,8 +11,13 @@ import { authorizeUser, setUserAuthGroup, setUserEmail,
          hasNewUserJustSignedIn, addAuthDataFromCookies,
          cleanupAuthDataFromCookies } from './auth/actions';
 
+import { selectOpenSpot, hasNewUserSelectedOpenSpotBeforeSignIn,
+         cleanupSelectedOpenSpotFromLocalStorage,
+         retrieveSelectedOpenSpotFromLocalStorage } from './schedulingApp/showSchedule/actions';
+
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
+import { redirectTo } from './utils';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -37,8 +42,15 @@ const store = createStoreWithMiddleware(reducers);
 
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
-    cleanupAuthDataFromCookies();
+    redirectTo('/schedule/show');
+    if (hasNewUserSelectedOpenSpotBeforeSignIn()) {
+        const selectedOpenSpot = retrieveSelectedOpenSpotFromLocalStorage();
+        store.dispatch(selectOpenSpot(selectedOpenSpot));
+    }
 }
+
+cleanupAuthDataFromCookies();
+cleanupSelectedOpenSpotFromLocalStorage();
 
 const token = localStorage.getItem('token');
 const authGroup = localStorage.getItem('group');
