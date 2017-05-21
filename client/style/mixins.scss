@@ -14,7 +14,6 @@
 
 @mixin url {
     text-decoration: none;
-    text-transform: lowercase;
 }
 
 @mixin button() {
@@ -25,31 +24,13 @@
 }
 
 @mixin destructive {
-    @include breakpoint($medium-screen) {
-        background-color: transparent;
-        color: $danger-color;
-    }
     background-color: $danger-color;
     color: $danger-text-color;
-
-    &:hover {
-        background-color: $danger-color;
-        color: $danger-text-color;
-    }
 }
 
 @mixin nondestructive {
-    @include breakpoint($medium-screen) {
-        background-color: transparent;
-        color: darken($primary-color, 15%);
-    }
     background-color: $primary-color;
     color: $primary-text-color;
-
-    &:hover {
-        color: $primary-text-color;
-        background-color: $primary-color;
-    }
 }
 
 @mixin set-react-select-selection-area-size($size) {
