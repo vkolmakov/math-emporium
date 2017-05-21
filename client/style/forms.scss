@@ -42,7 +42,6 @@
 }
 
 .auth-form-wrap {
-    @include clearfix();
     max-width: 50em;
     padding: 1em;
     margin: 0 auto;
@@ -65,6 +64,10 @@
     h2 {
         color: darken($tertiary-color, 50%);
         font-weight: normal;
+    }
+
+    a {
+        color: darken($primary-color, 25%);
     }
 
     .oauth2-wrap {

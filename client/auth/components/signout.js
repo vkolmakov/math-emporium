@@ -19,6 +19,7 @@ class Signout extends Component {
             <div className="auth-form-wrap">
                 <h1>Goodbye!</h1>
                 <h2>We will redirect you to sign out of your school account in a moment...</h2>
+                <h2>You can also click <a href={OAUTH2_PROVIDER_SIGNOUT_URL}>here</a> to sign out of your school account right away.</h2>
             </div>
         );
     }
