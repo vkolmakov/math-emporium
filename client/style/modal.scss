@@ -45,14 +45,12 @@
     }
 }
 
-.confirmation-modal {
-    @include breakpoint($medium-screen) {
-        max-width: 475px;
-        max-height: 200px;
-    }
+.message-modal {
+    @extend .base-modal;
 
-    max-width: 300px;
-    max-height: 175px;
+    > .message {
+        font-size: 1.5em;
+    }
 }
 
 .scheduling-modal {
@@ -116,7 +114,7 @@
 .loading-modal {
     @extend .base-modal;
 
-   > .loading {
-       margin: 10em auto;
+    > .loading {
+        margin: 10em auto;
     }
 }

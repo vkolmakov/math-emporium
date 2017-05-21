@@ -4,12 +4,13 @@ import Modal from 'react-modal';
 export default ({ onRequestClose, message }) => (
     <Modal isOpen={true}
            onRequestClose={onRequestClose}
-           className="confirmation-modal"
+           className="message-modal"
            contentLabel="Message Modal">
-        <h2 className="message">{message}</h2>
-        <div className="buttons">
-            <span onClick={onRequestClose}
-                  className="nondestructive nonaction">Close</span>
+        <p className="message">{message}</p>
+        <div className="buttons-input-group-wrap">
+            <span className="filler"></span>
+            <button onClick={onRequestClose}
+                  className="nondestructive">Close</button>
         </div>
     </Modal>
 );
