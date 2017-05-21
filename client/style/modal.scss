@@ -122,3 +122,7 @@
         margin: 10em auto;
     }
 }
+
+.confirmation-modal {
+    @include base-modal();
+}

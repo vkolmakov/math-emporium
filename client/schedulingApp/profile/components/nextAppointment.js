@@ -50,12 +50,12 @@ class NextAppointment extends Component {
                    onRequestClose={this.closeModal.bind(this)}
                    className="confirmation-modal"
                    key={2}>
-              <h2>Are you sure you want to cancel your appointment?</h2>
-              <div className="buttons">
-                <span onClick={this.deleteAppointment.bind(this)}
-                      className="destructive action">Yes</span>
-                <span onClick={this.closeModal.bind(this)}
-                      className="nondestructive nonaction">No</span>
+              <h1>Are you sure you want to cancel your appointment?</h1>
+              <div className="buttons-input-group-wrap">
+                <button onClick={this.deleteAppointment.bind(this)}
+                      className="destructive action">Yes</button>
+                <button onClick={this.closeModal.bind(this)}
+                      className="nondestructive nonaction">No</button>
               </div>
             </Modal>,
         ];
