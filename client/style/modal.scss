@@ -8,7 +8,7 @@
     align-items: center;
 }
 
-.base-modal {
+@mixin base-modal {
     background-color: $secondary-color;
 
     max-width: 35em;
@@ -46,7 +46,7 @@
 }
 
 .message-modal {
-    @extend .base-modal;
+    @include base-modal();
 
     > .message {
         font-size: 1.5em;
@@ -54,7 +54,7 @@
 }
 
 .scheduling-modal {
-    @extend .base-modal;
+    @include base-modal();
 
     > .select-input-group-wrap {
         @include input-group-wrap();
@@ -112,7 +112,7 @@
 }
 
 .loading-modal {
-    @extend .base-modal;
+    @include base-modal;
 
     > .loading {
         margin: 10em auto;
