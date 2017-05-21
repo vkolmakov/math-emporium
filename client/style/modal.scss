@@ -114,10 +114,9 @@
 }
 
 .loading-modal {
+    @extend .base-modal;
+
    > .loading {
-       margin: 128px auto;
-       @include breakpoint($medium-screen) {
-           margin: 128px auto;
-       }
+       margin: 10em auto;
     }
 }
