@@ -12,7 +12,12 @@
     background-color: $secondary-color;
 
     max-width: 35em;
-    margin: 25vh auto;
+    margin: 5vh auto;
+
+    @include breakpoint($medium-screen) {
+        margin: 25vh auto;
+    }
+
     padding: 1.25em;
     @include rounded-border();
 
