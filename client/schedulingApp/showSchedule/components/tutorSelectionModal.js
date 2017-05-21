@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Modal from 'react-modal';
 
-import Select from '../../../components/select/reactSelectWrapper';
+import FilterControls from '../../../components/filterControls';
 
 import { clearOpenSpotSelection,
          scheduleAppointment,
@@ -68,26 +68,28 @@ class TutorSelectionModal extends Component {
                    onRequestClose={onRequestClose}
                    contentLabel="Tutor Selecion Modal"
                    className="scheduling-modal">
-                <h2>Confirm your appointment details</h2>
+                <h1>Confirm your appointment details</h1>
                 <h2>{appointmentInfoDisplay}</h2>
-                <div className="controls-wrapper">
-                    <h2>Select a tutor:</h2>
-                    <Select options={tutorOptions}
-                            value={this.state.requestedTutor ? this.state.requestedTutor.id : null}
-                            searchable={false}
-                            clearable={false}
+
+                <div className="select-input-group-wrap">
+                    <label>Select Your Tutor:</label>
+                    <FilterControls options={tutorOptions}
+                            currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
                             onChange={onTutorSelect}
                             placeholder="Select a tutor..." />
-                    <textarea value={this.state.additionalInfo}
-                              onChange={onAdditionalCommentsChange}
-                              placeholder="Additional comments..." />
                 </div>
 
-                <div className="buttons">
-                    <span onClick={onScheduleAppointment}
-                          className="nondestructive action">Schedule</span>
-                    <span onClick={onRequestClose}
-                          className="destructive nonaction">Cancel</span>
+                <div className="textarea-input-group-wrap">
+                    <label>Additional Comments:</label>
+                    <textarea value={this.state.additionalInfo}
+                              onChange={onAdditionalCommentsChange} />
+                </div>
+
+                <div className="buttons-input-group-wrap">
+                    <button onClick={onRequestClose}
+                            className="destructive">Cancel</button>
+                    <button onClick={onScheduleAppointment}
+                            className="nondestructive">Schedule</button>
                 </div>
             </Modal>
         );
