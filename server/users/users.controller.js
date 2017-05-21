@@ -102,7 +102,7 @@ export const scheduleAppointment = async (req, res, next) => {
 
     try {
         if (!user.firstName || !user.lastName) {
-            throw new Error('VISIBLE::first and last names are required.');
+            throw new Error('VISIBLE::Error: first and last names are required.');
         }
 
         const {
@@ -114,14 +114,14 @@ export const scheduleAppointment = async (req, res, next) => {
         } = req.body;
 
         if (!time || !course || !location) {
-            throw new Error('VISIBLE::time, course and location are required');
+            throw new Error('VISIBLE::Error: time, course and location are required');
         }
 
         // Check if user already has an upcomming appointment
         const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
         const now = moment();
         if (nextAppointment.isAfter(now)) {
-            throw new Error('VISIBLE::must not have more than one appointment at the same time');
+            throw new Error(`VISIBLE::Error: can't have more than one appointment at the same time. You can go to your profile, cancel your previously scheduled appointment and try again.`);
         }
 
         const locationRes = await Location.findOne({
