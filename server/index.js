@@ -47,10 +47,10 @@ function connect() {
     const app = express();
     const port = config.PORT;
 
-    const isDev = !config.IS_PRODUCTION;
+    const isProduction = config.IS_PRODUCTION;
 
     app.use(bodyParser.json());
-    if (isDev) {
+    if (!isProduction) {
         app.use(morgan('dev'));
     }
 
@@ -68,10 +68,9 @@ function connect() {
     app.use('/api', createUtilRouter());
     app.use('/api', createManageUserRouter());
 
-    const isDevClient = !config.IS_PRODUCITON && process.env.NODE_ENV !== 'serverdev';
-
     app.use(errorHandler);
 
+    const isDevClient = !isProduction && process.env.NODE_ENV !== 'serverdev';
     if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');
