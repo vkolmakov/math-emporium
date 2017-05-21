@@ -1,56 +1,38 @@
 @import "variables";
 @import "mixins";
 
-@mixin modal-header-text {
-    @include set-font();
-    font-size: 1.2em;
-    @include breakpoint($medium-screen) {
-        font-size: 1.5em;
-    }
-    padding: 0 10px;
-    text-align: center;
-    font-weight: 300;
+@mixin input-group-wrap {
+    margin: 0.25em 0;
+
+    display: flex;
+    align-items: center;
 }
 
 .base-modal {
-    @include rounded-border();
-    @include clearfix();
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    margin: auto;
-
     background-color: $secondary-color;
 
-     @include breakpoint($medium-screen) {
-        max-width: 500px;
-        max-height: 300px;
+    max-width: 35em;
+    margin: 25vh auto;
+    padding: 1.25em;
+    @include rounded-border();
+
+    display: flex;
+    flex-flow: column wrap;
+
+    h1, h2 {
+        margin: 0.25em 0;
+        font-weight: normal;
     }
 
-    max-width: 300px;
-    max-height: 300px;
-
-    > h2 {
-        @include modal-header-text();
-    }
-
-    > .buttons {
-        @include clearfix();
-        position:absolute;
-        bottom: 0;
-        width: 100%;
-
-        > span {
+    > .buttons-input-group-wrap {
+        @include input-group-wrap();
+        justify-content: space-between;
+        > button {
             @include button();
-            display: inline-block;
             padding: 10px;
-            margin: 10px;
-            width: 60px;
-            font-weight: 400;
+            width: 7.5em;
+            font-size: 1em;
+            font-weight: bold;
 
             &.destructive {
                 @include destructive()
@@ -59,22 +41,11 @@
             &.nondestructive {
                 @include nondestructive()
             }
-
-            &.action {
-                float: left;
-            }
-
-            &.nonaction {
-                float: right;
-            }
-
         }
     }
 }
 
 .confirmation-modal {
-    @extend .base-modal;
-
     @include breakpoint($medium-screen) {
         max-width: 475px;
         max-height: 200px;
@@ -87,55 +58,38 @@
 .scheduling-modal {
     @extend .base-modal;
 
-    > .controls-wrapper {
-        @include container();
-        margin: 0 5px;
-        @include breakpoint($medium-screen) {
-            margin: 0 65px;
+    > .select-input-group-wrap {
+        @include input-group-wrap();
+        > label {
+            padding-right: 0.75em;
+            flex: 1;
+        }
+
+
+        > div.select-filter-wrap {
+            margin: 0;
+            flex: 2;
+        }
+    }
+
+    > .textarea-input-group-wrap {
+        @include input-group-wrap();
+        > label {
+            padding-right: 0.75em;
+            flex: 1;
         }
 
         > textarea {
-            @include set-font();
-            @include rounded-border();
-            font-size: 16px;
-            padding: 4px;
-            resize: none;
-            margin: 6px auto;
-
-            width: 97%;
-            height: 40px;
-            @include breakpoint($medium-screen) {
-                width: 99%;
-                height: 65px;
-            }
-        }
-
-        > h2 {
-            @include modal-header-text();
-            padding: 3px 0 0 0;
+            @include rounded-border;
+            padding: 0.5em 0;
             margin: 0;
-
-            text-align: left;
-            @include span(4 of 4);
-
-            @include breakpoint($medium-screen) {
-                text-align: right;
-                @include span(2 of 4)
-            }
-        }
-
-        > .Select {
-            @include span (4 of 4 last);
-            @include breakpoint($medium-screen) {
-                @include span(2 of 4 last);
-            }
-            @include set-react-select-selection-area-size(120px);
+            font-size: 16px;
+            flex: 2;
         }
     }
 }
 
 .profile-form-modal {
-    @extend .base-modal;
     h2 {
         margin: 0 0.5em;
     }
@@ -160,7 +114,6 @@
 }
 
 .loading-modal {
-   @extend .base-modal;
    > .loading {
        margin: 128px auto;
        @include breakpoint($medium-screen) {
