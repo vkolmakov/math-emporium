@@ -23,7 +23,8 @@ import { setStartDate,
          clearOpenSpotSelection,
          getAvailableTutors,
          displayTutorSelectionModal,
-         displayProfileModal } from './actions';
+         displayProfileModal,
+         displayMessageModal } from './actions';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 import { redirectTo } from '../../utils';
@@ -265,4 +266,5 @@ export default connect(mapStateToProps, {
     getAvailableTutors,
     displayTutorSelectionModal,
     displayProfileModal,
+    displayMessageModal,
 })(ShowSchedule);
