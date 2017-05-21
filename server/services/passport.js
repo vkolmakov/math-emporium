@@ -30,6 +30,7 @@ const azureOptions = {
     clientID: config.azure.CLIENT_ID,
     clientSecret: config.azure.SECRET,
     callbackURL: config.azure.CALLBACK,
+    tenant: config.azure.TENANT,
     response_type: 'id_token',
     scope: ['openid', 'profile'],
     scopeSeparator: '+',
