@@ -23,6 +23,5 @@ export default {
         SECRET: process.env.AZURE_SECRET,
         CLIENT_ID: process.env.AZURE_CLIENT_ID,
         CALLBACK: process.env.AZURE_CALLBACK,
-        TENANT: process.env.AZURE_TENANT,
     },
 };
