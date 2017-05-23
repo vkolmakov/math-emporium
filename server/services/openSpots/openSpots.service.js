@@ -30,7 +30,7 @@ const predictTutorName = (rawName, options) => {
 
 function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     // find tutors that can tutor selected course
-    const { locationId, courseId, startDate, endDate } = parameters;
+    const { courseId } = parameters;
 
     const selectedTutors = locationData.tutors
           .filter(t => !!t.courses.find(c => c.id === courseId));
