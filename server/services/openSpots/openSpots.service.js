@@ -28,30 +28,12 @@ const predictTutorName = (rawName, options) => {
     }
 };
 
-export const openSpots = async (locationId, courseId, startDate, endDate) => {
-    /* locationId: Int,
-       courseId: Int,
-       startDate: moment Date,
-       endDate: moment Date,
-     */
-
-    moment.tz.setDefault(TIMEZONE);
-    // as of now course and location are passed in as a database ID
-    const data = await getCachedData();
-
-    // select the correct data blob
-    const locationData = data.find(d => d.location.id === locationId);
-
-    if (!locationData) {
-        throw new Error('Selected location does not exist');
-    }
-
+function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     // find tutors that can tutor selected course
+    const { locationId, courseId, startDate, endDate } = parameters;
+
     const selectedTutors = locationData.tutors
-              .filter(t => !!t.courses.find(c => c.id === courseId));
-
-
-    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate });
+          .filter(t => !!t.courses.find(c => c.id === courseId));
 
     // go through schedule and count tutors that are selected and present
     const initialCounts = locationData.schedules.map(s => {
@@ -74,8 +56,6 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
             count,
         };
     });
-
-    const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
 
     const scheduledCounts = appointments.reduce((results, item) => {
         const { tutor: rawTutorName, time, weekday } = item;
@@ -124,6 +104,29 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     });
 
     return openSpots;
+}
+
+export const openSpots = async (locationId, courseId, startDate, endDate) => {
+    /* locationId: Int,
+       courseId: Int,
+       startDate: moment Date,
+       endDate: moment Date,
+     */
+    moment.tz.setDefault(TIMEZONE);
+    // as of now course and location are passed in as a database ID
+    const data = await getCachedData();
+    // select the correct data blob
+    const locationData = data.find(d => d.location.id === locationId);
+
+    if (!locationData) {
+        throw new Error('Selected location does not exist');
+    }
+
+    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate });
+    const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
+    const parameters = { locationId, courseId, startDate, endDate };
+
+    return getOpenSpots(locationData, appointments, specialInstructions, parameters);
 };
 
 export const findAvailableTutors = async ({ time, course, location }) => {
