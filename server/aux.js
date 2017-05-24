@@ -82,7 +82,7 @@ export const extractSpecialInstructions = summary => {
         return null;
     }
 
-    const instructionsRegex = /^_\d+\*\((.+?)\)$/;
+    const instructionsRegex = /^_\d+\((.+?)\)$/;
     const match = summary.match(instructionsRegex);
 
     if (!match) {
