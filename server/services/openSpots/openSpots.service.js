@@ -106,7 +106,7 @@ function getOpenSpots(locationData, appointments, specialInstructions, parameter
     return openSpots;
 }
 
-export const openSpots = async (locationId, courseId, startDate, endDate) => {
+export async function openSpots(locationId, courseId, startDate, endDate) {
     /* locationId: Int,
        courseId: Int,
        startDate: moment Date,
@@ -127,13 +127,10 @@ export const openSpots = async (locationId, courseId, startDate, endDate) => {
     const parameters = { locationId, courseId, startDate, endDate };
 
     return getOpenSpots(locationData, appointments, specialInstructions, parameters);
-};
+}
 
-export const findAvailableTutors = async ({ time, course, location }) => {
-    moment.tz.setDefault(TIMEZONE);
-    const data = await getCachedData();
-    const locationData = data.find(d => d.location.id === location.id);
-
+export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
+    const { time, course, location } = parameters;
     // Convert time into a format that is stored in the database schedule model
     const timeRaw = moment(time).hours() * 60 + moment(time).minutes();
     // Convert weekday into a format that is stored in the database schedule model
@@ -144,14 +141,8 @@ export const findAvailableTutors = async ({ time, course, location }) => {
         throw new Error('Schedule not found');
     }
 
-
     let scheduledTutors;
     // try to find any special instructions related to this time and date
-    const specialInstructions = await getSpecialInstructions({
-        locationId: locationData.location.id,
-        startDate: time,
-        endDate: moment(time).add(1, 'hours'),
-    });
     const hasSpecialInstructions = specialInstructions.length > 0;
     if (hasSpecialInstructions) {
         // `join` scheduled tutors and location tutors, that is find a complete list of scheduled tutors with
@@ -179,19 +170,13 @@ export const findAvailableTutors = async ({ time, course, location }) => {
         tutor => !!tutor.courses.find(c => c.id === course.id)
     );
 
-    const appointments = await getAppointments({
-        locationId: locationData.location.id,
-        startDate: time,
-        endDate: moment(time).add(1, 'hours'),
-    });
-
     const busyTutorsNames = appointments.map(appointment => {
         const { tutor: rawTutorName } = appointment;
         const scheduledTutorNames = scheduledTutors.map(t => t.name);
 
         return contains(scheduledTutorNames.map(name => name.toLowerCase()), rawTutorName.toLowerCase())
-               ? rawTutorName
-               : predictTutorName(rawTutorName, scheduledTutorNames);
+            ? rawTutorName
+            : predictTutorName(rawTutorName, scheduledTutorNames);
     });
 
     // Keep only tutors whose names are not in the busyTutorsNames array
@@ -201,4 +186,26 @@ export const findAvailableTutors = async ({ time, course, location }) => {
     );
 
     return availableTutors;
-};
+}
+
+export async function findAvailableTutors({ time, course, location }) {
+    moment.tz.setDefault(TIMEZONE);
+    const data = await getCachedData();
+    const locationData = data.find(d => d.location.id === location.id);
+
+    const specialInstructions = await getSpecialInstructions({
+        locationId: locationData.location.id,
+        startDate: time,
+        endDate: moment(time).add(1, 'hours'),
+    });
+
+    const appointments = await getAppointments({
+        locationId: locationData.location.id,
+        startDate: time,
+        endDate: moment(time).add(1, 'hours'),
+    });
+
+    const parameters = { time, course, location };
+
+    return getAvailableTutors(locationData, appointments, specialInstructions, parameters);
+}
