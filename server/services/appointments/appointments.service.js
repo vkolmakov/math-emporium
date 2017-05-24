@@ -4,7 +4,7 @@ import db from 'sequelize-connect';
 import { CalendarService } from '../googleApis';
 import { TIMEZONE, TIMESTAMP_FORMAT, extractInfoFromSummary, extractSpecialInstructions } from '../../aux';
 
-function _getAppointments(calendarEvents, { startDate, endDate }) {
+export function _getAppointments(calendarEvents) {
     const appointments = calendarEvents.reduce((results, item) => {
         const appointmentInfo = extractInfoFromSummary(item.summary);
         if (!appointmentInfo) {
@@ -38,24 +38,11 @@ export const getAppointments = async ({ locationId, startDate, endDate }) => {
     const calendarId = location.calendarId;
     const calendarEvents = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
 
-    return _getAppointments(calendarEvents, { startDate, endDate });
+    return _getAppointments(calendarEvents);
 };
 
-export const getSpecialInstructions = async ({ locationId, startDate, endDate }) => {
-    moment.tz.setDefault(TIMEZONE);
-    const Location = db.models.location;
-
-    const location = await Location.findOne({
-        where: { id: locationId },
-    });
-
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = location.calendarId;
-    const calItems = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
-
-    const specialInstructions = calItems.reduce((results, item) => {
+export function _getSpecialInstructions(calendarEvents) {
+    const specialInstructions = calendarEvents.reduce((results, item) => {
         const instructionsInfo = extractSpecialInstructions(item.summary);
         if (!instructionsInfo) {
             return results;
@@ -73,4 +60,21 @@ export const getSpecialInstructions = async ({ locationId, startDate, endDate })
     }, []);
 
     return specialInstructions;
+}
+
+export const getSpecialInstructions = async ({ locationId, startDate, endDate }) => {
+    moment.tz.setDefault(TIMEZONE);
+    const Location = db.models.location;
+
+    const location = await Location.findOne({
+        where: { id: locationId },
+    });
+
+    const calendarService = new CalendarService;
+    await calendarService.create();
+
+    const calendarId = location.calendarId;
+    const calendarEvents = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
+
+    return _getSpecialInstructions(calendarEvents);
 };
