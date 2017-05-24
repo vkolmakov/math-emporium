@@ -73,7 +73,7 @@ export const extractInfoFromSummary = summary => {
     return {
         tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''), // strip trailing whitespace or `#` symbols
         student: match[2],
-        course: match[3],
+        course: match[3].trim(),
     };
 };
 
