@@ -58,25 +58,6 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
-export const extractInfoFromSummary = summary => {
-    if (!summary) {
-        return null;
-    }
-
-    const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
-    const match = summary.match(appointmentRegex);
-
-    if (!match) {
-        return null;
-    }
-
-    return {
-        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''), // strip trailing whitespace or `#` symbols
-        student: match[2],
-        course: match[3].trim(),
-    };
-};
-
 export const extractSpecialInstructions = summary => {
     if (!summary) {
         return null;

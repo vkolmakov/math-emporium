@@ -2,7 +2,26 @@ import moment from 'moment';
 import db from 'sequelize-connect';
 
 import { CalendarService } from '../googleApis';
-import { TIMEZONE, TIMESTAMP_FORMAT, extractInfoFromSummary, extractSpecialInstructions } from '../../aux';
+import { TIMEZONE, TIMESTAMP_FORMAT, extractSpecialInstructions } from '../../aux';
+
+function extractInfoFromSummary(summary) {
+    if (!summary) {
+        return null;
+    }
+
+    const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
+    const match = summary.match(appointmentRegex);
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''), // strip trailing whitespace or `#` symbols
+        student: match[2],
+        course: match[3].trim(),
+    };
+}
 
 export function _getAppointments(calendarEvents) {
     const appointments = calendarEvents.reduce((results, item) => {
