@@ -58,23 +58,6 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
-export const extractSpecialInstructions = summary => {
-    if (!summary) {
-        return null;
-    }
-
-    const instructionsRegex = /^_\d+\((.+?)\)$/;
-    const match = summary.match(instructionsRegex);
-
-    if (!match) {
-        return null;
-    }
-
-    return {
-        overwriteTutors: match[1].split('_').map(tutorName => ({ name: tutorName })),
-    };
-};
-
 export const range = (start, end) => [...Array(end).keys()].slice(start);
 export const first = (list) => list[0];
 export const last = (list) => list[list.length - 1];

@@ -2,7 +2,7 @@ import moment from 'moment';
 import db from 'sequelize-connect';
 
 import { CalendarService } from '../googleApis';
-import { TIMEZONE, TIMESTAMP_FORMAT, extractSpecialInstructions } from '../../aux';
+import { TIMEZONE, TIMESTAMP_FORMAT } from '../../aux';
 
 function extractInfoFromSummary(summary) {
     if (!summary) {
@@ -59,6 +59,23 @@ export const getAppointments = async ({ locationId, startDate, endDate }) => {
 
     return _getAppointments(calendarEvents);
 };
+
+function extractSpecialInstructions(summary) {
+    if (!summary) {
+        return null;
+    }
+
+    const instructionsRegex = /^_\d+\((.+?)\)$/;
+    const match = summary.match(instructionsRegex);
+
+    if (!match) {
+        return null;
+    }
+
+    return {
+        overwriteTutors: match[1].split('_').map(tutorName => ({ name: tutorName })),
+    };
+}
 
 export function _getSpecialInstructions(calendarEvents) {
     const specialInstructions = calendarEvents.reduce((results, item) => {
