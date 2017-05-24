@@ -4,21 +4,8 @@ import db from 'sequelize-connect';
 import { CalendarService } from '../googleApis';
 import { TIMEZONE, TIMESTAMP_FORMAT, extractInfoFromSummary, extractSpecialInstructions } from '../../aux';
 
-export const getAppointments = async ({ locationId, startDate, endDate }) => {
-    moment.tz.setDefault(TIMEZONE);
-    const Location = db.models.location;
-
-    const location = await Location.findOne({
-        where: { id: locationId },
-    });
-
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = location.calendarId;
-    const calItems = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
-
-    const appointments = calItems.reduce((results, item) => {
+function _getAppointments(calendarEvents, { startDate, endDate }) {
+    const appointments = calendarEvents.reduce((results, item) => {
         const appointmentInfo = extractInfoFromSummary(item.summary);
         if (!appointmentInfo) {
             return results;
@@ -36,6 +23,22 @@ export const getAppointments = async ({ locationId, startDate, endDate }) => {
     }, []);
 
     return appointments;
+}
+
+export const getAppointments = async ({ locationId, startDate, endDate }) => {
+    moment.tz.setDefault(TIMEZONE);
+    const Location = db.models.location;
+    const location = await Location.findOne({
+        where: { id: locationId },
+    });
+
+    const calendarService = new CalendarService;
+    await calendarService.create();
+
+    const calendarId = location.calendarId;
+    const calendarEvents = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
+
+    return _getAppointments(calendarEvents, { startDate, endDate });
 };
 
 export const getSpecialInstructions = async ({ locationId, startDate, endDate }) => {
@@ -43,7 +46,7 @@ export const getSpecialInstructions = async ({ locationId, startDate, endDate })
     const Location = db.models.location;
 
     const location = await Location.findOne({
-        where : { id: locationId },
+        where: { id: locationId },
     });
 
     const calendarService = new CalendarService;
