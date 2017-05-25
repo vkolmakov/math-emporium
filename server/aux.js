@@ -1,3 +1,5 @@
+import * as R from 'ramda';
+
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
 export const TIMEZONE = 'US/Central';
@@ -58,7 +60,7 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
-export const range = (start, end) => [...Array(end).keys()].slice(start);
-export const first = (list) => list[0];
-export const last = (list) => list[list.length - 1];
-export const contains = (list, elem) => list.indexOf(elem) > -1;
+export const range = R.range;
+export const first = R.head;
+export const last = R.last;
+export const contains = R.contains;

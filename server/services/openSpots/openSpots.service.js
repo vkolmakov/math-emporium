@@ -174,7 +174,7 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
         const { tutor: rawTutorName } = appointment;
         const scheduledTutorNames = scheduledTutors.map(t => t.name);
 
-        return contains(scheduledTutorNames.map(name => name.toLowerCase()), rawTutorName.toLowerCase())
+        return contains(rawTutorName.toLowerCase(), scheduledTutorNames.map(name => name.toLowerCase()))
             ? rawTutorName
             : predictTutorName(rawTutorName, scheduledTutorNames);
     });
