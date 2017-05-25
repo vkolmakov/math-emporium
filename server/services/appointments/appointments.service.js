@@ -21,7 +21,7 @@ function extractInfoFromSummary(summary) {
     };
 }
 
-export function _getAppointments(calendarEvents) {
+export function getAppointments(calendarEvents) {
     const appointments = calendarEvents.reduce((results, item) => {
         const appointmentInfo = extractInfoFromSummary(item.summary);
         if (!appointmentInfo) {
@@ -59,7 +59,7 @@ function extractSpecialInstructions(summary) {
     };
 }
 
-export function _getSpecialInstructions(calendarEvents) {
+export function getSpecialInstructions(calendarEvents) {
     const specialInstructions = calendarEvents.reduce((results, item) => {
         const instructionsInfo = extractSpecialInstructions(item.summary);
         if (!instructionsInfo) {

@@ -1,5 +1,5 @@
-import { _getAppointments,
-         _getSpecialInstructions } from '../../../../server/services/appointments/appointments.service.js';
+import { getAppointments,
+         getSpecialInstructions } from '../../../../server/services/appointments/appointments.service.js';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -35,7 +35,7 @@ describe('Appointments service', () => {
     }];
 
     describe('getAppointments', () => {
-        const appointments = _getAppointments(calendarEvents);
+        const appointments = getAppointments(calendarEvents);
         const expectedAppointments = [
             { tutor: 'George', student: 'John', course: 'MATH99', startDateTime: '2017-05-22-10-00', weekday: 1, time: 600 },
             { tutor: 'SamT', student: 'Jane', course: 'MATH125', startDateTime: '2017-05-22-13-00', weekday: 1, time: 780 },
@@ -52,7 +52,7 @@ describe('Appointments service', () => {
     });
 
     describe('getSpecialInstructions', () => {
-        const specialInstructions = _getSpecialInstructions(calendarEvents);
+        const specialInstructions = getSpecialInstructions(calendarEvents);
         const expectedSpecialInstructions = [
             { overwriteTutors: [{ name: 'George' }, { name: 'Qiqi' }, { name: 'SamT' }],
               startDateTime: '2017-05-22-10-00',
