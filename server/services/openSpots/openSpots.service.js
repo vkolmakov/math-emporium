@@ -2,7 +2,8 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains } from '../../aux';
 import { getCachedData } from '../appData';
-import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
+import { _getAppointments, _getSpecialInstructions } from '../appointments/appointments.service';
+import { CalendarService } from '../googleApis.js';
 
 export const selectRandomTutor = tutors => {
     if (tutors.length === 0) {
@@ -122,15 +123,27 @@ export async function openSpots(locationId, courseId, startDate, endDate) {
         throw new Error('Selected location does not exist');
     }
 
-    const specialInstructions = await getSpecialInstructions({ locationId: locationData.location.id, startDate, endDate });
-    const appointments = await getAppointments({ locationId: locationData.location.id, startDate, endDate });
+    const calendarId = locationData.location.calendarId;
+
+    const calendarService = new CalendarService;
+    await calendarService.create();
+
+    const calendarEvents = await calendarService.getCalendarEvents(
+        calendarId,
+        startDate.toISOString(),
+        endDate.toISOString()
+    );
+
+    const specialInstructions = _getSpecialInstructions(calendarEvents);
+    const appointments = _getAppointments(calendarEvents);
+
     const parameters = { locationId, courseId, startDate, endDate };
 
     return getOpenSpots(locationData, appointments, specialInstructions, parameters);
 }
 
 export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
-    const { time, course, location } = parameters;
+    const { time, course } = parameters;
     // Convert time into a format that is stored in the database schedule model
     const timeRaw = moment(time).hours() * 60 + moment(time).minutes();
     // Convert weekday into a format that is stored in the database schedule model
@@ -150,7 +163,8 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
         scheduledTutors = specialInstructions[0].overwriteTutors.reduce(
             (results, scheduledTutor) => {
                 // with special instructions try to find tutor by name
-                const tutor = locationData.tutors.find(tutor => scheduledTutor.name.toLowerCase() === tutor.name.toLowerCase());
+                const tutor = locationData.tutors.find(
+                    tutor => scheduledTutor.name.toLowerCase() === tutor.name.toLowerCase());
                 if (!tutor) {
                     return results;
                 }
@@ -188,24 +202,27 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
     return availableTutors;
 }
 
-export async function findAvailableTutors({ time, course, location }) {
+export async function findAvailableTutors(startDate, course, location) {
     moment.tz.setDefault(TIMEZONE);
     const data = await getCachedData();
     const locationData = data.find(d => d.location.id === location.id);
 
-    const specialInstructions = await getSpecialInstructions({
-        locationId: locationData.location.id,
-        startDate: time,
-        endDate: moment(time).add(1, 'hours'),
-    });
+    const calendarId = locationData.location.calendarId;
 
-    const appointments = await getAppointments({
-        locationId: locationData.location.id,
-        startDate: time,
-        endDate: moment(time).add(1, 'hours'),
-    });
+    const calendarService = new CalendarService;
+    await calendarService.create();
 
-    const parameters = { time, course, location };
+    const endDate = moment(startDate).add(1, 'hours');
+    const calendarEvents = await calendarService.getCalendarEvents(
+        calendarId,
+        startDate.toISOString(),
+        endDate.toISOString()
+    );
+
+    const specialInstructions = _getSpecialInstructions(calendarEvents);
+    const appointments = _getAppointments(calendarEvents);
+
+    const parameters = { time: startDate, course };
 
     return getAvailableTutors(locationData, appointments, specialInstructions, parameters);
 }

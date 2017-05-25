@@ -132,11 +132,11 @@ export const scheduleAppointment = async (req, res, next) => {
             where: { id: course.id },
         });
 
-        const tutors = await findAvailableTutors({
-            time: moment(time, TIMESTAMP_FORMAT),
+        const tutors = await findAvailableTutors(
+            moment(time, TIMESTAMP_FORMAT),
             course,
             location,
-        });
+        );
 
         let tutor;
         if (requestedTutor) {

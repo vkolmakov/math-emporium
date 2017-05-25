@@ -1,8 +1,6 @@
 import moment from 'moment';
-import db from 'sequelize-connect';
 
-import { CalendarService } from '../googleApis';
-import { TIMEZONE, TIMESTAMP_FORMAT } from '../../aux';
+import { TIMESTAMP_FORMAT } from '../../aux';
 
 function extractInfoFromSummary(summary) {
     if (!summary) {
@@ -44,22 +42,6 @@ export function _getAppointments(calendarEvents) {
     return appointments;
 }
 
-export const getAppointments = async ({ locationId, startDate, endDate }) => {
-    moment.tz.setDefault(TIMEZONE);
-    const Location = db.models.location;
-    const location = await Location.findOne({
-        where: { id: locationId },
-    });
-
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = location.calendarId;
-    const calendarEvents = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
-
-    return _getAppointments(calendarEvents);
-};
-
 function extractSpecialInstructions(summary) {
     if (!summary) {
         return null;
@@ -97,20 +79,3 @@ export function _getSpecialInstructions(calendarEvents) {
 
     return specialInstructions;
 }
-
-export const getSpecialInstructions = async ({ locationId, startDate, endDate }) => {
-    moment.tz.setDefault(TIMEZONE);
-    const Location = db.models.location;
-
-    const location = await Location.findOne({
-        where: { id: locationId },
-    });
-
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarId = location.calendarId;
-    const calendarEvents = await calendarService.getCalendarEvents(calendarId, startDate.toISOString(), endDate.toISOString());
-
-    return _getSpecialInstructions(calendarEvents);
-};

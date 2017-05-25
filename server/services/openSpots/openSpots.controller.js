@@ -37,11 +37,11 @@ export const handleGetAvailableTutors = async (req, res, next) => {
     const location = { id: parseInt(req.query.locationId, 10) };
 
     try {
-        const tutors = await findAvailableTutors({
+        const tutors = await findAvailableTutors(
             time,
             course,
             location,
-        });
+        );
         res.status(200).json(tutors.map(tutor => ({ name: tutor.name, id: tutor.id })));
     } catch (err) {
         next(err);
