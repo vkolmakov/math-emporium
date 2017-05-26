@@ -1,6 +1,7 @@
 import { getOpenSpots,
          getAvailableTutors,
-         canTutorCourse } from '../../../../server/services/openSpots/openSpots.service.js';
+         canTutorCourse,
+         buildScheduleMap } from '../../../../server/services/openSpots/openSpots.service.js';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -96,6 +97,55 @@ describe('openSpots.service', () => {
             },
         ],
     };
+
+    describe('buildScheduleMap', () => {
+        it('builds a correct simple schedule map', () => {
+            const source = [{
+                weekday: 1,
+                time: 540,
+                tutors: [{ id: 1 }, { id: 2 }],
+            }, {
+                weekday: 1,
+                time: 600,
+                tutors: [{ id: 2 }],
+            }, {
+                weekday: 1,
+                time: 660,
+                tutors: [],
+            }, {
+                weekday: 2,
+                time: 600,
+                tutors: [{ id: 2 }],
+            }, {
+                weekday: 6,
+                time: 800,
+                tutors: [{ id: 1 }, { id: 2 }, { id: 3 }],
+            }];
+
+            const expected = new Map([
+                [
+                    1,
+                    new Map([
+                        [540, [{ id: 1 }, { id: 2 }]],
+                        [600, [{ id: 2 }]],
+                        [660, []],
+                    ]),
+                ], [
+                    2,
+                    new Map([
+                        [600, [{ id: 2 }]],
+                    ]),
+                ], [
+                    6,
+                    new Map([
+                        [800, [{ id: 1 }, { id: 2 }, { id: 3 }]],
+                    ]),
+                ],
+            ]);
+
+            expect(buildScheduleMap(source)).toEqual(expected);
+        });
+    });
 
     describe('canTutorCourse', () => {
         const tutors = locationData.tutors;
