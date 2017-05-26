@@ -47,10 +47,19 @@ export function canTutorCourse(tutors, course, tutor) {
 
 export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     const { courseId } = parameters;
-    const course = { id: courseId };
     const { schedules, tutors } = locationData;
 
-    const openSpots = [];
+    const course = { id: courseId };
+    const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
+
+    const processSchedule = schedule => ({
+        time: schedule.time,
+        weekday: schedule.weekday,
+        count: length(schedule.tutors.filter(canTutorSelectedCourse)),
+    });
+
+    const openSpots = schedules.map(processSchedule);
+
     return openSpots;
 }
 
