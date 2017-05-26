@@ -46,84 +46,11 @@ export function canTutorCourse(tutors, course, tutor) {
 }
 
 export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
-    // find tutors that can tutor selected course
     const { courseId } = parameters;
+    const course = { id: courseId };
+    const { schedules, tutors } = locationData;
 
-    const selectedTutors = locationData.tutors
-          .filter(t => !!t.courses.find(c => c.id === courseId));
-
-    // go through schedule and count tutors that are selected and present
-    const initialCounts = locationData.schedules.map(s => {
-        const relatedSpecialInstructions = specialInstructions.find(
-            item => item.weekday === s.weekday && item.time === s.time);
-        const hasSpecialInstructions = !!relatedSpecialInstructions;
-
-        let tutorPool;
-        let count;
-        if (hasSpecialInstructions && relatedSpecialInstructions.overwriteTutors) {
-            tutorPool = relatedSpecialInstructions.overwriteTutors;
-            count = tutorPool.filter(
-                t => !!selectedTutors.find(
-                    ti => t.name.toLowerCase() === ti.name.toLowerCase())).length;
-        } else {
-            tutorPool = s.tutors;
-            count = tutorPool.filter(t => !!selectedTutors.find(ti => t.id === ti.id)).length;
-        }
-
-        return {
-            weekday: s.weekday,
-            time: s.time,
-            count,
-        };
-    });
-
-    const scheduledCounts = appointments.reduce((results, item) => {
-        const { tutor: rawTutorName, time, weekday } = item;
-
-        const isTutor = !!locationData.tutors.find(t => t.name.toLowerCase() === rawTutorName.toLowerCase());
-        let tutorName;
-        if (!isTutor) {
-            const schedule = locationData.schedules.find(s => s.weekday === weekday && s.time === time);
-            // if there is a schedule get scheduled tutors, otherwise get everyone
-            const tutorOptions = schedule ? schedule.tutors.map(t => t.name) : locationData.tutors.map(t => t.name);
-            tutorName = predictTutorName(rawTutorName, tutorOptions);
-        } else {
-            tutorName = rawTutorName;
-        }
-
-        // check if this is in fact a known tutor after trying to predict a name based on spelling
-        const isValidTutorName = isTutor || (!isTutor && tutorName !== rawTutorName);
-        const isSelectedTutor = isValidTutorName && !!selectedTutors.find(
-            t => t.name.toLowerCase() === tutorName.toLowerCase());
-
-        let existingResult;
-        // play it safe, if something unknown was encountered just assume this spot is taken
-        if (isSelectedTutor || !isValidTutorName) {
-            existingResult = results.find(r => r.weekday === weekday && r.time === time);
-            if (existingResult) {
-                existingResult.count += 1;
-            } else {
-                existingResult = {
-                    weekday,
-                    time,
-                    count: 1,
-                };
-                return results.concat(existingResult);
-            }
-        }
-        return results;
-    }, []);
-
-    const openSpots = initialCounts.map(ic => {
-        // find an appropriate scheduledCount
-        const sc = scheduledCounts.find(sc => ic.weekday === sc.weekday && ic.time === sc.time);
-        return {
-            ...ic,
-            // if a scheduledCount was found we subtract it, otherwise just subtract 0
-            count: ic.count - (sc ? sc.count : 0),
-        };
-    });
-
+    const openSpots = [];
     return openSpots;
 }
 
