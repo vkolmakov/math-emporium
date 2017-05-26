@@ -1,7 +1,8 @@
 import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains,
-         prop, map, compose, curry, length } from '../../aux';
+         prop, map, compose, curry, length, flatten, reduce,
+         append } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -56,8 +57,20 @@ export function buildScheduleMap(source) {
         }
         return acc;
     };
-    const result = source.reduce(collectElement, new Map());
-    return result;
+    return source.reduce(collectElement, new Map());
+}
+
+export function foldScheduleMapToList(scheduleMap) {
+    const foldWeekdayToList = (acc, [weekday, weekdayMap]) => {
+        const transformMapEntry = ([time, tutors]) => ({
+            weekday, time, tutors,
+        });
+        return append(
+            map(transformMapEntry, [...weekdayMap.entries()]),
+            acc);
+    };
+    return flatten(
+        reduce(foldWeekdayToList, [], [...scheduleMap.entries()]));
 }
 
 export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {

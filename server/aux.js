@@ -69,3 +69,6 @@ export const map = R.map;
 export const compose = R.compose;
 export const curry = R.curry;
 export const length = R.length;
+export const flatten = R.flatten;
+export const reduce = R.reduce;
+export const append = R.append;
