@@ -144,7 +144,7 @@ describe('openSpots.service', () => {
                 ],
             ]);
 
-            expect(buildScheduleMap(source)).toEqual(expected);
+            expect(buildScheduleMap(x => x, source)).toEqual(expected);
         });
 
         it('builds a correct schedule map given schedule from locationData', () => {
@@ -165,7 +165,7 @@ describe('openSpots.service', () => {
                 ],
             ]);
 
-            expect(buildScheduleMap(locationData.schedules)).toEqual(expected);
+            expect(buildScheduleMap(x => x, locationData.schedules)).toEqual(expected);
         });
     });
 
@@ -194,7 +194,7 @@ describe('openSpots.service', () => {
             }];
 
             expected.forEach(
-                expectIn(convertScheduleMapToList(buildScheduleMap(locationData.schedules))));
+                expectIn(convertScheduleMapToList(buildScheduleMap(x => x, locationData.schedules))));
         });
     });
 

@@ -46,14 +46,14 @@ export function canTutorCourse(tutors, course, tutor) {
         : contains(predictTutorName(name, selectedTutorNames), selectedTutorNames);
 }
 
-export function buildScheduleMap(source) {
+export function buildScheduleMap(transformTutors, source) {
     const collectElement = (acc, element) => {
         const { weekday, time, tutors } = element;
 
         if (acc.has(weekday)) {
-            acc.get(weekday).set(time, tutors);
+            acc.get(weekday).set(time, transformTutors(tutors));
         } else {
-            acc.set(weekday, new Map([ [time, tutors] ]));
+            acc.set(weekday, new Map([ [time, transformTutors(tutors)] ]));
         }
         return acc;
     };
@@ -81,13 +81,14 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
     const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
     const countSelectedTutors = compose(length, filter(canTutorSelectedCourse));
 
-    const scheduleMap = buildScheduleMap(schedules);
+    const scheduleMap = buildScheduleMap(countSelectedTutors, schedules);
 
     const getCounts = ({ weekday, time, tutors }) => ({
         weekday,
         time,
-        count: countSelectedTutors(tutors),
+        count: tutors,
     });
+
     const openSpots = map(getCounts, convertScheduleMapToList(scheduleMap));
 
     return openSpots;
