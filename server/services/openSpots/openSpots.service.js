@@ -45,6 +45,21 @@ export function canTutorCourse(tutors, course, tutor) {
         : contains(predictTutorName(name, selectedTutorNames), selectedTutorNames);
 }
 
+export function buildScheduleMap(source) {
+    const collectElement = (acc, element) => {
+        const { weekday, time, tutors } = element;
+
+        if (acc.has(weekday)) {
+            acc.get(weekday).set(time, tutors);
+        } else {
+            acc.set(weekday, new Map([ [time, tutors] ]));
+        }
+        return acc;
+    };
+    const result = source.reduce(collectElement, new Map());
+    return result;
+}
+
 export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     const { courseId } = parameters;
     const { schedules, tutors } = locationData;
