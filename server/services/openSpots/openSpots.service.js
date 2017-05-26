@@ -1,6 +1,7 @@
 import moment from 'moment';
 
-import { TIMEZONE, pickOneFrom, range, first, contains } from '../../aux';
+import { TIMEZONE, pickOneFrom, range, first, contains,
+         prop, map, compose, curry, length } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -28,6 +29,21 @@ const predictTutorName = (rawName, options) => {
         return selectRandomTutor(candidates);
     }
 };
+
+export function canTutorCourse(tutors, course, tutor) {
+    const { id: courseId } = course;
+    const { id: tutorId, name } = tutor;
+    const hasCourse = compose(
+        contains(courseId),
+        map(prop('id')),
+        prop('courses'));
+
+    const selectedTutors = tutors.filter(hasCourse);
+    const selectedTutorNames = selectedTutors.map(prop('name'));
+    return tutorId
+        ? contains(tutorId, selectedTutors.map(prop('id')))
+        : contains(predictTutorName(name, selectedTutorNames), selectedTutorNames);
+}
 
 export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     // find tutors that can tutor selected course
