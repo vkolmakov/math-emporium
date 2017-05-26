@@ -8,7 +8,7 @@
     "clean": "rimraf dist",
     "production": "NODE_ENV=production npm run start",
     "dev": "NODE_ENV=serverdev nodemon -w ./ -x npm run start",
-    "test": "jest -o",
+    "test": "jest -o --verbose || true",
     "test:all": "jest"
   },
   "devDependencies": {
