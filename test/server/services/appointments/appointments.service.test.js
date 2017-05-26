@@ -3,7 +3,7 @@ import { getAppointments,
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
-describe('Appointments service', () => {
+describe('appointments.service', () => {
     const calendarEvents = [{
         summary: 'George (John) MATH99',
         start: { dateTime: '2017-05-22T10:00:00-05:00', timeZone: 'America/Chicago' },

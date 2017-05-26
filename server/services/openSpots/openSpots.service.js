@@ -29,7 +29,7 @@ const predictTutorName = (rawName, options) => {
     }
 };
 
-function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
+export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
     // find tutors that can tutor selected course
     const { courseId } = parameters;
 
