@@ -1,7 +1,8 @@
 import { getOpenSpots,
          getAvailableTutors,
          canTutorCourse,
-         buildScheduleMap } from '../../../../server/services/openSpots/openSpots.service.js';
+         buildScheduleMap,
+         foldScheduleMapToList } from '../../../../server/services/openSpots/openSpots.service.js';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -165,6 +166,35 @@ describe('openSpots.service', () => {
             ]);
 
             expect(buildScheduleMap(locationData.schedules)).toEqual(expected);
+        });
+    });
+
+    describe('foldScheduleMapToList', () => {
+        it('properly folds a schedule map to a list', () => {
+            const expected = [{
+                weekday: 1,
+                time: 540,
+                tutors: [{ id: 2, name: 'PhillipF' }, { id: 3, name: 'HubertF' }],
+            }, {
+                weekday: 1,
+                time: 600,
+                tutors: [{ id: 2, name: 'PhillipF' }, { id: 3, name: 'HubertF' }],
+            }, {
+                weekday: 1,
+                time: 660,
+                tutors: [{ id: 1, name: 'AmyW' }, { id: 4, name: 'HermesC' }],
+            }, {
+                weekday: 2,
+                time: 540,
+                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+            }, {
+                weekday: 2,
+                time: 600,
+                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+            }];
+
+            expected.forEach(
+                expectIn(foldScheduleMapToList(buildScheduleMap(locationData.schedules))));
         });
     });
 
