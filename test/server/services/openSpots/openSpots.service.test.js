@@ -2,7 +2,7 @@ import { getOpenSpots,
          getAvailableTutors,
          canTutorCourse,
          buildScheduleMap,
-         foldScheduleMapToList } from '../../../../server/services/openSpots/openSpots.service.js';
+         convertScheduleMapToList } from '../../../../server/services/openSpots/openSpots.service.js';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -169,8 +169,8 @@ describe('openSpots.service', () => {
         });
     });
 
-    describe('foldScheduleMapToList', () => {
-        it('properly folds a schedule map to a list', () => {
+    describe('convertScheduleMapToList', () => {
+        it('properly converts a schedule map to a list', () => {
             const expected = [{
                 weekday: 1,
                 time: 540,
@@ -194,7 +194,7 @@ describe('openSpots.service', () => {
             }];
 
             expected.forEach(
-                expectIn(foldScheduleMapToList(buildScheduleMap(locationData.schedules))));
+                expectIn(convertScheduleMapToList(buildScheduleMap(locationData.schedules))));
         });
     });
 

@@ -72,3 +72,4 @@ export const length = R.length;
 export const flatten = R.flatten;
 export const reduce = R.reduce;
 export const append = R.append;
+export const filter = R.filter;

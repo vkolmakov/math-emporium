@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains,
          prop, map, compose, curry, length, flatten, reduce,
-         append } from '../../aux';
+         append, filter } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -60,7 +60,7 @@ export function buildScheduleMap(source) {
     return source.reduce(collectElement, new Map());
 }
 
-export function foldScheduleMapToList(scheduleMap) {
+export function convertScheduleMapToList(scheduleMap) {
     const foldWeekdayToList = (acc, [weekday, weekdayMap]) => {
         const transformMapEntry = ([time, tutors]) => ({
             weekday, time, tutors,
@@ -79,14 +79,16 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
 
     const course = { id: courseId };
     const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
+    const countSelectedTutors = compose(length, filter(canTutorSelectedCourse));
 
-    const processSchedule = schedule => ({
-        time: schedule.time,
-        weekday: schedule.weekday,
-        count: length(schedule.tutors.filter(canTutorSelectedCourse)),
+    const scheduleMap = buildScheduleMap(schedules);
+
+    const getCounts = ({ weekday, time, tutors }) => ({
+        weekday,
+        time,
+        count: countSelectedTutors(tutors),
     });
-
-    const openSpots = schedules.map(processSchedule);
+    const openSpots = map(getCounts, convertScheduleMapToList(scheduleMap));
 
     return openSpots;
 }
