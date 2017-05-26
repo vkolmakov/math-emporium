@@ -145,6 +145,27 @@ describe('openSpots.service', () => {
 
             expect(buildScheduleMap(source)).toEqual(expected);
         });
+
+        it('builds a correct schedule map given schedule from locationData', () => {
+            const expected = new Map([
+                [
+                    1,
+                    new Map([
+                        [540, locationData.schedules[0].tutors],
+                        [600, locationData.schedules[1].tutors],
+                        [660, locationData.schedules[2].tutors],
+                    ]),
+                ], [
+                    2,
+                    new Map([
+                        [540, locationData.schedules[3].tutors],
+                        [600, locationData.schedules[4].tutors],
+                    ]),
+                ],
+            ]);
+
+            expect(buildScheduleMap(locationData.schedules)).toEqual(expected);
+        });
     });
 
     describe('canTutorCourse', () => {
