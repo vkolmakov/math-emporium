@@ -1,5 +1,6 @@
 import { getOpenSpots,
-         getAvailableTutors } from '../../../../server/services/openSpots/openSpots.service.js';
+         getAvailableTutors,
+         canTutorCourse } from '../../../../server/services/openSpots/openSpots.service.js';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -43,15 +44,15 @@ describe('openSpots.service', () => {
         location: { id: 1 },
         courses: [{ id: 2 }, { id: 3 }, { id: 4 }],
         tutors: [
+            {
+                id: 1,
+                name: 'AmyW',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            },
             { id: 2, name: 'PhillipF', courses: [{ id: 2 }] },
             {
                 id: 3,
                 name: 'HubertF',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            },
-            {
-                id: 1,
-                name: 'AmyW',
                 courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
             },
             { id: 4, name: 'HermesC', courses: [{ id: 4 }] },
@@ -95,6 +96,48 @@ describe('openSpots.service', () => {
             },
         ],
     };
+
+    describe('canTutorCourse', () => {
+        const tutors = locationData.tutors;
+        const course1 = { id: 2 };
+        const course2 = { id: 3 };
+
+        it('accepts tutor objects that have ids and produces correct result', () => {
+            expect(
+                tutors.map(t => canTutorCourse(tutors, course1, t))
+            ).toEqual([true, true, true, false]);
+
+            expect(
+                tutors.map(t => canTutorCourse(tutors, course2, t))
+            ).toEqual([true, false, true, false]);
+        });
+
+        it('accepts tutor objects that have names and produces correct result', () => {
+            expect(
+                tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course1, t))
+            ).toEqual([true, true, true, false]);
+
+            expect(
+                tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course2, t))
+            ).toEqual([true, false, true, false]);
+        });
+
+        it('accepts tutor objects with misspelled names and produces correct result', () => {
+            expect([
+                canTutorCourse(tutors, course1, { name: 'amy' }),
+                canTutorCourse(tutors, course1, { name: 'philllipp' }),
+                canTutorCourse(tutors, course1, { name: 'hubirTf' }),
+                canTutorCourse(tutors, course1, { name: 'hermZ' }),
+            ]).toEqual([true, true, true, false]);
+
+            expect([
+                canTutorCourse(tutors, course2, { name: 'amy' }),
+                canTutorCourse(tutors, course2, { name: 'philllipp' }),
+                canTutorCourse(tutors, course2, { name: 'hubirTf' }),
+                canTutorCourse(tutors, course2, { name: 'hermZ' }),
+            ]).toEqual([true, false, true, false]);
+        });
+    });
 
     describe('getOpenSpots', () => {
         it('should return correct schedule given no appointments or special instructions', () => {
