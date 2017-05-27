@@ -80,14 +80,28 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
     const course = { id: courseId };
     const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
     const countSelectedTutors = compose(length, filter(canTutorSelectedCourse));
+    const knownTutorNames = map(prop('name'), tutors);
+    const isKnownTutorName = compose(
+        flip(contains)(knownTutorNames),
+        curry(predictTutorName)(knownTutorNames));
 
-    const scheduleMap = buildScheduleMap(countSelectedTutors, schedules);
+    const applySpecialInstructions = (scheduleMap, specialInstructions) => {
+        const processInstruction = (acc, instruction) => {
+            const { overwriteTutors, weekday, time } = instruction;
+            const overwrittenCount = countSelectedTutors(overwriteTutors);
+
+            acc.get(weekday).set(time, overwrittenCount);
+
+            return acc;
+        };
+
+        return reduce(
+            processInstruction,
+            new Map(scheduleMap),
+            specialInstructions);
+    };
 
     const removeScheduledTutors = (scheduleMap, appointments) => {
-        const knownTutorNames = map(prop('name'), tutors);
-        const isKnownTutorName = compose(
-            flip(contains)(knownTutorNames),
-            curry(predictTutorName)(knownTutorNames));
         const processAppointment = (acc, appointment) => {
             const { tutor: tutorName, weekday, time } = appointment;
 
@@ -100,7 +114,7 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
             if (canTutorSelectedCourse(tutor)) {
                 // tutor is known and can tutor the selected course, remove from counts
                 acc.get(weekday).set(time, counts - 1);
-            } else if (isKnownTutorName(tutor)) {
+            } else if (isKnownTutorName(tutor.name)) {
                 // tutor is known and cannot tutor the course, skip
                 acc.get(weekday).set(time, counts);
             } else {
@@ -117,7 +131,11 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
             appointments);
     };
 
-    removeScheduledTutors(scheduleMap, appointments);
+    const scheduleMap = removeScheduledTutors(
+        applySpecialInstructions(
+            buildScheduleMap(countSelectedTutors, schedules),
+            specialInstructions),
+        appointments);
 
     const getCounts = ({ weekday, time, tutors }) => ({
         weekday,
