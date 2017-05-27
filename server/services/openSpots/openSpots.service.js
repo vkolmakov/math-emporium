@@ -15,7 +15,7 @@ export const selectRandomTutor = tutors => {
     return pickOneFrom(tutors);
 };
 
-const predictTutorName = (rawName, options) => {
+const predictTutorName = (options, rawName) => {
     const [searchFromIdx, searchUpToIdx] = [2, 6];
 
     const candidateLists = range(searchFromIdx, searchUpToIdx).reduce((result, num) => {
@@ -43,7 +43,7 @@ export function canTutorCourse(tutors, course, tutor) {
     const selectedTutorNames = selectedTutors.map(prop('name'));
     return tutorId
         ? contains(tutorId, selectedTutors.map(prop('id')))
-        : contains(predictTutorName(name, selectedTutorNames), selectedTutorNames);
+        : contains(predictTutorName(selectedTutorNames, name), selectedTutorNames);
 }
 
 export function buildScheduleMap(transformTutors, source) {
@@ -177,7 +177,7 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
 
         return contains(rawTutorName.toLowerCase(), scheduledTutorNames.map(name => name.toLowerCase()))
             ? rawTutorName
-            : predictTutorName(rawTutorName, scheduledTutorNames);
+            : predictTutorName(scheduledTutorNames, rawTutorName);
     });
 
     // Keep only tutors whose names are not in the busyTutorsNames array
