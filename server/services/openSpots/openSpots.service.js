@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains,
          prop, map, compose, curry, length, flatten, reduce,
-         append, filter, flip } from '../../aux';
+         append, filter, flip, pipe } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -85,7 +85,7 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
         flip(contains)(knownTutorNames),
         curry(predictTutorName)(knownTutorNames));
 
-    const applySpecialInstructions = (scheduleMap, specialInstructions) => {
+    const applySpecialInstructions = specialInstructions => scheduleMap => {
         const processInstruction = (acc, instruction) => {
             const { overwriteTutors, weekday, time } = instruction;
             const overwrittenCount = countSelectedTutors(overwriteTutors);
@@ -101,7 +101,7 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
             specialInstructions);
     };
 
-    const removeScheduledTutors = (scheduleMap, appointments) => {
+    const removeScheduledTutors = appointments => scheduleMap => {
         const processAppointment = (acc, appointment) => {
             const { tutor: tutorName, weekday, time } = appointment;
 
@@ -131,11 +131,12 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
             appointments);
     };
 
-    const scheduleMap = removeScheduledTutors(
-        applySpecialInstructions(
-            buildScheduleMap(countSelectedTutors, schedules),
-            specialInstructions),
-        appointments);
+    const updateScheduleMap = pipe(
+        applySpecialInstructions(specialInstructions),
+        removeScheduledTutors(appointments));
+
+    const scheduleMap =
+          updateScheduleMap(buildScheduleMap(countSelectedTutors, schedules));
 
     const renameCounts = ({ weekday, time, tutors }) => ({
         weekday,

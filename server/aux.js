@@ -75,3 +75,4 @@ export const append = R.append;
 export const filter = R.filter;
 export const flip = R.flip;
 export const trace = msg => x => { console.log(msg, x); return x; };
+export const pipe = R.pipe;
