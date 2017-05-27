@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains,
          prop, map, compose, curry, length, flatten, reduce,
-         append, filter } from '../../aux';
+         append, filter, flip } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -82,6 +82,42 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
     const countSelectedTutors = compose(length, filter(canTutorSelectedCourse));
 
     const scheduleMap = buildScheduleMap(countSelectedTutors, schedules);
+
+    const removeScheduledTutors = (scheduleMap, appointments) => {
+        const knownTutorNames = map(prop('name'), tutors);
+        const isKnownTutorName = compose(
+            flip(contains)(knownTutorNames),
+            curry(predictTutorName)(knownTutorNames));
+        const processAppointment = (acc, appointment) => {
+            const { tutor: tutorName, weekday, time } = appointment;
+
+            if (!acc.has(weekday) || !acc.get(weekday).has(time)) {
+                return acc; // invalid appointment time
+            }
+
+            const tutor = { name: tutorName };
+            const counts = acc.get(weekday).get(time);
+            if (canTutorSelectedCourse(tutor)) {
+                // tutor is known and can tutor the selected course, remove from counts
+                acc.get(weekday).set(time, counts - 1);
+            } else if (isKnownTutorName(tutor)) {
+                // tutor is known and cannot tutor the course, skip
+                acc.get(weekday).set(time, counts);
+            } else {
+                // not a known tutor name, remove from counts
+                acc.get(weekday).set(time, counts - 1);
+            }
+
+            return acc;
+        };
+
+        return reduce(
+            processAppointment,
+            new Map(scheduleMap),
+            appointments);
+    };
+
+    removeScheduledTutors(scheduleMap, appointments);
 
     const getCounts = ({ weekday, time, tutors }) => ({
         weekday,
