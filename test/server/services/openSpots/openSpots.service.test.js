@@ -193,8 +193,12 @@ describe('openSpots.service', () => {
                 tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
             }];
 
+            const result = convertScheduleMapToList(
+                buildScheduleMap(x => x, locationData.schedules));
+
+            expect(result).toHaveLength(expected.length);
             expected.forEach(
-                expectIn(convertScheduleMapToList(buildScheduleMap(x => x, locationData.schedules))));
+                expectIn(result));
         });
     });
 
@@ -255,9 +259,9 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, [], [], parameters
-            );
+                locationData, [], [], parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -275,9 +279,9 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, [], parameters
-            );
+                locationData, appointments, [], parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -292,12 +296,13 @@ describe('openSpots.service', () => {
                 { weekday: 1, time: 660, count: 1 },
                 { weekday: 2, time: 540, count: 1 },
                 { weekday: 2, time: 600, count: 1 },
+                { weekday: 2, time: 660, count: 2 },
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, specialInstructions, parameters
-            );
+                locationData, appointments, specialInstructions, parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -312,12 +317,13 @@ describe('openSpots.service', () => {
                 { weekday: 1, time: 660, count: 1 },
                 { weekday: 2, time: 540, count: 2 },
                 { weekday: 2, time: 600, count: 2 },
+                { weekday: 2, time: 660, count: 2 },
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, specialInstructions, parameters
-            );
+                locationData, appointments, specialInstructions, parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
     });
@@ -337,6 +343,7 @@ describe('openSpots.service', () => {
             const result = getAvailableTutors(
                 locationData, [], [], parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -361,6 +368,7 @@ describe('openSpots.service', () => {
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -384,6 +392,7 @@ describe('openSpots.service', () => {
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
@@ -413,6 +422,7 @@ describe('openSpots.service', () => {
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);
 
+            expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
     });
