@@ -137,15 +137,16 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
             specialInstructions),
         appointments);
 
-    const getCounts = ({ weekday, time, tutors }) => ({
+    const renameCounts = ({ weekday, time, tutors }) => ({
         weekday,
         time,
         count: tutors,
     });
 
-    const openSpots = map(getCounts, convertScheduleMapToList(scheduleMap));
+    const createOpenSpots = compose(
+        map(renameCounts), convertScheduleMapToList);
 
-    return openSpots;
+    return createOpenSpots(scheduleMap);
 }
 
 export async function openSpots(locationId, courseId, startDate, endDate) {
