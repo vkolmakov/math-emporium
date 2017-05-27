@@ -332,11 +332,7 @@ describe('openSpots.service', () => {
             const appointments = [];
             const specialInstructions = [];
 
-            const expected = [{
-                id: 1,
-                name: 'AmyW',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            }];
+            const expected = [{ id: 1, name: 'AmyW' }];
 
             const result = getAvailableTutors(
                 locationData, [], [], parameters);
@@ -360,11 +356,7 @@ describe('openSpots.service', () => {
             }];
             const specialInstructions = [];
 
-            const expected = [{
-                id: 3,
-                name: 'HubertF',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            }];
+            const expected = [{ id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);
@@ -386,15 +378,8 @@ describe('openSpots.service', () => {
                 time: 600,
             }];
 
-            const expected = [{
-                id: 1,
-                name: 'AmyW',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            }, {
-                id: 3,
-                name: 'HubertF',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            }];
+            const expected = [{ id: 1, name: 'AmyW' },
+                              { id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);
@@ -423,11 +408,7 @@ describe('openSpots.service', () => {
                 time: 600,
             }];
 
-            const expected = [{
-                id: 3,
-                name: 'HubertF',
-                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
-            }];
+            const expected = [{ id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
                 locationData, appointments, specialInstructions, parameters);

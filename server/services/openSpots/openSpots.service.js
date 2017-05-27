@@ -187,9 +187,14 @@ export async function openSpots(locationId, courseId, startDate, endDate) {
 
 export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
     const { time, weekday, course } = parameters;
+    const { schedules, tutors } = locationData;
 
-    const availableTutors = [];
+    const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
+    const selectTutorsForCourse = filter(canTutorSelectedCourse);
 
+    const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
+
+    const availableTutors = scheduleMap.get(weekday).get(time);
     return availableTutors;
 }
 
