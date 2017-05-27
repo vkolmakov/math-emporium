@@ -51,7 +51,10 @@ function connect() {
 
     app.use(bodyParser.json());
     if (!isProduction) {
-        app.use(morgan('dev'));
+        app.use(morgan('dev', {
+            // ignore devtools discover requests
+            skip: (req, res) => req.originalUrl.startsWith('/json'),
+        }));
     }
 
     const crudRoutes = [
