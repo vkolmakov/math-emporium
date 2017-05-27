@@ -188,55 +188,7 @@ export async function openSpots(locationId, courseId, startDate, endDate) {
 export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
     const { time, weekday, course } = parameters;
 
-    const selectedSchedule = locationData.schedules.find(s => s.weekday === weekday && s.time === time);
-    if (!selectedSchedule) {
-        throw new Error('Schedule not found');
-    }
-
-    let scheduledTutors;
-    // try to find any special instructions related to this time and date
-    const hasSpecialInstructions = specialInstructions.length > 0;
-    if (hasSpecialInstructions) {
-        // `join` scheduled tutors and location tutors, that is find a complete list of scheduled tutors with
-        // all the information
-        scheduledTutors = specialInstructions[0].overwriteTutors.reduce(
-            (results, scheduledTutor) => {
-                // with special instructions try to find tutor by name
-                const tutor = locationData.tutors.find(
-                    tutor => scheduledTutor.name.toLowerCase() === tutor.name.toLowerCase());
-                if (!tutor) {
-                    return results;
-                }
-
-                return results.concat(tutor);
-            }, []);
-    } else {
-        // same here
-        scheduledTutors = selectedSchedule.tutors.map(
-            // without special instructions just get tutors by id
-            scheduledTutor => locationData.tutors.find(tutor => scheduledTutor.id === tutor.id)
-        );
-    }
-
-    // filter out tutors that can't tutor a required course
-    const filteredScheduledTutors = scheduledTutors.filter(
-        tutor => !!tutor.courses.find(c => c.id === course.id)
-    );
-
-    const busyTutorsNames = appointments.map(appointment => {
-        const { tutor: rawTutorName } = appointment;
-        const scheduledTutorNames = scheduledTutors.map(t => t.name);
-
-        return contains(rawTutorName.toLowerCase(), scheduledTutorNames.map(name => name.toLowerCase()))
-            ? rawTutorName
-            : predictTutorName(scheduledTutorNames, rawTutorName);
-    });
-
-    // Keep only tutors whose names are not in the busyTutorsNames array
-    const availableTutors = filteredScheduledTutors.filter(
-        tutor =>
-            !busyTutorsNames.find(name => name.toLowerCase() === tutor.name.toLowerCase())
-    );
+    const availableTutors = [];
 
     return availableTutors;
 }
