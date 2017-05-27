@@ -186,13 +186,9 @@ export async function openSpots(locationId, courseId, startDate, endDate) {
 }
 
 export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
-    const { time, course } = parameters;
-    // Convert time into a format that is stored in the database schedule model
-    const timeRaw = moment(time).hours() * 60 + moment(time).minutes();
-    // Convert weekday into a format that is stored in the database schedule model
-    const weekdayRaw = parseInt(moment(time).format('E'), 10);
+    const { time, weekday, course } = parameters;
 
-    const selectedSchedule = locationData.schedules.find(s => s.weekday === weekdayRaw && s.time === timeRaw);
+    const selectedSchedule = locationData.schedules.find(s => s.weekday === weekday && s.time === time);
     if (!selectedSchedule) {
         throw new Error('Schedule not found');
     }
@@ -265,7 +261,16 @@ export async function findAvailableTutors(startDate, course, location) {
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);
 
-    const parameters = { time: startDate, course };
+    // Convert time into a format that is stored in the database schedule model
+    const timeRaw = moment(startDate).hours() * 60 + moment(startDate).minutes();
+    // Convert weekday into a format that is stored in the database schedule model
+    const weekdayRaw = parseInt(moment(startDate).format('E'), 10);
+
+    const parameters = {
+        time: timeRaw,
+        weekday: weekdayRaw,
+        course,
+    };
 
     return getAvailableTutors(locationData, appointments, specialInstructions, parameters);
 }
