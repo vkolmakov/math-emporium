@@ -321,4 +321,118 @@ describe('openSpots.service', () => {
             expected.forEach(expectIn(result));
         });
     });
+
+    describe('getAvailableTutors', () => {
+        it('should return the correct number when there are no appointments or special instructions', () => {
+            const parameters = {
+                course: { id: 2 },
+                weekday: 1,
+                time: 660,
+            };
+            const appointments = [];
+            const specialInstructions = [];
+
+            const expected = [{
+                id: 1,
+                name: 'AmyW',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            }];
+
+            const result = getAvailableTutors(
+                locationData, [], [], parameters);
+
+            expected.forEach(expectIn(result));
+        });
+
+        it('should return the correct number of tutors with just appointments', () => {
+            const parameters = {
+                course: { id: 2 },
+                weekday: 1,
+                time: 540,
+            };
+            const appointments = [{
+                tutor: 'PhillipF',
+                student: 'Zoidberg',
+                course: 'MATH101',
+                startDateTime: '2017-05-29-09-00',
+                weekday: 1,
+                time: 540,
+            }];
+            const specialInstructions = [];
+
+            const expected = [{
+                id: 3,
+                name: 'HubertF',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            }];
+
+            const result = getAvailableTutors(
+                locationData, appointments, specialInstructions, parameters);
+
+            expected.forEach(expectIn(result));
+        });
+
+        it('should return the correct number of tutors with just special instructions', () => {
+            const parameters = {
+                course: { id: 2 },
+                weekday: 2,
+                time: 600,
+            };
+            const appointments = [];
+            const specialInstructions = [{
+                overwriteTutors: [{ name: 'AmyW' }, { name: 'HubertF' }],
+                startDateTime: '2017-05-30-11-00',
+                weekday: 2,
+                time: 600,
+            }];
+
+            const expected = [{
+                id: 1,
+                name: 'AmyW',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            }, {
+                id: 3,
+                name: 'HubertF',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            }];
+
+            const result = getAvailableTutors(
+                locationData, appointments, specialInstructions, parameters);
+
+            expected.forEach(expectIn(result));
+        });
+
+        it('should return the correct number of tutors with both appointments and special instructions', () => {
+            const parameters = {
+                course: { id: 2 },
+                weekday: 2,
+                time: 600,
+            };
+            const appointments = [{
+                tutor: 'AmyW',
+                student: 'Zoidberg',
+                course: 'MATH101',
+                startDateTime: '2017-05-29-09-00',
+                weekday: 2,
+                time: 600,
+            }];
+            const specialInstructions = [{
+                overwriteTutors: [{ name: 'AmyW' }, { name: 'HubertF' }],
+                startDateTime: '2017-05-30-11-00',
+                weekday: 2,
+                time: 600,
+            }];
+
+            const expected = [{
+                id: 3,
+                name: 'HubertF',
+                courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
+            }];
+
+            const result = getAvailableTutors(
+                locationData, appointments, specialInstructions, parameters);
+
+            expected.forEach(expectIn(result));
+        });
+    });
 });
