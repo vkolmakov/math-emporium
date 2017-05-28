@@ -193,13 +193,20 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
 
     const applySpecialInstructions = specialInstructions => scheduleMap => {
         const selectedTutors = selectTutorsForCourse(tutors);
-        const replaceWithExistingTutor = ({ name }) =>
-              R.omit(['courses'], R.find(R.propEq('name', name), selectedTutors));
+        const selectedTutorNames = R.map(R.prop('name'), selectedTutors);
+        const findExistingTutorByName = name =>
+              R.find(R.propEq('name', name), selectedTutors);
+
+        const replaceWithExistingTutor = R.compose(
+            R.omit(['courses']),
+            findExistingTutorByName,
+            R.curry(predictTutorName)(selectedTutorNames),
+            R.prop('name'));
 
         const processInstruction = (acc, instruction) => {
             const { overwriteTutors, weekday, time } = instruction;
             const overwrittenTutors = R.map(replaceWithExistingTutor,
-                                          overwriteTutors);
+                                            overwriteTutors);
 
             acc.get(weekday).set(time, overwrittenTutors);
 
