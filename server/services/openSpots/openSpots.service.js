@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { TIMEZONE, pickOneFrom, range, first, contains,
          prop, map, compose, curry, length, flatten, reduce,
-         append, filter, flip, pipe } from '../../aux';
+         append, filter, flip, pipe, propEq, find, omit } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { CalendarService } from '../googleApis.js';
@@ -136,7 +136,8 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
         removeScheduledTutors(appointments));
 
     const scheduleMap =
-          updateScheduleMap(buildScheduleMap(countSelectedTutors, schedules));
+          updateScheduleMap(
+              buildScheduleMap(countSelectedTutors, schedules));
 
     const renameCounts = ({ weekday, time, tutors }) => ({
         weekday,
@@ -192,9 +193,32 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
     const canTutorSelectedCourse = curry(canTutorCourse)(tutors, course);
     const selectTutorsForCourse = filter(canTutorSelectedCourse);
 
-    const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
+    const applySpecialInstructions = specialInstructions => scheduleMap => {
+        const selectedTutors = selectTutorsForCourse(tutors);
+        const replaceWithExistingTutor = ({ name }) =>
+              omit(['courses'], find(propEq('name', name), selectedTutors));
 
-    const availableTutors = scheduleMap.get(weekday).get(time);
+        const processInstruction = (acc, instruction) => {
+            const { overwriteTutors, weekday, time } = instruction;
+            const overwrittenTutors = map(replaceWithExistingTutor,
+                                          overwriteTutors);
+
+            acc.get(weekday).set(time, overwrittenTutors);
+
+            return acc;
+        };
+
+        return reduce(
+            processInstruction,
+            new Map(scheduleMap),
+            specialInstructions);
+    };
+
+    const updateScheduleMap = pipe(
+        applySpecialInstructions(specialInstructions));
+
+    const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
+    const availableTutors = updateScheduleMap(scheduleMap).get(weekday).get(time);
     return availableTutors;
 }
 

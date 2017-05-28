@@ -76,3 +76,7 @@ export const filter = R.filter;
 export const flip = R.flip;
 export const trace = msg => x => { console.log(msg, x); return x; };
 export const pipe = R.pipe;
+export const identity = R.identity;
+export const propEq = R.propEq;
+export const find = R.find;
+export const omit = R.omit;
