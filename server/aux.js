@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import * as _R from 'ramda';
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
@@ -60,23 +60,5 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
-export const range = R.range;
-export const first = R.head;
-export const last = R.last;
-export const contains = R.contains;
-export const prop = R.prop;
-export const map = R.map;
-export const compose = R.compose;
-export const curry = R.curry;
-export const length = R.length;
-export const flatten = R.flatten;
-export const reduce = R.reduce;
-export const append = R.append;
-export const filter = R.filter;
-export const flip = R.flip;
+export const R = _R;
 export const trace = msg => x => { console.log(msg, x); return x; };
-export const pipe = R.pipe;
-export const identity = R.identity;
-export const propEq = R.propEq;
-export const find = R.find;
-export const omit = R.omit;
