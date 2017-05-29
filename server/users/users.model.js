@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { CalendarService } from '../services/googleApis';
+import { calendarService } from '../services/googleApis';
 import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
 import * as email from '../services/email';
 
@@ -58,8 +58,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 return new Promise(async (resolve, reject) => {
-                    const calendarService = new CalendarService;
-                    await calendarService.create();
+                    const calendar = await calendarService();
 
                     const calendarId = location.calendarId;
                     const startTime = time.toISOString();
@@ -67,7 +66,7 @@ export default function createUserModel(sequelize, DataTypes) {
                     const summary = user.getAppointmentSummary({ course, tutor });
                     const description = user.getAppointmentDescription({ course, tutor, comments });
 
-                    const result = await calendarService.createCalendarEvent({
+                    const result = await calendar.createCalendarEvent({
                         calendarId,
                         startTime,
                         endTime,
@@ -98,10 +97,9 @@ export default function createUserModel(sequelize, DataTypes) {
             deleteGoogleCalendarAppointment() {
                 const user = this;
                 return new Promise(async (resolve, reject) => {
-                    const calendarService = new CalendarService;
+                    const calendar = await calendarService();
                     try {
-                        await calendarService.create();
-                        const result = await calendarService.deleteCalendarEvent({
+                        const result = await calendar.deleteCalendarEvent({
                             calendarId: user.dataValues.googleCalendarId,
                             eventId: user.dataValues.googleCalendarAppointmentId,
                         });

@@ -27,10 +27,11 @@ function getAuth(resource) {
     });
 }
 
-export class CalendarService {
+class CalendarService {
     async create() {
         this.auth = await getAuth('calendar');
         this.calendar = googleapis.calendar('v3');
+        this.isCreated = true;
     }
 
     getCalendarEvents(calendarId, startDate, endDate) {
@@ -96,4 +97,14 @@ export class CalendarService {
             });
         });
     }
+}
+
+const _calendarService = new CalendarService;
+
+export async function calendarService() {
+    if (!_calendarService.isCreated) {
+        await _calendarService.create();
+    }
+
+    return _calendarService;
 }

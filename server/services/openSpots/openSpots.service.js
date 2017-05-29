@@ -3,7 +3,7 @@ import moment from 'moment';
 import { TIMEZONE, pickOneFrom, R } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
-import { CalendarService } from '../googleApis.js';
+import { calendarService } from '../googleApis.js';
 
 export const selectRandomTutor = tutors => {
     if (tutors.length === 0) {
@@ -167,10 +167,8 @@ export async function openSpots(locationId, courseId, startDate, endDate) {
 
     const calendarId = locationData.location.calendarId;
 
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
-    const calendarEvents = await calendarService.getCalendarEvents(
+    const calendar = await calendarService();
+    const calendarEvents = await calendar.getCalendarEvents(
         calendarId,
         startDate.toISOString(),
         endDate.toISOString()
@@ -251,11 +249,9 @@ export async function availableTutors(startDate, course, location) {
 
     const calendarId = locationData.location.calendarId;
 
-    const calendarService = new CalendarService;
-    await calendarService.create();
-
     const endDate = moment(startDate).add(1, 'hours');
-    const calendarEvents = await calendarService.getCalendarEvents(
+    const calendar = await calendarService();
+    const calendarEvents = await calendar.getCalendarEvents(
         calendarId,
         startDate.toISOString(),
         endDate.toISOString()
