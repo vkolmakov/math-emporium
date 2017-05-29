@@ -71,6 +71,32 @@ export function convertScheduleMapToList(scheduleMap) {
         R.reduce(foldWeekdayToList, [], [...scheduleMap.entries()]));
 }
 
+function findExistingTutorByName(tutors, nameToFind) {
+    const findTutorByName = name => R.find(R.propEq('name', name), tutors);
+    const knownTutorNames = R.map(R.prop('name'), tutors);
+
+    const predictAndFind = R.compose(
+        R.pick(['name', 'id']),
+        findTutorByName,
+        R.curry(predictTutorName)(knownTutorNames));
+
+    return predictAndFind(nameToFind);
+}
+
+function specialInstructionsToSchedules(tutors, specialInstructions) {
+    const replaceWithExistingTutor = R.compose(
+        R.curry(findExistingTutorByName)(tutors),
+        R.prop('name'));
+
+    const convert = ({ overwriteTutors, weekday, time }) => ({
+        tutors: R.map(replaceWithExistingTutor, overwriteTutors),
+        weekday,
+        time,
+    });
+
+    return R.map(convert, specialInstructions);
+}
+
 export function getOpenSpots(schedules, tutors, appointments, specialInstructions, parameters) {
     const { course } = parameters;
 
@@ -171,14 +197,15 @@ export async function openSpots(location, course, startDate, endDate) {
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);
-    const { schedules, tutors } = locationData;
+    const { tutors } = locationData;
+    const schedules = specialInstructionsToSchedules(tutors, specialInstructions);
 
     const parameters = {
         course,
     };
 
     return getOpenSpots(
-        schedules, tutors, appointments, specialInstructions, parameters);
+        schedules, tutors, appointments, [], parameters);
 }
 
 export function getAvailableTutors(schedules, tutors, appointments, specialInstructions, parameters) {
@@ -190,13 +217,8 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
     const selectedTutorNames = R.map(R.prop('name'), selectedTutors);
 
     const applySpecialInstructions = specialInstructions => scheduleMap => {
-        const findExistingTutorByName = name =>
-              R.find(R.propEq('name', name), selectedTutors);
-
         const replaceWithExistingTutor = R.compose(
-            R.omit(['courses']),
-            findExistingTutorByName,
-            R.curry(predictTutorName)(selectedTutorNames),
+            R.curry(findExistingTutorByName)(tutors),
             R.prop('name'));
 
         const processInstruction = (acc, instruction) => {
@@ -235,8 +257,15 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
         applySpecialInstructions(specialInstructions),
         removeScheduledTutors(appointments));
 
-    const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
-    const availableTutors = updateScheduleMap(scheduleMap).get(weekday).get(time);
+    let availableTutors;
+    try {
+        const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
+        availableTutors = updateScheduleMap(scheduleMap).get(weekday).get(time);
+    } catch (e) {
+        // selected schedule does not exist anymore
+        availableTutors = [];
+    }
+
     return availableTutors;
 }
 
@@ -274,8 +303,9 @@ export async function availableTutors(location, course, startDate, endDate) {
         course,
     };
 
-    const { schedules, tutors } = locationData;
+    const { tutors } = locationData;
+    const schedules = specialInstructionsToSchedules(tutors, specialInstructions);
 
     return getAvailableTutors(
-        schedules, tutors, appointments, specialInstructions, parameters);
+        schedules, tutors, appointments, [], parameters);
 }
