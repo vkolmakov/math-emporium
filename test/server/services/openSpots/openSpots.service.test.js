@@ -247,7 +247,7 @@ describe('openSpots.service', () => {
     describe('getOpenSpots', () => {
         it('should return correct schedule given no appointments or special instructions', () => {
             const parameters = {
-                courseId: 2,
+                course: { id: 2 },
             };
 
             const expected = [
@@ -259,7 +259,11 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, [], [], parameters);
+                locationData.schedules,
+                locationData.tutors,
+                [],
+                [],
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -267,7 +271,7 @@ describe('openSpots.service', () => {
 
         it('should draw schedule from locationData only if no special instructions are provided', () => {
             const parameters = {
-                courseId: 2,
+                course: { id: 2 },
             };
 
             const expected = [
@@ -279,7 +283,11 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, [], parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                [],
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -287,7 +295,7 @@ describe('openSpots.service', () => {
 
         it('should return correct open spots using default schedule and calendar overrides', () => {
             const parameters = {
-                courseId: 3,
+                course: { id: 3 },
             };
 
             const expected = [
@@ -300,7 +308,11 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, specialInstructions, parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -308,7 +320,7 @@ describe('openSpots.service', () => {
 
         it('should return correct open spots using default schedule and calendar overrides for a different course', () => {
             const parameters = {
-                courseId: 2,
+                course: { id: 2 },
             };
 
             const expected = [
@@ -321,7 +333,11 @@ describe('openSpots.service', () => {
             ];
 
             const result = getOpenSpots(
-                locationData, appointments, specialInstructions, parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));

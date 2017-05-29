@@ -71,11 +71,9 @@ export function convertScheduleMapToList(scheduleMap) {
         R.reduce(foldWeekdayToList, [], [...scheduleMap.entries()]));
 }
 
-export function getOpenSpots(locationData, appointments, specialInstructions, parameters) {
-    const { courseId } = parameters;
-    const { schedules, tutors } = locationData;
+export function getOpenSpots(schedules, tutors, appointments, specialInstructions, parameters) {
+    const { course } = parameters;
 
-    const course = { id: courseId };
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const countSelectedTutors = R.compose(R.length, R.filter(canTutorSelectedCourse));
     const knownTutorNames = R.map(R.prop('name'), tutors);
@@ -149,37 +147,38 @@ export function getOpenSpots(locationData, appointments, specialInstructions, pa
     return createOpenSpots(scheduleMap);
 }
 
-export async function openSpots(locationId, courseId, startDate, endDate) {
-    /* locationId: Int,
-       courseId: Int,
+export async function openSpots(location, course, startDate, endDate) {
+    /* location: { id: Number },
+       course: { id: Number },
        startDate: moment Date,
        endDate: moment Date,
      */
     moment.tz.setDefault(TIMEZONE);
-    // as of now course and location are passed in as a database ID
     const data = await getCachedData();
-    // select the correct data blob
-    const locationData = data.find(d => d.location.id === locationId);
+
+    const locationData = data.find(d => d.location.id === location.id);
 
     if (!locationData) {
         throw new Error('Selected location does not exist');
     }
 
     const calendarId = locationData.location.calendarId;
-
     const calendar = await calendarService();
     const calendarEvents = await calendar.getCalendarEvents(
         calendarId,
         startDate.toISOString(),
-        endDate.toISOString()
-    );
+        endDate.toISOString());
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);
+    const { schedules, tutors } = locationData;
 
-    const parameters = { locationId, courseId, startDate, endDate };
+    const parameters = {
+        course,
+    };
 
-    return getOpenSpots(locationData, appointments, specialInstructions, parameters);
+    return getOpenSpots(
+        schedules, tutors, appointments, specialInstructions, parameters);
 }
 
 export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
