@@ -3,6 +3,7 @@ import * as _R from 'ramda';
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
 export const TIMEZONE = 'US/Central';
+export const APPOINTMENT_LENGTH = 60; // in minutes
 
 export const AUTH_GROUPS = {
     user: 1,

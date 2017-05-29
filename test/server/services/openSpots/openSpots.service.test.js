@@ -357,7 +357,11 @@ describe('openSpots.service', () => {
             const expected = [{ id: 1, name: 'AmyW' }];
 
             const result = getAvailableTutors(
-                locationData, [], [], parameters);
+                locationData.schedules,
+                locationData.tutors,
+                [],
+                [],
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -382,7 +386,11 @@ describe('openSpots.service', () => {
             const expected = [{ id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
-                locationData, appointments, specialInstructions, parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -406,7 +414,11 @@ describe('openSpots.service', () => {
                               { id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
-                locationData, appointments, specialInstructions, parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
@@ -436,7 +448,11 @@ describe('openSpots.service', () => {
             const expected = [{ id: 3, name: 'HubertF' }];
 
             const result = getAvailableTutors(
-                locationData, appointments, specialInstructions, parameters);
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));

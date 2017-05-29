@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { calendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
+import { TIMEZONE, AUTH_GROUPS,
+         TIMESTAMP_VISIBLE_FORMAT, APPOINTMENT_LENGTH } from '../aux';
 import * as email from '../services/email';
 
 
@@ -62,7 +63,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                     const calendarId = location.calendarId;
                     const startTime = time.toISOString();
-                    const endTime = moment(time).add(1, 'hours').toISOString();
+                    const endTime = moment(time).add(APPOINTMENT_LENGTH, 'minutes').toISOString();
                     const summary = user.getAppointmentSummary({ course, tutor });
                     const description = user.getAppointmentDescription({ course, tutor, comments });
 

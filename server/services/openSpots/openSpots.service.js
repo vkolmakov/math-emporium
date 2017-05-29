@@ -181,9 +181,8 @@ export async function openSpots(location, course, startDate, endDate) {
         schedules, tutors, appointments, specialInstructions, parameters);
 }
 
-export function getAvailableTutors(locationData, appointments, specialInstructions, parameters) {
+export function getAvailableTutors(schedules, tutors, appointments, specialInstructions, parameters) {
     const { time, weekday, course } = parameters;
-    const { schedules, tutors } = locationData;
 
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const selectTutorsForCourse = R.filter(canTutorSelectedCourse);
@@ -241,34 +240,42 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
     return availableTutors;
 }
 
-export async function availableTutors(startDate, course, location) {
+export async function availableTutors(location, course, startDate, endDate) {
+    /* location: { id: Number },
+       course: { id: Number },
+       startDate: moment Date,
+       endDate: moment Date,
+    */
     moment.tz.setDefault(TIMEZONE);
     const data = await getCachedData();
     const locationData = data.find(d => d.location.id === location.id);
 
-    const calendarId = locationData.location.calendarId;
+    if (!locationData) {
+        throw new Error('Selected location does not exist');
+    }
 
-    const endDate = moment(startDate).add(1, 'hours');
+    const calendarId = locationData.location.calendarId;
     const calendar = await calendarService();
     const calendarEvents = await calendar.getCalendarEvents(
         calendarId,
         startDate.toISOString(),
-        endDate.toISOString()
-    );
+        endDate.toISOString());
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);
 
-    // Convert time into a format that is stored in the database schedule model
-    const timeRaw = moment(startDate).hours() * 60 + moment(startDate).minutes();
-    // Convert weekday into a format that is stored in the database schedule model
-    const weekdayRaw = parseInt(moment(startDate).format('E'), 10);
+    // Convert time and weekday into a format that is stored in the database schedule model
+    const time = moment(startDate).hours() * 60 + moment(startDate).minutes();
+    const weekday = parseInt(moment(startDate).format('E'), 10);
 
     const parameters = {
-        time: timeRaw,
-        weekday: weekdayRaw,
+        time,
+        weekday,
         course,
     };
 
-    return getAvailableTutors(locationData, appointments, specialInstructions, parameters);
+    const { schedules, tutors } = locationData;
+
+    return getAvailableTutors(
+        schedules, tutors, appointments, specialInstructions, parameters);
 }

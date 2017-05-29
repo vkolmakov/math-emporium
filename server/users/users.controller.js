@@ -1,7 +1,9 @@
 import db from 'sequelize-connect';
 import moment from 'moment';
 
-import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT, TIMEZONE } from '../aux';
+import { createExtractDataValuesFunction, isObject,
+         hasOneOf, TIMESTAMP_FORMAT, TIMEZONE,
+         APPOINTMENT_LENGTH } from '../aux';
 import { notFound } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { availableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
@@ -133,9 +135,10 @@ export const scheduleAppointment = async (req, res, next) => {
         });
 
         const tutors = await availableTutors(
-            moment(time, TIMESTAMP_FORMAT),
-            course,
             location,
+            course,
+            moment(time, TIMESTAMP_FORMAT),
+            moment(time, TIMESTAMP_FORMAT).add(APPOINTMENT_LENGTH, 'minutes'),
         );
 
         let tutor;
