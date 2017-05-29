@@ -190,10 +190,10 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
 
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const selectTutorsForCourse = R.filter(canTutorSelectedCourse);
+    const selectedTutors = selectTutorsForCourse(tutors);
+    const selectedTutorNames = R.map(R.prop('name'), selectedTutors);
 
     const applySpecialInstructions = specialInstructions => scheduleMap => {
-        const selectedTutors = selectTutorsForCourse(tutors);
-        const selectedTutorNames = R.map(R.prop('name'), selectedTutors);
         const findExistingTutorByName = name =>
               R.find(R.propEq('name', name), selectedTutors);
 
@@ -219,8 +219,25 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
             specialInstructions);
     };
 
+    const removeScheduledTutors = appointments => scheduleMap => {
+        const compareTutorsByName = R.eqProps('name');
+        const appointmentToTutor = appointment =>
+              ({ name: predictTutorName(selectedTutorNames, appointment.tutor) });
+
+        const takenTutors = R.map(appointmentToTutor, appointments);
+        const scheduledTutors = scheduleMap.get(weekday).get(time);
+        const availableTutors = R.differenceWith(
+            compareTutorsByName, scheduledTutors, takenTutors);
+
+        const nextScheduleMap = new Map(scheduleMap);
+        nextScheduleMap.get(weekday).set(time, availableTutors);
+
+        return nextScheduleMap;
+    };
+
     const updateScheduleMap = R.pipe(
-        applySpecialInstructions(specialInstructions));
+        applySpecialInstructions(specialInstructions),
+        removeScheduledTutors(appointments));
 
     const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
     const availableTutors = updateScheduleMap(scheduleMap).get(weekday).get(time);
