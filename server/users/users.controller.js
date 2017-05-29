@@ -4,7 +4,7 @@ import moment from 'moment';
 import { createExtractDataValuesFunction, isObject, hasOneOf, TIMESTAMP_FORMAT, TIMEZONE } from '../aux';
 import { notFound } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
-import { findAvailableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
+import { availableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
 const Location = db.models.location;
@@ -132,7 +132,7 @@ export const scheduleAppointment = async (req, res, next) => {
             where: { id: course.id },
         });
 
-        const tutors = await findAvailableTutors(
+        const tutors = await availableTutors(
             moment(time, TIMESTAMP_FORMAT),
             course,
             location,

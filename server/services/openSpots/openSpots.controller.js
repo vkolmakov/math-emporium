@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { openSpots, findAvailableTutors } from './openSpots.service';
+import { openSpots, availableTutors } from './openSpots.service';
 import { TIMESTAMP_FORMAT, TIMEZONE } from '../../aux';
 
 export const handleGetOpenSpots = async (req, res, next) => {
@@ -37,7 +37,7 @@ export const handleGetAvailableTutors = async (req, res, next) => {
     const location = { id: parseInt(req.query.locationId, 10) };
 
     try {
-        const tutors = await findAvailableTutors(
+        const tutors = await availableTutors(
             time,
             course,
             location,

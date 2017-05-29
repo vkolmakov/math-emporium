@@ -244,7 +244,7 @@ export function getAvailableTutors(locationData, appointments, specialInstructio
     return availableTutors;
 }
 
-export async function findAvailableTutors(startDate, course, location) {
+export async function availableTutors(startDate, course, location) {
     moment.tz.setDefault(TIMEZONE);
     const data = await getCachedData();
     const locationData = data.find(d => d.location.id === location.id);
