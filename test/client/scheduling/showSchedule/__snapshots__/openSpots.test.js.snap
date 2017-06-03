@@ -89,7 +89,7 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
 </div>
 `;
 
-exports[`OpenSpots component renders a spinner if both location and course are selected, but openSpots are empty 1`] = `
+exports[`OpenSpots component renders a spinner if both location and course are selected, but openSpots is a Left of loading message 1`] = `
 <div
   className="loading" />
 `;
@@ -117,6 +117,15 @@ exports[`OpenSpots component renders an appropriate error message if location is
   className="middle-help-message-wrap">
   <h1>
     Select a Location
+  </h1>
+</div>
+`;
+
+exports[`OpenSpots component renders an error message if both location and course are selected, but openSpots is a Left of any other message 1`] = `
+<div
+  className="middle-help-message-wrap">
+  <h1>
+    No ducks here.
   </h1>
 </div>
 `;

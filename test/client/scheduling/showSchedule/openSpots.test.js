@@ -2,6 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import renderer from 'react-test-renderer';
 import OpenSpots from '../../../../client/schedulingApp/showSchedule/components/openSpots';
+import { Either } from '../../../../client/utils';
+import { OPEN_SPOTS_LOADING_MESSAGE } from '../../../../client/schedulingApp/showSchedule/constants';
 
 describe('OpenSpots component', () => {
     const startDate = moment('2017-01-02 00:00:00');
@@ -19,7 +21,7 @@ describe('OpenSpots component', () => {
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={[]} />
+                       openSpots={Either.Left()} />
         );
 
         let tree = component.toJSON();
@@ -31,7 +33,7 @@ describe('OpenSpots component', () => {
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={[]} />
+                       openSpots={Either.Left()} />
         );
 
         tree = component.toJSON();
@@ -45,20 +47,33 @@ describe('OpenSpots component', () => {
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={[]} />
+                       openSpots={Either.Left()} />
         );
 
         expect(component.toJSON()).toMatchSnapshot();
     });
 
-    it('renders a spinner if both location and course are selected, but openSpots are empty', () => {
+    it('renders a spinner if both location and course are selected, but openSpots is a Left of loading message', () => {
         const component = renderer.create(
             <OpenSpots isLocationSelected={true}
                        isCourseSelected={true}
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={[]} />
+                       openSpots={Either.Left(OPEN_SPOTS_LOADING_MESSAGE)} />
+        );
+
+        expect(component.toJSON()).toMatchSnapshot();
+    });
+
+    it('renders an error message if both location and course are selected, but openSpots is a Left of any other message', () => {
+        const component = renderer.create(
+            <OpenSpots isLocationSelected={true}
+                       isCourseSelected={true}
+                       startDate={startDate}
+                       now={now}
+                       handlers={handlers}
+                       openSpots={Either.Left('No ducks here.')} />
         );
 
         expect(component.toJSON()).toMatchSnapshot();
@@ -78,7 +93,7 @@ describe('OpenSpots component', () => {
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={openSpots} />
+                       openSpots={Either.Right(openSpots)} />
         );
 
         expect(component.toJSON()).toMatchSnapshot();
@@ -97,7 +112,7 @@ describe('OpenSpots component', () => {
                        startDate={startDate}
                        now={now}
                        handlers={handlers}
-                       openSpots={openSpots} />
+                       openSpots={Either.Right(openSpots)} />
         );
 
         expect(component.toJSON()).toMatchSnapshot();
