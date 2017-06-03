@@ -1,6 +1,8 @@
 import moment from 'moment';
+import { Left, Right } from '../../utils';
 
-import { MODAL_LIFECYCLE } from './constants';
+import { MODAL_LIFECYCLE,
+         OPEN_SPOTS_LOADING_MESSAGE } from './constants';
 
 import { SA_GET_OPEN_SPOTS,
          SA_SET_START_DATE,
@@ -18,7 +20,8 @@ const INITIAL_STATE = {
     startDate: moment().isoWeekday() > 6 // check if it's Sunday
         ? moment().add(1, 'days').startOf('isoWeek') // if it is, go to next week
         : moment().startOf('isoWeek'), // otherwise stay on the current week
-    openSpots: [],
+    // Either OpenSpotsErrorMessage [OpenSpot]
+    openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
     message: '',
     modalInfo: {
         displayModal: false,
@@ -39,7 +42,9 @@ export default (state = INITIAL_STATE, action) => {
     case SA_GET_OPEN_SPOTS:
         return {
             ...state,
-            openSpots: payload.data,
+            openSpots: payload.data.length > 0
+                ? Right(payload.data)
+                : Left('There are no appointments available for this time.'),
         };
 
     case SA_SET_START_DATE:
@@ -47,13 +52,13 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             startDate: payload.startOf('isoWeek'),
-            openSpots: [],
+            openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
         };
 
     case SA_RESET_OPEN_SPOTS:
         return {
             ...state,
-            openSpots: [],
+            openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
         };
 
     case SA_SCHEDULING_MESSAGE:
