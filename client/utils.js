@@ -1,4 +1,5 @@
 import { browserHistory } from 'react-router';
+import * as S from 'sanctuary';
 
 export const courseComparator = (course1, course2) => {
     const getCourseCodeNameAndNumber = code => {
@@ -74,15 +75,8 @@ export function cleanCookies(onlyKeys, cookies) {
 }
 
 export const Either = {
-    Right: x => ({
-        map: f => Right(f(x)),
-        chain: f => f(x),
-        fold: (f, g) => g(x),
-    }),
-    Left: x => ({
-        map: f => Left(x),
-        chain: f => Left(x),
-        fold: (f, g) => f(x),
-    }),
-    fromNullable: x => x != null ? Right(x) : Left(null),
+    Right: S.Right,
+    Left: S.Left,
+    either: S.either,
+    toEither: S.toEither,
 };

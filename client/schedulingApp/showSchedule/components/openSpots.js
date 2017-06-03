@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 import { OPEN_SPOTS_LOADING_MESSAGE } from '../constants';
+import { Either } from '../../../utils';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
 import ErrorMessage from './errorMessage';
@@ -54,7 +55,8 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, no
           ? (<LoadingSpinner />)
           : (<ErrorMessage message={msg} />);
 
-    return openSpots.fold(
+    return Either.either(
         renderErrorMessage,
-        renderOpenSpots);
+        renderOpenSpots,
+        openSpots);
 };
