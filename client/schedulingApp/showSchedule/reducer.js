@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Left, Right } from '../../utils';
+import { Either } from '../../utils';
 
 import { MODAL_LIFECYCLE,
          OPEN_SPOTS_LOADING_MESSAGE } from './constants';
@@ -21,7 +21,7 @@ const INITIAL_STATE = {
         ? moment().add(1, 'days').startOf('isoWeek') // if it is, go to next week
         : moment().startOf('isoWeek'), // otherwise stay on the current week
     // Either OpenSpotsErrorMessage [OpenSpot]
-    openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
+    openSpots: Either.Left(OPEN_SPOTS_LOADING_MESSAGE),
     message: '',
     modalInfo: {
         displayModal: false,
@@ -43,8 +43,8 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             openSpots: payload.data.length > 0
-                ? Right(payload.data)
-                : Left('There are no appointments available for this time.'),
+                ? Either.Right(payload.data)
+                : Either.Left('There are no appointments available for this week.'),
         };
 
     case SA_SET_START_DATE:
@@ -52,13 +52,13 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             startDate: payload.startOf('isoWeek'),
-            openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
+            openSpots: Either.Left(OPEN_SPOTS_LOADING_MESSAGE),
         };
 
     case SA_RESET_OPEN_SPOTS:
         return {
             ...state,
-            openSpots: Left(OPEN_SPOTS_LOADING_MESSAGE),
+            openSpots: Either.Left(OPEN_SPOTS_LOADING_MESSAGE),
         };
 
     case SA_SCHEDULING_MESSAGE:

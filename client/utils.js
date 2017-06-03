@@ -73,14 +73,16 @@ export function cleanCookies(onlyKeys, cookies) {
         .map(createExpiredCookie);
 }
 
-export const Right = x => ({
-    map: f => Right(f(x)),
-    chain: f => f(x),
-    fold: (f, g) => g(x),
-});
-
-export const Left = x => ({
-    map: f => Left(x),
-    chain: f => Left(x),
-    fold: (f, g) => f(x),
-});
+export const Either = {
+    Right: x => ({
+        map: f => Right(f(x)),
+        chain: f => f(x),
+        fold: (f, g) => g(x),
+    }),
+    Left: x => ({
+        map: f => Left(x),
+        chain: f => Left(x),
+        fold: (f, g) => f(x),
+    }),
+    fromNullable: x => x != null ? Right(x) : Left(null),
+};
