@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 
+import { OPEN_SPOTS_LOADING_MESSAGE } from '../constants';
+
 import LoadingSpinner from '../../../components/loadingSpinner';
 import ErrorMessage from './errorMessage';
 import Weekday from './weekday';
@@ -34,22 +36,25 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, no
         return (<ErrorMessage message='Select a Course' />);
     }
 
-    if (openSpots.length === 0) {
-        return (<LoadingSpinner />);
-    }
-
     const renderWeekday = ({ weekdayDisplay, openSpots }) => (
         <Weekday startDate={startDate}
                  weekdayDisplay={weekdayDisplay}
                  openSpots={openSpots}
                  now={now}
                  handlers={handlers}
-                 key={weekdayDisplay} />
-    );
+                 key={weekdayDisplay} />);
 
-    return (
+    const renderOpenSpots = os => (
         <div className="open-spots-display">
-            {partitionOpenSpotsByWeekday(openSpots, startDate).map(renderWeekday)}
-        </div>
-    );
+            {partitionOpenSpotsByWeekday(os, startDate).map(renderWeekday)}
+        </div>);
+
+    const renderErrorMessage = msg =>
+          msg === OPEN_SPOTS_LOADING_MESSAGE
+          ? (<LoadingSpinner />)
+          : (<ErrorMessage message={msg} />);
+
+    return openSpots.fold(
+        renderErrorMessage,
+        renderOpenSpots);
 };
