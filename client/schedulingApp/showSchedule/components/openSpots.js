@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 import { OPEN_SPOTS_LOADING_MESSAGE } from '../constants';
-import { Either } from '../../../utils';
+import { Either, S } from '../../../utils';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
 import ErrorMessage from './errorMessage';
@@ -28,13 +28,19 @@ function partitionOpenSpotsByWeekday(openSpots, startDate) {
     }));
 }
 
+const OpenSpotsWrapper = content => (
+    <div className="open-spots-display">
+        {content}
+    </div>);
+
+
 export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, now, handlers }) => {
     if (!isLocationSelected) {
-        return (<ErrorMessage message='Select a Location' />);
+        return OpenSpotsWrapper(<ErrorMessage message='Select a Location' />);
     }
 
     if (!isCourseSelected) {
-        return (<ErrorMessage message='Select a Course' />);
+        return OpenSpotsWrapper(<ErrorMessage message='Select a Course' />);
     }
 
     const renderWeekday = ({ weekdayDisplay, openSpots }) => (
@@ -45,10 +51,8 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, no
                  handlers={handlers}
                  key={weekdayDisplay} />);
 
-    const renderOpenSpots = os => (
-        <div className="open-spots-display">
-            {partitionOpenSpotsByWeekday(os, startDate).map(renderWeekday)}
-        </div>);
+    const renderOpenSpots = os =>
+          partitionOpenSpotsByWeekday(os, startDate).map(renderWeekday);
 
     const renderErrorMessage = msg =>
           msg === OPEN_SPOTS_LOADING_MESSAGE
@@ -56,7 +60,7 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, no
           : (<ErrorMessage message={msg} />);
 
     return Either.either(
-        renderErrorMessage,
-        renderOpenSpots,
+        S.compose(OpenSpotsWrapper, renderErrorMessage),
+        S.compose(OpenSpotsWrapper, renderOpenSpots),
         openSpots);
 };
