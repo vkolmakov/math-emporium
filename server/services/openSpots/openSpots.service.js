@@ -1,17 +1,10 @@
 import moment from 'moment';
 
-import { TIMEZONE, pickOneFrom, R, Either } from '../../aux';
+import { TIMEZONE, R, Either } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { calendarService } from '../googleApis.js';
 
-export const selectRandomTutor = tutors => {
-    if (tutors.length === 0) {
-        throw new Error('No available tutors');
-    }
-
-    return pickOneFrom(tutors);
-};
 
 export function predictTutorName(options, rawName) {
     const createSearchStartRegex = p => new RegExp(`^${p}`, 'i');
