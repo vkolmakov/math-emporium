@@ -487,7 +487,8 @@ describe('openSpots.service', () => {
         });
 
         it('should predict a name based on first and then last letters', () => {
-            const toPredict = ['AmyW', 'AmyZ', 'Amyyw', 'Amyyyyyyyyyyz', 'AnyW', 'AnyZ'];
+            const toPredict = ['AmyW', 'AmyZ', 'Amyyw', 'Amyyyyyyyyyyz', 'AnyW', 'AnyZ',
+                               'JohnZ', 'JohnD', 'JohnT', 'Johz', 'JahnnD', 'JonhT'];
             const results = toPredict
                   .map(predictFromOptions);
 
@@ -497,7 +498,8 @@ describe('openSpots.service', () => {
                   .map(unpackFromEither);
 
             expect(resultValues).toEqual([
-                'AmyW', 'AmyZ', 'AmyW', 'AmyZ', 'AmyW', 'AmyZ']);
+                'AmyW', 'AmyZ', 'AmyW', 'AmyZ', 'AmyW', 'AmyZ',
+                'JohnZ', 'JohnD', 'JohnT', 'JohnZ', 'JohnD', 'JohnT']);
         });
 
         it('should return Left if name cannot be recognized using first and last letters', () => {
