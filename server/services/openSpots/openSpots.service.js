@@ -252,7 +252,7 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
             const overwrittenTutors = R.map(replaceWithExistingTutor,
                                             overwriteTutors);
 
-            acc.get(weekday).set(time, overwrittenTutors);
+            acc.get(weekday).set(time, Either.rights(overwrittenTutors));
 
             return acc;
         };
