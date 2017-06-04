@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { TIMEZONE, pickOneFrom, R } from '../../aux';
+import { TIMEZONE, pickOneFrom, R, Either } from '../../aux';
 import { getCachedData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { calendarService } from '../googleApis.js';
@@ -13,7 +13,36 @@ export const selectRandomTutor = tutors => {
     return pickOneFrom(tutors);
 };
 
-const predictTutorName = (options, rawName) => {
+export function _predictTutorName(options, rawName) {
+    const createSearchStartRegex = p => new RegExp(`^${p}`, 'i');
+    const createSearchEndRegex = p => new RegExp(`${p}$`, 'i');
+    const isMatching = regex => s => s.match(regex);
+
+    const searchFromStart = (current, upTo) => {
+        const sliceStart = R.slice(0, upTo);
+
+        const isMatch = isMatching(
+            createSearchStartRegex(sliceStart(rawName)));
+
+        const next = current.filter(isMatch);
+
+        return next.length === 0
+            ? current
+            : next;
+    };
+
+    const [searchStart, searchEnd] = [1, 6];
+    const afterSearchingFromStart =
+          R.range(searchStart, searchEnd).reduce(searchFromStart, options);
+
+    if (afterSearchingFromStart.length === 1) {
+        return Either.Right(R.head(afterSearchingFromStart));
+    }
+
+    return Either.Left('Could not converge on a single tutor name');
+}
+
+function predictTutorName(options, rawName) {
     const [searchFromIdx, searchUpToIdx] = [2, 6];
 
     const candidateLists = R.range(searchFromIdx, searchUpToIdx).reduce((result, num) => {
