@@ -63,10 +63,18 @@ export function canTutorCourse(tutors, course, tutor) {
         R.prop('courses'));
 
     const selectedTutors = tutors.filter(hasCourse);
+    const tutorNames = tutors.map(R.prop('name'));
     const selectedTutorNames = selectedTutors.map(R.prop('name'));
+
+    const canFindNameInSelectedTutors =
+          Either.either(
+              _ => false,
+              n => R.contains(n, selectedTutorNames),
+              predictTutorName(tutorNames, name));
+
     return tutorId
         ? R.contains(tutorId, selectedTutors.map(R.prop('id')))
-        : R.contains(predictTutorName(selectedTutorNames, name), selectedTutorNames);
+        : canFindNameInSelectedTutors;
 }
 
 export function buildScheduleMap(transformTutors, source) {
