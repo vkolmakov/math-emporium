@@ -41,15 +41,9 @@ body {
         @include span(9 of 12 last nest); // This container will contain nested things
     }
 
-    .middle-help-message-wrap {
-        h1 {
-            color: darken($tertiary-color, 32%);
-            font-weight: 400;
-        }
-
-        @include breakpoint($medium-screen) {
-            margin: span(3 of 12) span(4 of 12); // kinda centered
-        }
+    h1 {
+        color: darken($tertiary-color, 32%);
+        font-weight: 400;
     }
 }
 
@@ -438,9 +432,4 @@ body {
     border: .25rem solid $primary-color;
     border-top-color: darken($primary-color, 15%);
     animation: spin $spin-duration infinite;
-
-    margin: 1em auto;
-    @include breakpoint($medium-screen) {
-        margin: 25vh auto;
-    }
 }

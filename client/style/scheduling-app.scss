@@ -71,6 +71,25 @@
 
 
 .open-spots-display {
+    > h1 {
+        color: darken($tertiary-color, 32%);
+        font-weight: 400;
+
+        @include breakpoint($medium-screen) {
+            margin: 15vh auto;
+            max-width: 20em;
+            text-align: center;
+        }
+    }
+
+    > .loading {
+        margin: 1em auto;
+        @include breakpoint($medium-screen) {
+            margin: 15vh auto;
+        }
+    }
+
+
     $col-size: 3;
     $num-cols: 9;
     @include span($num-cols of $num-cols nest);
