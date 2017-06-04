@@ -3,7 +3,7 @@ import { getOpenSpots,
          canTutorCourse,
          buildScheduleMap,
          convertScheduleMapToList,
-         _predictTutorName } from '../../../../server/services/openSpots/openSpots.service.js';
+         predictTutorName } from '../../../../server/services/openSpots/openSpots.service.js';
 
 import { Either } from '../../../../server/aux';
 
@@ -468,7 +468,7 @@ describe('openSpots.service', () => {
                          'JohnD', 'JohnT', 'JohnZ'];
         const toLower = s => s.toLowerCase();
         const unpackFromEither = x => Either.either(x => x, x => x, x);
-        const predictFromOptions = n => _predictTutorName(options, n);
+        const predictFromOptions = n => predictTutorName(options, n);
         const isLeft = x => Either.isLeft(x);
         const isRight = x => Either.isRight(x);
 
@@ -512,7 +512,7 @@ describe('openSpots.service', () => {
         });
 
         it('should be able to handle case where the only available options have same first letters', () => {
-            const predict = n => _predictTutorName(['JohnT', 'JohnD'], n);
+            const predict = n => predictTutorName(['JohnT', 'JohnD'], n);
             const toPredictSuccess = ['JohnT', 'JohnD', 'JonhT', 'JohD'];
             const toPredictFailure = ['John', 'Jonh', 'Joh'];
 

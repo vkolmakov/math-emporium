@@ -13,7 +13,7 @@ export const selectRandomTutor = tutors => {
     return pickOneFrom(tutors);
 };
 
-export function _predictTutorName(options, rawName) {
+export function predictTutorName(options, rawName) {
     const createSearchStartRegex = p => new RegExp(`^${p}`, 'i');
     const createSearchEndRegex = p => new RegExp(`${p}$`, 'i');
     const isMatching = regex => s => s.match(regex);
@@ -53,22 +53,6 @@ export function _predictTutorName(options, rawName) {
         ? Either.Right(R.head(afterCheckingLastLetter))
         : Either.Left('Could not converge on a single tutor name');
 }
-
-function predictTutorName(options, rawName) {
-    const [searchFromIdx, searchUpToIdx] = [2, 6];
-
-    const candidateLists = R.range(searchFromIdx, searchUpToIdx).reduce((result, num) => {
-        const candidates = options.filter(name => name.toLowerCase().startsWith(rawName.toLowerCase().slice(0, num)));
-        return candidates.length > 0 ? result.concat([candidates]) : result;
-    }, []);
-
-    if (candidateLists.length < 1) {
-        return rawName;
-    } else {
-        const candidates = R.head(candidateLists.sort((l1, l2) => l1.length - l2.length));
-        return selectRandomTutor(candidates);
-    }
-};
 
 export function canTutorCourse(tutors, course, tutor) {
     const { id: courseId } = course;
