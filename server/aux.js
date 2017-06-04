@@ -1,4 +1,5 @@
 import * as _R from 'ramda';
+import * as _S from 'sanctuary';
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
@@ -61,6 +62,15 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
+export const Either = {
+    Right: _S.Right,
+    Left: _S.Left,
+    either: _S.either,
+    toEither: _S.toEither,
+    isLeft: _S.isLeft,
+    isRight: _S.isRight,
+};
+
 export const R = {
     map: _R.map,
     prop: _R.prop,
@@ -81,6 +91,10 @@ export const R = {
     flatten: _R.flatten,
     find: _R.find,
     flip: _R.flip,
+    last: _R.last,
+    toLower: _R.toLower,
+    slice: _R.slice,
+    equals: _R.equals,
 };
 
 export const trace = msg => x => { console.log(msg, x); return x; };
