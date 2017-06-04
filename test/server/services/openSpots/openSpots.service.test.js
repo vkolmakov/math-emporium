@@ -477,7 +477,7 @@ describe('openSpots.service', () => {
             const results = toPredict
                   .map(predictFromOptions);
 
-            expect(results.every(isRight)).toEqual(true);
+            expect(results.every(isRight)).toBe(true);
 
             const resultValues = results
                   .map(unpackFromEither);
@@ -492,7 +492,7 @@ describe('openSpots.service', () => {
             const results = toPredict
                   .map(predictFromOptions);
 
-            expect(results.every(isRight)).toEqual(true);
+            expect(results.every(isRight)).toBe(true);
 
             const resultValues = results
                   .map(unpackFromEither);
@@ -503,12 +503,27 @@ describe('openSpots.service', () => {
         });
 
         it('should return Left if name cannot be recognized using first and last letters', () => {
-            const toPredict = ['Amy', 'Ame', 'Anaconda', 'Duck', 'wildcatD', 'bluefish'];
+            const toPredict = ['Amy', 'Ame', 'Anaconda', 'Duck', 'bluefish'];
 
             const results = toPredict
                   .map(predictFromOptions);
 
             expect(results.every(isLeft)).toBe(true);
+        });
+
+        it('should be able to handle case where the only available options have same first letters', () => {
+            const predict = n => _predictTutorName(['JohnT', 'JohnD'], n);
+            const toPredictSuccess = ['JohnT', 'JohnD', 'JonhT', 'JohD'];
+            const toPredictFailure = ['John', 'Jonh', 'Joh'];
+
+            const successes = toPredictSuccess.map(predict);
+            const failures = toPredictFailure.map(predict);
+
+            expect(successes.every(isRight)).toBe(true);
+            expect(failures.every(isLeft)).toBe(true);
+
+            const successValues = successes.map(unpackFromEither);
+            expect(successValues).toEqual(['JohnT', 'JohnD', 'JohnT', 'JohnD']);
         });
     });
 });
