@@ -99,18 +99,21 @@ export function convertScheduleMapToList(scheduleMap) {
 
 function findExistingTutorByName(tutors, nameToFind) {
     const knownTutorNames = tutors.map(R.prop('name'));
+    const findTutorByName = name => R.find(R.propEq('name', name), tutors);
+    const getNameAndId = R.pick(['name', 'id']);
 
-    return R.map(R.pick(['name', 'id']),
-                 predictTutorName(knownTutorNames, nameToFind));
+    return R.map(
+        R.compose(getNameAndId, findTutorByName),
+        predictTutorName(knownTutorNames, nameToFind));
 }
 
 function specialInstructionsToSchedules(tutors, specialInstructions) {
     const replaceWithExistingTutor = R.compose(
-        R.curry(findExistingTutorByName)(tutors), // TODO: Fix
+        R.curry(findExistingTutorByName)(tutors),
         R.prop('name'));
 
     const convert = ({ overwriteTutors, weekday, time }) => ({
-        tutors: R.map(replaceWithExistingTutor, overwriteTutors),
+        tutors: Either.rights(R.map(replaceWithExistingTutor, overwriteTutors)),
         weekday,
         time,
     });

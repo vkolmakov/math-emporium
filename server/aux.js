@@ -69,10 +69,11 @@ export const Either = {
     toEither: _S.toEither,
     isLeft: _S.isLeft,
     isRight: _S.isRight,
+    rights: _S.rights,
 };
 
 export const R = {
-    map: _R.map,
+    map: _S.map,
     prop: _R.prop,
     propEq: _R.propEq,
     pipe: _R.pipe,
