@@ -31,6 +31,12 @@ export function _predictTutorName(options, rawName) {
             : next;
     };
 
+    const checkLastLetter = remaining => {
+        const isMatch = isMatching(
+            createSearchEndRegex(R.last(rawName)));
+        return remaining.filter(isMatch);
+    };
+
     const [searchStart, searchEnd] = [1, 6];
     const afterSearchingFromStart =
           R.range(searchStart, searchEnd).reduce(searchFromStart, options);
@@ -39,7 +45,12 @@ export function _predictTutorName(options, rawName) {
         return Either.Right(R.head(afterSearchingFromStart));
     }
 
-    return Either.Left('Could not converge on a single tutor name');
+    const afterCheckingLastLetter = checkLastLetter(
+        afterSearchingFromStart);
+
+    return afterCheckingLastLetter.length === 1
+        ? Either.Right(R.head(afterCheckingLastLetter))
+        : Either.Left('Could not converge on a single tutor name');
 }
 
 function predictTutorName(options, rawName) {
