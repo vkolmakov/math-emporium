@@ -26,7 +26,8 @@ export function _predictTutorName(options, rawName) {
 
         const next = current.filter(isMatch);
 
-        return next.length === 0
+        const areThereAnyOptionsLeft = next.length === 0;
+        return areThereAnyOptionsLeft
             ? current
             : next;
     };
