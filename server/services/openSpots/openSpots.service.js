@@ -98,20 +98,15 @@ export function convertScheduleMapToList(scheduleMap) {
 }
 
 function findExistingTutorByName(tutors, nameToFind) {
-    const findTutorByName = name => R.find(R.propEq('name', name), tutors);
-    const knownTutorNames = R.map(R.prop('name'), tutors);
+    const knownTutorNames = tutors.map(R.prop('name'));
 
-    const predictAndFind = R.compose(
-        R.pick(['name', 'id']),
-        findTutorByName,
-        R.curry(predictTutorName)(knownTutorNames));
-
-    return predictAndFind(nameToFind);
+    return R.map(R.pick(['name', 'id']),
+                 predictTutorName(knownTutorNames, nameToFind));
 }
 
 function specialInstructionsToSchedules(tutors, specialInstructions) {
     const replaceWithExistingTutor = R.compose(
-        R.curry(findExistingTutorByName)(tutors),
+        R.curry(findExistingTutorByName)(tutors), // TODO: Fix
         R.prop('name'));
 
     const convert = ({ overwriteTutors, weekday, time }) => ({
@@ -129,9 +124,11 @@ export function getOpenSpots(schedules, tutors, appointments, specialInstruction
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const countSelectedTutors = R.compose(R.length, R.filter(canTutorSelectedCourse));
     const knownTutorNames = R.map(R.prop('name'), tutors);
-    const isKnownTutorName = R.compose(
-        R.flip(R.contains)(knownTutorNames),
-        R.curry(predictTutorName)(knownTutorNames));
+    const isKnownTutorName = name => Either.either(
+        () => false,
+        () => true,
+        predictTutorName(knownTutorNames, name));
+
 
     const applySpecialInstructions = specialInstructions => scheduleMap => {
         const processInstruction = (acc, instruction) => {
@@ -244,7 +241,7 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
 
     const applySpecialInstructions = specialInstructions => scheduleMap => {
         const replaceWithExistingTutor = R.compose(
-            R.curry(findExistingTutorByName)(tutors),
+            R.curry(findExistingTutorByName)(tutors), // TODO: fix
             R.prop('name'));
 
         const processInstruction = (acc, instruction) => {
@@ -266,7 +263,7 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
     const removeScheduledTutors = appointments => scheduleMap => {
         const compareTutorsByName = R.eqProps('name');
         const appointmentToTutor = appointment =>
-              ({ name: predictTutorName(selectedTutorNames, appointment.tutor) });
+              ({ name: predictTutorName(selectedTutorNames, appointment.tutor) }); // TODO: fix
 
         const takenTutors = R.map(appointmentToTutor, appointments);
         const scheduledTutors = scheduleMap.get(weekday).get(time);
