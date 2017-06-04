@@ -45,6 +45,10 @@ body {
         color: darken($tertiary-color, 32%);
         font-weight: 400;
     }
+
+    .loading {
+        margin: 1.5em auto;
+    }
 }
 
 
