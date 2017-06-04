@@ -2,11 +2,11 @@ import db from 'sequelize-connect';
 import moment from 'moment';
 
 import { createExtractDataValuesFunction, isObject,
-         hasOneOf, TIMESTAMP_FORMAT, TIMEZONE,
+         hasOneOf, pickOneFrom, TIMESTAMP_FORMAT, TIMEZONE,
          APPOINTMENT_LENGTH } from '../aux';
 import { notFound } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
-import { availableTutors, selectRandomTutor } from '../services/openSpots/openSpots.service';
+import { availableTutors } from '../services/openSpots/openSpots.service';
 
 const User = db.models.user;
 const Location = db.models.location;
@@ -145,7 +145,7 @@ export const scheduleAppointment = async (req, res, next) => {
         if (requestedTutor) {
             tutor = tutors.find(t => t.id === requestedTutor.id);
         } else {
-            tutor = selectRandomTutor(tutors);
+            tutor = pickOneFrom(tutors);
         }
 
         const result = await user.createGoogleCalendarAppointment({
