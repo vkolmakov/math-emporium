@@ -1,5 +1,7 @@
 import * as _R from 'ramda';
-import * as _S from 'sanctuary';
+import { create, env } from 'sanctuary';
+
+const _S = create({ checkTypes: false, env });
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';

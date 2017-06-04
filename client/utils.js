@@ -1,5 +1,7 @@
 import { browserHistory } from 'react-router';
-import * as _S from 'sanctuary';
+import { create, env } from 'sanctuary';
+
+const _S = create({ checkTypes: false, env });
 
 export const courseComparator = (course1, course2) => {
     const getCourseCodeNameAndNumber = code => {
