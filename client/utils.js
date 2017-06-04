@@ -76,6 +76,10 @@ export function cleanCookies(onlyKeys, cookies) {
         .map(createExpiredCookie);
 }
 
+export function getOrigin() {
+    return document.location.origin;
+}
+
 export const Either = {
     Right: _S.Right,
     Left: _S.Left,
