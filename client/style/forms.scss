@@ -68,9 +68,12 @@
 
     a {
         color: darken($primary-color, 25%);
+    }
+
+    a.oauth2-link {
+        width: 100%;
         display: flex;
         justify-content: center;
-        width: 100%;
         @include breakpoint($medium-screen) {
             width: auto;
         }
