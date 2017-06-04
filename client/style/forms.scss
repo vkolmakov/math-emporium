@@ -68,9 +68,15 @@
 
     a {
         color: darken($primary-color, 25%);
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        @include breakpoint($medium-screen) {
+            width: auto;
+        }
     }
 
-    .oauth2-wrap {
+    .oauth2-button-wrap {
         @include box-sizing(border-box);
         @include rounded-border();
         @include set-font();
@@ -78,12 +84,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        max-width: 22.5em;
         padding: 1em;
-        margin: 0 auto;
 
+        width: 100%;
         @include breakpoint($medium-screen) {
-            margin: 3em auto;
+            width: 22.5em;
         }
 
         > img {
