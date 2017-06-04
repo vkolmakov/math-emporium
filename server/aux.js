@@ -61,5 +61,26 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
-export const R = _R;
+export const R = {
+    map: _R.map,
+    prop: _R.prop,
+    propEq: _R.propEq,
+    pipe: _R.pipe,
+    compose: _R.compose,
+    head: _R.head,
+    range: _R.range,
+    contains: _R.contains,
+    pick: _R.pick,
+    curry: _R.curry,
+    differenceWith: _R.differenceWith,
+    eqProps: _R.eqProps,
+    reduce: _R.reduce,
+    filter: _R.filter,
+    length: _R.length,
+    append: _R.append,
+    flatten: _R.flatten,
+    find: _R.find,
+    flip: _R.flip,
+};
+
 export const trace = msg => x => { console.log(msg, x); return x; };
