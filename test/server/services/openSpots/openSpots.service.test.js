@@ -2,7 +2,10 @@ import { getOpenSpots,
          getAvailableTutors,
          canTutorCourse,
          buildScheduleMap,
-         convertScheduleMapToList } from '../../../../server/services/openSpots/openSpots.service.js';
+         convertScheduleMapToList,
+         _predictTutorName } from '../../../../server/services/openSpots/openSpots.service.js';
+
+import { Either } from '../../../../server/aux';
 
 const expectIn = container => element => expect(container).toContainEqual(element);
 
@@ -456,6 +459,54 @@ describe('openSpots.service', () => {
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
+        });
+    });
+
+    describe('getAvailableTutors', () => {
+        const options = ['PhillipF', 'HubertF', 'HermesC',
+                         'AmyW', 'AmyZ',
+                         'JohnD', 'JohnT', 'JohnZ'];
+        const toLower = s => s.toLowerCase();
+        const unpackFromEither = x => Either.either(x => x, x => x, x);
+        const predictFromOptions = n => _predictTutorName(options, n);
+        const isLeft = x => Either.isLeft(x);
+        const isRight = x => Either.isRight(x);
+
+        it('should predict a simple slightly misspelled tutor name using first letters', () => {
+            const toPredict = ['Philip', 'Phil', 'HubirtF', 'HermC'];
+            const results = toPredict
+                  .map(predictFromOptions);
+
+            expect(results.every(isRight)).toEqual(true);
+
+            const resultValues = results
+                  .map(unpackFromEither);
+
+            expect(resultValues).toEqual([
+                'PhillipF', 'PhillipF', 'HubertF', 'HermesC']);
+        });
+
+        it('should predict a name based on first and then last letters', () => {
+            const toPredict = ['AmyW', 'AmyZ', 'Amyyw', 'Amyyyyyyyyyyz', 'AnyW', 'AnyZ'];
+            const results = toPredict
+                  .map(predictFromOptions);
+
+            expect(results.every(isRight)).toEqual(true);
+
+            const resultValues = results
+                  .map(unpackFromEither);
+
+            expect(resultValues).toEqual([
+                'AmyW', 'AmyZ', 'AmyW', 'AmyZ', 'AmyW', 'AmyZ']);
+        });
+
+        it('should return Left if name cannot be recognized using first and last letters', () => {
+            const toPredict = ['Amy', 'Ame', 'Anaconda', 'Duck', 'wildcatD', 'bluefish'];
+
+            const results = toPredict
+                  .map(predictFromOptions);
+
+            expect(results.every(isLeft)).toBe(true);
         });
     });
 });
