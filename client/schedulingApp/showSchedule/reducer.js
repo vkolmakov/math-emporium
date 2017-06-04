@@ -85,8 +85,8 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             selectedOpenSpotInfo: {
                 time: null,
-                course: null,
-                location: null,
+                course: state.selectedOpenSpotInfo.course,
+                location: state.selectedOpenSpotInfo.location,
                 tutors: [],
             },
             modalInfo: { displayModal: false, status: MODAL_LIFECYCLE.LOADING },
