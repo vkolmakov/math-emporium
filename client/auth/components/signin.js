@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import { OAUTH2_SIGNIN_URL } from '../constants';
-import { saveSelectedOpenSpotInLocalStorage } from '../../schedulingApp/showSchedule/actions';
+import { saveSelectedOpenSpotInLocalStorage,
+         clearOpenSpotSelection } from '../../schedulingApp/showSchedule/actions';
 import schoolLogo from '../../assets/school-logo.png';
 
 
@@ -24,6 +25,7 @@ class Signin extends Component {
         const { course, location, time } = selectedOpenSpotInfo;
         if (course && location && time) {
             this.props.saveSelectedOpenSpotInLocalStorage(selectedOpenSpotInfo);
+            this.props.clearOpenSpotSelection();
         }
     }
 
@@ -65,4 +67,5 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     saveSelectedOpenSpotInLocalStorage,
+    clearOpenSpotSelection,
 })(Signin);
