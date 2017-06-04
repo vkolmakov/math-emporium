@@ -4,11 +4,16 @@ export const SA_GET_LOCATIONS = 'SA_GET_LOCATIONS';
 export const SA_GET_COURSES = 'SA_GET_COURSES';
 export const SA_SET_LOCATION = 'SA_SET_LOCATION';
 export const SA_SET_COURSE = 'SA_SET_COURSE';
+export const SA_INITIALIZE = 'SA_INITIALIZE';
 
 const BASE_URL_LOCATIONS = '/api/locations';
 const BASE_URL_COURSES = '/api/courses';
 
 import { resetOpenSpots } from './showSchedule/actions';
+
+export function markAsInitialized() {
+    return { type: SA_INITIALIZE };
+}
 
 export function getLocations() {
     const request = axios.get(BASE_URL_LOCATIONS);

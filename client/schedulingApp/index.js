@@ -4,14 +4,17 @@ import { connect } from 'react-redux';
 import Sidebar from '../components/sidebar';
 import LoadingSpinner from '../components/loadingSpinner';
 import { BASE_PATH } from './constants';
-import { getLocations, getCourses } from './actions';
+import { getLocations, getCourses, markAsInitialized } from './actions';
 import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 
 class SchedulingApp extends Component {
     componentDidMount() {
-        // collect all the data at the start
-        this.props.getLocations();
-        this.props.getCourses();
+        if (!this.props.initialized) {
+            this.props.getLocations();
+            this.props.getCourses();
+            this.props.markAsInitialized();
+        }
+
         if (this.props.authenticated) {
             this.props.getUserProfileAndSetOpenSpotsData();
         }
@@ -60,6 +63,7 @@ function mapStateToProps(state) {
     return {
         authenticated: state.auth.authenticated,
         profile: state.scheduling.profile,
+        initialized: state.scheduling.shared.initialized,
     };
 }
 
@@ -67,4 +71,5 @@ export default connect(mapStateToProps, {
     getLocations,
     getCourses,
     getUserProfileAndSetOpenSpotsData,
+    markAsInitialized,
 })(SchedulingApp);

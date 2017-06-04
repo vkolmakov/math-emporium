@@ -7,9 +7,11 @@ import { courseComparator, locationComparator } from '../utils';
 import { SA_GET_LOCATIONS,
          SA_GET_COURSES,
          SA_SET_LOCATION,
-         SA_SET_COURSE } from './actions';
+         SA_SET_COURSE,
+         SA_INITIALIZE } from './actions';
 
 const INITIAL_STATE = {
+    initialized: false,
     locations: {
         selected: null,
         all: [],
@@ -24,6 +26,12 @@ const INITIAL_STATE = {
 const sharedReducer = (state = INITIAL_STATE, action) => {
     const { payload, type } = action;
     switch (type) {
+
+    case SA_INITIALIZE:
+        return {
+            ...state,
+            initialized: true,
+        };
 
     case SA_GET_LOCATIONS:
         return {
