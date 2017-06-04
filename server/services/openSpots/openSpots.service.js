@@ -265,10 +265,13 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
 
     const removeScheduledTutors = appointments => scheduleMap => {
         const compareTutorsByName = R.eqProps('name');
-        const appointmentToTutor = appointment =>
-              ({ name: predictTutorName(selectedTutorNames, appointment.tutor) }); // TODO: fix
+        const predictTutorFromAppointment = appointment =>
+              R.map(
+                  n => ({ name: n }),
+                  predictTutorName(selectedTutorNames, appointment.tutor));
 
-        const takenTutors = R.map(appointmentToTutor, appointments);
+        const takenTutors =
+              Either.rights(R.map(predictTutorFromAppointment, appointments));
         const scheduledTutors = scheduleMap.get(weekday).get(time);
         const availableTutors = R.differenceWith(
             compareTutorsByName, scheduledTutors, takenTutors);
