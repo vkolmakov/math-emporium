@@ -8,6 +8,7 @@ const VENDOR_LIBS = [
     'axios',
     'moment',
     'react',
+    'sanctuary',
     'react-datepicker',
     'react-dom',
     'react-modal',
