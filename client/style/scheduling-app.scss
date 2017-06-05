@@ -96,26 +96,19 @@
         }
     }
 
+    @include breakpoint($medium-screen) {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 0.5em;
+    }
 
-    $col-size: 3;
-    $num-cols: 9;
-    @include span($num-cols of $num-cols nest);
     > .weekday {
-        @include breakpoint($medium-screen) {
-            @include span($col-size of $num-cols);
-            &:nth-child(#{$col-size}n) {
-                @include span($col-size of $num-cols last);
-            }
-            display: table-cell;
-        }
-
         > p {
             text-align: center;
         }
 
         @mixin spot() {
             margin: 0.5em 0;
-            cursor: pointer;
             @include rounded-border();
 
             > span {
@@ -128,6 +121,7 @@
 
         > .open-spot {
             @include spot();
+            cursor: pointer;
             background-color: $primary-color;
 
             &:hover {
@@ -141,6 +135,7 @@
 
         > .closed-spot {
             @include spot();
+            cursor: not-allowed;
             background-color: $danger-color;
 
             > span {
@@ -150,6 +145,7 @@
 
         > .expired-spot {
             @include spot();
+            cursor: not-allowed;
             background-color: $tertiary-color;
 
             > span {
