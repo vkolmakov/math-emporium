@@ -53,12 +53,6 @@ body {
 
 
 .select-filter-wrap {
-    @include breakpoint($medium-screen) {
-        @include span(3 of 9 last);
-    }
-    margin: 0 auto;
-    padding: 0.5em 0;
-
     &.select-filter-error > select {
         border-color: $danger-color;
     }

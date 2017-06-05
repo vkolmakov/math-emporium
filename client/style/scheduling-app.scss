@@ -2,41 +2,48 @@
 @import "mixins";
 
 .show-schedule-controls {
-    > .select-filter-wrap {
-        @include breakpoint($medium-screen) {
-            @include span(3 of 9);
-            &:nth-child(3) {
-                @include span(3 of 9 last);
-            }
+    display: flex;
+    align-items: center;
 
-            margin: 0 auto;
-            padding: 0.5em 0;
-            input {
-                @include set-font();
-                @include box-sizing(border-box);
-                width: 100%;
-            }
+    flex-flow: column wrap;
+
+    @include breakpoint($medium-screen) {
+        flex-flow: row nowrap;
+
+        > div:not(:last-child) {
+            padding-right: 0.5em;
+        }
+    }
+
+    > .select-filter-wrap {
+        flex: 1;
+        padding-bottom: 0.5em;
+        width: 100%;
+
+        input {
+            padding: 0.5em;
+            @include set-font();
         }
     }
 
     > .dual-datepicker-wrap {
-        $datepicker-height: 36px;
+        flex: 1;
+        padding-bottom: 0.5em;
+        width: 100%;
 
-        @include breakpoint($medium-screen) {
-            @include span(3 of 9);
-        }
-        margin: 0 auto;
-        padding: 0.5em 0;
+        $datepicker-height: 34px;
 
         .react-datepicker__input-container {
             > input {
+                padding: 0.5em;
                 @include set-font();
+
                 @include box-sizing(border-box);
                 @include rounded-border();
                 width: 100%;
                 height: $datepicker-height;
                 font-size: 16px;
-                padding: 0.5em;
+
             }
 
             width: 50%;
