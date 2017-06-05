@@ -91,7 +91,7 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
 
 exports[`OpenSpots component renders a spinner if both location and course are selected, but openSpots is a Left of loading message 1`] = `
 <div
-  className="open-spots-display">
+  className="open-spots-message">
   <div
     className="loading" />
 </div>
@@ -99,7 +99,7 @@ exports[`OpenSpots component renders a spinner if both location and course are s
 
 exports[`OpenSpots component renders an appropriate error message if course is not selected but location is 1`] = `
 <div
-  className="open-spots-display">
+  className="open-spots-message">
   <h1>
     Select a Course
   </h1>
@@ -108,7 +108,7 @@ exports[`OpenSpots component renders an appropriate error message if course is n
 
 exports[`OpenSpots component renders an appropriate error message if location is missing 1`] = `
 <div
-  className="open-spots-display">
+  className="open-spots-message">
   <h1>
     Select a Location
   </h1>
@@ -117,7 +117,7 @@ exports[`OpenSpots component renders an appropriate error message if location is
 
 exports[`OpenSpots component renders an appropriate error message if location is missing 2`] = `
 <div
-  className="open-spots-display">
+  className="open-spots-message">
   <h1>
     Select a Location
   </h1>
@@ -126,7 +126,7 @@ exports[`OpenSpots component renders an appropriate error message if location is
 
 exports[`OpenSpots component renders an error message if both location and course are selected, but openSpots is a Left of any other message 1`] = `
 <div
-  className="open-spots-display">
+  className="open-spots-message">
   <h1>
     No ducks here.
   </h1>
