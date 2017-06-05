@@ -77,13 +77,16 @@
 }
 
 
-.open-spots-display {
+.open-spots-message {
+    @include breakpoint($medium-screen) {
+        margin: 15vh auto;
+    }
+
     > h1 {
         color: darken($tertiary-color, 32%);
         font-weight: 400;
 
         @include breakpoint($medium-screen) {
-            margin: 15vh auto;
             max-width: 20em;
             text-align: center;
         }
@@ -95,7 +98,9 @@
             margin: 15vh auto;
         }
     }
+}
 
+.open-spots-display {
     @include breakpoint($medium-screen) {
         display: grid;
         grid-template-columns: repeat(3, 1fr);

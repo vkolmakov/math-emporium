@@ -33,14 +33,19 @@ const OpenSpotsWrapper = content => (
         {content}
     </div>);
 
+const OpenSpotsMessageWrapper = content => (
+    <div className="open-spots-message">
+        {content}
+    </div>);
+
 
 export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, now, handlers }) => {
     if (!isLocationSelected) {
-        return OpenSpotsWrapper(<ErrorMessage message='Select a Location' />);
+        return OpenSpotsMessageWrapper(<ErrorMessage message='Select a Location' />);
     }
 
     if (!isCourseSelected) {
-        return OpenSpotsWrapper(<ErrorMessage message='Select a Course' />);
+        return OpenSpotsMessageWrapper(<ErrorMessage message='Select a Course' />);
     }
 
     const renderWeekday = ({ weekdayDisplay, openSpots }) => (
@@ -60,7 +65,7 @@ export default ({ openSpots, startDate, isLocationSelected, isCourseSelected, no
           : (<ErrorMessage message={msg} />);
 
     return Either.either(
-        S.compose(OpenSpotsWrapper, renderErrorMessage),
+        S.compose(OpenSpotsMessageWrapper, renderErrorMessage),
         S.compose(OpenSpotsWrapper, renderOpenSpots),
         openSpots);
 };
