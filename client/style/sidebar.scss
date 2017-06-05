@@ -10,6 +10,7 @@
     @include breakpoint($medium-screen) {
         @include span(3 of 12);
         height: 100vh;
+        border-bottom: none;
     }
 
     ul {
