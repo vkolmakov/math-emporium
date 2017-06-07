@@ -105,13 +105,12 @@ $gutter-size: 0.75em;
 }
 
 .open-spots-display {
-    @include breakpoint($medium-screen) {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: $gutter-size;
-    }
-
     > .weekday {
+        @include breakpoint($medium-screen) {
+            @include gallery(4 of 12);
+        }
+
+
         > p {
             text-align: center;
         }
