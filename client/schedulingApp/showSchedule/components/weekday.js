@@ -1,7 +1,30 @@
 import React from 'react';
 import moment from 'moment';
 
-const SingleOpenSpot = ({ startDate, openSpot, now, handlers }) => {
+function createAvailableOpenSpotContext(time, count, handlers) {
+    return {
+        openSpotText: `${time.format('hh:mm a')}: ${count} available`,
+        openSpotClass: 'open-spot',
+        openSpotHandler: handlers.available,
+    };
+}
+
+function createUnavailableOpenSpotContext(time, count, handlers) {
+    return {
+        openSpotText: `${time.format('hh:mm a')}: none available`,
+        openSpotClass: 'closed-spot',
+        openSpotHandler: handlers.closed,
+    };
+}
+
+function createExpiredOpenSpotContext(time, count, handlers) {
+    return {
+        openSpotText: `${time.format('hh:mm a')}: expired`,
+        openSpotClass: 'expired-spot',
+        openSpotHandler: handlers.expired,
+    };
+}
+
 const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) => {
     const count = openSpot.count;
 
@@ -17,11 +40,11 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
     const isExpired = now.isAfter(openSpotTime);
     const isAvailable = count > 0;
 
-    const openSpotText = `${openSpotTime.format('hh:mm a')}: ${isAvailable ? `${count} available` : 'none available'}`;
-    const [openSpotClass, openSpotHandler] =
-        isExpired
-            ? ['expired-spot', handlers.expired]
-            : isAvailable ? ['open-spot', handlers.available] : ['closed-spot', handlers.closed];
+    const { openSpotText, openSpotClass, openSpotHandler } = isExpired
+          ? createExpiredOpenSpotContext(startDate, count, handlers)
+          : isAvailable
+              ? createAvailableOpenSpotContext(startDate, count, handlers)
+              : createUnavailableOpenSpotContext(startDate, count, handlers);
 
     return (
         <button className={openSpotClass}
