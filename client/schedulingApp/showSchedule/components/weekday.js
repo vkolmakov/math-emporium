@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 const SingleOpenSpot = ({ startDate, openSpot, now, handlers }) => {
+const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) => {
     const count = openSpot.count;
 
     // Add an ((ISO weekday number of a current spot) - 1)
@@ -23,15 +24,24 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers }) => {
             : isAvailable ? ['open-spot', handlers.available] : ['closed-spot', handlers.closed];
 
     return (
-        <div className={openSpotClass}>
-            <span onClick={openSpotHandler(openSpotTime)}>{openSpotText}</span>
-        </div>
-    );
+        <button className={openSpotClass}
+                onClick={openSpotHandler(openSpotTime)}
+                name={`${weekdayDisplay}, ${openSpotText}`}
+                disabled={isExpired || !isAvailable}>
+            {openSpotText}
+        </button>);
 };
 
 export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
     <div className="weekday">
         <p>{weekdayDisplay}</p>
-        {openSpots.map(os => <SingleOpenSpot startDate={startDate} openSpot={os} now={now} key={os.time} handlers={handlers} />)}
+        {openSpots.map(
+            os => <SingleOpenSpot
+                          startDate={startDate}
+                          openSpot={os}
+                          now={now}
+                          key={os.time}
+                          handlers={handlers}
+                          weekdayDisplay={weekdayDisplay}/>)}
     </div>
 );
