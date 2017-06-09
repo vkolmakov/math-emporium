@@ -106,6 +106,9 @@ $gutter-size: 0.75em;
 
 .open-spots-display {
     > .weekday {
+        display: flex;
+        flex-flow: column nowrap;
+
         @include breakpoint($medium-screen) {
             @include gallery(4 of 12);
         }
@@ -116,28 +119,22 @@ $gutter-size: 0.75em;
         }
 
         @mixin spot() {
-            margin: 0.5em 0;
             @include rounded-border();
-
-            > span {
-                display: block;
-                text-align: center;
-                text-decoration: none;
-                padding: 0.5em;
-            }
+            text-align: center;
+            text-decoration: none;
+            padding: 0.5em;
+            margin-bottom: 0.5em;
+            font-size: 16px;
         }
 
         > .open-spot {
             @include spot();
             cursor: pointer;
             background-color: $primary-color;
+            color: $primary-text-color;
 
-            &:hover {
-                background-color: darken($primary-color, 5%);
-            }
-
-            > span {
-                color: $primary-text-color;
+            &:hover,&:focus {
+                background-color: darken($primary-color, 15%);
             }
         }
 
@@ -145,20 +142,14 @@ $gutter-size: 0.75em;
             @include spot();
             cursor: not-allowed;
             background-color: $danger-color;
-
-            > span {
-                color: $danger-text-color;
-            }
+            color: $danger-text-color;
         }
 
         > .expired-spot {
             @include spot();
             cursor: not-allowed;
             background-color: $tertiary-color;
-
-            > span {
-                color: lighten($primary-text-color, 64%);
-            }
+            color: lighten($primary-text-color, 64%);
         }
     }
 }
