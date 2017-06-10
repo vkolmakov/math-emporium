@@ -1,9 +1,5 @@
 import eventStorage from '../services/eventStorage';
-
-export const events = {
-    USER_CREATED_APPOINTMENT: 1,
-    USER_REMOVED_APPOINTMENT: 2,
-};
+import { events } from '../aux';
 
 function getAdditionalData(eventType, requestBody) {
     switch (eventType) {

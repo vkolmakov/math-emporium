@@ -13,6 +13,9 @@ export const AUTH_GROUPS = {
     employee: 2,
     employer: 3,
     admin: 4,
+export const events = {
+    USER_CREATED_APPOINTMENT: 1,
+    USER_REMOVED_APPOINTMENT: 2,
 };
 
 export const isObject = (obj) => obj === Object(obj);

@@ -1,8 +1,8 @@
 import express from 'express';
 
 import requireGroup from '../middleware/requireGroup';
-import { logEvent, events } from '../middleware/eventLogger';
-import { AUTH_GROUPS } from '../aux';
+import { logEvent } from '../middleware/eventLogger';
+import { authGroups, events } from '../aux';
 
 export default function createUserRouter() {
     const controller = require('../users/users.controller');
