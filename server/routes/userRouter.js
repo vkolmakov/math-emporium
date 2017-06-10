@@ -1,7 +1,7 @@
 import express from 'express';
 
 import requireGroup from '../middleware/requireGroup';
-import { logEvent } from '../middleware/eventLogger';
+import logEvent from '../middleware/logEvent';
 import { authGroups, events } from '../aux';
 
 export default function createUserRouter() {

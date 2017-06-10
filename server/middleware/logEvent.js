@@ -23,7 +23,7 @@ function getAdditionalData(eventType, requestBody) {
     }
 }
 
-export function logEvent(type) {
+export default function logEvent(type) {
     return (req, res, next) => {
         const { user } = req;
 
