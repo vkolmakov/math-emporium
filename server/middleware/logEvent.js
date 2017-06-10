@@ -16,6 +16,7 @@ function getAdditionalData(eventType, requestBody) {
                 id: location.id,
             },
         };
+    case events.USER_SIGNED_IN:
     case events.USER_REMOVED_APPOINTMENT:
         return {};
     default:

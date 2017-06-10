@@ -18,6 +18,7 @@ export const authGroups = {
 export const events = {
     USER_CREATED_APPOINTMENT: 1,
     USER_REMOVED_APPOINTMENT: 2,
+    USER_SIGNED_IN: 3,
 };
 
 export const isObject = (obj) => obj === Object(obj);

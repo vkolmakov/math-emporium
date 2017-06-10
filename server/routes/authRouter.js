@@ -3,7 +3,8 @@ import express from 'express';
 import passport from 'passport';
 import passportService from '../services/passport';
 import requireGroup from '../middleware/requireGroup';
-import { authGroups } from '../aux';
+import logEvent from '../middleware/logEvent';
+import { authGroups, events } from '../aux';
 
 function requireSignin() {
     const oauthOptions = {
@@ -25,6 +26,7 @@ export default function createAuthRouter() {
 
     router.post('/auth/record-signin',
                 requireGroup(authGroups.USER),
+                logEvent(events.USER_SIGNED_IN),
                 controller.recordSignin);
 
     return router;
