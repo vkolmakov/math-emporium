@@ -27,7 +27,7 @@ nav {
 
         font-size: 1.2em;
 
-        &:hover {
+        &:hover,&:focus {
             background: $primary-color;
             font-weight: bold;
         }

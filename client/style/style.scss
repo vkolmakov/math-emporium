@@ -197,7 +197,7 @@ body {
 
                 padding: 0.2em;
                 color: black;
-                &:hover {
+                &:hover,&:focus {
                     color: $primary-color;
                     text-decoration: underline;
                 }

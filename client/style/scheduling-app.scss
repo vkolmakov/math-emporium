@@ -65,7 +65,7 @@ $gutter-size: 0.75em;
 .react-datepicker__day--in-range {
     background-color: $primary-color;
     color: black;
-    &:hover {
+    &:hover,&:focus {
         background-color: darken($primary-color, 15%);
     }
 }
@@ -75,7 +75,7 @@ $gutter-size: 0.75em;
 }
 
 .react-datepicker__week {
-    &:hover {
+    &:hover,&:focus {
         background-color: darken($tertiary-color, 4%);
     }
 }
