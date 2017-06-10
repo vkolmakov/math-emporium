@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { calendarService } from '../services/googleApis';
-import { TIMEZONE, AUTH_GROUPS,
+import { TIMEZONE, authGroups,
          TIMESTAMP_VISIBLE_FORMAT, APPOINTMENT_LENGTH } from '../aux';
 import * as email from '../services/email';
 
@@ -22,7 +22,7 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         group: {
             type: DataTypes.INTEGER,
-            defaultValue: AUTH_GROUPS.user,
+            defaultValue: authGroups.USER,
         },
         googleCalendarAppointmentId: {
             type: DataTypes.STRING,

@@ -9,18 +9,18 @@ export default function createUserRouter() {
     const router = express.Router();
 
     router.get('/user/profile',
-               requireGroup(AUTH_GROUPS.user),
+               requireGroup(authGroups.USER),
                controller.getProfile);
     router.put('/user/profile',
-               requireGroup(AUTH_GROUPS.user),
+               requireGroup(authGroups.USER),
                controller.updateProfile);
 
     router.post('/user/appointment',
-                requireGroup(AUTH_GROUPS.user),
+                requireGroup(authGroups.USER),
                 logEvent(events.USER_CREATED_APPOINTMENT),
                 controller.scheduleAppointment);
     router.delete('/user/appointment',
-                  requireGroup(AUTH_GROUPS.user),
+                  requireGroup(authGroups.USER),
                   logEvent(events.USER_REMOVED_APPOINTMENT),
                   controller.deleteAppointment);
 

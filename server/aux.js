@@ -8,11 +8,13 @@ export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
 export const TIMEZONE = 'US/Central';
 export const APPOINTMENT_LENGTH = 60; // in minutes
 
-export const AUTH_GROUPS = {
-    user: 1,
-    employee: 2,
-    employer: 3,
-    admin: 4,
+export const authGroups = {
+    USER: 1,
+    EMPLOYEE: 2,
+    EMPLOYER: 3,
+    ADMIN: 4,
+};
+
 export const events = {
     USER_CREATED_APPOINTMENT: 1,
     USER_REMOVED_APPOINTMENT: 2,
