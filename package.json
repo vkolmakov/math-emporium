@@ -54,6 +54,7 @@
     "memory-cache": "^0.1.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.4",
+    "mongoose": "^4.10.5",
     "morgan": "^1.7.0",
     "node-sass": "^3.7.0",
     "passport": "^0.3.2",

@@ -12,6 +12,8 @@ import createUtilRouter from './routes/utilRouter';
 import createUserRouter from './routes/userRouter';
 import createManageUserRouter from './routes/manageUserRouter';
 
+import { connectToEventStorage } from './services/eventStorage';
+
 import webpack from 'webpack';
 import webpackConfig from '../webpack.config';
 import morgan from 'morgan';
@@ -19,7 +21,7 @@ import morgan from 'morgan';
 import config from './config';
 
 
-function connect() {
+function connectToMainDatabase() {
     db.discover = path.join(__dirname);
     db.matcher = (file) => !!file.match(/.+\.model\.js/);
 
@@ -37,11 +39,21 @@ function connect() {
                       });
 }
 
+function connectToEventStorageDatabase() {
+    return connectToEventStorage('mongodb://localhost/mathcenterapp_events_dev');
+}
+
 (async () => {
     try {
-        await connect();
+        await connectToMainDatabase();
     } catch (err) {
-        console.log(`Could not connect to the database: ${err}`);
+        console.error(`Could not connect to the main database: ${err}`);
+    }
+
+    try {
+        await connectToEventStorageDatabase();
+    } catch (err) {
+        console.error(`Could not connect to the event storage database: ${err}`);
     }
 
     const app = express();
