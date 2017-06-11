@@ -24,4 +24,9 @@ export default {
         CLIENT_ID: process.env.AZURE_CLIENT_ID,
         CALLBACK: process.env.AZURE_CALLBACK,
     },
+    eventStorage: {
+        URL: process.env.EVENTSTORAGE_URL || 'mongodb://localhost/mathcenterapp_eventstorage_dev',
+        USER: process.env.EVENTSTORAGE_USER || null,
+        PASSWORD: process.env.EVENTSTORAGE_PASSWORD || null,
+    },
 };

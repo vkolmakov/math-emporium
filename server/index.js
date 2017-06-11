@@ -40,7 +40,10 @@ function connectToMainDatabase() {
 }
 
 function connectToEventStorageDatabase() {
-    return connectToEventStorage('mongodb://localhost/mathcenterapp_events_dev');
+    return connectToEventStorage(config.eventStorage.URL, {
+        user: config.eventStorage.USER,
+        password: config.eventStorage.PASSWORD,
+    });
 }
 
 (async () => {

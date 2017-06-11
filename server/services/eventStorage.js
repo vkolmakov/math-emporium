@@ -15,8 +15,13 @@ function saveEvent(event) {
 }
 
 export function connectToEventStorage(url, options) {
+    const { user, password } = options;
+
     mongoose.Promise = global.Promise;
-    return mongoose.connect(url, options);
+    return mongoose.connect(url, {
+        user,
+        pass: password,
+    });
 }
 
 export default {
