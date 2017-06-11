@@ -6,33 +6,33 @@ exports[`OpenSpots component applies correct classes to empty and expired spots 
     <p>
       Mon, 01/02
     </p>
-    <div
-      className="expired-spot">
-      <span
-        onClick={[Function]}>
-        09:00 am: 2 available
-      </span>
-    </div>
-    <div
-      className="expired-spot">
-      <span
-        onClick={[Function]}>
-        10:00 am: none available
-      </span>
-    </div>
+    <button
+      className="expired-spot"
+      disabled={true}
+      name="Mon, 01/02, 09:00 am: expired"
+      onClick={[Function]}>
+      09:00 am: expired
+    </button>
+    <button
+      className="expired-spot"
+      disabled={true}
+      name="Mon, 01/02, 10:00 am: expired"
+      onClick={[Function]}>
+      10:00 am: expired
+    </button>
   </div>
   <div
     className="weekday">
     <p>
       Tue, 01/03
     </p>
-    <div
-      className="closed-spot">
-      <span
-        onClick={[Function]}>
-        10:00 am: none available
-      </span>
-    </div>
+    <button
+      className="closed-spot"
+      disabled={true}
+      name="Tue, 01/03, 10:00 am: none available"
+      onClick={[Function]}>
+      10:00 am: none available
+    </button>
   </div>
 </div>
 `;
@@ -45,46 +45,46 @@ exports[`OpenSpots component correctly partitions and renders open spots 1`] = `
     <p>
       Tue, 01/03
     </p>
-    <div
-      className="open-spot">
-      <span
-        onClick={[Function]}>
-        10:00 am: 2 available
-      </span>
-    </div>
+    <button
+      className="open-spot"
+      disabled={false}
+      name="Tue, 01/03, 10:00 am: 2 available"
+      onClick={[Function]}>
+      10:00 am: 2 available
+    </button>
   </div>
   <div
     className="weekday">
     <p>
       Wed, 01/04
     </p>
-    <div
-      className="open-spot">
-      <span
-        onClick={[Function]}>
-        09:00 am: 2 available
-      </span>
-    </div>
+    <button
+      className="open-spot"
+      disabled={false}
+      name="Wed, 01/04, 09:00 am: 2 available"
+      onClick={[Function]}>
+      09:00 am: 2 available
+    </button>
   </div>
   <div
     className="weekday">
     <p>
       Thu, 01/05
     </p>
-    <div
-      className="open-spot">
-      <span
-        onClick={[Function]}>
-        10:00 am: 1 available
-      </span>
-    </div>
-    <div
-      className="open-spot">
-      <span
-        onClick={[Function]}>
-        11:00 am: 5 available
-      </span>
-    </div>
+    <button
+      className="open-spot"
+      disabled={false}
+      name="Thu, 01/05, 10:00 am: 1 available"
+      onClick={[Function]}>
+      10:00 am: 1 available
+    </button>
+    <button
+      className="open-spot"
+      disabled={false}
+      name="Thu, 01/05, 11:00 am: 5 available"
+      onClick={[Function]}>
+      11:00 am: 5 available
+    </button>
   </div>
 </div>
 `;

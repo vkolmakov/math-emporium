@@ -27,7 +27,6 @@ function createExpiredOpenSpotContext(time, count, handlers) {
 
 const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) => {
     const count = openSpot.count;
-
     // Add an ((ISO weekday number of a current spot) - 1)
     // to the start date (which has an ISO date of 1)
     // to get the actual weekday and just add a number of minutes
@@ -41,10 +40,10 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
     const isAvailable = count > 0;
 
     const { openSpotText, openSpotClass, openSpotHandler } = isExpired
-          ? createExpiredOpenSpotContext(startDate, count, handlers)
+          ? createExpiredOpenSpotContext(openSpotTime, count, handlers)
           : isAvailable
-              ? createAvailableOpenSpotContext(startDate, count, handlers)
-              : createUnavailableOpenSpotContext(startDate, count, handlers);
+              ? createAvailableOpenSpotContext(openSpotTime, count, handlers)
+              : createUnavailableOpenSpotContext(openSpotTime, count, handlers);
 
     return (
         <button className={openSpotClass}
