@@ -28,4 +28,7 @@ export default {
     save(event) {
         return saveEvent(event);
     },
+    getAll() {
+        return Event.find({});
+    },
 };

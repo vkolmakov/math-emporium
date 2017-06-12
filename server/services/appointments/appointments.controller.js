@@ -4,7 +4,7 @@ import { getAppointments } from './appointments.service';
 import { TIMEZONE, TIMESTAMP_FORMAT } from '../../aux';
 
 
-export const handleGetAppointments = async (req, res, next) => {
+export async function handleGetAppointments(req, res, next) {
     moment.tz.setDefault(TIMEZONE);
 
     const locationId = parseInt(req.query.locationId, 10);
@@ -18,8 +18,7 @@ export const handleGetAppointments = async (req, res, next) => {
             endDate,
         });
         res.status(200).json(data);
-    } catch(err) {
+    } catch (err) {
         next(err);
     }
-
-};
+}

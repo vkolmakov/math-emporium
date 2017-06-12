@@ -5,6 +5,8 @@ import { authGroups } from '../aux';
 import { handleGetOpenSpots, handleGetAvailableTutors } from '../services/openSpots/openSpots.controller';
 import { handleGetAppointments } from '../services/appointments/appointments.controller';
 import { handleGetChromeExtensionData } from '../services/chromeExtensionData/chromeExtensionData.controller';
+import { handleGetAllEvents } from '../services/events/events.controller';
+
 
 export default function createUtilRouter() {
     const router = express.Router();
@@ -20,6 +22,10 @@ export default function createUtilRouter() {
     router.get('/chrome-extension-data',
                requireGroup(authGroups.EMPLOYER),
                handleGetChromeExtensionData);
+
+    router.get('/events',
+               requireGroup(authGroups.EMPLOYER),
+               handleGetAllEvents);
 
     return router;
 }
