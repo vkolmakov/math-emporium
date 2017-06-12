@@ -9,26 +9,22 @@ $gutter-size: 0.75em;
 
     flex-flow: column wrap;
 
-    > div:not(:last-child) {
-        padding: 0 0 $gutter-size 0;
+    > *:not(:last-child) {
+        margin: 0 0 $gutter-size 0;
     }
 
     @include breakpoint($medium-screen) {
         flex-flow: row nowrap;
 
-        > div:not(:last-child) {
-            padding: 0 $gutter-size 0 0;
+        > *:not(:last-child) {
+            margin: 0 $gutter-size 0 0;
         }
     }
 
-    > .select-filter-wrap {
+    select {
+        @include input;
         flex: 1;
         width: 100%;
-
-        input {
-            padding: 0.5em;
-            @include set-font();
-        }
     }
 
     > .dual-datepicker-wrap {
@@ -39,15 +35,7 @@ $gutter-size: 0.75em;
 
         .react-datepicker__input-container {
             > input {
-                padding: 0.5em;
-                @include set-font();
-
-                @include box-sizing(border-box);
-                @include rounded-border();
-                width: 100%;
-                height: $datepicker-height;
-                font-size: 16px;
-
+                @include input;
             }
 
             width: 50%;
