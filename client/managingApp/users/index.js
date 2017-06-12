@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { selectTransformOptions } from '../../editingApp/utils';
-import { BASE_PATH, AUTH_GROUPS_OPTIONS, ACTIVE_OPTIONS } from '../constants';
+import { BASE_PATH, AUTH_GROUPS_OPTIONS } from '../constants';
 import { getUsers } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
@@ -56,10 +56,6 @@ class ManageUsers extends Component {
             {
                 dataKey: 'email',
                 label: 'email',
-            }, {
-                dataKey: 'active',
-                label: 'active',
-                mapValuesToLabels: ACTIVE_OPTIONS,
             }, {
                 dataKey: 'group',
                 label: 'group',

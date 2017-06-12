@@ -15,10 +15,9 @@ export function getUsers() {
 }
 
 export function updateUser(id, data) {
-    const { active, email, group } = data;
+    const { email, group } = data;
 
     const requestData = {
-        active: JSON.parse(data.active),
         email,
         group,
     };

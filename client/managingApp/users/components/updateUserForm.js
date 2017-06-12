@@ -3,13 +3,13 @@ import { reduxForm, initialize } from 'redux-form';
 
 
 import { selectTransformOptions } from '../../../editingApp/utils';
-import { AUTH_GROUPS_OPTIONS, ACTIVE_OPTIONS } from '../../constants';
+import { AUTH_GROUPS_OPTIONS } from '../../constants';
 import { getUsers, updateUser } from '../actions';
 
 import Form from '../../../components/form/index';
 
 const FORM_NAME = 'UpdateUserForm';
-const FORM_FIELDS = ['email', 'active', 'group'];
+const FORM_FIELDS = ['email', 'group'];
 
 class UpdateUserForm extends Component {
     constructor() {
@@ -20,19 +20,17 @@ class UpdateUserForm extends Component {
     }
 
     componentDidMount() {
-        const { email, active, group } = this.props.selectedUser;
+        const { email, group } = this.props.selectedUser;
 
         this.props.dispatch(initialize(FORM_NAME, {
             email,
-            active,
             group,
         }, FORM_FIELDS));
     }
 
     render() {
-        const { email, active, group } = this.props.fields;
+        const { email, group } = this.props.fields;
 
-        const activeOptions = selectTransformOptions('value', 'display')(ACTIVE_OPTIONS);
         const groupOptions = selectTransformOptions('value', 'display')(AUTH_GROUPS_OPTIONS);
 
         const onSubmit = (data) => {
@@ -59,13 +57,6 @@ class UpdateUserForm extends Component {
                 input: {
                     type: 'email',
                     binding: email,
-                },
-            }, {
-                label: 'active',
-                input: {
-                    type: 'select',
-                    binding: active,
-                    options: activeOptions,
                 },
             }, {
                 label: 'access group',
@@ -98,7 +89,6 @@ function validate(values) {
 
     const required = {
         email: 'Must have an email',
-        active: 'Must select one status',
         group: 'Must select one group',
     };
 

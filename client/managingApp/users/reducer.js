@@ -10,8 +10,7 @@ export default (state = INITIAL_STATE, action) => {
     case GET_USERS:
         return {
             ...state,
-            // stringify booleans so react-select will accept them
-            all: payload.data.map(user => ({ ...user, active: JSON.stringify(user.active) })),
+            all: payload.data,
         };
     default:
         return state;
