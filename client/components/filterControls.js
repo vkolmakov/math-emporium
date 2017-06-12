@@ -23,13 +23,12 @@ export default ({ options, currentValue, onChange, placeholder, error }) => {
 
         return result.join(' ');
     };
-
+        // <div className={createClassName(error, currentValue)}>
     return (
-        <div className={createClassName(error, currentValue)}>
-            <select value={currentValue || 0} onChange={(event) => handleChange(options, event)(onChange)}>
-                <option value={0} disabled>{placeholder}</option>
-                {options.map(({ value, label }) => (<option value={value} key={value}>{label}</option>))}
-            </select>
-        </div>
-    );
+        <select value={currentValue || 0}
+                className={createClassName(error, currentValue)}
+                onChange={(event) => handleChange(options, event)(onChange)}>
+            <option value={0} disabled>{placeholder}</option>
+            {options.map(({ value, label }) => (<option value={value} key={value}>{label}</option>))}
+        </select>);
 };
