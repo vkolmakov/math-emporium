@@ -56,22 +56,31 @@
     }
 
     > .buttons-input-group-wrap {
+        @mixin modal-button-border {
+            padding: 10px;
+            &:hover,&:focus {
+                padding: 9px;
+                @include rounded-border-enlarge;
+            }
+        }
+
         @include input-group-wrap();
         margin: 0.5em 0;
         justify-content: space-between;
         > button {
-            @include button();
-            @include modal-controls-font-size();
+            @include button;
+            @include modal-controls-font-size;
+            @include modal-button-border;
             padding: 10px;
             width: 7.5em;
-            font-weight: bold;
 
             &.destructive {
-                @include destructive()
+                @include destructive;
+
             }
 
             &.nondestructive {
-                @include nondestructive()
+                @include nondestructive;
             }
         }
     }
@@ -91,27 +100,25 @@
 }
 
 .scheduling-modal {
-    @include base-modal();
+    @include base-modal;
 
     > .select-input-group-wrap {
-        @include input-group-wrap();
+        @include input-group-wrap;
+
         > label {
             padding-right: 0.75em;
             flex: 1;
         }
 
-
-        > div.select-filter-wrap {
+        > select {
+            @include input;
             margin: 0;
             flex: 2;
-            > select {
-                @include modal-controls-font-size();
-            }
         }
     }
 
     > .textarea-input-group-wrap {
-        @include input-group-wrap();
+        @include input-group-wrap;
         > label {
             padding-right: 0.75em;
             flex: 1;

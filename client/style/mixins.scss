@@ -6,6 +6,11 @@
     border: 1px solid #ccc;
 }
 
+@mixin rounded-border-enlarge {
+    @include border-radius (5px);
+    border: 2px solid #ccc;
+}
+
 @mixin set-font {
     font-family: $font-family;
     -webkit-font-smoothing: antialiased;
@@ -18,7 +23,7 @@
 
 @mixin input {
     @include box-sizing(border-box);
-    @include rounded-border();
+    @include rounded-border;
     @include set-font();
     background-color: white;
     padding: 0 0.5em;
@@ -27,7 +32,7 @@
     width: 100%;
 }
 
-@mixin button() {
+@mixin button {
     @include url();
     @include rounded-border();
     cursor: pointer;
@@ -37,11 +42,19 @@
 @mixin destructive {
     background-color: $danger-color;
     color: $danger-text-color;
+
+    &:hover,&:focus {
+        background-color: darken($danger-color, 15%);
+    }
 }
 
 @mixin nondestructive {
     background-color: $primary-color;
     color: $primary-text-color;
+
+    &:hover,&:focus {
+        background-color: darken($primary-color, 15%);
+    }
 }
 
 @mixin set-react-select-selection-area-size($size) {

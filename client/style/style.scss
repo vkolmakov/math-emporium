@@ -52,35 +52,21 @@ body {
 }
 
 
-.select-filter-wrap {
-    &.select-filter-error > select {
-        border-color: $danger-color;
-    }
-
-    &.select-filter-empty > select {
-        color: #aaa;
-    }
-
-    &.select-filter-error .Select-arrow {
-        border-color: $danger-color transparent transparent;
-        color: $danger-color;
-    }
-
-    select {
-        @include box-sizing(border-box);
-        @include rounded-border();
-        @include set-font();
-        background-color: white;
-        padding: 0 0.5em;
-        font-size: 16px;
-        height:34px;
-        width: 100%;
-    }
+select.select-filter-error {
+    @include rounded-border-enlarge;
+    border-color: $danger-color;
 }
 
+select.select-filter-empty {
+    color: #aaa;
+}
+
+select {
+    @include input;
+}
 
 .clearfix {
-    @include clearfix();
+    @include clearfix;
 }
 
 
