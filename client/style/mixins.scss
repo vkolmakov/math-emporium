@@ -44,7 +44,7 @@
     color: $danger-text-color;
 
     &:hover,&:focus {
-        background-color: darken($danger-color, 15%);
+        background-color: darken($danger-color, 10%);
     }
 }
 
@@ -53,7 +53,7 @@
     color: $primary-text-color;
 
     &:hover,&:focus {
-        background-color: darken($primary-color, 15%);
+        background-color: darken($primary-color, 10%);
     }
 }
 

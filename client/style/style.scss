@@ -312,18 +312,11 @@ select {
         }
         
         a {
-            @include border-radius (5px);
-            display: inline-block;
-            text-align: center;
-            text-decoration: none;
-            border: 1px solid $hero-font-color;
-            padding: 14px;
-
-            opacity: 0.98;
-
-            color: black;
+            @include button;
+            @include nondestructive;
             @include text-shadow(black 0 0 0);
-            background-color: $primary-color;
+            display: inline-block;
+            padding: 14px;
         }
     }
 }
