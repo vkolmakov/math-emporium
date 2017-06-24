@@ -9,6 +9,7 @@
 @import "modal";
 @import "nav";
 @import "sidebar";
+@import "managing-app";
 
 $susy: (
     colums: 12,
@@ -231,14 +232,6 @@ select {
             @include clearfix();
         }
     }
-}
-
-.content-nav {
-    h2 {
-        padding: 0.5em 0;
-        display: inline-block;
-    }
-    display: block;
 }
 
 .container{

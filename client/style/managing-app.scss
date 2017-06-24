@@ -1,0 +1,32 @@
+@import "variables";
+@import "mixins";
+
+.content-nav {
+    $gutter-size: 0.75em;
+    margin-bottom: 0.5em;
+
+    display: flex;
+
+    flex-flow: column wrap;
+
+    @include breakpoint($medium-screen) {
+        flex-flow: row nowrap;
+
+        > *:not(:last-child):not(:first-child) {
+            margin: 0 $gutter-size 0 0;
+        }
+    }
+
+    > *:first-child {
+        margin-right: auto;
+    }
+
+    > select {
+        @include input;
+        flex: 1;
+        width: 100%;
+        @include breakpoint($medium-screen) {
+            max-width: 200px;
+        }
+    }
+}
