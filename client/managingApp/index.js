@@ -10,6 +10,7 @@ class ManagingApp extends Component {
 
         const links = [
             ['users', 'Users'],
+            ['events', 'Events'],
         ];
 
         const sidebarConfig = {
