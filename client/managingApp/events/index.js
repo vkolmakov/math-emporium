@@ -2,21 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { selectTransformOptions } from '../../editingApp/utils';
+import { EVENT_TYPES_OPTIONS } from '../constants';
 import { getEvents } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
 import FilterControls from '../../components/filterControls';
 
-const EVENT_TYPES = {
-    'create appointment': 1,
-    'remove appointment': 2,
-    'sign in': 3,
-};
-
-const EVENT_TYPES_OPTIONS =
-      Object.keys(EVENT_TYPES).map(
-          display => ({ value: EVENT_TYPES[display], display }));
 
 class ManageEvents extends Component {
     constructor() {

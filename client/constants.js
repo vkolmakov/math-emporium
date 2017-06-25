@@ -33,6 +33,12 @@ export const AUTH_GROUPS = {
     admin: 4,
 };
 
+export const EVENT_TYPES = {
+    CREATE_APPOINTMENT: 1,
+    REMOVE_APPOINTMENT: 2,
+    SIGN_IN: 3,
+};
+
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_DISPLAY_FORMAT = 'dddd, M/DD [at] h:mma';
 export const USER_EMAIL_REGEX = /.+@(?:student.)?ccc\.edu$/;
