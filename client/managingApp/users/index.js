@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 import { BASE_PATH, AUTH_GROUPS_OPTIONS } from '../constants';
-import { getUsers } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
@@ -15,10 +14,6 @@ class ManageUsers extends Component {
         this.state = {
             selectedGroup: null,
         };
-    }
-
-    componentWillMount() {
-        this.props.getUsers();
     }
 
     setSelectedGroup(groupOption) {
@@ -98,4 +93,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { getUsers })(ManageUsers);
+export default connect(mapStateToProps)(ManageUsers);

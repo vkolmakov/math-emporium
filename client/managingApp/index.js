@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Sidebar from '../components/sidebar/index';
 import { BASE_PATH } from './constants';
 
+import { getUsers } from './users/actions';
+import { getEvents } from './events/actions';
+
 class ManagingApp extends Component {
+    componentWillMount() {
+        this.props.getUsers();
+        this.props.getEvents();
+    }
+
     render() {
         const currPath = this.props.location.pathname;
         const selected = currPath.split('/').pop();
@@ -36,4 +45,5 @@ class ManagingApp extends Component {
     }
 }
 
-export default ManagingApp;
+export default connect(null, {
+    getUsers, getEvents })(ManagingApp);

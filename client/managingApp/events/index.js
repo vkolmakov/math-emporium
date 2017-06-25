@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import { selectTransformOptions } from '../../editingApp/utils';
 import { EVENT_TYPES_OPTIONS } from '../constants';
-import { getEvents } from './actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
@@ -16,10 +15,6 @@ class ManageEvents extends Component {
         this.state = {
             selectedEventType: null,
         };
-    }
-
-    componentWillMount() {
-        this.props.getEvents();
     }
 
     setSelectedEventType(eventTypeOption) {
@@ -101,6 +96,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, {
-    getEvents,
-})(ManageEvents);
+export default connect(mapStateToProps)(ManageEvents);
