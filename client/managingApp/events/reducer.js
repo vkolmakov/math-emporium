@@ -24,4 +24,6 @@ export default (state = INITIAL_STATE, action) => {
             all: payload.data.map(processEvent),
         };
     }
-}
+
+    return state;
+};
