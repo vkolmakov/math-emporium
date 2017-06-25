@@ -31,7 +31,13 @@ class ManageEvents extends Component {
     }
 
     setSelectedEventType(eventTypeOption) {
-        console.log('setting to', eventTypeOption);
+        if (eventTypeOption) {
+            const selectedEventType = EVENT_TYPES_OPTIONS.find(
+                (g) => g.value === eventTypeOption.value);
+            this.setState({ selectedEventType });
+        } else {
+            this.setState({ selectedEventType: null });
+        }
     }
 
     render() {
@@ -48,7 +54,7 @@ class ManageEvents extends Component {
         if (this.state.selectedEventType) {
             const { selectedEventType } = this.state;
             const filteredEvents = events.all.filter(
-                u => u.group === selectedEventType.value);
+                e => e.type === selectedEventType.value);
 
             events = {
                 ...events,
@@ -80,6 +86,8 @@ class ManageEvents extends Component {
                 <div className="content-nav">
                     <h2>Events</h2>
                     <FilterControls options={eventTypeOptions}
+                                    currentValue={this.state.selectedEventType ? this.state.selectedEventType.value : null}
+                                    onChange={this.setSelectedEventType.bind(this)}
                                     placeholder={'Filter by event type...'} />
                 </div>
 
