@@ -166,16 +166,30 @@ select {
             border: none;
             @include breakpoint($medium-screen) {
                 width: 50px;
+                text-align: center;
             }
 
-            a {
+            &.action-confirmation-required {
+                font-weight: bold;
+                @include rounded-border;
+                background-color: $tertiary-color;
+                .action-text {
+                    color: $danger-color;
+                    &:hover,&:focus {
+                        color: $danger-color;
+                    }
+                }
+            }
+
+            .action-text {
                 @include set-font();
                 @include url();
 
                 padding: 0.2em;
                 color: black;
+                cursor: pointer;
                 &:hover,&:focus {
-                    color: $primary-color;
+                    color: darken($primary-color, 50%);
                     text-decoration: underline;
                 }
             }
