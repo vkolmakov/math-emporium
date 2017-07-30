@@ -184,6 +184,9 @@ select {
             .action-text {
                 @include set-font();
                 @include url();
+                font-size: 1em;
+                border: none;
+                background-color: transparent;
 
                 padding: 0.2em;
                 color: black;

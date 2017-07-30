@@ -24,19 +24,25 @@ export default class TableAction extends Component {
 
         let LinkElem;
 
+        const restoreFocusIfRequestedConfirmation =
+              (elem) => { if (elem && action.requestConfirmation && this.state.isConfirmed) elem.focus(); };
+
         if (action.requestConfirmation && !this.state.isConfirmed) {
             // wait until next click before performing the action
             onClick = () => this.setState({ isConfirmed: true });
             LinkElem = () => (
-                <span className="action-text">
+                <button className="action-text">
                     {label}
-                </span>);
+                </button>);
         } else if (typeof action.action === 'string') {
             // got a URL
             url = `${action.action}/${param}`;
             onClick = () => {};
             LinkElem = () => (
-                <Link to={url} className="action-text">
+                <Link
+                    ref={restoreFocusIfRequestedConfirmation}
+                    to={url}
+                    className="action-text">
                     {label}
                 </Link>);
         } else if (typeof action.action === 'function') {
@@ -45,9 +51,11 @@ export default class TableAction extends Component {
                 action.action.call(null, param);
             };
             LinkElem = () => (
-                <span className="action-text">
+                <button
+                    ref={restoreFocusIfRequestedConfirmation}
+                    className="action-text">
                     {label}
-                </span>);
+                </button>);
         }
 
         return (
