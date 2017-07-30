@@ -45,11 +45,14 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
               ? createAvailableOpenSpotContext(openSpotTime, count, handlers)
               : createUnavailableOpenSpotContext(openSpotTime, count, handlers);
 
+    const isInactive = isExpired || !isAvailable;
+
     return (
         <button className={openSpotClass}
                 onClick={openSpotHandler(openSpotTime)}
                 aria-label={`${openSpotText}, ${weekdayDisplay}`}
-                disabled={isExpired || !isAvailable}>
+                aria-hidden={isInactive}
+                disabled={isInactive}>
             {openSpotText}
         </button>);
 };
