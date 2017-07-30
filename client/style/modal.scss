@@ -111,8 +111,10 @@
         > textarea {
             @include rounded-border();
             @include modal-controls-font-size();
-            padding: 0.5em 0;
+            padding: 0.5em;
             margin: 0;
+
+            resize: none;
         }
     }
 }
