@@ -5,6 +5,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 
 import FilterControls from '../../components/filterControls';
+import MainContentWrap from '../../components/mainContentWrap';
 import OpenSpots from './components/openSpots';
 
 import TutorSelectionModal from './components/tutorSelectionModal';
@@ -191,7 +192,7 @@ class ShowSchedule extends Component {
             : () => (<span />);
 
         return (
-            <div className="content">
+            <MainContentWrap>
 
                 <div className="show-schedule-controls">
 
@@ -240,7 +241,7 @@ class ShowSchedule extends Component {
                          handlers={openSpotHandlers} />
 
               <MaybeModal />
-            </div>
+            </MainContentWrap>
         );
     }
 }

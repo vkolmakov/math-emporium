@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import NextAppointment from './components/nextAppointment';
 import UpdateProfileForm from './components/updateProfileForm';
 import LoadingSpinner from '../../components/loadingSpinner';
+import MainContentWrap from '../../components/mainContentWrap';
 
 import { getUserProfile } from './actions';
 import { getLocations, getCourses } from '../actions';
@@ -25,12 +26,12 @@ class Profile extends Component {
         }
 
         return (
-            <div className="content">
+            <MainContentWrap>
               <NextAppointment profile={profile} />
               <UpdateProfileForm profile={profile}
                                  locations={locations}
                                  courses={courses} />
-            </div>
+            </MainContentWrap>
         );
     }
 }

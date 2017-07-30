@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import Sidebar from '../components/sidebar';
 import LoadingSpinner from '../components/loadingSpinner';
+import MainContentWrap from '../components/mainContentWrap';
+
 import { BASE_PATH } from './constants';
 import { getLocations, getCourses, markAsInitialized } from './actions';
 import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
@@ -48,7 +50,7 @@ class SchedulingApp extends Component {
 
         const maybeContent = isReady // TODO: Turn into a component after moving
               ? this.props.children  // updateProfileForm off the redux-form
-              : <div className="content"><LoadingSpinner /></div>;
+              : <MainContentWrap><LoadingSpinner /></MainContentWrap>;
 
         return (
             <div className="wrap">
