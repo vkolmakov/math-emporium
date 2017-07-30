@@ -14,6 +14,8 @@ import FilterControls from '../../components/filterControls';
 
 import { selectTransformOptions } from '../utils';
 
+import { DERIVE_SCHEDULES_FROM_CALENDAR } from '../../constants';
+
 class EditSchedules extends Component {
     componentWillMount() {
         this.props.getTutors();
@@ -22,6 +24,17 @@ class EditSchedules extends Component {
     }
 
     render() {
+        if (DERIVE_SCHEDULES_FROM_CALENDAR) {
+            return (
+                <div className="content">
+                    <div className="middle-help-message-wrap">
+                        <h1>Schedules are derived directly from Google Calendar on this instance.</h1>
+                    </div>
+                </div>
+            );
+        }
+
+
         let { tutors, locations, schedules } = this.props;
 
         const { setCurrentLocation, deleteSchedule, setCurrentWeekday } = this.props;
