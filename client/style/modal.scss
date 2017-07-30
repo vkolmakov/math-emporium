@@ -23,7 +23,7 @@
 @mixin base-modal {
     background-color: $secondary-color;
 
-    max-width: 35em;
+    max-width: 30em;
     margin: 5vh auto;
 
     @include breakpoint($medium-screen) {
@@ -37,6 +37,7 @@
     flex-flow: column wrap;
 
     h1, h2 {
+        overflow-wrap: break-word;
         margin: 0.25em 0;
         font-weight: normal;
     }
@@ -90,6 +91,7 @@
     @include base-modal();
 
     > .message {
+        overflow-wrap: break-word;
         font-size: 1em;
 
         @include breakpoint($medium-screen) {
