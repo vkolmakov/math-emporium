@@ -80,6 +80,7 @@ $gutter-size: 0.75em;
 
         @include breakpoint($medium-screen) {
             max-width: 20em;
+            margin: 0 auto;
             text-align: center;
         }
     }
