@@ -41,6 +41,7 @@ class EditLocations extends Component {
             {
                 label: 'Remove',
                 action: deleteLocation,
+                requestConfirmation: true,
             }, {
                 label: 'Edit',
                 action: `/${BASE_PATH}/locations`,

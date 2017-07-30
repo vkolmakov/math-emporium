@@ -65,6 +65,7 @@ class EditCourses extends Component {
             {
                 label: 'Remove',
                 action: deleteCourse,
+                requestConfirmation: true,
             }, {
                 label: 'Edit',
                 action: `/${BASE_PATH}/courses`,

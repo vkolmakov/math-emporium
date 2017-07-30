@@ -112,6 +112,7 @@ class EditSchedules extends Component {
             {
                 label: 'Remove',
                 action: deleteSchedule,
+                requestConfirmation: true,
             }, {
                 label: 'Edit',
                 action: `/${BASE_PATH}/schedules`,

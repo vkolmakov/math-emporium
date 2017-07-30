@@ -72,6 +72,7 @@ class EditTutors extends Component {
             {
                 label: 'Remove',
                 action: deleteTutor,
+                requestConfirmation: true,
             }, {
                 label: 'Edit',
                 action: `/${BASE_PATH}/tutors`,
