@@ -42,7 +42,7 @@
 }
 
 .auth-form-wrap {
-    max-width: 50em;
+    max-width: 25em;
     padding: 1em;
     margin: 0 auto;
 
@@ -91,7 +91,7 @@
 
         width: 100%;
         @include breakpoint($medium-screen) {
-            width: 22.5em;
+            width: 25em;
         }
 
         > img {
