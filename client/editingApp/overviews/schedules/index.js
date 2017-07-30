@@ -38,7 +38,8 @@ class SchedulesOverview extends Component {
                   <FilterControls options={locationsOptions}
                                   currentValue={locations.selected ? locations.selected.id : null}
                                   onChange={setCurrentLocation}
-                                  placeholder={'Select a location...'} />
+                                  label="Select a location"
+                                  placeholder="Select..." />
                   <div className="middle-help-message-wrap">
                     <h1>Select a location...</h1>
                   </div>

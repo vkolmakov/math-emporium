@@ -78,7 +78,8 @@ class EditCourses extends Component {
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
                                 onChange={setCurrentLocation.bind(this)}
-                                placeholder={'Filter by location...'} />
+                                label="Filter by location"
+                                placeholder="Select..." />
               </div>
               <CreateCourseForm locations={locations}
                                 courses={courses} />

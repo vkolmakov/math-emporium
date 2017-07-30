@@ -112,12 +112,14 @@ class EditSchedules extends Component {
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : ''}
                                 onChange={setCurrentLocation.bind(this)}
-                                placeholder={'Filter by location...'} />
+                                label="Filter by location"
+                                placeholder="Select..." />
 
                 <FilterControls options={weekdayOptions}
                                 currentValue={schedules.selectedWeekday || ''}
                                 onChange={setCurrentWeekday}
-                                placeholder={'Filter by weekday...'} />
+                                label="Filter by weekday"
+                                placeholder="Select..." />
               </div>
 
               <CreateScheduleForm locations={locations}

@@ -75,7 +75,8 @@ class ManageEvents extends Component {
                     <FilterControls options={eventTypeOptions}
                                     currentValue={this.state.selectedEventType ? this.state.selectedEventType.value : null}
                                     onChange={this.setSelectedEventType.bind(this)}
-                                    placeholder={'Filter by event type...'} />
+                                    label="Filter by event type"
+                                    placeholder="Select..." />
                 </div>
 
                 <div className="list-wrap">

@@ -72,7 +72,8 @@ class ManageUsers extends Component {
                 <FilterControls options={groupOptions}
                                 currentValue={this.state.selectedGroup ? this.state.selectedGroup.value : null}
                                 onChange={this.setSelectedGroup.bind(this)}
-                                placeholder={'Filter by group...'} />
+                                label="Filter by group"
+                                placeholder="Select..." />
               </div>
 
               <div className="list-wrap">

@@ -85,7 +85,8 @@ class EditTutors extends Component {
                 <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : ''}
                                 onChange={setCurrentLocation.bind(this)}
-                                placeholder={'Filter by location...'} />
+                                label="Filter by location"
+                                placeholder="Select..." />
               </div>
               <CreateTutorForm locations={locations}
                                courses={courses}
