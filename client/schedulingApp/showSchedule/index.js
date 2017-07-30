@@ -31,10 +31,14 @@ import { redirectTo } from '../../utils';
 
 class ShowSchedule extends Component {
     componentDidMount() {
-        const { selectedOpenSpotInfo } = this.props;
+        const { selectedOpenSpotInfo, courses, locations } = this.props;
         const { time, course, location } = selectedOpenSpotInfo;
         if (time && course && location) {
             this.createAvailableOpenSpotHandler(time, course, location)();
+        } else if (!locations.selected) {
+            this.locationSelect.focus();
+        } else if (!courses.selected) {
+            this.coursesSelect.focus();
         }
     }
 
@@ -59,7 +63,7 @@ class ShowSchedule extends Component {
         const prevCourse = courses.selected;
         const nextCourse = courseOption ? courses.all.find(c => courseOption.value === c.id) : null;
 
-        return this.onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
+        this.onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
     }
 
     onLocationChange(locationOption) {
@@ -68,7 +72,8 @@ class ShowSchedule extends Component {
         const prevLocation = locations.selected;
         const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
 
-        return this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
+        this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
+        this.courseSelect.focus();
     }
 
     onStartDateChange(startDateOption) {
@@ -209,12 +214,14 @@ class ShowSchedule extends Component {
                                 currentValue={locations.selected ? locations.selected.id : null}
                                 placeholder="Select a Location"
                                 error={!locations.selected}
+                                selectRef={input => { this.locationSelect = input; } }
                                 onChange={this.onLocationChange.bind(this)} />
 
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
                                 placeholder="Select a Course"
                                 error={locations.selected && !courses.selected}
+                                selectRef={input => { this.courseSelect = input; } }
                                 onChange={this.onCourseChange.bind(this)} />
 
               </div>
