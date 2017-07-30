@@ -9,7 +9,6 @@ nav {
 
     @include breakpoint($medium-screen) {
         max-width: none;
-        /* margin-bottom: 1.5em; */
     }
 
     a {

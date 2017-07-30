@@ -27,6 +27,10 @@ body {
     padding: 1em;
 }
 
+[tabindex="-1"]:focus {
+    outline: none;
+}
+
 .content {
     @include breakpoint($medium-screen) {
         max-width: none;
@@ -409,4 +413,26 @@ select {
     border: .25rem solid $primary-color;
     border-top-color: darken($primary-color, 15%);
     animation: spin $spin-duration infinite;
+}
+
+.skip-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+    li a {
+        background-color: #fff;
+        display: block;
+
+        left: -999999999999px;
+        padding: 0.5em;
+        margin-top: 0.5em;
+        position: absolute;
+        @include rounded-border;
+
+        &:focus {
+            left: 0;
+        }
+    }
 }
