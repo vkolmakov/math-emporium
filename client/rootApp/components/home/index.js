@@ -6,7 +6,7 @@ import Hero from './components/hero';
 import Features from './components/features';
 
 export default () => (
-    <MainContentWrap noSidebar>
+    <MainContentWrap>
       <Hero />
       <Features />
     </MainContentWrap>

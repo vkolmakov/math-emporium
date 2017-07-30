@@ -50,13 +50,15 @@ class SchedulingApp extends Component {
 
         const maybeContent = isReady // TODO: Turn into a component after moving
               ? this.props.children  // updateProfileForm off the redux-form
-              : <MainContentWrap><LoadingSpinner /></MainContentWrap>;
+              : <div className="content"><LoadingSpinner /></div>;
 
         return (
-            <div className="wrap">
-              <Sidebar {...sidebarConfig} />
-              {maybeContent}
-            </div>
+            <MainContentWrap>
+                <div className="wrap">
+                    <Sidebar {...sidebarConfig} />
+                    {maybeContent}
+                </div>
+            </MainContentWrap>
         );
     }
 }

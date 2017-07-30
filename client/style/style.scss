@@ -27,10 +27,6 @@ body {
     padding: 1em;
 }
 
-[tabindex="-1"]:focus {
-    outline: none;
-}
-
 .content {
     @include breakpoint($medium-screen) {
         max-width: none;
