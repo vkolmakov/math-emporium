@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Sidebar from '../components/sidebar/index';
+import MainContentWrap from '../components/mainContentWrap';
+
 import { BASE_PATH } from './constants';
 
 import { getUsers } from './users/actions';
@@ -37,10 +39,12 @@ class ManagingApp extends Component {
         );
 
         return (
-            <div className="wrap">
-              <Sidebar {...sidebarConfig}/>
-              {displayElems}
-            </div>
+            <MainContentWrap>
+                <div className="wrap">
+                    <Sidebar {...sidebarConfig}/>
+                    {displayElems}
+                </div>
+            </MainContentWrap>
         );
     }
 }

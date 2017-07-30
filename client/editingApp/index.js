@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Sidebar from '../components/sidebar/index';
+import MainContentWrap from '../components/mainContentWrap';
 import { BASE_PATH, AUTH_GROUPS } from './constants';
 
 class EditingApp extends Component {
@@ -46,10 +47,12 @@ class EditingApp extends Component {
         );
 
         return (
-            <div className="wrap">
-              <Sidebar {...sidebarConfig} />
-              {displayElems}
-            </div>
+            <MainContentWrap>
+                <div className="wrap">
+                    <Sidebar {...sidebarConfig} />
+                    {displayElems}
+                </div>
+            </MainContentWrap>
         );
     }
 }

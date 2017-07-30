@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import LoadingSpinner from '../../components/loadingSpinner';
+import MainContentWrap from '../../components/mainContentWrap';
+
 import { OAUTH2_SIGNIN_URL } from '../constants';
 import { saveSelectedOpenSpotInLocalStorage,
          clearOpenSpotSelection } from '../../schedulingApp/showSchedule/actions';
@@ -51,11 +53,13 @@ class Signin extends Component {
                       <span key={1}>Sign in with your school account</span>]);
 
         return (
-            <div className="wrap">
-                <div className="auth-form-wrap">
-                    <ButtonOrSpinner />
+            <MainContentWrap>
+                <div className="wrap">
+                    <div className="auth-form-wrap">
+                        <ButtonOrSpinner />
+                    </div>
                 </div>
-            </div>
+            </MainContentWrap>
         );
     }
 }
