@@ -418,6 +418,7 @@ select {
     position: relative;
 
     li a {
+        color: darken($primary-color, 32%);
         background-color: #fff;
         display: block;
 
