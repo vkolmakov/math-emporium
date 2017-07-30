@@ -48,7 +48,7 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
     return (
         <button className={openSpotClass}
                 onClick={openSpotHandler(openSpotTime)}
-                name={`${weekdayDisplay}, ${openSpotText}`}
+                aria-label={`${openSpotText}, ${weekdayDisplay}`}
                 disabled={isExpired || !isAvailable}>
             {openSpotText}
         </button>);

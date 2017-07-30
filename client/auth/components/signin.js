@@ -37,6 +37,7 @@ class Signin extends Component {
     render() {
         const Wrap = content => () => (
             <a href={OAUTH2_SIGNIN_URL}
+               role="button"
                className="oauth2-link"
                onClick={this.initiateSignin.bind(this)}>
                 <div className="oauth2-button-wrap">

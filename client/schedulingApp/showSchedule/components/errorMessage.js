@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default ({ message }) => (
-    <h1>{message}</h1>
+    <h1 role="alert">{message}</h1>
 );

@@ -7,7 +7,7 @@ export default (props) => (
             <h1>Tutoring @ Wright</h1>
             <h2>Study with us!</h2>
             <div>
-                <Link to="/schedule">Schedule appointment</Link>
+                <Link role="button" to="/schedule">Schedule appointment</Link>
             </div>
         </div>
     </div>

@@ -29,7 +29,7 @@ function partitionOpenSpotsByWeekday(openSpots, startDate) {
 }
 
 const OpenSpotsWrapper = content => (
-    <div className="open-spots-display">
+    <div aria-live="polite" aria-relevant="additions" className="open-spots-display">
         {content}
     </div>);
 
