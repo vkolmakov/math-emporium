@@ -21,29 +21,34 @@ $gutter-size: 0.75em;
         }
     }
 
-    select {
-        @include input;
+    .input-group {
         flex: 1;
         width: 100%;
-    }
-
-    > .dual-datepicker-wrap {
-        flex: 1;
-        width: 100%;
-
-        $datepicker-height: 34px;
-
-        .react-datepicker__input-container {
-            > input {
-                @include input;
+        > select {
+            @include input;
+            &.select-filter-error {
+                @include rounded-border-enlarge;
+                border-color: $danger-color;
             }
 
-            width: 50%;
-            height: $datepicker-height;
+            &.select-filter-empty {
+                color: #aaa;
+            }
         }
 
-    }
+        > .dual-datepicker-wrap {
+            $datepicker-height: 34px;
 
+            .react-datepicker__input-container {
+                > input {
+                    @include input;
+                }
+
+                width: 50%;
+                height: $datepicker-height;
+            }
+        }
+    }
 }
 
 .react-datepicker {

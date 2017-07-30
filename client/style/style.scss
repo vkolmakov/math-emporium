@@ -52,16 +52,6 @@ body {
     }
 }
 
-
-select.select-filter-error {
-    @include rounded-border-enlarge;
-    border-color: $danger-color;
-}
-
-select.select-filter-empty {
-    color: #aaa;
-}
-
 select {
     @include input;
 }
