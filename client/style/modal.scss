@@ -101,35 +101,16 @@
 
 .scheduling-modal {
     @include base-modal;
-
-    > .select-input-group-wrap {
-        @include input-group-wrap;
-
-        > label {
-            padding-right: 0.75em;
-            flex: 1;
-        }
-
-        > select {
-            @include input;
-            margin: 0;
-            flex: 2;
-        }
-    }
-
-    > .textarea-input-group-wrap {
-        @include input-group-wrap;
-        > label {
-            padding-right: 0.75em;
-            flex: 1;
-        }
+    > .textarea-input-group {
+        display: flex;
+        flex-flow: column wrap;
+        margin-top: 0.25em;
 
         > textarea {
             @include rounded-border();
             @include modal-controls-font-size();
             padding: 0.5em 0;
             margin: 0;
-            flex: 2;
         }
     }
 }

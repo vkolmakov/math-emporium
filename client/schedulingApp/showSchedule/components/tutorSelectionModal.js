@@ -71,17 +71,16 @@ class TutorSelectionModal extends Component {
                 <h1>Confirm your appointment details</h1>
                 <h2>{appointmentInfoDisplay}</h2>
 
-                <div className="select-input-group-wrap">
-                    <label>Select Your Tutor:</label>
-                    <FilterControls options={tutorOptions}
-                            currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
-                            onChange={onTutorSelect}
-                            placeholder="Select a tutor..." />
-                </div>
+                <FilterControls options={tutorOptions}
+                                label="Select Your Tutor"
+                                currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
+                                onChange={onTutorSelect}
+                                placeholder="Select a tutor..." />
 
-                <div className="textarea-input-group-wrap">
-                    <label>Additional Comments:</label>
+                <div className="textarea-input-group">
+                    <label htmlFor="textarea-additional-comments">Additional Comments</label>
                     <textarea value={this.state.additionalInfo}
+                              id="textarea-additional-comments"
                               onChange={onAdditionalCommentsChange} />
                 </div>
 
