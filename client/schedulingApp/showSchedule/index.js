@@ -196,7 +196,7 @@ class ShowSchedule extends Component {
                 <div className="show-schedule-controls">
 
                     <div className="input-group">
-                        <label htmlFor="dual-datepicker">Select a week</label>
+                        <label htmlFor="dual-datepicker">Week</label>
                         <div className="dual-datepicker-wrap">
                             <DatePicker selected={startDate}
                                         startDate={startDate}
@@ -217,7 +217,7 @@ class ShowSchedule extends Component {
                     <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
                                 placeholder="Select..."
-                                label="Select a Location"
+                                label="Location"
                                 error={!locations.selected}
                                 selectRef={input => { this.locationSelect = input; } }
                                 onChange={this.onLocationChange.bind(this)} />
@@ -225,7 +225,7 @@ class ShowSchedule extends Component {
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
                                 placeholder="Select..."
-                                label="Select a Course"
+                                label="Course"
                                 error={locations.selected && !courses.selected}
                                 selectRef={input => { this.courseSelect = input; } }
                                 onChange={this.onCourseChange.bind(this)} />
