@@ -35,9 +35,9 @@ class ShowSchedule extends Component {
         const { time, course, location } = selectedOpenSpotInfo;
         if (time && course && location) {
             this.createAvailableOpenSpotHandler(time, course, location)();
-        } else if (!locations.selected) {
+        } else if (this.locationSelect && !locations.selected) {
             this.locationSelect.focus();
-        } else if (!courses.selected) {
+        } else if (this.coursesSelect && !courses.selected) {
             this.coursesSelect.focus();
         }
     }
@@ -73,7 +73,9 @@ class ShowSchedule extends Component {
         const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
 
         this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
-        this.courseSelect.focus();
+        if (this.courseSelect) {
+            this.courseSelect.focus();
+        }
     }
 
     onStartDateChange(startDateOption) {
