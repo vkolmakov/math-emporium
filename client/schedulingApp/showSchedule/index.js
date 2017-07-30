@@ -193,33 +193,39 @@ class ShowSchedule extends Component {
         return (
             <div className="content">
 
-              <div className="show-schedule-controls">
+                <div className="show-schedule-controls">
 
-                <div className="dual-datepicker-wrap">
-                  <DatePicker selected={startDate}
-                              startDate={startDate}
-                              endDate={moment(startDate).endOf('isoWeek')}
-                              locale="en-gb"
-                              dateFormat="MM/DD/YYYY"
-                              readOnly={true}
-                              onChange={this.onStartDateChange.bind(this)} />
+                    <div className="input-group">
+                        <label htmlFor="dual-datepicker">Select a week</label>
+                        <div className="dual-datepicker-wrap">
+                            <DatePicker selected={startDate}
+                                        startDate={startDate}
+                                        endDate={moment(startDate).endOf('isoWeek')}
+                                        locale="en-gb"
+                                        dateFormat="MM/DD/YYYY"
+                                        readOnly={true}
+                                        onChange={this.onStartDateChange.bind(this)}
+                                        id="dual-datepicker"/>
 
-                  <DatePicker selected={moment(startDate).endOf('isoWeek')}
-                              locale="en-gb"
-                              dateFormat="MM/DD/YYYY"
-                              disabled={true} />
-                </div>
+                            <DatePicker selected={moment(startDate).endOf('isoWeek')}
+                                        locale="en-gb"
+                                        dateFormat="MM/DD/YYYY"
+                                        disabled={true} />
+                        </div>
+                    </div>
 
-                <FilterControls options={locationsOptions}
+                    <FilterControls options={locationsOptions}
                                 currentValue={locations.selected ? locations.selected.id : null}
-                                placeholder="Select a Location"
+                                placeholder="Select..."
+                                label="Select a Location"
                                 error={!locations.selected}
                                 selectRef={input => { this.locationSelect = input; } }
                                 onChange={this.onLocationChange.bind(this)} />
 
                 <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
-                                placeholder="Select a Course"
+                                placeholder="Select..."
+                                label="Select a Course"
                                 error={locations.selected && !courses.selected}
                                 selectRef={input => { this.courseSelect = input; } }
                                 onChange={this.onCourseChange.bind(this)} />
