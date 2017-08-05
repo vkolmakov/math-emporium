@@ -6,8 +6,8 @@ export const SA_SET_LOCATION = 'SA_SET_LOCATION';
 export const SA_SET_COURSE = 'SA_SET_COURSE';
 export const SA_INITIALIZE = 'SA_INITIALIZE';
 
-const BASE_URL_LOCATIONS = '/api/locations';
-const BASE_URL_COURSES = '/api/courses';
+const BASE_URL_LOCATIONS = '/api/public/locations';
+const BASE_URL_COURSES = '/api/public/courses';
 
 import { resetOpenSpots } from './showSchedule/actions';
 
