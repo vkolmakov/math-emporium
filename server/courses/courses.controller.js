@@ -1,6 +1,7 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
 import { notFound, isRequired, actionFailed } from '../services/errorMessages';
+import { pluckPublicFields } from './courses.model';
 
 const Location = db.models.location;
 const Course = db.models.course;
@@ -10,7 +11,6 @@ const allowedToWrite = ['name', 'code', 'color'];
 const relatedModels = [Location];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
-
 
 export const getCourses = (body) => new Promise(async (resolve) => {
     const coursesRes = await Course.findAll({
@@ -122,6 +122,14 @@ export const handleGet = async (req, res, next) => {
     }
 };
 
+export const handlePublicGet = async (req, res, next) => {
+    try {
+        const courses = await getCourses(req.body);
+        res.status(200).json(courses.map(pluckPublicFields));
+    } catch (err) {
+        next(err);
+    }
+};
 
 export const handleGetId = async (req, res, next) => {
     try {

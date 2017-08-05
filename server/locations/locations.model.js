@@ -1,3 +1,5 @@
+export const pluckPublicFields = ({ id, name }) => ({ id, name });
+
 export default function createLocationModel(sequelize, DataTypes) {
     const location = sequelize.define('location', {
         name: {

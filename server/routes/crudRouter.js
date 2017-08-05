@@ -9,14 +9,14 @@ export default function createCrudRouter(modelName) {
 
     const modelsWithPublicGet = ['locations', 'courses'];
 
-    if (modelsWithPublicGet.indexOf(modelName) > -1) {
-        router.get(`/${modelName}`,
-                   controller.handleGet);
-    } else {
-        router.get(`/${modelName}`,
-                   requireGroup(authGroups.EMPLOYEE),
-                   controller.handleGet);
+    if (modelsWithPublicGet.includes(modelName)) {
+        router.get(`/public/${modelName}`,
+                   controller.handlePublicGet);
     }
+
+    router.get(`/${modelName}`,
+               requireGroup(authGroups.EMPLOYEE),
+               controller.handleGet);
     router.get(`/${modelName}/:id`,
                requireGroup(authGroups.EMPLOYER),
                controller.handleGetId);

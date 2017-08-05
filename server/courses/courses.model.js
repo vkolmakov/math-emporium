@@ -1,3 +1,12 @@
+import * as locationModel from '../locations/locations.model';
+
+export const pluckPublicFields = ({ id, name, code, location }) => ({
+    id,
+    name,
+    code,
+    location: locationModel.pluckPublicFields(location),
+});
+
 export default function createCourseModel(sequelize, DataTypes) {
     const course = sequelize.define('course', {
         name: {

@@ -1,6 +1,7 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction } from '../aux';
 import { notFound, actionFailed } from '../services/errorMessages';
+import { pluckPublicFields } from './locations.model';
 
 const allowedToRead = ['id', 'name', 'calendarId'];
 const allowedToWrite = ['name', 'calendarId'];
@@ -83,11 +84,19 @@ export const updateLocation = (id, body) => new Promise(async (resolve, reject) 
     }
 });
 
-
 export const handleGet = async (req, res, next) => {
     try {
         const locations = await getLocations();
         res.status(200).json(locations);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const handlePublicGet = async (req, res, next) => {
+    try {
+        const locations = await getLocations();
+        res.status(200).json(locations.map(pluckPublicFields));
     } catch (err) {
         next(err);
     }
