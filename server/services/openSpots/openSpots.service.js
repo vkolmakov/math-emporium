@@ -11,11 +11,14 @@ export function predictTutorName(options, rawName) {
     const createSearchEndRegex = p => new RegExp(`${p}$`, 'i');
     const isMatching = regex => s => s.match(regex);
 
+    // for safe regex construction
+    const name = rawName.replace(/[^a-zA-Z0-9\s]/gi, '').trim();
+
     const searchFromStart = (current, upTo) => {
         const sliceStart = R.slice(0, upTo);
 
         const isMatch = isMatching(
-            createSearchStartRegex(sliceStart(rawName)));
+            createSearchStartRegex(sliceStart(name)));
 
         const next = current.filter(isMatch);
 
@@ -27,7 +30,7 @@ export function predictTutorName(options, rawName) {
 
     const checkLastLetter = remaining => {
         const isMatch = isMatching(
-            createSearchEndRegex(R.last(rawName)));
+            createSearchEndRegex(R.last(name)));
         return remaining.filter(isMatch);
     };
 
