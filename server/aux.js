@@ -65,6 +65,10 @@ export function set(obj, key, val) {
     };
 }
 
+export function sanitizeCalendarInput(text) {
+    return text.replace(/[^a-zA-Z0-9\s]/gi, '').trim();
+}
+
 export function pickOneFrom(list) {
     const randomIndex = Math.floor(Math.random() * list.length);
     return list[randomIndex];

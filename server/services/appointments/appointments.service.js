@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { TIMESTAMP_FORMAT } from '../../aux';
+import { TIMESTAMP_FORMAT, sanitizeCalendarInput } from '../../aux';
 
 function extractInfoFromSummary(summary) {
     if (!summary) {
@@ -15,9 +15,9 @@ function extractInfoFromSummary(summary) {
     }
 
     return {
-        tutor: match[1].replace(/^[\s]+|[#\s]+$/g, ''), // strip trailing whitespace or `#` symbols
+        tutor: sanitizeCalendarInput(match[1]),
         student: match[2],
-        course: match[3].trim(),
+        course: sanitizeCalendarInput(match[3]),
     };
 }
 
@@ -55,7 +55,8 @@ function extractSpecialInstructions(summary) {
     }
 
     return {
-        overwriteTutors: match[1].split('_').map(tutorName => ({ name: tutorName })),
+        overwriteTutors: match[1].split('_').map(tutorName => ({
+            name: sanitizeCalendarInput(tutorName) })),
     };
 }
 
