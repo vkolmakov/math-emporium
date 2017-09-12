@@ -3,7 +3,7 @@ import { calendarService } from '../services/googleApis';
 import { TIMEZONE, authGroups,
          TIMESTAMP_VISIBLE_FORMAT, APPOINTMENT_LENGTH } from '../aux';
 import * as email from '../services/email';
-
+import cache from '../services/cache';
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define('user', {
@@ -75,6 +75,10 @@ export default function createUserModel(sequelize, DataTypes) {
                         description,
                         colorId: course.color,
                     });
+
+                    // invalidate the cache for a given location as soon
+                    // as new appointment is registered
+                    cache.remove(cache.keys.calendarEvents(calendarId));
 
                     resolve(result);
                 });

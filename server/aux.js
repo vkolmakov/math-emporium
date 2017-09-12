@@ -108,6 +108,7 @@ export const R = {
     toLower: _R.toLower,
     slice: _R.slice,
     equals: _R.equals,
+    identity: _R.identity,
 };
 
 export const trace = msg => x => { console.log(msg, x); return x; };
