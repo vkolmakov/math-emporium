@@ -42,9 +42,9 @@ function invalidateCalendarEventsCache(calendarId) {
 
 function putCalendarEvents(calendarId, weekStartIsoString, events) {
     return put(
-        cache.keys.calendarEvents(calendarId, weekStartIsoString),
+        keys.calendarEvents(calendarId, weekStartIsoString),
         events,
-        cache.DURATIONS.CALENDAR_EVENTS);
+        DURATIONS.CALENDAR_EVENTS);
 }
 
 function getCalendarEvents(calendarId, weekStartIsoString) {

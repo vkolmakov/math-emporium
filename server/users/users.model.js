@@ -78,7 +78,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                     // invalidate the cache for a given location as soon
                     // as new appointment is registered
-                    cache.remove(cache.keys.calendarEvents(calendarId));
+                    cache.invalidateCalendarEventsCache(calendarId);
 
                     resolve(result);
                 });
@@ -103,11 +103,17 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 return new Promise(async (resolve, reject) => {
                     const calendar = await calendarService();
+                    const calendarId = user.dataValues.googleCalendarId;
+                    const eventId = user.dataValues.googleCalendarAppointmentId;
                     try {
                         const result = await calendar.deleteCalendarEvent({
-                            calendarId: user.dataValues.googleCalendarId,
-                            eventId: user.dataValues.googleCalendarAppointmentId,
+                            calendarId,
+                            eventId,
                         });
+
+                        // invalidate the cache for a given location as soon
+                        // as an appointment is deleted
+                        cache.invalidateCalendarEventsCache(calendarId);
 
                         resolve(result);
                     } catch (err) {
