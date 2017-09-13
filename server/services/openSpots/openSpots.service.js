@@ -220,7 +220,7 @@ export async function openSpots(location, course, startDate, endDate) {
 
     const fetchAndCacheCalendarEvents = () => {
         const cacheEvents = (events) =>
-            cache.put(cache.keys.calendarEvents(calendarId), events, cache.DURATIONS.CALENDAR_EVENTS);
+              cache.putCalendarEvents(calendarId, startDate.toISOString(), events);
 
         return calendar.getCalendarEvents(
             calendarId,
@@ -231,7 +231,7 @@ export async function openSpots(location, course, startDate, endDate) {
     const calendarEvents = await Either.either(
         fetchAndCacheCalendarEvents,
         R.identity,
-        cache.get(cache.keys.calendarEvents(calendarId)));
+        cache.getCalendarEvents(calendarId, startDate.toISOString()));
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);

@@ -8,7 +8,8 @@ const MESSAGES = {
 };
 
 const keys = {
-    calendarEvents: (calendarId) => `CALENDAR_EVENTS-${calendarId}`,
+    calendarEvents: (calendarId, startDateIsoString) =>
+        `CALENDAR_EVENTS-${calendarId}-${startDateIsoString}`,
     appData: () => 'APP_DATA',
 };
 
@@ -24,12 +25,30 @@ function get(key) {
 }
 
 function remove(key) {
-    return cache.del(key);
+    cache.del(key);
+    return key;
 }
 
 function put(key, value, duration) {
     cache.put(key, value, duration);
     return value;
+}
+
+function invalidateCalendarEventsCache(calendarId) {
+    const toRemove = cache.keys().filter((key) => key.includes(calendarId));
+    toRemove.forEach(remove);
+    return toRemove;
+}
+
+function putCalendarEvents(calendarId, weekStartIsoString, events) {
+    return put(
+        cache.keys.calendarEvents(calendarId, weekStartIsoString),
+        events,
+        cache.DURATIONS.CALENDAR_EVENTS);
+}
+
+function getCalendarEvents(calendarId, weekStartIsoString) {
+    return get(keys.calendarEvents(calendarId, weekStartIsoString));
 }
 
 export default {
@@ -39,4 +58,8 @@ export default {
     remove,
     DURATIONS,
     MESSAGES,
+    // calendar events
+    invalidateCalendarEventsCache,
+    putCalendarEvents,
+    getCalendarEvents,
 };
