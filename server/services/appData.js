@@ -1,7 +1,7 @@
 import db from 'sequelize-connect';
-import cache from 'memory-cache';
+import cache from './cache';
 
-import { set, createExtractDataValuesFunction } from '../aux';
+import { set, createExtractDataValuesFunction, Either } from '../aux';
 
 const collectData = () => new Promise(async (resolve, reject) => {
     const Location = db.models.location;
@@ -61,19 +61,11 @@ const collectData = () => new Promise(async (resolve, reject) => {
 });
 
 export const getCachedData = () => new Promise(async (resolve, reject) => {
-    const DATA_KEY = 'data';
-    let data = cache.get(DATA_KEY);
+    const cacheData = (data) =>
+          cache.put(cache.keys.appData(), data, cache.DURATIONS.APP_DATA);
 
-    if (!data) {
-        try {
-            data = await collectData();
-        } catch (err) {
-            reject(err);
-        }
-        cache.put(DATA_KEY, data, 0.5 * 60000, () => {
-            getCachedData(); // refresh cache automatically every two hours
-        });
-    }
-
-    resolve(data);
+    return Either.either(
+        () => collectData().then(cacheData).then(resolve),
+        resolve,
+        cache.get(cache.keys.appData()));
 });

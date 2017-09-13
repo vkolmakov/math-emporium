@@ -9,10 +9,14 @@ const MESSAGES = {
 
 const keys = {
     calendarEvents: (calendarId) => `CALENDAR_EVENTS-${calendarId}`,
+    appData: () => 'APP_DATA',
 };
 
+const minutes = (n) => n * 60 * 1000;
+
 const DURATIONS = {
-    CALENDAR_EVENTS: 4 * 60 * 1000, // 4 minutes
+    CALENDAR_EVENTS: minutes(4),
+    APP_DATA: minutes(30),
 };
 
 function get(key) {
