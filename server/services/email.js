@@ -2,10 +2,6 @@ import SparkPost from 'sparkpost';
 import config from '../config';
 import { pickOneFrom } from '../aux';
 
-export function createClient() {
-    const client = new SparkPost(config.email.SPARKPOST_API_KEY);
-    return client;
-}
 
 function composeLetter(body, user) {
     function htmlify(sentence) {
@@ -35,8 +31,15 @@ function composeLetter(body, user) {
     };
 }
 
+function debugSendEmail(user, letter) {
+    const emailMetadataRepresentation = JSON.stringify({ user, letter }, null, 2);
+    console.log(`Sending an email: ${emailMetadataRepresentation}`); // eslint-disable-line no-console
+    return Promise.resolve();
+}
 
-export function send(client, user, letter) {
+function productionSendEmail(user, letter) {
+    const client = new SparkPost(config.email.SPARKPOST_API_KEY);
+
     const { subjectConstructor, emailBodyConstructor } = letter;
     const { email } = user;
 
@@ -56,4 +59,10 @@ export function send(client, user, letter) {
         },
         recipients: [{ address: email }],
     });
+}
+
+export default function sendEmail(user, letter) {
+    return config.IS_PRODUCTION
+        ? productionSendEmail(user, letter)
+        : debugSendEmail(user, letter);
 }

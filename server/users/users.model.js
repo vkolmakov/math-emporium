@@ -2,7 +2,7 @@ import moment from 'moment';
 import { calendarService } from '../services/googleApis';
 import { TIMEZONE, authGroups,
          TIMESTAMP_VISIBLE_FORMAT, APPOINTMENT_LENGTH } from '../aux';
-import * as email from '../services/email';
+import sendEmail from '../services/email';
 import cache from '../services/cache';
 
 export default function createUserModel(sequelize, DataTypes) {
@@ -49,10 +49,8 @@ export default function createUserModel(sequelize, DataTypes) {
                 const user = this;
                 const emailAddress = user.getDataValue('email');
                 const firstName = user.getDataValue('firstName');
-                const client = email.createClient();
-                return email.send(client,
-                                  { email: emailAddress, firstName },
-                                  { subjectConstructor, emailBodyConstructor });
+                return sendEmail({ email: emailAddress, firstName },
+                                 { subjectConstructor, emailBodyConstructor });
             },
 
             createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
