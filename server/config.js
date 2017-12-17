@@ -9,7 +9,7 @@ export default {
         NAME: process.env.EMAIL_NAME,
     },
     db: {
-        NAME: process.env.DB_NAME || 'mathcenterapp_dev',
+        NAME: process.env.DB_NAME || 'mathcenterapp_main_dev',
         USER: process.env.DB_USER || 'postgres',
         PASSWORD: process.env.DB_PASSWORD || '',
         PORT: process.env.DB_PORT || null,
