@@ -1,4 +1,6 @@
-export const pluckPublicFields = ({ id, name }) => ({ id, name });
+export const pluckPublicFields =
+    ({ id, name, pictureLink, phone, email, address, description }) =>
+    ({ id, name, pictureLink, phone, email, address, description });
 
 export default function createLocationModel(sequelize, DataTypes) {
     const location = sequelize.define('location', {

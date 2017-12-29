@@ -3,8 +3,8 @@ import { createExtractDataValuesFunction } from '../aux';
 import { notFound, actionFailed } from '../services/errorMessages';
 import { pluckPublicFields } from './locations.model';
 
-const allowedToRead = ['id', 'name', 'calendarId'];
-const allowedToWrite = ['name', 'calendarId'];
+const allowedToRead = ['id', 'name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description'];
+const allowedToWrite = ['name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description'];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
