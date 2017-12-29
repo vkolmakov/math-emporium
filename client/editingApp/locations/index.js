@@ -34,6 +34,21 @@ class EditLocations extends Component {
             }, {
                 dataKey: 'calendarId',
                 label: 'Calendar ID',
+            }, {
+                dataKey: 'address',
+                label: 'Address',
+            }, {
+                dataKey: 'phone',
+                label: 'Phone',
+            }, {
+                dataKey: 'email',
+                label: 'Email',
+            }, {
+                dataKey: 'description',
+                label: 'Description',
+            }, {
+                dataKey: 'pictureLink',
+                label: 'Link to a picture',
             },
         ];
 
