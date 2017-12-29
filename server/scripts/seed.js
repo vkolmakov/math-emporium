@@ -1,27 +1,5 @@
 import fs from 'fs';
-import path from 'path';
-import db from 'sequelize-connect';
-
-import config from '../config';
-
-
-function connect() {
-    db.discover = path.resolve(__dirname, '..');
-    db.matcher = (file) => !!file.match(/.+\.model\.js/);
-
-    return db.connect(config.db.NAME,
-                      config.db.USER,
-                      config.db.PASSWORD, {
-                          dialect: 'postgres',
-                          protocol: 'postgres',
-                          port: config.db.PORT,
-                          host: config.db.HOST,
-                          logging: false,
-                          dialectOptions: {
-                              ssl: config.IS_PRODUCTION,
-                          },
-                      });
-}
+import mainStorage from '../services/mainStorage';
 
 function readJson(fileName) {
     return new Promise((resolve, reject) => {
@@ -96,9 +74,9 @@ function addTutorCourses(Tutor) {
 }
 
 function seed() {
-    const Course = db.models.course;
-    const Location = db.models.location;
-    const Tutor = db.models.tutor;
+    const Course = mainStorage.db.models.course;
+    const Location = mainStorage.db.models.location;
+    const Tutor = mainStorage.db.models.tutor;
 
     const makeFileName = body => `./server/scripts/data/${body}.json`;
     const fileNamesPrimitives = ['locations', 'courses', 'tutors'].map(makeFileName);
@@ -123,4 +101,4 @@ function seed() {
     insertPrimitives().then(insertRelations);
 }
 
-connect().then(seed);
+mainStorage.connect().then(seed);

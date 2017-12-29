@@ -1,5 +1,4 @@
 import express from 'express';
-import db from 'sequelize-connect';
 import bodyParser from 'body-parser';
 import path from 'path';
 
@@ -13,6 +12,7 @@ import createUserRouter from './routes/userRouter';
 import createManageUserRouter from './routes/manageUserRouter';
 
 import { connectToEventStorage } from './services/eventStorage';
+import mainStorage from './services/mainStorage';
 
 import webpack from 'webpack';
 import webpackConfig from '../webpack.config';
@@ -20,24 +20,6 @@ import morgan from 'morgan';
 
 import config from './config';
 
-
-function connectToMainDatabase() {
-    db.discover = path.join(__dirname);
-    db.matcher = (file) => !!file.match(/.+\.model\.js/);
-
-    return db.connect(config.db.NAME,
-                      config.db.USER,
-                      config.db.PASSWORD, {
-                          dialect: 'postgres',
-                          protocol: 'postgres',
-                          port: config.db.PORT,
-                          host: config.db.HOST,
-                          logging: false,
-                          dialectOptions: {
-                              ssl: config.IS_PRODUCTION,
-                          },
-                      });
-}
 
 function connectToEventStorageDatabase() {
     return connectToEventStorage(config.eventStorage.URL, {
@@ -48,7 +30,7 @@ function connectToEventStorageDatabase() {
 
 (async () => {
     try {
-        await connectToMainDatabase();
+        await mainStorage.connect();
     } catch (err) {
         console.error(`Could not connect to the main database: ${err}`);
     }
