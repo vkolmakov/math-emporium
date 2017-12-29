@@ -16,6 +16,26 @@ export default function createLocationModel(sequelize, DataTypes) {
                 msg: 'Location calendar ID must be unique!',
             },
         },
+        pictureLink: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        phone: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
     }, {
         timestamps: true,
         classMethods: {
