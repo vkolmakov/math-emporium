@@ -59,6 +59,7 @@ function connectToEventStorageDatabase() {
         ['courses'],
         ['tutors'],
         ['schedules'],
+        ['subjects'],
     ];
 
     crudRoutes.forEach((routeParams) => app.use('/api', createCrudRouter(...routeParams)));

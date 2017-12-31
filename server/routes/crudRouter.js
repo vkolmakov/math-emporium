@@ -7,7 +7,7 @@ export default function createCrudRouter(modelName) {
     const controller = require(`../${modelName}/${modelName}.controller`);
     const router = express.Router();
 
-    const modelsWithPublicGet = ['locations', 'courses'];
+    const modelsWithPublicGet = ['locations', 'courses', 'subjects'];
 
     if (modelsWithPublicGet.includes(modelName)) {
         router.get(`/public/${modelName}`,
@@ -25,7 +25,7 @@ export default function createCrudRouter(modelName) {
                 controller.handlePost);
     router.delete(`/${modelName}/:id`,
                   requireGroup(authGroups.EMPLOYER),
-                  controller.handleDelete);
+                  controller.handleDelete); // refactor this into a regular lambda and attach .on('finish') to bust the cache
     router.put(`/${modelName}/:id`,
                requireGroup(authGroups.EMPLOYER),
                controller.handleUpdate);
