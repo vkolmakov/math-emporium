@@ -31,6 +31,7 @@ export default function createCourseModel(sequelize, DataTypes) {
             associate(models) {
                 course.belongsToMany(models.tutor, { through: 'tutor_course', as: 'tutors' });
                 course.belongsTo(models.location);
+                course.belongsTo(models.subject);
             },
         },
 
