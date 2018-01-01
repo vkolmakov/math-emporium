@@ -3,6 +3,7 @@ import * as constants from '../constants';
 export const BASE_PATH = 'edit-schedule';
 export const ROUTES = {
     LOCATIONS: `/${BASE_PATH}/locations`,
+    SUBJECTS: `/${BASE_PATH}/subjects`,
     COURSES: `/${BASE_PATH}/courses`,
     TUTORS: `/${BASE_PATH}/tutors`,
     SCHEDULES: `/${BASE_PATH}/schedules`,

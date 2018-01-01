@@ -16,6 +16,7 @@ class EditingApp extends Component {
         case AUTH_GROUPS.employer:
             links = [
                 ['locations', 'Locations'],
+                ['subjects', 'Subjects'],
                 ['courses', 'Courses'],
                 ['tutors', 'Tutors'],
                 ['schedules', 'Schedules'],
