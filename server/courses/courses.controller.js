@@ -5,10 +5,11 @@ import { pluckPublicFields } from './courses.model';
 
 const Location = db.models.location;
 const Course = db.models.course;
+const Subject = db.models.subject;
 
-const allowedToRead = ['id', 'name', 'code', 'color', 'location'];
+const allowedToRead = ['id', 'name', 'code', 'color', 'location', 'subject'];
 const allowedToWrite = ['name', 'code', 'color'];
-const relatedModels = [Location];
+const relatedModels = [Location, Subject];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
@@ -40,10 +41,22 @@ export const createCourse = (body) => new Promise(async (resolve, reject) => {
         reject(isRequired('Location'));
     }
 
+    if (!isObject(body.subject) || !hasOneOf(body.location, 'name', 'id')) {
+        reject(isRequired('Subject'));
+    }
+
     const location = await Location.findIfExists(body.location);
 
     if (!location) {
         reject(notFound('Location'));
+    }
+
+    const subject = await Subject.findOne({
+        where: { $or: [{ id: body.subject.id }, { name: body.subject.name }] },
+    });
+
+    if (!subject) {
+        reject(notFound('Subject'));
     }
 
     const createdCourse = Course.build(body, {
@@ -51,6 +64,7 @@ export const createCourse = (body) => new Promise(async (resolve, reject) => {
     });
 
     await createdCourse.setLocation(location, { save: false });
+    await createdCourse.setSubject(subject, { save: false });
 
     try {
         await createdCourse.save();
@@ -97,6 +111,22 @@ export const updateCourse = (id, body) => new Promise(async (resolve, reject) =>
             reject(notFound('location'));
         }
         await updatedCourse.setLocation(location);
+    }
+
+    let subject;
+    if (hasOneOf(body, 'subject')) {
+        if (isObject(body.subject) && hasOneOf(body.subject, 'id', 'name')) {
+            subject = await Subject.findOne({
+                where: { $or: [{ id: body.subject.id }, { name: body.subject.name }] },
+            });
+
+            if (!subject) {
+                reject(notFound('subject'));
+            }
+        } else {
+            reject(notFound('subject'));
+        }
+        await updatedCourse.setSubject(subject);
     }
 
     let result;

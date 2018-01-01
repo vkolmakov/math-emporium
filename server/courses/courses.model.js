@@ -1,10 +1,12 @@
 import * as locationModel from '../locations/locations.model';
+import * as subjectModel from '../subjects/subjects.model';
 
-export const pluckPublicFields = ({ id, name, code, location }) => ({
+export const pluckPublicFields = ({ id, name, code, location, subject }) => ({
     id,
     name,
     code,
     location: locationModel.pluckPublicFields(location),
+    subject: subjectModel.pluckPublicFields(subject),
 });
 
 export default function createCourseModel(sequelize, DataTypes) {
