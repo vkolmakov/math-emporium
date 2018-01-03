@@ -34,6 +34,7 @@ class ShowSchedule extends Component {
     componentDidMount() {
         const { selectedOpenSpotInfo, courses, locations, subjects } = this.props;
         const { time, course, location } = selectedOpenSpotInfo;
+
         if (time && course && location) {
             this.createAvailableOpenSpotHandler(time, course, location)();
         } else if (this.locationSelect && !locations.selected) {
@@ -225,48 +226,53 @@ class ShowSchedule extends Component {
 
                 <div className="show-schedule-controls">
 
-                    <div className="input-group">
-                        <label htmlFor="dual-datepicker">Week</label>
-                        <div className="dual-datepicker-wrap">
-                            <DatePicker selected={startDate}
-                                        startDate={startDate}
-                                        endDate={moment(startDate).endOf('isoWeek')}
-                                        locale="en-gb"
-                                        dateFormat="MM/DD/YYYY"
-                                        readOnly={true}
-                                        onChange={this.onStartDateChange.bind(this)}
-                                        id="dual-datepicker"/>
+                    <div className="column">
+                        <div className="input-group">
+                            <label htmlFor="dual-datepicker">Week</label>
+                            <div className="dual-datepicker-wrap">
+                                <DatePicker selected={startDate}
+                                            startDate={startDate}
+                                            endDate={moment(startDate).endOf('isoWeek')}
+                                            locale="en-gb"
+                                            dateFormat="MM/DD/YYYY"
+                                            readOnly={true}
+                                            onChange={this.onStartDateChange.bind(this)}
+                                            id="dual-datepicker"/>
 
-                            <DatePicker selected={moment(startDate).endOf('isoWeek')}
-                                        locale="en-gb"
-                                        dateFormat="MM/DD/YYYY"
-                                        disabled={true} />
+                                <DatePicker selected={moment(startDate).endOf('isoWeek')}
+                                            locale="en-gb"
+                                            dateFormat="MM/DD/YYYY"
+                                            disabled={true} />
+                            </div>
                         </div>
+
+                        <FilterControls options={locationsOptions}
+                                        currentValue={locations.selected ? locations.selected.id : null}
+                                        placeholder="Select..."
+                                        label="Location"
+                                        error={!locations.selected}
+                                        selectRef={input => { this.locationSelect = input; } }
+                                        onChange={this.onLocationChange.bind(this)} />
+
                     </div>
 
-                    <FilterControls options={locationsOptions}
-                                currentValue={locations.selected ? locations.selected.id : null}
-                                placeholder="Select..."
-                                label="Location"
-                                error={!locations.selected}
-                                selectRef={input => { this.locationSelect = input; } }
-                                onChange={this.onLocationChange.bind(this)} />
+                    <div className="column">
+                        <FilterControls options={subjectsOptions}
+                                        currentValue={subjects.selected ? subjects.selected.id : null}
+                                        placeholder="Select..."
+                                        label="Subject"
+                                        error={locations.selected && !subjects.selected}
+                                        selectRef={input => { this.subjectSelect = input; } }
+                                        onChange={this.onSubjectChange.bind(this)} />
 
-                   <FilterControls options={subjectsOptions}
-                                currentValue={subjects.selected ? subjects.selected.id : null}
-                                placeholder="Select..."
-                                label="Subject"
-                                error={locations.selected && !subjects.selected}
-                                selectRef={input => { this.subjectSelect = input; } }
-                                onChange={this.onSubjectChange.bind(this)} />
-
-                    <FilterControls options={coursesOptions}
-                                currentValue={courses.selected ? courses.selected.id : null}
-                                placeholder="Select..."
-                                label="Course"
-                                error={locations.selected && subjects.selected && !courses.selected}
-                                selectRef={input => { this.courseSelect = input; } }
-                                onChange={this.onCourseChange.bind(this)} />
+                            <FilterControls options={coursesOptions}
+                                            currentValue={courses.selected ? courses.selected.id : null}
+                                            placeholder="Select..."
+                                            label="Course"
+                                            error={locations.selected && subjects.selected && !courses.selected}
+                                            selectRef={input => { this.courseSelect = input; } }
+                                            onChange={this.onCourseChange.bind(this)} />
+                    </div>
 
               </div>
 

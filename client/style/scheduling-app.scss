@@ -9,31 +9,32 @@ $gutter-size: 0.75em;
 
     flex-flow: column wrap;
 
-    > *:not(:last-child) {
-        margin: 0 0 $gutter-size 0;
-    }
-
     @include breakpoint($medium-screen) {
         flex-flow: row nowrap;
-
-        > *:not(:last-child) {
-            margin: 0 $gutter-size 0 0;
+        .column:not(:last-child) {
+            margin-right: 0.5em;
         }
+        .column:last-child {
+            margin-left: 0.5em;
+        }
+    }
+
+    .column {
+        width: 100%;
     }
 
     .input-group {
         flex: 1;
         width: 100%;
-        > select {
-            @include input;
-            &.select-filter-error {
-                @include rounded-border-enlarge;
-                border-color: $danger-color;
-            }
+        padding-bottom: 0.25em;
 
-            &.select-filter-empty {
-                color: #aaa;
-            }
+        .select-filter-error {
+            @include rounded-border-enlarge;
+            border-color: $danger-color;
+        }
+
+        .select-filter-empty {
+            color: #aaa;
         }
 
         > .dual-datepicker-wrap {
