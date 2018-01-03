@@ -11,6 +11,8 @@ import { GOOGLE_CALENDAR_COLORS, ROUTES } from '../../constants';
 import { selectTransformOptions } from '../../utils';
 import Form from '../../../components/form/index';
 
+const FORM_FIELDS = ['code', 'subject', 'name', 'color', 'location'];
+
 class UpdateCourseForm extends Component {
     constructor() {
         super();
@@ -20,23 +22,25 @@ class UpdateCourseForm extends Component {
     }
 
     componentWillMount() {
-        const { code, name, color, location } = this.props.selectedCourse;
+        const { code, name, color, location, subject } = this.props.selectedCourse;
 
         this.props.dispatch(initialize('UpdateCourseForm', {
             code,
             name,
             color,
             location: location.id,
-        }, ['code', 'name', 'color', 'location']));
+            subject: subject.id,
+        }, FORM_FIELDS));
     }
 
     render() {
-        const { name, location, code, color } = this.props.fields;
+        const { name, location, code, color, subject } = this.props.fields;
 
         const { setCurrentLocation } = this.props;
 
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
+        const subjectOptions = selectTransformOptions()(this.props.subjects.all);
 
         const onSubmit = (data) => {
             this.setState({ success: false });
@@ -55,6 +59,13 @@ class UpdateCourseForm extends Component {
                 input: {
                     type: 'text',
                     binding: code,
+                },
+            }, {
+                label: 'Subject',
+                input: {
+                    type: 'select',
+                    binding: subject,
+                    options: subjectOptions,
                 },
             }, {
                 label: 'Name',
@@ -104,6 +115,7 @@ function validate(values) {
         name: 'Enter a name',
         color: 'Select a color',
         location: 'Select location',
+        subject: 'Select a subject',
     };
 
     Object.keys(requiredFields).forEach(
@@ -119,6 +131,6 @@ function validate(values) {
 
 export default reduxForm({
     form: 'UpdateCourseForm',
-    fields: ['code', 'name', 'color', 'location'],
+    fields: FORM_FIELDS,
     validate,
 }, null, { updateCourse, getCourses, setCurrentLocation })(UpdateCourseForm);

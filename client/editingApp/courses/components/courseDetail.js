@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { getLocations } from '../../locations/actions';
+import { getSubjects } from '../../subjects/actions';
 import { getCourses } from '../actions';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
@@ -11,10 +12,11 @@ class CourseDetail extends Component {
     componentWillMount() {
         this.props.getLocations();
         this.props.getCourses();
+        this.props.getSubjects();
     }
 
     render() {
-        let { locations, courses } = this.props;
+        let { locations, courses, subjects } = this.props;
 
         const { id } = this.props.params;
 
@@ -33,6 +35,7 @@ class CourseDetail extends Component {
         return (
             <div className="content">
               <UpdateCourseForm locations={locations}
+                                subjects={subjects}
                                 selectedCourse={selectedCourse}
                                 courses={courses}/>
             </div>
@@ -49,10 +52,14 @@ function mapStateToProps(state) {
             all: state.courses.all,
             error: state.courses.error,
         },
+        subjects: {
+            all: state.subjects.all,
+            error: state.subjects.error,
+        },
     };
 }
 
 export default connect(
     mapStateToProps,
-    { getLocations, getCourses }
+    { getLocations, getCourses, getSubjects }
 )(CourseDetail);

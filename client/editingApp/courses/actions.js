@@ -18,11 +18,15 @@ export function getCourses() {
 
 export function createCourse(data) {
     const locationId = data.location;
+    const subjectId = data.subject;
 
     const requestData = {
         ...data,
         location: {
             id: locationId,
+        },
+        subject: {
+            id: subjectId,
         },
     };
     const request = axios.post(BASE_URL, requestData);
@@ -45,11 +49,15 @@ export function deleteCourse(id) {
 export function updateCourse(id, data) {
     return dispatch => {
         const locationId = data.location;
+        const subjectId = data.subject;
 
         const requestData = {
             ...data,
             location: {
                 id: locationId,
+            },
+            subject: {
+                id: subjectId,
             },
         };
 

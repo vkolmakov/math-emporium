@@ -5,6 +5,7 @@ import { BASE_PATH } from '../constants';
 
 import { getCourses, deleteCourse } from './actions';
 import { getLocations, setCurrentLocation } from '../locations/actions';
+import { getSubjects } from '../subjects/actions';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
@@ -17,10 +18,11 @@ class EditCourses extends Component {
     componentWillMount() {
         this.props.getLocations();
         this.props.getCourses();
+        this.props.getSubjects();
     }
 
     render() {
-        let { courses, locations } = this.props;
+        let { courses, locations, subjects } = this.props;
 
         const { setCurrentLocation, deleteCourse } = this.props;
 
@@ -49,6 +51,9 @@ class EditCourses extends Component {
             {
                 dataKey: 'code',
                 label: 'Code',
+            }, {
+                dataKey: 'subject->name',
+                label: 'Subject',
             }, {
                 dataKey: 'name',
                 label: 'Name',
@@ -83,6 +88,7 @@ class EditCourses extends Component {
                                 placeholder="Select..." />
               </div>
               <CreateCourseForm locations={locations}
+                                subjects={subjects}
                                 courses={courses} />
 
               <div className="list-wrap right-col">
@@ -106,6 +112,10 @@ function mapStateToProps(state) {
             all: state.locations.all,
             selected: state.locations.selected,
         },
+        subjects: {
+            all: state.subjects.all,
+            error: state.subjects.error,
+        },
     };
 }
 
@@ -114,4 +124,5 @@ export default connect(mapStateToProps, {
     getLocations,
     deleteCourse,
     setCurrentLocation,
+    getSubjects,
 })(EditCourses);

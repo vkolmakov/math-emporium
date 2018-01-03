@@ -10,7 +10,7 @@ import { selectTransformOptions } from '../../utils';
 import Form from '../../../components/form/index';
 
 const FORM_NAME = 'CreateCourseForm';
-const FORM_FIELDS = ['code', 'name', 'color', 'location'];
+const FORM_FIELDS = ['code', 'subject', 'name', 'color', 'location'];
 
 class CreateCourseForm extends Component {
     componentWillMount() {
@@ -32,12 +32,13 @@ class CreateCourseForm extends Component {
     }
 
     render() {
-        const { name, location, code, color } = this.props.fields;
+        const { name, location, code, color, subject } = this.props.fields;
 
         const { setCurrentLocation } = this.props;
 
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
         const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
+        const subjectOptions = selectTransformOptions()(this.props.subjects.all);
 
         const onSubmit = (data) => {
             this.props.createCourse(data)
@@ -65,6 +66,13 @@ class CreateCourseForm extends Component {
                     binding: code,
                     placeholder: 'e.g. MATH208',
 
+                },
+            }, {
+                label: 'Subject',
+                input: {
+                    type: 'select',
+                    binding: subject,
+                    options: subjectOptions,
                 },
             }, {
                 label: 'Name',
@@ -115,6 +123,7 @@ function validate(values) {
         name: 'Enter a name',
         color: 'Select a color',
         location: 'Select location',
+        subject: 'Select a subject',
     };
 
     Object.keys(requiredFields).forEach(
