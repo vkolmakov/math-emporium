@@ -1,12 +1,15 @@
 import axios from 'axios';
 
 export const SA_GET_LOCATIONS = 'SA_GET_LOCATIONS';
+export const SA_GET_SUBJECTS = 'SA_GET_SUBJECTS';
 export const SA_GET_COURSES = 'SA_GET_COURSES';
+export const SA_SET_SUBJECT = 'SA_SET_SUBJECT';
 export const SA_SET_LOCATION = 'SA_SET_LOCATION';
 export const SA_SET_COURSE = 'SA_SET_COURSE';
 export const SA_INITIALIZE = 'SA_INITIALIZE';
 
 const BASE_URL_LOCATIONS = '/api/public/locations';
+const BASE_URL_SUBJECTS = '/api/public/subjects';
 const BASE_URL_COURSES = '/api/public/courses';
 
 import { resetOpenSpots } from './showSchedule/actions';
@@ -24,6 +27,15 @@ export function getLocations() {
     };
 }
 
+export function getSubjects() {
+    const request = axios.get(BASE_URL_SUBJECTS);
+
+    return {
+        type: SA_GET_SUBJECTS,
+        payload: request,
+    };
+}
+
 export function getCourses() {
     const request = axios.get(BASE_URL_COURSES);
 
@@ -35,9 +47,13 @@ export function getCourses() {
 
 export function setLocation(location) {
     return dispatch => {
-        // every time we change the location we have to reset the selected course
+        // every time we change the location we have to reset the selected course and subject
         dispatch({
             type: SA_SET_COURSE,
+            payload: null,
+        });
+        dispatch({
+            type: SA_SET_SUBJECT,
             payload: null,
         });
 
@@ -47,6 +63,24 @@ export function setLocation(location) {
         dispatch({
             type: SA_SET_LOCATION,
             payload: location,
+        });
+    };
+}
+
+export function setSubject(subject) {
+    return dispatch => {
+        // every time we change the subject we have to reset the selected course
+        dispatch({
+            type: SA_SET_COURSE,
+            payload: null,
+        });
+
+        // also we need to nullify the openSpots
+        dispatch(resetOpenSpots());
+
+        dispatch({
+            type: SA_SET_SUBJECT,
+            payload: subject,
         });
     };
 }

@@ -2,17 +2,23 @@ import { combineReducers } from 'redux';
 
 import ShowScheduleReducer from './showSchedule/reducer';
 import ProfileReducer from './profile/reducer';
-import { courseComparator, locationComparator } from '../utils';
+import { courseComparator, locationComparator, subjectComparator } from '../utils';
 
 import { SA_GET_LOCATIONS,
+         SA_GET_SUBJECTS,
          SA_GET_COURSES,
          SA_SET_LOCATION,
+         SA_SET_SUBJECT,
          SA_SET_COURSE,
          SA_INITIALIZE } from './actions';
 
 const INITIAL_STATE = {
     initialized: false,
     locations: {
+        selected: null,
+        all: [],
+    },
+    subjects: {
         selected: null,
         all: [],
     },
@@ -42,6 +48,15 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
             },
         };
 
+    case SA_GET_SUBJECTS:
+        return {
+            ...state,
+            subjects: {
+                selected: null,
+                all: payload.data.sort(subjectComparator),
+            },
+        };
+
     case SA_GET_COURSES:
         return {
             ...state,
@@ -66,6 +81,24 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
             locations: {
                 all: state.locations.all,
                 selected: selectedLocation,
+            },
+        };
+
+    case SA_SET_SUBJECT:
+        // could either come as an object with value from select or as an object with id
+        let subjectId;
+        if (payload) {
+            subjectId = payload.value ? payload.value : payload.id;
+        } else {
+            subjectId = null;
+        }
+        const selectedSubject = subjectId ? state.subjects.all.find(s => s.id === subjectId) : null;
+
+        return {
+            ...state,
+            subjects: {
+                all: state.subjects.all,
+                selected: selectedSubject,
             },
         };
 

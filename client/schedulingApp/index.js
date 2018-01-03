@@ -6,13 +6,14 @@ import LoadingSpinner from '../components/loadingSpinner';
 import MainContentWrap from '../components/mainContentWrap';
 
 import { BASE_PATH } from './constants';
-import { getLocations, getCourses, markAsInitialized } from './actions';
+import { getLocations, getCourses, getSubjects, markAsInitialized } from './actions';
 import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 
 class SchedulingApp extends Component {
     componentDidMount() {
         if (!this.props.initialized) {
             this.props.getLocations();
+            this.props.getSubjects();
             this.props.getCourses();
             this.props.markAsInitialized();
         }
@@ -73,6 +74,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     getLocations,
+    getSubjects,
     getCourses,
     getUserProfileAndSetOpenSpotsData,
     markAsInitialized,

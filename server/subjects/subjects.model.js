@@ -1,6 +1,9 @@
-export const pluckPublicFields = ({ id, name }) => ({
+export const pluckPublicFields = ({ id, name, location }) => ({
     id,
     name,
+    location: {
+        id: location.id,
+    },
 });
 
 export default function createSubjectModel(sequelize, DataTypes) {

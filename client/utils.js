@@ -36,6 +36,9 @@ export const courseComparator = (course1, course2) => {
     }
 };
 
+export const subjectComparator = (x, y) =>
+    x.name.toLowerCase() > y.name.toLowerCase() ? 1 : -1;
+
 export const selectTransformOptions = (valueKey = 'id', labelKey = 'name', colorKey = null) => options =>
     options.map(
         option => Object.keys(option).reduce((result, key) => {

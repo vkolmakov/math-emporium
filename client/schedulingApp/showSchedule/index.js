@@ -15,6 +15,7 @@ import MessageModal from './components/messageModal';
 import { MODAL_LIFECYCLE } from './constants';
 
 import { setLocation,
+         setSubject,
          setCourse } from '../actions';
 
 import { setStartDate,
@@ -31,12 +32,14 @@ import { redirectTo } from '../../utils';
 
 class ShowSchedule extends Component {
     componentDidMount() {
-        const { selectedOpenSpotInfo, courses, locations } = this.props;
+        const { selectedOpenSpotInfo, courses, locations, subjects } = this.props;
         const { time, course, location } = selectedOpenSpotInfo;
         if (time && course && location) {
             this.createAvailableOpenSpotHandler(time, course, location)();
         } else if (this.locationSelect && !locations.selected) {
             this.locationSelect.focus();
+        } else if (this.subjectSelect && !subjects.selected) {
+            this.subjectSelect.focus();
         } else if (this.coursesSelect && !courses.selected) {
             this.coursesSelect.focus();
         }
@@ -66,6 +69,18 @@ class ShowSchedule extends Component {
         this.onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
     }
 
+    onSubjectChange(subjectOption) {
+        const { subjects } = this.props;
+
+        const prevSubject = subjects.selected;
+        const nextSubject = subjectOption ? subjects.all.find(l => subjectOption.value === l.id) : null;
+
+        this.onSelectChange(prevSubject, this.props.setSubject)(nextSubject);
+        if (this.courseSelect) {
+            this.courseSelect.focus();
+        }
+    }
+
     onLocationChange(locationOption) {
         const { locations } = this.props;
 
@@ -73,8 +88,8 @@ class ShowSchedule extends Component {
         const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
 
         this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
-        if (this.courseSelect) {
-            this.courseSelect.focus();
+        if (this.subjectSelect) {
+            this.subjectSelect.focus();
         }
     }
 
@@ -133,18 +148,30 @@ class ShowSchedule extends Component {
         };
     }
 
-    createCoursesOptions(courses, locations) {
+    createCoursesOptions(courses, subjects) {
         let coursesOptions;
-        if (!locations.selected) {
+        if (!subjects.selected) {
             coursesOptions = [];
         } else {
             const transformCourseToOption = c => ({ value: c.id, label: `${c.code}: ${c.name}` });
             coursesOptions = courses.all
-                .filter(c => c.location.id === locations.selected.id)
+                .filter(c => c.subject.id === subjects.selected.id)
                 .map(transformCourseToOption);
         }
 
         return coursesOptions;
+    }
+
+    createSubjectsOptions(subjects, locations) {
+        let subjectsOptions = [];
+        if (locations.selected) {
+            const transformSubjectToOption = s => ({ value: s.id, label: s.name });
+            subjectsOptions = subjects.all
+                .filter(s => s.location.id === locations.selected.id)
+                .map(transformSubjectToOption);
+        }
+
+        return subjectsOptions;
     }
 
     createLocationsOptions(locations) {
@@ -176,11 +203,12 @@ class ShowSchedule extends Component {
     }
 
     render() {
-        const { locations, courses, startDate, openSpots, modalInfo } = this.props;
+        const { locations, courses, subjects, startDate, openSpots, modalInfo } = this.props;
         const now = moment();
 
         const locationsOptions = this.createLocationsOptions(locations);
-        const coursesOptions = this.createCoursesOptions(courses, locations);
+        const subjectsOptions = this.createSubjectsOptions(subjects, locations);
+        const coursesOptions = this.createCoursesOptions(courses, subjects);
 
         const openSpotHandlers = {
             available: time => this.createAvailableOpenSpotHandler(time, courses.selected, locations.selected),
@@ -224,17 +252,26 @@ class ShowSchedule extends Component {
                                 selectRef={input => { this.locationSelect = input; } }
                                 onChange={this.onLocationChange.bind(this)} />
 
-                <FilterControls options={coursesOptions}
+                   <FilterControls options={subjectsOptions}
+                                currentValue={subjects.selected ? subjects.selected.id : null}
+                                placeholder="Select..."
+                                label="Subject"
+                                error={locations.selected && !subjects.selected}
+                                selectRef={input => { this.subjectSelect = input; } }
+                                onChange={this.onSubjectChange.bind(this)} />
+
+                    <FilterControls options={coursesOptions}
                                 currentValue={courses.selected ? courses.selected.id : null}
                                 placeholder="Select..."
                                 label="Course"
-                                error={locations.selected && !courses.selected}
+                                error={locations.selected && subjects.selected && !courses.selected}
                                 selectRef={input => { this.courseSelect = input; } }
                                 onChange={this.onCourseChange.bind(this)} />
 
               </div>
 
               <OpenSpots isCourseSelected={!!courses.selected}
+                         isSubjectSelected={!!subjects.selected}
                          isLocationSelected={!!locations.selected}
                          startDate={startDate}
                          now={now}
@@ -252,6 +289,10 @@ function mapStateToProps(state) {
         locations: {
             selected: state.scheduling.shared.locations.selected,
             all: state.scheduling.shared.locations.all,
+        },
+        subjects: {
+            selected: state.scheduling.shared.subjects.selected,
+            all: state.scheduling.shared.subjects.all,
         },
         courses: {
             selected: state.scheduling.shared.courses.selected,
@@ -273,6 +314,7 @@ ShowSchedule.contextTypes = {
 
 export default connect(mapStateToProps, {
     setLocation,
+    setSubject,
     setCourse,
     setStartDate,
     getOpenSpots,
