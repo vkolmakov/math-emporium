@@ -2,38 +2,18 @@
 @import "mixins";
 
 nav {
-    display: block;
+    display: flex;
+    flex-flow: column nowrap;
+    border-bottom: 1px solid darken($tertiary-color, 25%);
 
-    background-color: $secondary-color;
-    border-bottom: 1px solid #eaeaea;
-
-    @include breakpoint($medium-screen) {
-        max-width: none;
-    }
-
-    a {
-        display: block;
-        padding: 0.5em;
-        @include set-font();
+    .nav-link {
         @include url();
-
-        @include breakpoint($medium-screen) {
-            display: inline-block;
-            padding: 0.75em;
-        }
-
-        color: black;
-
-        font-size: 1.2em;
+        color: $primary-text-color;
+        padding: 0.75em;
 
         &:hover,&:focus {
             background: $primary-color;
             font-weight: bold;
-        }
-        &.auth-link {
-            @include breakpoint($medium-screen) {
-                float: right;
-            }
         }
     }
 }

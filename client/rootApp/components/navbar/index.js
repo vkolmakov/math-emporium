@@ -2,30 +2,34 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { AUTH_GROUPS } from '../../../constants';
-import { id } from '../../../utils';
+import { id, createClassName } from '../../../utils';
+
+const NavLink = ({ to, className, children }) => (
+    <Link to={to} key={to} className={createClassName(['nav-link', className])}>{children}</Link>
+);
 
 class Navbar extends Component {
     authLinks() {
         let links = [];
         if (!this.props.authenticated) {
             links = [
-                <Link to="/signin" key={0} className="auth-link">Sign in</Link>,
+                <NavLink to="/signin" className="auth-link">Sign in</NavLink>,
             ];
         } else {
             switch (this.props.authGroup) {
             case AUTH_GROUPS.admin:
             case AUTH_GROUPS.employer:
-                links = [<Link to="/edit-schedule" key={3}>Edit-schedule</Link>,
-                         <Link to="/manage-portal" key={4}>Manage-portal</Link>];
+                links = [<NavLink to="/edit-schedule">Edit-schedule</NavLink>,
+                         <NavLink to="/manage-portal">Manage-portal</NavLink>];
                 break;
             case AUTH_GROUPS.employee:
-                links = [<Link to="/edit-schedule" key={3}>Edit-schedule</Link>];
+                links = [<NavLink to="/edit-schedule">Edit-schedule</NavLink>];
                 break;
             case AUTH_GROUPS.user:
             default:
                 break;
             }
-            links = links.concat([<Link to="/signout" key={2} className="auth-link">Sign out ({this.props.email})</Link>]);
+            links = links.concat([<NavLink to="/signout" className="auth-link">Sign out ({this.props.email})</NavLink>]);
         }
 
         return links;
@@ -34,8 +38,8 @@ class Navbar extends Component {
         const authLinks = this.authLinks();
         return (
             <nav>
-              <Link to="/">Home</Link>
-              <Link to="/schedule">Schedule</Link>
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/schedule">Schedule</NavLink>
               {authLinks.map(id)}
             </nav>
         );
