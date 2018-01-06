@@ -15,11 +15,11 @@ class Navbar extends Component {
             switch (this.props.authGroup) {
             case AUTH_GROUPS.admin:
             case AUTH_GROUPS.employer:
-                links = [<NavLink to="/edit-schedule">Edit-schedule</NavLink>,
-                         <NavLink to="/manage-portal">Manage-portal</NavLink>];
+                links = [{ to: '/edit-schedule', children: 'Edit-schedule' },
+                         { to: '/manage-portal', children: 'Manage-portal' }];
                 break;
             case AUTH_GROUPS.employee:
-                links = [<NavLink to="/edit-schedule">Edit-schedule</NavLink>];
+                links = [{ to: '/edit-schedule', children: 'Edit-schedule' }];
                 break;
             case AUTH_GROUPS.user:
             default:
@@ -36,15 +36,15 @@ class Navbar extends Component {
             <nav>
               <NavLink to="/">Home</NavLink>
               <NavLink to="/schedule">Schedule</NavLink>
-              {links}
-              <div className="auth-links">{authLinks}</div>
+              {links.map(NavLink)}
+              <div className="auth-links">{authLinks.map(NavLink)}</div>
             </nav>
         );
     }
     authLinks() {
         return this.props.authenticated
-            ? [<NavLink to="/signout" className="auth-link">Sign out ({this.props.email})</NavLink>]
-            : [<NavLink to="/signin" className="auth-link">Sign in</NavLink>];
+            ? [{ to: '/signout', className: 'auth-link', children: `Sign out (${this.props.email})` }]
+            : [{ to: '/signin', className: 'auth-link', children: 'Sign in' }];
     }
 }
 
