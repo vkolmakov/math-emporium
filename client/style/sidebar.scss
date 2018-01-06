@@ -1,6 +1,11 @@
 @import "variables";
 @import "mixins";
 
+@mixin in-focus() {
+    background: $primary-color;
+    font-weight: bold;
+}
+
 .sidebar {
     .sidebar-container {
         display: flex;
@@ -22,9 +27,8 @@
 
         margin-right: 0.5em;
 
-        &:hover, &:focus, &.selected {
-            background: $primary-color;
-            font-weight: bold;
+        &.selected {
+            @include in-focus();
         }
     }
 
@@ -35,5 +39,9 @@
 
         @include url();
         color: $primary-text-color;
+
+        &:hover, &:focus {
+            @include in-focus();
+        }
     }
 }
