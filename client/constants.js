@@ -39,6 +39,10 @@ export const EVENT_TYPES = {
     SIGN_IN: 3,
 };
 
+export const SCREEN_SIZE = {
+    MEDIUM: 768,
+};
+
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_DISPLAY_FORMAT = 'dddd, M/DD [at] h:mma';
 export const USER_EMAIL_REGEX = /.+@(?:student.)?ccc\.edu$/;

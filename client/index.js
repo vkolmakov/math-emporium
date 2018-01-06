@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
+import attachUtilEventListeners from './util/attachUtilEventListeners';
 import reducers from './reducers';
 import { authorizeUser, setUserAuthGroup, setUserEmail,
          recordUserSignin, startUsingAuthToken,
@@ -39,6 +40,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 const store = createStoreWithMiddleware(reducers);
+
+attachUtilEventListeners(window, store);
 
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
