@@ -2,42 +2,38 @@
 @import "mixins";
 
 .sidebar {
-    @include clearfix();
-    margin: 0 auto 0.5em auto;
-    background-color: $secondary-color;
-    border-bottom: 1px solid #eaeaea;
+    .sidebar-container {
+        display: flex;
+        flex-flow: row wrap;
 
-    @include breakpoint($medium-screen) {
-        @include span(3 of 12);
-        height: 100vh;
-        border-bottom: none;
+        list-style: none;
+
+        margin: 1em;
+        margin-top: 0;
+        margin-left: 0;
+
+        padding: 0;
     }
 
-    ul {
-        padding: 0;
-        margin: 0;
-        list-style-type: none;
+    .sidebar-item {
+        display: flex;
 
-        li {
-            margin: 0.25em;
+        @include rounded-border();
 
-            a {
-                @include set-font();
-                text-decoration: none;
-                padding: 0.5em;
-                color: black;
-                display: block;
+        margin-right: 0.5em;
 
-                &.selected {
-                    font-weight: bold;
-                }
-
-            }
-            &:hover,&:focus {
-                background-color: $primary-color;
-                font-weight: bold;
-            }
+        &:hover, &:focus, &.selected {
+            background: $primary-color;
+            font-weight: bold;
         }
     }
 
+    .sidebar-link {
+        flex: 1;
+
+        padding: 0.5em;
+
+        @include url();
+        color: $primary-text-color;
+    }
 }

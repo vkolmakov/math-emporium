@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
+import { createClassName } from '../../utils';
+
 export default class Sidebar extends Component {
     constructor() {
         super();
@@ -26,7 +28,7 @@ export default class Sidebar extends Component {
         return (
             <Link to={url}
                   onClick={this.handleClick}
-                  className={this.state.selected === path ? 'selected' : ''}>
+                  className={'sidebar-link'}>
               {text}
             </Link>
         );
@@ -34,14 +36,17 @@ export default class Sidebar extends Component {
 
     render() {
         const { BASE_PATH, links } = this.props;
+        const isCurrentlySelected = (path) => this.state.selected === path;
 
         return (
             <div className="sidebar">
-              <ul>
+              <ul className="sidebar-container">
                 {links.map(([path, text]) => (
-                    <li key={path}>{this.renderLink(path, text, BASE_PATH)}</li>
+                    <li className={createClassName(['sidebar-item', isCurrentlySelected(path) ? 'selected' : ''])}
+                        key={path}>{this.renderLink(path, text, BASE_PATH)}</li>
                 ))}
               </ul>
+              {this.props.children}
             </div>
         );
     }
