@@ -2,20 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { AUTH_GROUPS } from '../../../constants';
-import { id, createClassName } from '../../../utils';
+import { createClassName } from '../../../utils';
 
 const NavLink = ({ to, className, children }) => (
     <Link to={to} key={to} className={createClassName(['nav-link', className])}>{children}</Link>
 );
 
 class Navbar extends Component {
-    authLinks() {
+    links() {
         let links = [];
-        if (!this.props.authenticated) {
-            links = [
-                <NavLink to="/signin" className="auth-link">Sign in</NavLink>,
-            ];
-        } else {
+        if (this.props.authenticated) {
             switch (this.props.authGroup) {
             case AUTH_GROUPS.admin:
             case AUTH_GROUPS.employer:
@@ -29,20 +25,26 @@ class Navbar extends Component {
             default:
                 break;
             }
-            links = links.concat([<NavLink to="/signout" className="auth-link">Sign out ({this.props.email})</NavLink>]);
         }
 
         return links;
     }
     render() {
+        const links = this.links();
         const authLinks = this.authLinks();
         return (
             <nav>
               <NavLink to="/">Home</NavLink>
               <NavLink to="/schedule">Schedule</NavLink>
-              {authLinks.map(id)}
+              {links}
+              <div className="auth-links">{authLinks}</div>
             </nav>
         );
+    }
+    authLinks() {
+        return this.props.authenticated
+            ? [<NavLink to="/signout" className="auth-link">Sign out ({this.props.email})</NavLink>]
+            : [<NavLink to="/signin" className="auth-link">Sign in</NavLink>];
     }
 }
 

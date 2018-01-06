@@ -6,14 +6,32 @@ nav {
     flex-flow: column nowrap;
     border-bottom: 1px solid darken($tertiary-color, 25%);
 
+    @include breakpoint($medium-screen) {
+        flex-flow: row nowrap;
+    }
+
     .nav-link {
         @include url();
+
+        flex: 1;
+
         color: $primary-text-color;
         padding: 0.75em;
 
         &:hover,&:focus {
             background: $primary-color;
             font-weight: bold;
+        }
+
+        @include breakpoint($medium-screen) {
+            flex: inherit;
+        }
+    }
+    .auth-links {
+        display: flex;
+
+        @include breakpoint($medium-screen) {
+            margin-left: auto;
         }
     }
 }

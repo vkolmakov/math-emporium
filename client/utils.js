@@ -63,6 +63,10 @@ export function setKey(obj, key, val) {
     return obj;
 }
 
+export function createClassName(classList) {
+    return classList.filter((className) => !!className).join(' ');
+}
+
 export const id = x => x;
 
 export function parseCookies(onlyKeys, cookies) {
