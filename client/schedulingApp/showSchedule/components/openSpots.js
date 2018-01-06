@@ -7,6 +7,7 @@ import { Either, S } from '../../../utils';
 import LoadingSpinner from '../../../components/loadingSpinner';
 import ErrorMessage from './errorMessage';
 import Weekday from './weekday';
+import LocationsInfo from './locationsInfo';
 
 function partitionOpenSpotsByWeekday(openSpots, startDate) {
     // put every open-spot that have the same week in one list under one key
@@ -41,7 +42,10 @@ const OpenSpotsMessageWrapper = content => (
 
 export default ({ openSpots, startDate, isLocationSelected, isSubjectSelected, isCourseSelected, now, handlers }) => {
     if (!isLocationSelected) {
-        return OpenSpotsMessageWrapper(<ErrorMessage message='Select a location' />);
+        return OpenSpotsMessageWrapper(
+            [<ErrorMessage key="message" message='Select a location' />,
+             <LocationsInfo key="suppliment"/>]
+        );
     }
 
     if (!isSubjectSelected) {
