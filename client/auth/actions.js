@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { browserHistory } from 'react-router';
 import { BASE_URL } from './constants';
 import { parseCookies, cleanCookies } from '../utils';
 

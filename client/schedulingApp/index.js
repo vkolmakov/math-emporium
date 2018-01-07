@@ -52,15 +52,13 @@ class SchedulingApp extends Component {
 
 
         const maybeContent = isReady
-              ? React.cloneElement(
-                  this.props.children,
-                  { markAsSelectedOnSidebar: this.sidebarRef.markAsSelectedOnSidebar.bind(this.sidebarRef) })
+              ? this.props.children
               : <div className="main-content"><LoadingSpinner /></div>;
 
         return (
             <MainContentWrap>
               <div className="wrap">
-                <Sidebar ref={(sidebar) => this.sidebarRef = sidebar} {...sidebarConfig}></Sidebar>
+                <Sidebar {...sidebarConfig}></Sidebar>
                 {maybeContent}
                 </div>
             </MainContentWrap>

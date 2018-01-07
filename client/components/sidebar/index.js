@@ -1,36 +1,18 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
 import { createClassName } from '../../utils';
 
-export default class Sidebar extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selected: null,
-        };
-        this.handleClick = this.handleClick.bind(this);
+class Sidebar extends Component {
+    getSidebarEntryId(path) {
+        return path.split('/').pop();
     }
 
-    componentWillMount() {
-        this.setState({
-            selected: this.props.selected,
-        });
-    }
-
-    handleClick(event) {
-        this.markAsSelectedOnSidebar(event.currentTarget.href);
-    }
-
-    markAsSelectedOnSidebar(path) {
-        this.setState({ selected: path.split('/').pop() });
-    }
-
-    renderLink(path, text, BASE_PATH) {
-        const url = `/${BASE_PATH}/${path}`;
+    renderLink(entry, text, BASE_PATH) {
+        const url = `/${BASE_PATH}/${entry}`;
         return (
             <Link to={url}
-                  onClick={this.handleClick}
                   className={'sidebar-link'}>
               {text}
             </Link>
@@ -38,15 +20,16 @@ export default class Sidebar extends Component {
     }
 
     render() {
-        const { BASE_PATH, links } = this.props;
-        const isCurrentlySelected = (path) => this.state.selected === path;
+        const { BASE_PATH, links, currentRouterPath } = this.props;
+        const currentlySelectedEntry = this.getSidebarEntryId(currentRouterPath);
+        const isCurrentlySelectedEntry = (entry) => currentlySelectedEntry === entry;
 
         return (
             <div className="sidebar">
               <ul className="sidebar-container">
-                {links.map(([path, text]) => (
-                    <li className={createClassName(['sidebar-item', isCurrentlySelected(path) ? 'selected' : ''])}
-                        key={path}>{this.renderLink(path, text, BASE_PATH)}</li>
+                {links.map(([entry, text]) => (
+                    <li className={createClassName(['sidebar-item', isCurrentlySelectedEntry(entry) ? 'selected' : ''])}
+                        key={entry}>{this.renderLink(entry, text, BASE_PATH)}</li>
                 ))}
               </ul>
               {this.props.children}
@@ -54,3 +37,11 @@ export default class Sidebar extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        currentRouterPath: state.util.currentRouterPath,
+    };
+}
+
+export default connect(mapStateToProps, null)(Sidebar);
