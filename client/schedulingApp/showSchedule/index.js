@@ -150,7 +150,9 @@ class ShowSchedule extends Component {
                 const onRequestClose = () => {
                     this.props.clearOpenSpotSelection();
                     if (this.props.modalInfo.redirectToAfterClosing) {
-                        redirectTo(this.props.modalInfo.redirectToAfterClosing);
+                        const redirectPath = this.props.modalInfo.redirectToAfterClosing;
+                        this.props.markAsSelectedOnSidebar(redirectPath);
+                        redirectTo(redirectPath);
                     }
                 };
                 return (

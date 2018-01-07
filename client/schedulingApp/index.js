@@ -50,15 +50,18 @@ class SchedulingApp extends Component {
 
         const isReady = !authenticated || (authenticated && profile && initialized);
 
-        const maybeContent = isReady // TODO: Turn into a component after moving
-              ? this.props.children  // updateProfileForm off the redux-form
+
+        const maybeContent = isReady
+              ? React.cloneElement(
+                  this.props.children,
+                  { markAsSelectedOnSidebar: this.sidebarRef.markAsSelectedOnSidebar.bind(this.sidebarRef) })
               : <div className="main-content"><LoadingSpinner /></div>;
 
         return (
             <MainContentWrap>
-                <div className="wrap">
-                    <Sidebar {...sidebarConfig}></Sidebar>
-                    {maybeContent}
+              <div className="wrap">
+                <Sidebar ref={(sidebar) => this.sidebarRef = sidebar} {...sidebarConfig}></Sidebar>
+                {maybeContent}
                 </div>
             </MainContentWrap>
         );

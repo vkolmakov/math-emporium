@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 import { createClassName } from '../../utils';
 
 export default class Sidebar extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             selected: null,
         };
@@ -19,8 +19,11 @@ export default class Sidebar extends Component {
     }
 
     handleClick(event) {
-        const target = event.currentTarget.href.split('/').pop();
-        this.setState({ selected: target });
+        this.markAsSelectedOnSidebar(event.currentTarget.href);
+    }
+
+    markAsSelectedOnSidebar(path) {
+        this.setState({ selected: path.split('/').pop() });
     }
 
     renderLink(path, text, BASE_PATH) {
