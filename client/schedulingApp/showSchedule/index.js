@@ -89,7 +89,7 @@ class ShowSchedule extends Component {
         const nextSubject = subjectOption ? subjects.all.find(l => subjectOption.value === l.id) : null;
 
         this.onSelectChange(prevSubject, this.props.setSubject)(nextSubject);
-        if (this.courseSelect) {
+        if (this.courseSelect && nextSubject) {
             this.courseSelect.focus();
         }
     }
@@ -101,7 +101,7 @@ class ShowSchedule extends Component {
         const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
 
         this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
-        if (this.subjectSelect) {
+        if (this.subjectSelect && nextLocation) {
             this.subjectSelect.focus();
         }
     }

@@ -35,7 +35,7 @@ export default ({ options, currentValue, onChange, placeholder, error, selectRef
                 ref={select => selectRef ? selectRef(select) : null}
                 className={createClassName(error, currentValue)}
                 onChange={(event) => handleChange(options, event)(onChange)}>
-                <option value={0} disabled>{placeholder}</option>
+                <option value={0}>{placeholder}</option>
                 {options.map(({ value, label }) => (<option value={value} key={value}>{label}</option>))}
             </select>
         </div>);
