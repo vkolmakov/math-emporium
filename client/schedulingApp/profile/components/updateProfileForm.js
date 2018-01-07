@@ -91,9 +91,11 @@ class UpdateProfileForm extends Component {
                     searchable: false,
                     onSelect: (value) => {
                         this.props.dispatch(change(FORM_NAME, 'course', null));
+                        this.props.dispatch(change(FORM_NAME, 'subject', null));
                         this.setState({
                             ...this.state,
                             selectedCourse: null,
+                            selectedSubject: null,
                             selectedLocation: value ? { id: value.value } : null,
                         });
                     },
@@ -107,7 +109,7 @@ class UpdateProfileForm extends Component {
                     options: subjectsOptions,
                     searchable: false,
                     onSelect: (value) => {
-                        this.props.dispatch(change(FORM_NAME, 'subject', null));
+                        this.props.dispatch(change(FORM_NAME, 'course', null));
                         this.setState({
                             ...this.state,
                             selectedCourse: null,
