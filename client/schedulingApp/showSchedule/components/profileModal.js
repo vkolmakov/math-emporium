@@ -27,11 +27,11 @@ class MiniProfileForm extends Component {
             const { firstName, lastName } = this.state;
 
             if (firstName && lastName) {
-                const { time, course, location } = this.props.selectedOpenSpotInfo;
+                const { time, course, location, subject } = this.props.selectedOpenSpotInfo;
                 this.setState({ error: null });
                 this.props.displayLoadingModal();
                 this.props.updateUserProfile({ firstName, lastName }).then(
-                    res => this.props.getAvailableTutors({ time, course, location }),
+                    res => this.props.getAvailableTutors({ time, course, location, subject }),
                     err => this.props.displayMessageModal({ message: 'Something went wrong, please try again.' })
                 ).then(
                     res => res.data,
