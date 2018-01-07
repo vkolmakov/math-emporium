@@ -3,65 +3,6 @@
 
 $gutter-size: 0.75em;
 
-.locations-info {
-    display: flex;
-    flex-flow: column nowrap;
-
-    padding: 1em;
-    padding-top: 0;
-
-    margin: 0;
-
-    list-style: none;
-
-    @include breakpoint($medium-screen) {
-        flex-flow: row wrap;
-        justify-content: space-around;
-    }
-}
-
-.locations-info-location-container {
-    margin: 1em 0;
-
-    @mixin location-info-line {
-        color: darken($tertiary-color, 70%);
-        margin: 0;
-    }
-
-    @include breakpoint($medium-screen) {
-        margin: 1em;
-        flex: 1;
-        max-width: 20em;
-    }
-
-    .name {
-        @include location-info-line;
-        text-align: center;
-    }
-
-    .description {
-        @include location-info-line;
-    }
-
-    .location-info-link {
-        color: $primary-text-color;
-    }
-
-    .contact-info {
-        margin-top: 0.5em;
-
-        .address {
-            @include location-info-line;
-        }
-        .phone {
-            @include location-info-line;
-        }
-        .email {
-            @include location-info-line;
-        }
-    }
-}
-
 .show-schedule-controls {
     display: flex;
     align-items: center;
@@ -162,6 +103,65 @@ $gutter-size: 0.75em;
 
     .loading {
         margin: 0 auto;
+    }
+
+    .locations-info {
+        display: flex;
+        flex-flow: column nowrap;
+
+        padding: 1em;
+        padding-top: 0;
+
+        margin: 0;
+
+        list-style: none;
+
+        @include breakpoint($medium-screen) {
+            flex-flow: row wrap;
+            justify-content: space-around;
+        }
+    }
+
+    .locations-info-location-container {
+        margin: 1em 0;
+
+        @mixin location-info-line {
+            color: darken($tertiary-color, 70%);
+            margin: 0;
+        }
+
+        @include breakpoint($medium-screen) {
+            margin: 1em;
+            flex: 1;
+            max-width: 20em;
+        }
+
+        .name {
+            @include location-info-line;
+            text-align: center;
+        }
+
+        .description {
+            @include location-info-line;
+        }
+
+        .location-info-link {
+            color: $primary-text-color;
+        }
+
+        .contact-info {
+            margin-top: 0.5em;
+
+            .address {
+                @include location-info-line;
+            }
+            .phone {
+                @include location-info-line;
+            }
+            .email {
+                @include location-info-line;
+            }
+        }
     }
 }
 
