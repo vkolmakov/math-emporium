@@ -11,8 +11,10 @@ import { availableTutors } from '../services/openSpots/openSpots.service';
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
+const Subject = db.models.subject;
 
-const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'next', 'googleCalendarAppointmentDate'];
+const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'subjectId',
+                       'next', 'googleCalendarAppointmentDate'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 export const updateProfile = async (req, res, next) => {
@@ -40,6 +42,22 @@ export const updateProfile = async (req, res, next) => {
                 await user.setLocation(location);
             } else {
                 await user.setLocation(null);
+            }
+        }
+
+        if (hasOneOf(req.body, 'subject')) {
+            let subject;
+            if (isObject(req.body.subject) && hasOneOf(req.body.subject, 'id', 'name')) {
+                subject = await Subject.findOne({
+                    where: { id: req.body.subject.id },
+                });
+
+                if (!subject) {
+                    res.status(400).json(notFound('subject'));
+                }
+                await user.setSubject(subject);
+            } else {
+                await user.setSubject(null);
             }
         }
 

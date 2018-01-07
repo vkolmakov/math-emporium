@@ -40,7 +40,9 @@ export default function createUserModel(sequelize, DataTypes) {
         timestamps: true,
         classMethods: {
             associate(models) {
+                // should say hasOne, but oh well
                 user.belongsTo(models.location);
+                user.belongsTo(models.subject);
                 user.belongsTo(models.course);
             },
         },
