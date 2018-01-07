@@ -23,10 +23,11 @@ const BASE_URL_TUTORS = '/api/available-tutors';
 
 const SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY = 'selectedOpenSpotInfo';
 
-export function getOpenSpots({ location, course, startDate }) {
+export function getOpenSpots({ location, course, startDate, subject }) {
     const requestParams = {
         locationId: location.id,
         courseId: course.id,
+        subjectId: subject.id,
         startDate: startDate.format(TIMESTAMP_FORMAT),
     };
 

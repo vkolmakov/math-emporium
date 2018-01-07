@@ -32,11 +32,18 @@ import { redirectTo } from '../../utils';
 
 class ShowSchedule extends Component {
     componentDidMount() {
-        const { selectedOpenSpotInfo, courses, locations, subjects } = this.props;
-        const { time, course, location } = selectedOpenSpotInfo;
+        const { selectedOpenSpotInfo, courses, locations, subjects, startDate } = this.props;
+        const { time, course, location, subject } = selectedOpenSpotInfo;
 
-        if (time && course && location) {
+        if (time && course && location && subject) {
             this.createAvailableOpenSpotHandler(time, course, location)();
+        } else if (courses.selected && locations.selected && subjects.selected) {
+            this.props.getOpenSpots({
+                location: locations.selected,
+                course: courses.selected,
+                startDate,
+                subject: subjects.selected,
+            });
         } else if (this.locationSelect && !locations.selected) {
             this.locationSelect.focus();
         } else if (this.subjectSelect && !subjects.selected) {
@@ -108,14 +115,17 @@ class ShowSchedule extends Component {
     componentDidUpdate(prevProps) {
         const location = this.props.locations.selected;
         const [prevCourse, course] = [prevProps.courses.selected, this.props.courses.selected];
+        const [prevSubject, subject] = [prevProps.subjects.selected, this.props.subjects.selected];
         const [prevStartDate, startDate] = [prevProps.startDate, this.props.startDate];
 
-        const isEverythingSelected = [location, course, startDate].every(e => !!e);
+        const isEverythingSelected = [location, course, startDate, subject].every(e => !!e);
+
         const isRerenderWithNewCourse = prevCourse && course && prevCourse.id !== course.id || !prevCourse;
+        const isRerenderWithNewSubject = prevSubject && subject && prevSubject.id !== subject.id || !prevSubject;
         const isRerenderWithNewDate = prevStartDate && startDate && prevStartDate !== startDate;
 
-        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate)) {
-            this.props.getOpenSpots({ location, course, startDate });
+        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate || isRerenderWithNewSubject)) {
+            this.props.getOpenSpots({ location, course, startDate, subject });
         }
     }
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setCourse, setLocation } from '../actions';
+import { setCourse, setLocation, setSubject } from '../actions';
 
 export const SA_GET_USER_PROFILE = 'SA_GET_USER_PROFILE';
 export const SA_UPDATE_USER_PROFILE = 'SA_UPDATE_USER_PROFILE';
@@ -20,9 +20,10 @@ export function getUserProfileAndSetOpenSpotsData() {
     return dispatch => {
         axios.get(`${BASE_URL}/profile`)
             .then(response => {
-                const { locationId, courseId } = response.data;
+                const { locationId, courseId, subjectId } = response.data;
 
                 const location = locationId ? { id: locationId } : null;
+                const subject = subjectId ? { id: subjectId } : null;
                 const course = courseId ? { id: courseId } : null;
 
                 dispatch({
@@ -31,6 +32,7 @@ export function getUserProfileAndSetOpenSpotsData() {
                 });
 
                 dispatch(setLocation(location));
+                dispatch(setSubject(subject));
                 dispatch(setCourse(course));
             });
     };
