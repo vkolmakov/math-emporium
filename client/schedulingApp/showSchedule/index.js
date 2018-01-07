@@ -49,12 +49,8 @@ class ShowSchedule extends Component {
                 startDate,
                 subject: subjects.selected,
             });
-        } else if (this.locationSelect && !locations.selected) {
-            this.locationSelect.focus();
-        } else if (this.subjectSelect && !subjects.selected) {
-            this.subjectSelect.focus();
-        } else if (this.coursesSelect && !courses.selected) {
-            this.coursesSelect.focus();
+        } else {
+            this.focusOnNextInput();
         }
     }
 
@@ -89,9 +85,7 @@ class ShowSchedule extends Component {
         const nextSubject = subjectOption ? subjects.all.find(l => subjectOption.value === l.id) : null;
 
         this.onSelectChange(prevSubject, this.props.setSubject)(nextSubject);
-        if (this.courseSelect && nextSubject) {
-            this.courseSelect.focus();
-        }
+        this.focusOnNextInput();
     }
 
     onLocationChange(locationOption) {
@@ -99,11 +93,8 @@ class ShowSchedule extends Component {
 
         const prevLocation = locations.selected;
         const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
-
         this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
-        if (this.subjectSelect && nextLocation) {
-            this.subjectSelect.focus();
-        }
+        this.focusOnNextInput();
     }
 
     onStartDateChange(startDateOption) {
@@ -114,28 +105,32 @@ class ShowSchedule extends Component {
 
         if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
             this.props.setStartDate(nextStartDate);
+            this.focusOnNextInput();
+        }
+    }
 
-            const location = {
-                shouldFocus: !this.props.locations.selected,
-                elementRef: this.locationSelect,
-            };
-            const subject = {
-                shouldFocus: !this.props.subjects.selected,
-                elementRef: this.subjectSelect,
-            };
-            const course = {
-                shouldFocus: !this.props.courses.selected,
-                elementRef: this.courseSelect,
-            };
+    focusOnNextInput() {
+        const location = {
+            shouldFocus: !this.props.locations.selected,
+            elementRef: this.locationSelect,
+        };
+        const subject = {
+            shouldFocus: !this.props.subjects.selected,
+            elementRef: this.subjectSelect,
+        };
+        const course = {
+            shouldFocus: !this.props.courses.selected,
+            elementRef: this.courseSelect,
+        };
 
-            // target order is significant here
-            const nextFocusTarget = [location, subject, course].find((t) => t.shouldFocus);
+        // target order is significant here
+        const nextFocusTarget = [location, subject, course].find((t) => t.shouldFocus);
 
-            if (nextFocusTarget && nextFocusTarget.elementRef) {
-                // focus on the next target must be performed on next tick
-                // due to the datepicker grabbing focus
-                setTimeout(() => nextFocusTarget.elementRef.focus(), 0);
-            }
+        if (nextFocusTarget && nextFocusTarget.elementRef) {
+            // focus on the next target must be performed on next tick
+            // due to the previously-focused component grabbing focus if
+            // the change event came in from the datepicker
+            setTimeout(() => nextFocusTarget.elementRef.focus(), 0);
         }
     }
 
@@ -153,6 +148,8 @@ class ShowSchedule extends Component {
 
         if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate || isRerenderWithNewSubject)) {
             this.props.getOpenSpots({ location, course, startDate, subject });
+        } else {
+            this.focusOnNextInput();
         }
     }
 
