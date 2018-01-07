@@ -64,7 +64,7 @@ class LocationsInfo extends Component {
 function mapStateToProps(state) {
     return {
         locations: {
-            all: state.scheduling.shared.locations.all,
+            all: state.sharedPublicData.locations.all,
             selected: state.scheduling.shared.locations.selected,
         },
     };

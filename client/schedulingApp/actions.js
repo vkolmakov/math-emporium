@@ -1,14 +1,15 @@
 import axios from 'axios';
 
-export const SA_GET_LOCATIONS = 'SA_GET_LOCATIONS';
+import * as spd from '../sharedPublicData/actions';
+
 export const SA_GET_SUBJECTS = 'SA_GET_SUBJECTS';
 export const SA_GET_COURSES = 'SA_GET_COURSES';
 export const SA_SET_SUBJECT = 'SA_SET_SUBJECT';
 export const SA_SET_LOCATION = 'SA_SET_LOCATION';
 export const SA_SET_COURSE = 'SA_SET_COURSE';
 export const SA_INITIALIZE = 'SA_INITIALIZE';
+export const SA_GET_LOCATIONS = spd.SA_GET_LOCATIONS;
 
-const BASE_URL_LOCATIONS = '/api/public/locations';
 const BASE_URL_SUBJECTS = '/api/public/subjects';
 const BASE_URL_COURSES = '/api/public/courses';
 
@@ -18,14 +19,7 @@ export function markAsInitialized() {
     return { type: SA_INITIALIZE };
 }
 
-export function getLocations() {
-    const request = axios.get(BASE_URL_LOCATIONS);
-
-    return {
-        type: SA_GET_LOCATIONS,
-        payload: request,
-    };
-}
+export const getLocations = spd.getLocations;
 
 export function getSubjects() {
     const request = axios.get(BASE_URL_SUBJECTS);
