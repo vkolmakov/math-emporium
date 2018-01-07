@@ -114,6 +114,28 @@ class ShowSchedule extends Component {
 
         if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
             this.props.setStartDate(nextStartDate);
+
+            const location = {
+                shouldFocus: !this.props.locations.selected,
+                elementRef: this.locationSelect,
+            };
+            const subject = {
+                shouldFocus: !this.props.subjects.selected,
+                elementRef: this.subjectSelect,
+            };
+            const course = {
+                shouldFocus: !this.props.courses.selected,
+                elementRef: this.courseSelect,
+            };
+
+            // target order is significant here
+            const nextFocusTarget = [location, subject, course].find((t) => t.shouldFocus);
+
+            if (nextFocusTarget && nextFocusTarget.elementRef) {
+                // focus on the next target must be performed on next tick
+                // due to the datepicker grabbing focus
+                setTimeout(() => nextFocusTarget.elementRef.focus(), 0);
+            }
         }
     }
 
