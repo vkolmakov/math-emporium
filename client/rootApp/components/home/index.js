@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import MainContentWrap from '../../../components/mainContentWrap';
 import LocationsInfo from '../../../components/locationsInfo';
+import LocationsImages from './components/locationsImages';
 
 import { getLocations } from '../../../sharedPublicData/actions';
 
@@ -14,9 +15,16 @@ class Home extends Component {
     }
 
     render() {
+        const pageContent = this.props.util.isDesktop
+              ? [<LocationsImages></LocationsImages>,
+                 <LocationsInfo></LocationsInfo>]
+              : [<LocationsInfo></LocationsInfo>];
+
         return (
             <MainContentWrap>
-              <LocationsInfo />
+              <div className="home-content-container">
+                {pageContent}
+              </div>
             </MainContentWrap>
         );
     }
@@ -25,6 +33,7 @@ class Home extends Component {
 function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
+        util: { isDesktop: state.util.isDesktop },
     };
 }
 
