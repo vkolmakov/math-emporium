@@ -13,23 +13,23 @@ import { clearOpenSpotSelection,
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 class TutorSelectionModal extends Component {
-    constructor() {
-        super();
-        this.state = {
-            additionalComments: '',
-            requestedTutor: null,
-            tutors: [],
-        };
-    }
-
-    componentWillMount() {
+    constructor(props) {
+        super(props);
         const { selectedOpenSpotInfo } = this.props;
 
-        const tutors = selectedOpenSpotInfo.tutors.length > 1
-            ? [RANDOM_TUTOR, ...selectedOpenSpotInfo.tutors]
-            : selectedOpenSpotInfo.tutors;
+        let tutorOptions = [];
 
-        this.setState({ tutors, requestedTutor: tutors[0] });
+        if (selectedOpenSpotInfo.tutors) {
+            tutorOptions = selectedOpenSpotInfo.tutors.length > 1
+              ? [RANDOM_TUTOR, ...selectedOpenSpotInfo.tutors]
+              : selectedOpenSpotInfo.tutors;
+        }
+
+        this.state = {
+            additionalComments: '',
+            requestedTutor: selectedOpenSpotInfo.tutors ? selectedOpenSpotInfo.tutors[0] : null,
+            tutors: tutorOptions,
+        };
     }
 
     successMessage({ location, course, time }) {
@@ -39,16 +39,25 @@ class TutorSelectionModal extends Component {
     render() {
         const { selectedOpenSpotInfo } = this.props;
         const { course, location, time } = selectedOpenSpotInfo;
-        const { tutors } = this.state;
 
-        const tutorOptions = tutors.map(t => ({ label: t.name, value: t.id }));
+        const getTutorOptions = (state) => state.tutors.map(t => ({ label: t.name, value: t.id }));
 
-        const displayTime = time.format(TIMESTAMP_DISPLAY_FORMAT);
-        const appointmentInfoDisplay = `${course.code} on ${displayTime}`;
+        const getAppointmentInfoDisplay = (openSpotInfo) => {
+            const displayTime = openSpotInfo.time.format(TIMESTAMP_DISPLAY_FORMAT);
+            const appointmentInfoDisplay = `${openSpotInfo.course.code} on ${displayTime}`;
+
+            return appointmentInfoDisplay;
+        };
 
         const onRequestClose = this.props.clearOpenSpotSelection;
-        const onTutorSelect = tutorOption => this.setState({ requestedTutor: tutors.find(t => t.id === tutorOption.value) });
-        const onAdditionalCommentsChange = e => this.setState({ additionalComments: e.target.value });
+
+        const onTutorSelect = tutorOption => this.setState((state, _) => {
+            return { ...state, requestedTutor: state.tutors.find(t => t.id === tutorOption.value) };
+        });
+        const onAdditionalCommentsChange = e => this.setState((state, _) => {
+            return { ...state, additionalComments: e.target.value };
+        });
+
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
@@ -62,16 +71,15 @@ class TutorSelectionModal extends Component {
                       });
             this.props.displayLoadingModal();
         };
-
         return (
             <Modal isOpen={true}
                    onRequestClose={onRequestClose}
                    contentLabel="Tutor Selecion Modal"
                    className="scheduling-modal">
                 <h1>Confirm your appointment details</h1>
-                <h2>{appointmentInfoDisplay}</h2>
+                <h2>{getAppointmentInfoDisplay(selectedOpenSpotInfo)}</h2>
 
-                <FilterControls options={tutorOptions}
+                <FilterControls options={getTutorOptions(this.state)}
                                 label="Select Your Tutor"
                                 currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
                                 onChange={onTutorSelect}

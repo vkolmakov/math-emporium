@@ -30,6 +30,7 @@ const INITIAL_STATE = {
     },
     selectedOpenSpotInfo: {
         time: null,
+        previouslySelectedTime: null,
         course: null,
         location: null,
         tutors: [],
@@ -85,6 +86,11 @@ export default (state = INITIAL_STATE, action) => {
             ...state,
             selectedOpenSpotInfo: {
                 time: null,
+                // stash last valid selected time when clearing to use as a fall-back value
+                // this is required to handle a case when open spot was cleared but a
+                // network request for tutors is already executing and the callback that
+                // creates a tutor selection modal will run regardless. Thanks Promise!
+                previouslySelectedTime: state.selectedOpenSpotInfo.time || state.selectedOpenSpotInfo.previouslySelectedTime,
                 course: state.selectedOpenSpotInfo.course,
                 location: state.selectedOpenSpotInfo.location,
                 tutors: [],
@@ -96,7 +102,12 @@ export default (state = INITIAL_STATE, action) => {
         return {
             ...state,
             modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.SELECTING_TUTOR },
-            selectedOpenSpotInfo: { ...state.selectedOpenSpotInfo, tutors: payload },
+            selectedOpenSpotInfo: {
+                ...state.selectedOpenSpotInfo,
+                // ensure _a_ valid time is present
+                time: state.selectedOpenSpotInfo.time || state.selectedOpenSpotInfo.previouslySelectedTime,
+                tutors: payload,
+            },
         };
 
     case SA_DISPLAY_LOADING_MODAL:
