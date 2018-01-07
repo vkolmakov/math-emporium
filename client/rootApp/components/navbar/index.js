@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { AUTH_GROUPS } from '../../../constants';
+import { AUTH_GROUPS, APP_TITLE } from '../../../constants';
 import { createClassName } from '../../../utils';
 
 const NavLink = ({ to, className, children }) => (
@@ -34,7 +34,7 @@ class Navbar extends Component {
         const authLinks = this.authLinks();
         return (
             <nav>
-              <NavLink to="/">Home</NavLink>
+              <NavLink to="/">{APP_TITLE}</NavLink>
               <NavLink to="/schedule">Schedule</NavLink>
               {links.map(NavLink)}
               <div className="auth-links">{authLinks.map(NavLink)}</div>
