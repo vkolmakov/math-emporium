@@ -137,7 +137,7 @@ $gutter-size: 0.75em;
 
 .open-spots-message {
     @include breakpoint($medium-screen) {
-        margin: 15vh auto;
+        margin: 2em auto;
     }
 
     > h1 {
