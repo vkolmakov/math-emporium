@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Either } from '../../../utils';
+import { Either } from '../utils';
 
 const Location = (location) => {
     const Address = (address) => (

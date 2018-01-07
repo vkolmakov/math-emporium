@@ -5,9 +5,9 @@ import { OPEN_SPOTS_LOADING_MESSAGE } from '../constants';
 import { Either, S } from '../../../utils';
 
 import LoadingSpinner from '../../../components/loadingSpinner';
+import LocationsInfo from '../../../components/locationsInfo';
 import ErrorMessage from './errorMessage';
 import Weekday from './weekday';
-import LocationsInfo from './locationsInfo';
 import MissingItemInfo from './missingItemInfo';
 
 function partitionOpenSpotsByWeekday(openSpots, startDate) {
