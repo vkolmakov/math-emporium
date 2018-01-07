@@ -24,8 +24,8 @@ class Signin extends Component {
 
     trySaveSelectedOpenSpot() {
         const { selectedOpenSpotInfo } = this.props;
-        const { course, location, time } = selectedOpenSpotInfo;
-        if (course && location && time) {
+        const { course, location, time, subject } = selectedOpenSpotInfo;
+        if (course && location && time && subject) {
             this.props.saveSelectedOpenSpotInLocalStorage(selectedOpenSpotInfo);
             this.props.clearOpenSpotSelection();
         }

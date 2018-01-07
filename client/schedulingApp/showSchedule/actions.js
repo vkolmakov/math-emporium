@@ -67,10 +67,10 @@ export function clearSchedulingMessage() {
     };
 }
 
-export function selectOpenSpot({ time, course, location }) {
+export function selectOpenSpot({ time, course, location, subject }) {
     return {
         type: SA_SELECT_OPEN_SPOT,
-        payload: { time, course, location },
+        payload: { time, course, location, subject },
     };
 }
 
@@ -127,12 +127,13 @@ export function scheduleAppointment({ location, course, time, requestedTutor, ad
     };
 }
 
-export function getAvailableTutors({ time, course, location }) {
+export function getAvailableTutors({ time, course, location, subject }) {
     return dispatch => {
         const requestParams = {
             time: time.format(TIMESTAMP_FORMAT),
             courseId: course.id,
             locationId: location.id,
+            subjectId: subject.id,
         };
 
         return axios.get(BASE_URL_TUTORS, {
@@ -141,8 +142,9 @@ export function getAvailableTutors({ time, course, location }) {
     };
 }
 
-export function saveSelectedOpenSpotInLocalStorage({ course, location, time }) {
+export function saveSelectedOpenSpotInLocalStorage({ course, location, time, subject }) {
     const serialized = JSON.stringify({
+        subject,
         course,
         location,
         time: time.valueOf(),
@@ -160,12 +162,13 @@ export function hasNewUserSelectedOpenSpotBeforeSignIn() {
 }
 
 export function retrieveSelectedOpenSpotFromLocalStorage() {
-    const { course, location, time } =
+    const { course, location, time, subject } =
           JSON.parse(localStorage.getItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY));
 
     return {
         course,
         location,
+        subject,
         time: moment(time),
     };
 }

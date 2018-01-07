@@ -33,10 +33,15 @@ import { redirectTo } from '../../utils';
 class ShowSchedule extends Component {
     componentDidMount() {
         const { selectedOpenSpotInfo, courses, locations, subjects, startDate } = this.props;
-        const { time, course, location, subject } = selectedOpenSpotInfo;
 
-        if (time && course && location && subject) {
-            this.createAvailableOpenSpotHandler(time, course, location)();
+        const hasPreSelectedOpenSpot = selectedOpenSpotInfo.time
+              && selectedOpenSpotInfo.course
+              && selectedOpenSpotInfo.location
+              && selectedOpenSpotInfo.subject;
+
+        if (hasPreSelectedOpenSpot) {
+            const { time, course, location, subject } = selectedOpenSpotInfo;
+            this.createAvailableOpenSpotHandler(time, course, location, subject)();
         } else if (courses.selected && locations.selected && subjects.selected) {
             this.props.getOpenSpots({
                 location: locations.selected,
@@ -189,11 +194,11 @@ class ShowSchedule extends Component {
         return selectTransformOptions()(locations.all);
     }
 
-    createAvailableOpenSpotHandler(time, course, location) {
+    createAvailableOpenSpotHandler(time, course, location, subject) {
         const { authenticated, profile } = this.props;
 
         return e => {
-            this.props.selectOpenSpot({ time, course, location });
+            this.props.selectOpenSpot({ time, course, subject, location });
 
             if (!authenticated) {
                 return this.context.router.push('/signin');
@@ -205,7 +210,7 @@ class ShowSchedule extends Component {
                 return this.props.displayProfileModal();
             }
 
-            return this.props.getAvailableTutors({ time, course, location })
+            return this.props.getAvailableTutors({ time, course, location, subject })
                 .then(res => res.data)
                 .then(tutors => tutors.length > 0
                       ? this.props.displayTutorSelectionModal({ tutors })
@@ -222,7 +227,7 @@ class ShowSchedule extends Component {
         const coursesOptions = this.createCoursesOptions(courses, subjects);
 
         const openSpotHandlers = {
-            available: time => this.createAvailableOpenSpotHandler(time, courses.selected, locations.selected),
+            available: time => this.createAvailableOpenSpotHandler(time, courses.selected, locations.selected, subjects.selected),
             expired: time => e => this.props.clearOpenSpotSelection(),
             closed: time => e => this.props.clearOpenSpotSelection(),
         };
