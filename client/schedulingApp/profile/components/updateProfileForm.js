@@ -4,10 +4,9 @@ import { reduxForm, initialize, change } from 'redux-form';
 import Form from '../../../components/form/index';
 
 import { updateUserProfile } from '../actions';
-import { setLocation, setCourse } from '../../actions';
 import { selectTransformOptions } from '../../../editingApp/utils';
 
-const FORM_FIELDS = ['firstName', 'lastName', 'location', 'course'];
+const FORM_FIELDS = ['firstName', 'lastName', 'location', 'course', 'subject'];
 const FORM_NAME = 'UpdateProfileForm';
 
 class UpdateProfileForm extends Component {
@@ -17,6 +16,7 @@ class UpdateProfileForm extends Component {
             success: false,
             selectedCourse: null,
             selectedLocation: null,
+            selectedSubject: null,
         };
     }
 
@@ -25,28 +25,36 @@ class UpdateProfileForm extends Component {
     }
 
     updateForm() {
-        const { firstName, lastName, location, course } = this.props.profile;
+        const { firstName, lastName, location, course, subject } = this.props.profile;
         this.props.dispatch(initialize(FORM_NAME, {
             firstName: firstName || '',
             lastName: lastName || '',
             location: location ? location.id : null,
             course: course ? course.id : null,
+            subject: subject ? subject.id : null,
         }, FORM_FIELDS));
     }
 
     render() {
-        const { firstName, lastName, location, course } = this.props.fields;
+        const { firstName, lastName, location, course, subject } = this.props.fields;
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
 
-        let coursesOptions;
-        if (!location.value) { // doing a stupid lookup on form props
-            coursesOptions = [];
-        } else {
-            const filteredCourses = this.props.courses.all.filter(c => c.location.id === location.value);
-            coursesOptions = filteredCourses.map(c => ({
-                value: c.id,
-                label: `${c.code}: ${c.name}`,
+        let coursesOptions = [];
+        let subjectsOptions = [];
+        if (location.value) {
+            const filteredSubjects = this.props.subjects.all.filter(s => s.location.id === location.value);
+            subjectsOptions = filteredSubjects.map(s => ({
+                value: s.id,
+                label: s.name,
             }));
+
+            if (subject.value) {
+                const filteredCourses = this.props.courses.all.filter(c => c.subject.id === subject.value);
+                coursesOptions = filteredCourses.map(c => ({
+                    value: c.id,
+                    label: `${c.code}: ${c.name}`,
+                }));
+            }
         }
 
         const onSubmit = (data) => {
@@ -63,19 +71,19 @@ class UpdateProfileForm extends Component {
 
         const fields = [
             {
-                label: 'First Name',
+                label: 'First name',
                 input: {
                     type: 'text',
                     binding: firstName,
                 },
             }, {
-                label: 'Last Name',
+                label: 'Last name',
                 input: {
                     type: 'text',
                     binding: lastName,
                 },
             }, {
-                label: 'Location you usually go to for tutoring',
+                label: 'Default location',
                 input: {
                     type: 'select',
                     binding: location,
@@ -92,7 +100,24 @@ class UpdateProfileForm extends Component {
                     controlValue: this.state.selectedLocation ? this.state.selectedLocation.id : null,
                 },
             }, {
-                label: 'Course',
+                label: 'Default subject',
+                input: {
+                    type: 'select',
+                    binding: subject,
+                    options: subjectsOptions,
+                    searchable: false,
+                    onSelect: (value) => {
+                        this.props.dispatch(change(FORM_NAME, 'subject', null));
+                        this.setState({
+                            ...this.state,
+                            selectedCourse: null,
+                            selectedSubject: value ? { id: value.value } : null,
+                        });
+                    },
+                    controlValue: this.state.selectedSubject ? this.state.selectedSubject.id : null,
+                },
+            }, {
+                label: 'Default course',
                 input: {
                     type: 'select',
                     binding: course,
@@ -146,4 +171,4 @@ export default reduxForm({
     form: FORM_NAME,
     fields: FORM_FIELDS,
     validate,
-}, null, { updateUserProfile, setLocation, setCourse })(UpdateProfileForm);
+}, null, { updateUserProfile })(UpdateProfileForm);

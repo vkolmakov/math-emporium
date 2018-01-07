@@ -41,16 +41,19 @@ export function updateUserProfile(values) {
         const {
             location: locationId,
             course: courseId,
+            subject: subjectId,
             firstName,
             lastName,
         } = values;
 
         const location = locationId ? { id: locationId } : null;
         const course = courseId ? { id: courseId } : null;
+        const subject = subjectId ? { id: subjectId } : null;
 
         const requestBody = {
             location,
             course,
+            subject,
             firstName,
             lastName,
         };

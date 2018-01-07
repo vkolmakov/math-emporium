@@ -6,7 +6,6 @@ import UpdateProfileForm from './components/updateProfileForm';
 import LoadingSpinner from '../../components/loadingSpinner';
 
 import { getUserProfile } from './actions';
-import { getLocations, getCourses } from '../actions';
 
 class Profile extends Component {
     componentWillMount() {
@@ -14,7 +13,7 @@ class Profile extends Component {
     }
 
     render() {
-        const { profile, courses, locations } = this.props;
+        const { profile, courses, locations, subjects } = this.props;
 
         if (!(profile && courses.all && locations.all)) {
             return (
@@ -29,7 +28,8 @@ class Profile extends Component {
                 <NextAppointment profile={profile} />
                 <UpdateProfileForm profile={profile}
                                    locations={locations}
-                                   courses={courses} />
+                                   courses={courses}
+                                   subjects={subjects} />
             </div>
         );
     }
@@ -46,11 +46,13 @@ function mapStateToProps(state) {
             all: state.scheduling.shared.courses.all,
             selected: state.scheduling.shared.courses.selected,
         },
+        subjects: {
+            all: state.scheduling.shared.subjects.all,
+            selected: state.scheduling.shared.subjects.selected,
+        },
     };
 }
 
 export default connect(mapStateToProps, {
     getUserProfile,
-    getLocations,
-    getCourses,
 })(Profile);
