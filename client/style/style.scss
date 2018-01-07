@@ -36,6 +36,18 @@ body {
 
 }
 
+.page-section {
+    &:focus {
+        outline: 0;
+        animation: primaryColorFade 1.5s forwards;
+    }
+
+    @keyframes primaryColorFade {
+        from { background: $primary-color; }
+        to   { background: transparent; }
+    }
+}
+
 select {
     @include input;
 }
