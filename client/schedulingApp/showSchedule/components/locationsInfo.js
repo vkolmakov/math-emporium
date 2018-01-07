@@ -48,9 +48,14 @@ const Location = (location) => {
 
 class LocationsInfo extends Component {
     render() {
+        const locations = this.props.onlySelected
+              ? [this.props.locations.selected]
+              : this.props.locations.all;
+
+
         return (
             <ul className="locations-info">
-              {this.props.locations.all.map(Location)}
+              {locations.map(Location)}
             </ul>
         );
     }
@@ -58,7 +63,10 @@ class LocationsInfo extends Component {
 
 function mapStateToProps(state) {
     return {
-        locations: { all: state.scheduling.shared.locations.all },
+        locations: {
+            all: state.scheduling.shared.locations.all,
+            selected: state.scheduling.shared.locations.selected,
+        },
     };
 }
 

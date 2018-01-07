@@ -8,6 +8,7 @@ import LoadingSpinner from '../../../components/loadingSpinner';
 import ErrorMessage from './errorMessage';
 import Weekday from './weekday';
 import LocationsInfo from './locationsInfo';
+import MissingItemInfo from './missingItemInfo';
 
 function partitionOpenSpotsByWeekday(openSpots, startDate) {
     // put every open-spot that have the same week in one list under one key
@@ -43,17 +44,25 @@ const OpenSpotsMessageWrapper = content => (
 export default ({ openSpots, startDate, isLocationSelected, isSubjectSelected, isCourseSelected, now, handlers }) => {
     if (!isLocationSelected) {
         return OpenSpotsMessageWrapper(
-            [<ErrorMessage key="message" message='Select a location' />,
+            [<ErrorMessage key="message" message="Select a location" />,
              <LocationsInfo key="suppliment"/>]
         );
     }
 
     if (!isSubjectSelected) {
-        return OpenSpotsMessageWrapper(<ErrorMessage message='Select a subject' />);
+        return OpenSpotsMessageWrapper(
+            [<ErrorMessage key="message" message="Select a subject" />,
+             <MissingItemInfo key="suppliment" missingItem="subject"/>,
+             <LocationsInfo onlySelected key="location"/>]
+        );
     }
 
     if (!isCourseSelected) {
-        return OpenSpotsMessageWrapper(<ErrorMessage message='Select a course' />);
+        return OpenSpotsMessageWrapper(
+            [<ErrorMessage key="message" message="Select a course" />,
+             <MissingItemInfo key="suppliment" missingItem="course"/>,
+             <LocationsInfo onlySelected key="location"/>]
+        );
     }
 
     const renderWeekday = ({ weekdayDisplay, openSpots }) => (

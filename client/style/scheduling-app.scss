@@ -17,8 +17,6 @@ $gutter-size: 0.75em;
     @include breakpoint($medium-screen) {
         flex-flow: row wrap;
         justify-content: space-around;
-
-        padding-top: 1em;
     }
 }
 
@@ -38,6 +36,7 @@ $gutter-size: 0.75em;
 
     .name {
         @include location-info-line;
+        text-align: center;
     }
 
     .description {
@@ -136,26 +135,33 @@ $gutter-size: 0.75em;
 
 
 .open-spots-message {
+    $message-text-color: darken($tertiary-color, 70%);
+
     @include breakpoint($medium-screen) {
         margin: 2em auto;
     }
 
-    > h1 {
-        color: darken($tertiary-color, 32%);
-        font-weight: 400;
+    @mixin open-spots-message {
+        color: $message-text-color;
 
         @include breakpoint($medium-screen) {
-            max-width: 20em;
+            max-width: 35em;
             margin: 0 auto;
             text-align: center;
         }
     }
 
-    > .loading {
-        margin: 1em auto;
-        @include breakpoint($medium-screen) {
-            margin: 15vh auto;
-        }
+    .missing-item-info {
+        @include open-spots-message;
+    }
+
+
+    .open-spots-message-main {
+        @include open-spots-message;
+    }
+
+    .loading {
+        margin: 0 auto;
     }
 }
 
