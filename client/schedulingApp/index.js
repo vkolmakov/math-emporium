@@ -12,19 +12,20 @@ import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 class SchedulingApp extends Component {
     componentDidMount() {
         if (!this.props.initialized) {
-            this.props.getLocations();
-            this.props.getSubjects();
-            this.props.getCourses();
-            this.props.markAsInitialized();
-        }
-
-        if (this.props.authenticated) {
-            this.props.getUserProfileAndSetOpenSpotsData();
+            Promise.all([
+                this.props.getLocations(),
+                this.props.getSubjects(),
+                this.props.getCourses(),
+            ]).then(() => {
+                return this.props.authenticated
+                    ? this.props.getUserProfileAndSetOpenSpotsData()
+                    : Promise.resolve();
+            }).then(() => this.props.markAsInitialized());
         }
     }
 
     render() {
-        const { authenticated, profile } = this.props;
+        const { authenticated, profile, initialized } = this.props;
 
         const currPath = this.props.location.pathname;
         const selected = currPath.split('/').pop();
@@ -47,7 +48,7 @@ class SchedulingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
-        const isReady = (authenticated && profile) || !authenticated;
+        const isReady = !authenticated || (authenticated && profile && initialized);
 
         const maybeContent = isReady // TODO: Turn into a component after moving
               ? this.props.children  // updateProfileForm off the redux-form
