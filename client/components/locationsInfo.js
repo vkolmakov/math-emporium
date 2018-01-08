@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { Either } from '../utils';
 
-const Location = (location) => {
+const Location = ({ shouldDisplayImageBackground }) => (location) => {
     const Address = (address) => (
         <p className="address">
           <a className="location-info-link" href={`https://maps.google.com/?q=${address}`}>{address}</a>
@@ -31,16 +31,29 @@ const Location = (location) => {
 
     const description = Either.toEither('', location.description);
 
+    const backgroundImageStyle = {
+        backgroundImage: `url(${location.pictureLink})`,
+        backgroundSize: 'cover',
+        height: '20em',
+        backgroundPosition: 'center',
+    };
+
+    const overlayStyle = {
+        background: 'rgba(0, 0, 0, 0.5)',
+    };
+
     return (
-        <li key={location.id} className="locations-info-location-container">
-          <p className="name">
-            <strong>{location.name}</strong>
-          </p>
-          {Either.either(Empty, Description, description)}
-          <div className="contact-info">
-            {Either.either(Empty, Address, contacts.address)}
-            {Either.either(Empty, Phone, contacts.phone)}
-            {Either.either(Empty, Email, contacts.email)}
+        <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundImageStyle : {}}>
+          <div className="location-info-location-data" style={shouldDisplayImageBackground ? overlayStyle : {}}>
+            <p className="name">
+              <strong>{location.name}</strong>
+            </p>
+            {Either.either(Empty, Description, description)}
+            <div className="contact-info">
+              {Either.either(Empty, Address, contacts.address)}
+              {Either.either(Empty, Phone, contacts.phone)}
+              {Either.either(Empty, Email, contacts.email)}
+            </div>
           </div>
         </li>
     );
@@ -55,7 +68,7 @@ class LocationsInfo extends Component {
 
         return (
             <ul className="locations-info">
-              {locations.map(Location)}
+              {locations.map(Location(this.props))}
             </ul>
         );
     }
