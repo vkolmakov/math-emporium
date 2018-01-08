@@ -6,6 +6,7 @@ import LocationsInfo from '../../../components/locationsInfo';
 import LocationsImages from './components/locationsImages';
 
 import { getLocations } from '../../../sharedPublicData/actions';
+import { redirectTo } from '../../../utils';
 
 class Home extends Component {
     componentDidMount() {
@@ -14,11 +15,26 @@ class Home extends Component {
         }
     }
 
+    redirectToSchedule() {
+        redirectTo('/schedule');
+    }
+
     render() {
-        const pageContent = this.props.util.isDesktop
-              ? [<LocationsImages></LocationsImages>,
-                 <LocationsInfo></LocationsInfo>]
-              : [<LocationsInfo></LocationsInfo>];
+        let pageContent;
+        if (this.props.util.isDesktop) {
+            pageContent = [];
+        } else {
+            const Locations = () => (
+                <div className="locations">
+                  <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
+                    Schedule an appointment
+                  </button>
+                  <LocationsInfo shouldDisplayImageBackground></LocationsInfo>
+                </div>
+            );
+
+            pageContent = [<Locations key="locations"></Locations>];
+        }
 
         return (
             <MainContentWrap>

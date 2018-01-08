@@ -1,3 +1,61 @@
+@import "variables";
+
 .home-content-container {
     display: flex;
+
+    .schedule-appointment-button {
+        padding: 1.5em;
+        font-size: 1em;
+        background-color: $primary-color;
+        width: 100%;
+
+        cursor: pointer;
+
+        &:hover, &:focus {
+            background-color: darken($primary-color, 16%);
+            font-weight: bold;
+        }
+    }
+
+    .locations-info {
+        display: flex;
+        flex-flow: column nowrap;
+
+        padding: 0;
+        margin: 0;
+
+        list-style: none;
+    }
+
+    .locations-info-location-container {
+        display: flex;
+
+        @mixin location-info-line {
+            color: $secondary-color;
+            margin: 0;
+
+            text-align: center;
+        }
+
+        .name { @include location-info-line; }
+        .description { @include location-info-line; }
+        .location-info-link { @include location-info-line; }
+        .contact-info {
+            margin-top: 0.5em;
+
+            .address { @include location-info-line; }
+            .phone { @include location-info-line; }
+            .email { @include location-info-line; }
+        }
+    }
+
+    .location-info-location-data {
+        flex: 1;
+
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+
+        padding: 0.5em;
+    }
 }
