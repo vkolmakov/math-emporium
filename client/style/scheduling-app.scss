@@ -128,6 +128,10 @@ $gutter-size: 0.75em;
         @mixin location-info-line {
             color: darken($tertiary-color, 70%);
             margin: 0;
+
+            @include breakpoint($medium-screen) {
+                text-align: center;
+            }
         }
 
         @include breakpoint($medium-screen) {
@@ -138,10 +142,6 @@ $gutter-size: 0.75em;
 
         .name {
             @include location-info-line;
-
-            @include breakpoint($medium-screen) {
-                text-align: center;
-            }
         }
 
         .description {
