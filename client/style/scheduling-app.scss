@@ -138,7 +138,10 @@ $gutter-size: 0.75em;
 
         .name {
             @include location-info-line;
-            text-align: center;
+
+            @include breakpoint($medium-screen) {
+                text-align: center;
+            }
         }
 
         .description {
