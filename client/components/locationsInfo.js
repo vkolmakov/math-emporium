@@ -34,7 +34,7 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
     const backgroundImageStyle = {
         backgroundImage: `url(${location.pictureLink})`,
         backgroundSize: 'cover',
-        height: '20em',
+        height: '25em',
         backgroundPosition: 'center',
     };
 

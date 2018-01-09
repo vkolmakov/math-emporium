@@ -28,7 +28,21 @@ class Home extends Component {
 
 
         if (this.props.util.isDesktop) {
-            pageContent = [<Locations key="locations"></Locations>];
+            const HomeHeader = () => (
+                <div className="home-header">
+                  <div className="home-header-block">
+                    <h1 className="home-header-title">Tutoring@Wright</h1>
+                    <h2>Study with us!</h2>
+
+                    <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
+                      Schedule an appointment
+                    </button>
+                  </div>
+                </div>
+            );
+
+            pageContent = [<HomeHeader></HomeHeader>,
+                           <Locations key="locations"></Locations>];
         } else {
             const ScheduleButton = () => (
                 <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
@@ -37,8 +51,7 @@ class Home extends Component {
             );
 
             pageContent = [<ScheduleButton></ScheduleButton>,
-                           <Locations key="locations"></Locations>,
-                          ];
+                           <Locations key="locations"></Locations>];
         }
 
         return (

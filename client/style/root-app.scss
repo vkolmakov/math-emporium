@@ -1,5 +1,24 @@
 @import "variables";
 
+.home-header {
+    background-color: #1c1f21;
+    color: white;
+
+    height: 25em;
+
+
+    .home-header-block {
+        padding-top: 4em;
+
+        max-width: 50em;
+        margin: 0 auto;
+    }
+
+    .home-header-title {
+        margin: 0;
+    }
+}
+
 .schedule-appointment-button {
     padding: 1.5em;
     font-size: 1em;
@@ -7,6 +26,11 @@
     width: 100%;
 
     cursor: pointer;
+
+    @include breakpoint($medium-screen) {
+        padding: 1em;
+        width: 20em;
+    }
 
     &:hover, &:focus {
         background-color: darken($primary-color, 16%);
