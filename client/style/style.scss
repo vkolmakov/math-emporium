@@ -14,7 +14,7 @@
 
 $susy: (
     colums: 12,
-    container: 1040px,
+    container: 50em,
     global-box-sizing: border-box
 );
 
@@ -241,7 +241,7 @@ select {
 .container{
     margin: 0 auto;
     width: 90%;
-    max-width: 1024px;
+    max-width: 50em;
 }
 
 .loading {
