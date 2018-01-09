@@ -6,6 +6,7 @@ import LocationsInfo from '../../../components/locationsInfo';
 
 import { getLocations } from '../../../sharedPublicData/actions';
 import { redirectTo } from '../../../utils';
+import { APP_TITLE } from '../../../constants';
 
 class Home extends Component {
     componentDidMount() {
@@ -26,31 +27,27 @@ class Home extends Component {
             </div>
         );
 
+        const ScheduleButton = () => (
+            <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
+              Schedule an appointment
+            </button>
+        );
 
         if (this.props.util.isDesktop) {
             const HomeHeader = () => (
                 <div className="home-header">
                   <div className="home-header-block">
-                    <h1 className="home-header-title">Tutoring@Wright</h1>
+                    <h1 className="home-header-title">{APP_TITLE}</h1>
                     <h2>Study with us!</h2>
-
-                    <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
-                      Schedule an appointment
-                    </button>
+                    <ScheduleButton></ScheduleButton>
                   </div>
                 </div>
             );
 
-            pageContent = [<HomeHeader></HomeHeader>,
+            pageContent = [<HomeHeader key="leading-element"></HomeHeader>,
                            <Locations key="locations"></Locations>];
         } else {
-            const ScheduleButton = () => (
-                <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
-                  Schedule an appointment
-                </button>
-            );
-
-            pageContent = [<ScheduleButton></ScheduleButton>,
+            pageContent = [<ScheduleButton key="leading-element"></ScheduleButton>,
                            <Locations key="locations"></Locations>];
         }
 
