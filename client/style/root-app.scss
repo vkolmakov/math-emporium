@@ -1,21 +1,22 @@
 @import "variables";
 
+.schedule-appointment-button {
+    padding: 1.5em;
+    font-size: 1em;
+    background-color: $primary-color;
+    width: 100%;
+
+    cursor: pointer;
+
+    &:hover, &:focus {
+        background-color: darken($primary-color, 16%);
+        font-weight: bold;
+    }
+}
+
 .home-content-container {
     display: flex;
-
-    .schedule-appointment-button {
-        padding: 1.5em;
-        font-size: 1em;
-        background-color: $primary-color;
-        width: 100%;
-
-        cursor: pointer;
-
-        &:hover, &:focus {
-            background-color: darken($primary-color, 16%);
-            font-weight: bold;
-        }
-    }
+    flex-flow: column nowrap;
 
     .locations-info {
         display: flex;

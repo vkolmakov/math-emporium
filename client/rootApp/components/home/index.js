@@ -21,19 +21,25 @@ class Home extends Component {
 
     render() {
         let pageContent;
+        const Locations = () => (
+            <div className="locations">
+              <LocationsInfo shouldDisplayImageBackground></LocationsInfo>
+            </div>
+        );
+
+
         if (this.props.util.isDesktop) {
-            pageContent = [];
+            pageContent = [<Locations key="locations"></Locations>];
         } else {
-            const Locations = () => (
-                <div className="locations">
-                  <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
-                    Schedule an appointment
-                  </button>
-                  <LocationsInfo shouldDisplayImageBackground></LocationsInfo>
-                </div>
+            const ScheduleButton = () => (
+                <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
+                  Schedule an appointment
+                </button>
             );
 
-            pageContent = [<Locations key="locations"></Locations>];
+            pageContent = [<ScheduleButton></ScheduleButton>,
+                           <Locations key="locations"></Locations>,
+                          ];
         }
 
         return (
