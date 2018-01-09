@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import MainContentWrap from '../../../components/mainContentWrap';
 import LocationsInfo from '../../../components/locationsInfo';
-import LocationsImages from './components/locationsImages';
 
 import { getLocations } from '../../../sharedPublicData/actions';
 import { redirectTo } from '../../../utils';
