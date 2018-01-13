@@ -17,7 +17,7 @@ export function updateDefaultSettings(updatedValues) {
         .then((settingsDocument) => settingsDocument.values);
 }
 
-export function getValue(key) {
+export function getSettingsValue(key) {
     return getDefaultSettings()
         .then((settings) => settings[key]);
 }

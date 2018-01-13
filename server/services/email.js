@@ -1,7 +1,11 @@
 import SparkPost from 'sparkpost';
 import config from '../config';
+import { getSettingsValue, SETTINGS_KEYS } from './settings/settings.service';
 import { pickOneFrom } from '../aux';
 
+function createRecipient(email) {
+    return { address: email };
+}
 
 function composeLetterContent(body, user) {
     function htmlify(sentence) {
@@ -33,7 +37,7 @@ function composeLetterContent(body, user) {
     };
 }
 
-function createLetter(user, letterConstructors) {
+function createLetter(user, letterConstructors, additionalRecipients = []) {
     const { subjectConstructor, emailBodyConstructor } = letterConstructors;
     const { email } = user;
 
@@ -51,7 +55,7 @@ function createLetter(user, letterConstructors) {
             text,
             html,
         },
-        recipients: [{ address: email }],
+        recipients: [createRecipient(email), ...additionalRecipients],
     };
 }
 
@@ -67,9 +71,15 @@ function debugSendEmail(letterStructure) {
 }
 
 export default function sendEmail(user, letterConstructors) {
-    const letter = createLetter(user, letterConstructors);
-
-    return !config.IS_PRODUCTION
-        ? productionSendEmail(letter)
-        : debugSendEmail(letter);
+    return getSettingsValue(SETTINGS_KEYS.duplicateAllEmailsTo)
+        .then((additionalRecipientAddress) => {
+            return !!additionalRecipientAddress
+                ? createLetter(user, letterConstructors, [createRecipient(additionalRecipientAddress)])
+                : createLetter(user, letterConstructors, []);
+        })
+        .then((letter) => {
+            return config.IS_PRODUCTION
+                ? productionSendEmail(letter)
+                : debugSendEmail(letter);
+        });
 }
