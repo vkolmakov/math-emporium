@@ -23,11 +23,13 @@ class TutorSelectionModal extends Component {
             tutorOptions = selectedOpenSpotInfo.tutors.length > 1
               ? [RANDOM_TUTOR, ...selectedOpenSpotInfo.tutors]
               : selectedOpenSpotInfo.tutors;
+        } else {
+            tutorOptions = [];
         }
 
         this.state = {
             additionalComments: '',
-            requestedTutor: selectedOpenSpotInfo.tutors ? selectedOpenSpotInfo.tutors[0] : null,
+            requestedTutor: tutorOptions.length > 0 ? tutorOptions[0] : null,
             tutors: tutorOptions,
         };
     }
@@ -80,13 +82,14 @@ class TutorSelectionModal extends Component {
                 <h2>{getAppointmentInfoDisplay(selectedOpenSpotInfo)}</h2>
 
                 <FilterControls options={getTutorOptions(this.state)}
-                                label="Select Your Tutor"
+                                disableNullOption
+                                label="Select your tutor"
                                 currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
                                 onChange={onTutorSelect}
                                 placeholder="Select a tutor..." />
 
                 <div className="textarea-input-group">
-                    <label htmlFor="textarea-additional-comments">Additional Comments</label>
+                    <label htmlFor="textarea-additional-comments">Additional comments</label>
                     <textarea value={this.state.additionalInfo}
                               id="textarea-additional-comments"
                               onChange={onAdditionalCommentsChange} />
