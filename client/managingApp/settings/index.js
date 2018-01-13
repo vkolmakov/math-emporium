@@ -2,21 +2,39 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Form from '../../components/form/index';
+import { updateSettings } from './actions';
 
 class ManageSettings extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            settings: {},
+            form: { success: false, error: null },
+        };
     }
 
     componentDidMount() {
         const settings = this.props.settings;
-        this.setState(settings);
+        this.setState({ settings });
     }
 
     render() {
         const onSubmit = (event) => {
-            console.log('submitted', event);
+            event.preventDefault();
+            const settings = this.state.settings;
+
+            this.props.updateSettings(settings)
+                .then(() => {
+                    this.setState((state) => ({
+                        ...state,
+                        form: { success: true, error: null },
+                    }));
+                }, (err) => {
+                    this.setState((state) => ({
+                        ...state,
+                        form: { success: false, error: 'Failed to submit settings' },
+                    }));
+                });
         };
 
         const toFormTextField = (settingKey) => {
@@ -24,9 +42,13 @@ class ManageSettings extends Component {
                 label: settingKey,
                 input: {
                     type: 'text',
-                    controlValue: this.state[settingKey],
+                    controlValue: this.state.settings[settingKey],
                     binding: {
-                        onChange: (event) => this.setState({ [settingKey]: event.target.value }),
+                        onChange: (event) => {
+                            const state = this.state;
+                            state.settings[settingKey] = event.target.value;
+                            this.setState(state);
+                        },
                     },
                 },
             };
@@ -36,8 +58,8 @@ class ManageSettings extends Component {
             handleSubmit: onSubmit.bind(this),
             title: 'Update application settings',
             fields: Object.keys(this.props.settings).map(toFormTextField),
-            error: this.state.error,
-            success: false,
+            error: this.state.form.error,
+            success: this.state.form.success,
         };
 
         return (
@@ -54,4 +76,6 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, null)(ManageSettings);
+export default connect(mapStateToProps, {
+    updateSettings,
+})(ManageSettings);
