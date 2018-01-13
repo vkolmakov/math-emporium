@@ -8,11 +8,13 @@ import { BASE_PATH } from './constants';
 
 import { getUsers } from './users/actions';
 import { getEvents } from './events/actions';
+import { getSettings } from './settings/actions';
 
 class ManagingApp extends Component {
     componentWillMount() {
         this.props.getUsers();
         this.props.getEvents();
+        this.props.getSettings();
     }
 
     render() {
@@ -22,6 +24,7 @@ class ManagingApp extends Component {
         const links = [
             ['users', 'Users'],
             ['events', 'Events'],
+            ['settings', 'Settings'],
         ];
 
         const sidebarConfig = {
@@ -50,4 +53,4 @@ class ManagingApp extends Component {
 }
 
 export default connect(null, {
-    getUsers, getEvents })(ManagingApp);
+    getUsers, getEvents, getSettings })(ManagingApp);

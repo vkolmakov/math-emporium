@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route } from 'react-router';
 
 import RequireAuthGroup from '../auth/components/requireAuthGroup';
 
@@ -12,10 +12,13 @@ import UserDetail from './users/components/userDetail';
 
 import ManageEvents from './events/index';
 
+import ManageSettings from './settings/index';
+
 export default (
     <Route path={BASE_PATH} component={RequireAuthGroup(AUTH_GROUPS.employer)(ManagingApp)}>
       <Route path="users" component={ManageUsers} />
       <Route path="users/:id" component={UserDetail} />
       <Route path="events" component={ManageEvents} />
+      <Route path="settings" component={ManageSettings} />
     </Route>
 );
