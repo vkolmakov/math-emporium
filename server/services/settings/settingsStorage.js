@@ -9,7 +9,7 @@ const Settings = mongoose.model('Settings', mongoose.Schema({
 
 const SETTINGS_KEYS = {
     applicationTitle: 'applicationTitle',
-    instancePictureUrl: 'instancePictureUrl',
+    duplicateAllEmailsTo: 'duplicateAllEmailsTo',
 };
 
 function findOrCreateSettings(id) {
@@ -19,6 +19,7 @@ function findOrCreateSettings(id) {
 
         s.values = {
             [SETTINGS_KEYS.applicationTitle]: 'math-emporium',
+            [SETTINGS_KEYS.duplicateAllEmailsTo]: '',
         };
         s.markModified('values');
 
