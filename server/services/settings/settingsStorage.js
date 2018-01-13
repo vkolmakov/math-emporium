@@ -52,10 +52,13 @@ export default {
             .then(() => findOrCreateSettings(DEFAULT_SETTINGS_ID));
     },
 
-    set(key, value) {
+    updateDefaultSettings(values) {
         return findOrCreateSettings(DEFAULT_SETTINGS_ID)
             .then((settings) => {
-                settings.values[key] = value;
+                settings.values = {
+                    ...settings.values,
+                    ...values,
+                };
                 settings.markModified('values');
                 return settings.save();
             });
