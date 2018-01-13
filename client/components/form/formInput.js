@@ -13,8 +13,9 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder, .
     const isSelectInput = options && !!selectInputTypes.find(t => t === type);
 
     if (isTextInput) {
+        const value = controlValue || '';
         inputElement = (
-            <input type={type} {...binding} placeholder={placeholder} />
+            <input type={type} value={value} {...binding} placeholder={placeholder} />
         );
     } else if (isSelectInput) {
         let renderer = {};
