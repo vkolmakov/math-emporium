@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Sidebar from '../components/sidebar/index';
+import LoadingSpinner from '../components/loadingSpinner';
 import MainContentWrap from '../components/mainContentWrap';
 
 import { BASE_PATH } from './constants';
@@ -11,10 +12,17 @@ import { getEvents } from './events/actions';
 import { getSettings } from './settings/actions';
 
 class ManagingApp extends Component {
-    componentWillMount() {
-        this.props.getUsers();
-        this.props.getEvents();
-        this.props.getSettings();
+    constructor(props) {
+        super(props);
+        this.state = { initialized: false };
+    }
+
+    componentDidMount() {
+        return Promise.all([
+            this.props.getUsers(),
+            this.props.getEvents(),
+            this.props.getSettings(),
+        ]).then(() => this.setState({ initialized: true }));
     }
 
     render() {
@@ -33,13 +41,22 @@ class ManagingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
-        const displayElems = this.props.children || (
-            <div className="content">
-              <div className="middle-help-message-wrap">
-                <h1>Select an option</h1>
-              </div>
-            </div>
-        );
+
+        let displayElems;
+
+        if (!this.state.initialized) {
+            displayElems = (<LoadingSpinner></LoadingSpinner>);
+        } else if (this.props.children) {
+            displayElems = this.props.children;
+        } else {
+            displayElems = (
+                <div className="content">
+                  <div className="middle-help-message-wrap">
+                    <h1>Select an option</h1>
+                  </div>
+                </div>
+            );
+        }
 
         return (
             <MainContentWrap>
