@@ -7,13 +7,18 @@ const Settings = mongoose.model('Settings', mongoose.Schema({
     values: Object,
 }));
 
+const SETTINGS_KEYS = {
+    applicationTitle: 'applicationTitle',
+    instancePictureUrl: 'instancePictureUrl',
+};
+
 function findOrCreateSettings(id) {
     const createDefaultSettings = () => {
         const s = new Settings;
         s.id = id;
 
         s.values = {
-            applicationTitle: 'math-emporium',
+            [SETTINGS_KEYS.applicationTitle]: 'math-emporium',
         };
         s.markModified('values');
 
@@ -25,6 +30,8 @@ function findOrCreateSettings(id) {
 }
 
 export default {
+    keys: SETTINGS_KEYS,
+
     connect(url, options) {
         const { user, password } = options;
 
