@@ -33,8 +33,8 @@ class SchedulingApp extends Component {
         let links;
         if (authenticated) {
             links = [
-                ['show', 'Show Schedule'],
-                ['profile', 'My Profile'],
+                ['show', 'Schedule'],
+                ['profile', 'My Profile and Appointments'],
             ];
         } else {
             links = [
