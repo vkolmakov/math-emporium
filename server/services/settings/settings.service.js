@@ -7,5 +7,6 @@ export function getDefaultSettings() {
 
 export function updateDefaultSettings(updatedValues) {
     const validSettingsKeys = Object.keys(settingsStorage.keys);
-    return settingsStorage.updateDefaultSettings(R.pick(validSettingsKeys, updatedValues));
+    return settingsStorage.updateDefaultSettings(R.pick(validSettingsKeys, updatedValues))
+        .then((settingsDocument) => settingsDocument.values);
 }
