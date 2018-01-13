@@ -1,14 +1,9 @@
-import settingsStorage from './settingsStorage';
 import { R } from '../../aux';
-import { getDefaultSettings, updateDefaultSettings } from './settings.service';
-
-const PUBLIC_SETTINGS = [
-    settingsStorage.keys.applicationTitle,
-];
+import { getDefaultSettings, updateDefaultSettings, PUBLIC_SETTINGS_KEYS } from './settings.service';
 
 export function handleGetPublicSettings(req, res, next) {
     return getDefaultSettings()
-        .then(R.pick(PUBLIC_SETTINGS))
+        .then(R.pick(PUBLIC_SETTINGS_KEYS))
         .then((result) => res.status(200).json(result),
               (err) => next(err));
 }
