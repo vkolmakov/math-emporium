@@ -20,10 +20,12 @@ function composeLetterContent(body, user) {
     const openers = ['Hello']; // these used to be fun :(
     const greeting = `${pickOneFrom(openers)} ${firstName || email.split('@')[0]},`;
 
-    const closers = [`Have a great day!\n${config.email.NAME}`];
-    const valediction = `${pickOneFrom(closers)},\n${config.HOSTNAME}`;
+    const closers = ['Have a great day!'];
+    const valediction = `${pickOneFrom(closers)}`;
 
-    const message = [greeting, body, valediction];
+    const signature = `${config.email.NAME}\n${config.HOSTNAME}`;
+
+    const message = [greeting, body, valediction, signature];
 
     return {
         text: message.join('\n\n'),
