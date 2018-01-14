@@ -20,7 +20,6 @@ class Home extends Component {
     }
 
     render() {
-        let pageContent;
         const Locations = () => (
             <div className="locations">
               <LocationsInfo shouldDisplayImageBackground></LocationsInfo>
@@ -33,28 +32,23 @@ class Home extends Component {
             </button>
         );
 
-        if (this.props.util.isDesktop) {
-            const HomeHeader = () => (
-                <div className="home-header">
-                  <div className="home-header-block">
-                    <h1 className="home-header-title">{APP_TITLE}</h1>
-                    <h2>Study with us!</h2>
-                    <ScheduleButton></ScheduleButton>
-                  </div>
+        const HomeHeader = () => (
+            <div className="home-header">
+              <div className="home-header-overlay">
+                <div className="home-header-block">
+                  <h1 className="home-header-title">{APP_TITLE}</h1>
+                  <h2>Study with us!</h2>
+                  <ScheduleButton></ScheduleButton>
                 </div>
-            );
-
-            pageContent = [<HomeHeader key="leading-element"></HomeHeader>,
-                           <Locations key="locations"></Locations>];
-        } else {
-            pageContent = [<ScheduleButton key="leading-element"></ScheduleButton>,
-                           <Locations key="locations"></Locations>];
-        }
+              </div>
+            </div>
+        );
 
         return (
             <MainContentWrap>
               <div className="home-content-container">
-                {pageContent}
+                <HomeHeader key="leading-element"></HomeHeader>
+                <Locations key="locations"></Locations>
               </div>
             </MainContentWrap>
         );
@@ -64,7 +58,6 @@ class Home extends Component {
 function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
-        util: { isDesktop: state.util.isDesktop },
     };
 }
 
