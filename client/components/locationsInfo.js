@@ -28,7 +28,12 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
           <a className="location-info-link" href={`mailto:${email}`}>{email}</a>
         </p>
     );
-    const Description = (description) => (<p className="description">{description}</p>);
+    const Description = (description) => {
+        const toDescriptionParagraph = (tok, i) => (
+            <p key={`${location.id}-description-${i}`} className="description">{tok}</p>
+        );
+        return description.split('\n').map(toDescriptionParagraph);
+    };
 
     const Empty = () => (<span></span>);
 
@@ -75,7 +80,6 @@ class LocationsInfo extends Component {
         const locations = this.props.onlySelected
               ? [this.props.locations.selected]
               : this.props.locations.all;
-
 
         return (
             <ul className="locations-info">
