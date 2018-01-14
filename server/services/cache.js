@@ -16,8 +16,8 @@ const keys = {
 const minutes = (n) => n * 60 * 1000;
 
 const DURATIONS = {
-    CALENDAR_EVENTS: minutes(4),
-    APP_DATA: minutes(30),
+    CALENDAR_EVENTS: minutes(1),
+    APP_DATA: minutes(1),
 };
 
 function get(key) {
