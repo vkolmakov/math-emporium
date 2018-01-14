@@ -10,17 +10,21 @@ const Settings = mongoose.model('Settings', mongoose.Schema({
 const SETTINGS_KEYS = {
     applicationTitle: 'applicationTitle',
     duplicateAllEmailsTo: 'duplicateAllEmailsTo',
+    applicationMainHomePictureLink: 'applicationMainHomePictureLink',
 };
+
+const DEFAULT_SETTINGS_VALUES = {
+    [SETTINGS_KEYS.applicationTitle]: 'math-emporium',
+    [SETTINGS_KEYS.duplicateAllEmailsTo]: '',
+    [SETTINGS_KEYS.applicationMainHomePictureLink]: '',
+}
 
 function findOrCreateSettings(id) {
     const createDefaultSettings = () => {
         const s = new Settings;
         s.id = id;
 
-        s.values = {
-            [SETTINGS_KEYS.applicationTitle]: 'math-emporium',
-            [SETTINGS_KEYS.duplicateAllEmailsTo]: '',
-        };
+        s.values = DEFAULT_SETTINGS_VALUES;
         s.markModified('values');
 
         return s.save();
@@ -28,6 +32,21 @@ function findOrCreateSettings(id) {
 
     return Settings.findOne({ id })
         .then((result) => !!result ? Promise.resolve(result) : createDefaultSettings());
+}
+
+function ensureAllSettingsFieldsAreCreated(id) {
+    return Settings.findOne({ id })
+        .then((result) => {
+            const existingValues = result.values;
+
+            result.values = {
+                ...DEFAULT_SETTINGS_VALUES,
+                ...existingValues,
+            };
+            result.markModified('values');
+
+            return result.save();
+        });
 }
 
 export default {
@@ -50,7 +69,8 @@ export default {
         };
 
         return connectToStorage()
-            .then(() => findOrCreateSettings(DEFAULT_SETTINGS_ID));
+            .then(() => findOrCreateSettings(DEFAULT_SETTINGS_ID))
+            .then(() => ensureAllSettingsFieldsAreCreated(DEFAULT_SETTINGS_ID));
     },
 
     updateDefaultSettings(values) {

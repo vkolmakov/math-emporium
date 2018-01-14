@@ -5,6 +5,7 @@ export const SETTINGS_KEYS = settingsStorage.keys;
 
 export const PUBLIC_SETTINGS_KEYS = [
     SETTINGS_KEYS.applicationTitle,
+    SETTINGS_KEYS.applicationMainHomePictureLink,
 ];
 
 export function getDefaultSettings() {
