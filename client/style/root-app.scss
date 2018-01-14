@@ -38,9 +38,9 @@
         margin: 0 auto;
 
         @include breakpoint($medium-screen) {
-            padding-top: 2em;
+            padding-top: 3em;
 
-            font-size: 1.25em;
+            font-size: 1.35em;
         }
     }
 
