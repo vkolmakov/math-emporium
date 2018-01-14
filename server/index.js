@@ -56,8 +56,15 @@ function connectToEventStorageDatabase() {
     const port = config.PORT;
 
     const isProduction = config.IS_PRODUCTION;
+    const isDevClient = !isProduction && process.env.NODE_ENV !== 'serverdev';
 
-    app.use(helmet());
+    if (isDevClient) {
+        // allow mimetype sniffing for client-side development
+        app.use(helmet({ noSniff: false }));
+    } else {
+        app.use(helmet());
+    }
+
 
     app.use(bodyParser.json());
     if (!isProduction) {
@@ -84,7 +91,6 @@ function connectToEventStorageDatabase() {
 
     app.use(errorHandler);
 
-    const isDevClient = !isProduction && process.env.NODE_ENV !== 'serverdev';
     if (isDevClient) {
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');
@@ -115,5 +121,6 @@ function connectToEventStorageDatabase() {
         app.use(express.static(path.join(__dirname, '../dist')));
         app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../dist/index.html')));
     }
+
     app.listen(port, () => console.log(`Running on port ${port}`));
 })();
