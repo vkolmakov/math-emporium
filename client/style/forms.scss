@@ -18,15 +18,23 @@
 }
 
 .form-input-group {
-    width: 100%;
-    > input {
+    @mixin form-text-input {
         @include box-sizing(border-box);
         @include rounded-border();
         @include set-font();
         padding: 0.5em;
         font-size: 16px;
-        height:34px;
         width: 100%;
+    }
+
+    width: 100%;
+    > input {
+        @include form-text-input;
+        height:34px;
+    }
+
+    > textarea {
+        @include form-text-input;
     }
 }
 

@@ -6,7 +6,7 @@ import ColorIcon from '../colorIcon';
 export default ({ type, binding, options, onSelect, controlValue, placeholder, ...rest }) => {
     let inputElement;
 
-    const textInputTypes = ['text', 'password', 'email'];
+    const textInputTypes = ['text', 'password', 'email', 'textarea'];
     const isTextInput = !!textInputTypes.find(t => t === type);
 
     const selectInputTypes = ['select', 'multiselect'];
@@ -14,9 +14,17 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder, .
 
     if (isTextInput) {
         const value = controlValue || '';
-        inputElement = (
-            <input type={type} value={value} {...binding} placeholder={placeholder} />
-        );
+
+        if (type === 'textarea') {
+            inputElement = (
+                <textarea style={{ resize: 'vertical' }} rows={3} value={value} {...binding}></textarea>
+            );
+        } else {
+            inputElement = (
+                <input type={type} value={value} {...binding} placeholder={placeholder} />
+            );
+        }
+
     } else if (isSelectInput) {
         let renderer = {};
 
