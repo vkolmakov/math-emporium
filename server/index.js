@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import helmet from 'helmet';
 import path from 'path';
 
 import errorHandler from './middleware/errorHandler';
@@ -55,6 +56,8 @@ function connectToEventStorageDatabase() {
     const port = config.PORT;
 
     const isProduction = config.IS_PRODUCTION;
+
+    app.use(helmet());
 
     app.use(bodyParser.json());
     if (!isProduction) {
