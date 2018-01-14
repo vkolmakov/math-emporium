@@ -33,8 +33,8 @@ class Home extends Component {
         );
 
         const HomeHeader = () => (
-            <div className="home-header" style={backgroundPictureStyle(this.props.headerPictureLink)}>
-              <div className="home-header-overlay" style={backgroundPictureOverlayStyle()}>
+            <div className="home-header" style={!!this.props.headerPictureLink ? backgroundPictureStyle(this.props.headerPictureLink) : {}}>
+              <div className="home-header-overlay" style={!!this.props.headerPictureLink ? backgroundPictureOverlayStyle() : {}}>
                 <div className="home-header-block">
                   <h1 className="home-header-title">{APP_TITLE}</h1>
                   <h2>Study with us!</h2>
