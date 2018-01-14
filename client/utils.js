@@ -87,6 +87,20 @@ export function getOrigin() {
     return document.location.origin;
 }
 
+export function backgroundPictureStyle(link) {
+    return {
+        backgroundImage: `url(${link})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    };
+}
+
+export function backgroundPictureOverlayStyle() {
+    return {
+        background: 'rgba(0, 0, 0, 0.5)',
+    };
+}
+
 export const Either = {
     Right: _S.Right,
     Left: _S.Left,

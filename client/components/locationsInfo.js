@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Either } from '../utils';
+import { Either, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../utils';
 
 function openInNewTab(event) {
     event.preventDefault();
@@ -45,20 +45,14 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
 
     const description = Either.toEither('', location.description);
 
-    const backgroundImageStyle = {
-        backgroundImage: `url(${location.pictureLink})`,
-        backgroundSize: 'cover',
+    const backgroundStyle = {
+        ...backgroundPictureStyle(location.pictureLink),
         minHeight: '25em',
-        backgroundPosition: 'center',
-    };
-
-    const overlayStyle = {
-        background: 'rgba(0, 0, 0, 0.5)',
     };
 
     return (
-        <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundImageStyle : {}}>
-          <div className="location-info-location-overlay" style={shouldDisplayImageBackground ? overlayStyle : {}}>
+        <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundStyle : {}}>
+          <div className="location-info-location-overlay" style={shouldDisplayImageBackground ? backgroundPictureOverlayStyle() : {}}>
             <div className="location-info-location-data">
               <p className="name">
                 <strong>{location.name}</strong>
