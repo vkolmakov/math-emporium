@@ -6,7 +6,6 @@ import LocationsInfo from '../../../components/locationsInfo';
 
 import { getLocations } from '../../../sharedPublicData/actions';
 import { redirectTo, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../../../utils';
-import { APP_TITLE } from '../../../constants';
 
 class Home extends Component {
     componentDidMount() {
@@ -36,7 +35,7 @@ class Home extends Component {
             <div className="home-header" style={!!this.props.headerPictureLink ? backgroundPictureStyle(this.props.headerPictureLink) : {}}>
               <div className="home-header-overlay" style={!!this.props.headerPictureLink ? backgroundPictureOverlayStyle() : {}}>
                 <div className="home-header-block">
-                  <h1 className="home-header-title">{APP_TITLE}</h1>
+                  <h1 className="home-header-title">{this.props.applicationTitle}</h1>
                   <h2>Study with us!</h2>
                   <ScheduleButton></ScheduleButton>
                 </div>
@@ -59,6 +58,7 @@ function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
         headerPictureLink: state.util.settings.applicationMainHomePictureLink,
+        applicationTitle: state.util.settings.applicationTitle,
     };
 }
 
