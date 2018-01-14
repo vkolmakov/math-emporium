@@ -40,6 +40,11 @@ $gutter-size: 0.75em;
         > .dual-datepicker-wrap {
             $datepicker-height: 34px;
 
+            &.has-focus {
+                outline: 1px dotted #212121;
+                outline: 5px auto -webkit-focus-ring-color;
+            }
+
             .react-datepicker__input-container {
                 > input {
                     @include input;

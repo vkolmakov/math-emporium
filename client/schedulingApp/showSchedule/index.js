@@ -264,7 +264,7 @@ class ShowSchedule extends Component {
                     <div className="column">
                         <div className="input-group">
                             <label htmlFor="dual-datepicker">Week</label>
-                            <div className="dual-datepicker-wrap">
+                            <div ref={(datePickerWrapRef) => this.datePickerWrapRef = datePickerWrapRef} className="dual-datepicker-wrap">
                                 <DatePicker selected={startDate}
                                             startDate={startDate}
                                             endDate={moment(startDate).endOf('isoWeek')}
@@ -272,6 +272,8 @@ class ShowSchedule extends Component {
                                             dateFormat="MM/DD/YYYY"
                                             readOnly={true}
                                             onChange={this.onStartDateChange.bind(this)}
+                                            onFocus={() => this.datePickerWrapRef.classList.add('has-focus')}
+                                            onBlur={() => this.datePickerWrapRef.classList.remove('has-focus')}
                                             id="dual-datepicker"/>
 
                                 <DatePicker selected={moment(startDate).endOf('isoWeek')}
