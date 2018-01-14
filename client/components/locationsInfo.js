@@ -53,15 +53,17 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
 
     return (
         <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundImageStyle : {}}>
-          <div className="location-info-location-data" style={shouldDisplayImageBackground ? overlayStyle : {}}>
-            <p className="name">
-              <strong>{location.name}</strong>
-            </p>
-            {Either.either(Empty, Description, description)}
-            <div className="contact-info">
-              {Either.either(Empty, Address, contacts.address)}
-              {Either.either(Empty, Phone, contacts.phone)}
-              {Either.either(Empty, Email, contacts.email)}
+          <div className="location-info-location-overlay" style={shouldDisplayImageBackground ? overlayStyle : {}}>
+            <div className="location-info-location-data">
+              <p className="name">
+                <strong>{location.name}</strong>
+              </p>
+              {Either.either(Empty, Description, description)}
+              <div className="contact-info">
+                {Either.either(Empty, Address, contacts.address)}
+                {Either.either(Empty, Phone, contacts.phone)}
+                {Either.either(Empty, Email, contacts.email)}
+              </div>
             </div>
           </div>
         </li>
