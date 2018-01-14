@@ -5,7 +5,7 @@ import Sidebar from '../components/sidebar/index';
 import LoadingSpinner from '../components/loadingSpinner';
 import MainContentWrap from '../components/mainContentWrap';
 
-import { BASE_PATH } from './constants';
+import { BASE_PATH, LATEST_EVENT_LIMIT_DEFAULT } from './constants';
 
 import { getUsers } from './users/actions';
 import { getEvents } from './events/actions';
@@ -20,7 +20,7 @@ class ManagingApp extends Component {
     componentDidMount() {
         return Promise.all([
             this.props.getUsers(),
-            this.props.getEvents(),
+            this.props.getEvents(LATEST_EVENT_LIMIT_DEFAULT),
             this.props.getSettings(),
         ]).then(() => this.setState({ initialized: true }));
     }

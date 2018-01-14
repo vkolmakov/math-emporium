@@ -6,6 +6,8 @@ export const EVENT_TYPES = constants.EVENT_TYPES;
 
 export const TIMESTAMP_DISPLAY_FORMAT = constants.TIMESTAMP_DISPLAY_FORMAT;
 
+export const LATEST_EVENT_LIMIT_DEFAULT = 150;
+
 export const AUTH_GROUPS_OPTIONS =
     Object.keys(AUTH_GROUPS).map(
         display => ({ value: AUTH_GROUPS[display], display }));
