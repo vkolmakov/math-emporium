@@ -1,12 +1,24 @@
 @import "variables";
 
+@mixin home-entry-min-height {
+    $home-entry-min-height-desktop: 30em;
+    $home-entry-min-height-mobile: 25em;
+
+    @include breakpoint($medium-screen) {
+        min-height: $home-entry-min-height-desktop;
+    }
+
+    min-height: $home-entry-min-height-mobile;
+
+}
+
 .home-header {
     display: flex;
 
-    background-color: #1c1f21; // TODO: Remove when header background image is added
+    background-color: #1c1f21; // fallback for when there's no picture
     color: white;
 
-    height: 25em;
+    @include home-entry-min-height;
 
     .home-header-overlay {
         flex: 1;
@@ -77,6 +89,8 @@
 
     .locations-info-location-container {
         display: flex;
+
+        @include home-entry-min-height;
 
         @mixin location-info-line {
             color: $secondary-color;

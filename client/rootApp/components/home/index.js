@@ -5,7 +5,7 @@ import MainContentWrap from '../../../components/mainContentWrap';
 import LocationsInfo from '../../../components/locationsInfo';
 
 import { getLocations } from '../../../sharedPublicData/actions';
-import { redirectTo } from '../../../utils';
+import { redirectTo, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../../../utils';
 import { APP_TITLE } from '../../../constants';
 
 class Home extends Component {
@@ -33,8 +33,8 @@ class Home extends Component {
         );
 
         const HomeHeader = () => (
-            <div className="home-header">
-              <div className="home-header-overlay">
+            <div className="home-header" style={backgroundPictureStyle(this.props.headerPictureLink)}>
+              <div className="home-header-overlay" style={backgroundPictureOverlayStyle()}>
                 <div className="home-header-block">
                   <h1 className="home-header-title">{APP_TITLE}</h1>
                   <h2>Study with us!</h2>
@@ -58,6 +58,7 @@ class Home extends Component {
 function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
+        headerPictureLink: state.util.settings.applicationMainHomePictureLink,
     };
 }
 

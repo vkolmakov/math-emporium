@@ -45,13 +45,8 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
 
     const description = Either.toEither('', location.description);
 
-    const backgroundStyle = {
-        ...backgroundPictureStyle(location.pictureLink),
-        minHeight: '25em',
-    };
-
     return (
-        <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundStyle : {}}>
+        <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundPictureStyle(location.pictureLink) : {}}>
           <div className="location-info-location-overlay" style={shouldDisplayImageBackground ? backgroundPictureOverlayStyle() : {}}>
             <div className="location-info-location-data">
               <p className="name">
