@@ -8,7 +8,7 @@ function extractInfoFromSummary(summary) {
     }
 
     const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
-    const match = summary.match(appointmentRegex);
+    const match = summary.trim().match(appointmentRegex);
 
     if (!match) {
         return null;
@@ -48,7 +48,7 @@ function extractSpecialInstructions(summary) {
     }
 
     const instructionsRegex = /^_\d+\((.+?)\)$/;
-    const match = summary.match(instructionsRegex);
+    const match = summary.trim().match(instructionsRegex);
 
     if (!match) {
         return null;
