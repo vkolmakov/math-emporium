@@ -3,10 +3,19 @@ import { connect } from 'react-redux';
 
 import { Either } from '../utils';
 
+function openInNewTab(event) {
+    event.preventDefault();
+    window.open(event.target.href);
+}
+
+function createMapLink(address) {
+    return `https://maps.google.com/?q=${address}`;
+}
+
 const Location = ({ shouldDisplayImageBackground }) => (location) => {
     const Address = (address) => (
         <p className="address">
-          <a className="location-info-link" href={`https://maps.google.com/?q=${address}`}>{address}</a>
+          <a onClick={openInNewTab} className="location-info-link" href={createMapLink(address)}>{address}</a>
         </p>
     );
     const Phone = (phone) => (
