@@ -4,8 +4,13 @@ import { Link } from 'react-router';
 import { AUTH_GROUPS } from '../../../constants';
 import { createClassName } from '../../../utils';
 
-const NavLink = ({ to, className, children }) => (
-    <Link to={to} key={to} className={createClassName(['nav-link', className])}>{children}</Link>
+function isSelected(currentPath, linkPath) {
+    const currentTab = currentPath.split('/');
+    return linkPath === `/${currentTab[1]}`; // account for the leading '/'
+}
+
+const navLinkConstructor = (currentRouterPath) => ({ to, className, children }) => (
+    <Link to={to} key={to} className={createClassName(['nav-link', className, isSelected(currentRouterPath, to) ? 'selected' : ''])}>{children}</Link>
 );
 
 class Navbar extends Component {
@@ -32,6 +37,7 @@ class Navbar extends Component {
     render() {
         const links = this.links();
         const authLinks = this.authLinks();
+        const NavLink = navLinkConstructor(this.props.currentRouterPath);
         return (
             <nav>
               <NavLink to="/">{this.props.applicationTitle}</NavLink>
@@ -54,6 +60,7 @@ function mapStateToProps(state) {
         authGroup: state.auth.group,
         email: state.auth.email,
         applicationTitle: state.util.settings.applicationTitle,
+        currentRouterPath: state.util.currentRouterPath,
     };
 }
 
