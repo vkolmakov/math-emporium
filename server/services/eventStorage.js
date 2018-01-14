@@ -31,4 +31,7 @@ export default {
     getAll() {
         return Event.find({});
     },
+    getLatest(count) {
+        return Event.find({}, null, { limit: count, sort: { createdAt: -1 } });
+    },
 };

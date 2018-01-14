@@ -5,7 +5,7 @@ import { authGroups } from '../aux';
 import { handleGetOpenSpots, handleGetAvailableTutors } from '../services/openSpots/openSpots.controller';
 import { handleGetAppointments } from '../services/appointments/appointments.controller';
 import { handleGetChromeExtensionData } from '../services/chromeExtensionData/chromeExtensionData.controller';
-import { handleGetAllEvents } from '../services/events/events.controller';
+import { handleGetAllEvents, handleGetLatestEvents } from '../services/events/events.controller';
 import { handleGetSettings, handleGetPublicSettings, handleUpdateSettings } from '../services/settings/settings.controller';
 
 
@@ -27,6 +27,9 @@ export default function createUtilRouter() {
     router.get('/events',
                requireGroup(authGroups.EMPLOYER),
                handleGetAllEvents);
+    router.get('/events/latest',
+               requireGroup(authGroups.EMPLOYER),
+               handleGetLatestEvents);
 
     router.get('/public/settings',
                handleGetPublicSettings);
