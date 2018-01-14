@@ -3,8 +3,6 @@ import { reduxForm } from 'redux-form';
 
 import { createLocation, getLocations } from '../actions';
 
-import { selectTransformOptions } from '../../utils';
-
 import Form from '../../../components/form/index';
 
 const FORM_FIELDS = ['name', 'calendarId', 'address', 'phone', 'email', 'description', 'pictureLink'];
@@ -46,7 +44,7 @@ class CreateLocationForm extends Component {
                 input: { type: 'text', binding: email },
             }, {
                 label: 'Description',
-                input: { type: 'text', binding: description },
+                input: { type: 'textarea', binding: description },
             }, {
                 label: 'Link to a picture',
                 input: { type: 'text', binding: pictureLink },

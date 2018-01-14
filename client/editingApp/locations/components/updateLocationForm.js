@@ -53,7 +53,7 @@ class UpdateLocationForm extends Component {
                 input: { type: 'text', binding: email },
             }, {
                 label: 'Description',
-                input: { type: 'text', binding: description },
+                input: { type: 'textarea', binding: description },
             }, {
                 label: 'Link to a picture',
                 input: { type: 'text', binding: pictureLink },
