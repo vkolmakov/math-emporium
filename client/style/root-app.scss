@@ -41,7 +41,12 @@
 
     font-size: 1em;
     background-color: $primary-color;
+
     max-width: 20em;
+
+    @include breakpoint($medium-screen) {
+        min-width: 20em;
+    }
 
     cursor: pointer;
 
@@ -49,6 +54,8 @@
         background-color: darken($primary-color, 16%);
         font-weight: bold;
     }
+
+    transition: all 0.1s ease;
 }
 
 .home-content-container {
