@@ -1,17 +1,33 @@
 @import "variables";
 
 .home-header {
-    background-color: #1c1f21;
+    display: flex;
+
+    background-color: #1c1f21; // TODO: Remove when header background image is added
     color: white;
 
     height: 25em;
 
+    .home-header-overlay {
+        flex: 1;
+
+        display: flex;
+        align-items: center;
+
+        @include breakpoint($medium-screen) {
+            align-items: flex-start;
+        }
+    }
 
     .home-header-block {
-        padding-top: 4em;
+        padding: 0 1em;
 
-        max-width: 50em;
+        max-width: 20em;
         margin: 0 auto;
+
+        @include breakpoint($medium-screen) {
+            padding-top: 3em;
+        }
     }
 
     .home-header-title {
@@ -20,17 +36,14 @@
 }
 
 .schedule-appointment-button {
-    padding: 1.5em;
+    padding: 1em;
+    border: 1px solid $tertiary-color;
+
     font-size: 1em;
     background-color: $primary-color;
-    width: 100%;
+    max-width: 20em;
 
     cursor: pointer;
-
-    @include breakpoint($medium-screen) {
-        padding: 1em;
-        width: 20em;
-    }
 
     &:hover, &:focus {
         background-color: darken($primary-color, 16%);
