@@ -4,7 +4,7 @@ import moment from 'moment';
 import { createExtractDataValuesFunction, isObject,
          hasOneOf, pickOneFrom, TIMESTAMP_FORMAT, TIMEZONE,
          APPOINTMENT_LENGTH } from '../aux';
-import { notFound } from '../services/errorMessages';
+import { notFound, actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { availableTutors } from '../services/openSpots/openSpots.service';
 
@@ -37,8 +37,13 @@ export const updateProfile = async (req, res, next) => {
                 location = await Location.findIfExists(req.body.location);
 
                 if (!location) {
-                    res.status(400).json(notFound('location'));
+                    res.status(404).json(notFound('location'));
                 }
+
+                if (!location.isActive) {
+                    res.status(422).json(actionFailed('add', 'location', 'location is inactive'));
+                }
+
                 await user.setLocation(location);
             } else {
                 await user.setLocation(null);
@@ -135,6 +140,10 @@ export const scheduleAppointment = async (req, res, next) => {
 
         if (!time || !course || !location) {
             throw new Error('VISIBLE::Error: time, course and location are required');
+        }
+
+        if (!location.isActive) {
+            throw new Error('VISIBLE::Error: selected location is not active');
         }
 
         // Check if user already has an upcomming appointment

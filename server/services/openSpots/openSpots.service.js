@@ -215,6 +215,10 @@ export async function openSpots(location, course, startDate, endDate) {
         throw new Error('Selected location does not exist');
     }
 
+    if (!locationData.location.isActive) {
+        throw new Error('Selected location is not active');
+    }
+
     const calendarId = locationData.location.calendarId;
     const calendar = await calendarService();
 
@@ -322,6 +326,10 @@ export async function availableTutors(location, course, startDate, endDate) {
 
     if (!locationData) {
         throw new Error('Selected location does not exist');
+    }
+
+    if (!locationData.location.isActive) {
+        throw new Error('Selected location is not active');
     }
 
     const calendarId = locationData.location.calendarId;
