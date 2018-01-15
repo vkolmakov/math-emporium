@@ -75,6 +75,8 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder, .
                     {...renderer}
                     {...rest} />
         ); // Ugly workaround to make redux-form and custom event handler work together
+    } else if (type === 'checkbox') {
+        inputElement = (<input type="checkbox" value={false} {...binding} />);
     }
 
     return (
