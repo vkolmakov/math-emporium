@@ -12,12 +12,22 @@ export function routeChange(routeData) {
     };
 }
 
+export function setPageTitle(title) {
+    document.title = title;
+}
+
 export function getPublicApplicationSettings() {
     return (dispatch) => {
         return axios.get(BASE_URL_SETTINGS)
-            .then((response) => dispatch({
-                type: UT_GET_PUBLIC_SETTINGS,
-                payload: response.data,
-            }), () => {}); // proceed with default settings on error
+            .then((response) => {
+                dispatch({
+                    type: UT_GET_PUBLIC_SETTINGS,
+                    payload: response.data,
+                });
+
+                setPageTitle(response.data.applicationTitle);
+
+                return Promise.resolve();
+            }, () => {}); // proceed with default settings on error
     };
 }
