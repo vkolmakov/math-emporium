@@ -142,10 +142,6 @@ export const scheduleAppointment = async (req, res, next) => {
             throw new Error('VISIBLE::Error: time, course and location are required');
         }
 
-        if (!location.isActive) {
-            throw new Error('VISIBLE::Error: selected location is not active');
-        }
-
         // Check if user already has an upcomming appointment
         const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
         const now = moment();
@@ -156,6 +152,10 @@ export const scheduleAppointment = async (req, res, next) => {
         const locationRes = await Location.findOne({
             where: { id: location.id },
         });
+
+        if (!locationRes.isActive) {
+            throw new Error('VISIBLE::Error: selected location is not active');
+        }
 
         const courseRes = await Course.findOne({
             where: { id: course.id },
