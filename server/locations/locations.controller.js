@@ -1,10 +1,10 @@
 import db from 'sequelize-connect';
 import { createExtractDataValuesFunction } from '../aux';
 import { notFound, actionFailed } from '../services/errorMessages';
-import { pluckPublicFields } from './locations.model';
+import { pluckPublicFields, isActive } from './locations.model';
 
-const allowedToRead = ['id', 'name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description'];
-const allowedToWrite = ['name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description'];
+const allowedToRead = ['id', 'name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description', 'isActive'];
+const allowedToWrite = ['name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description', 'isActive'];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
