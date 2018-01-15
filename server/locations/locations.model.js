@@ -2,6 +2,8 @@ export const pluckPublicFields =
     ({ id, name, pictureLink, phone, email, address, description }) =>
     ({ id, name, pictureLink, phone, email, address, description });
 
+export const isActive = ({ isActive }) => isActive;
+
 export default function createLocationModel(sequelize, DataTypes) {
     const location = sequelize.define('location', {
         name: {
@@ -37,6 +39,10 @@ export default function createLocationModel(sequelize, DataTypes) {
         description: {
             type: DataTypes.STRING,
             allowNull: true,
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     }, {
         timestamps: true,
