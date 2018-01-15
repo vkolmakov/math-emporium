@@ -96,7 +96,7 @@ export const handleGet = async (req, res, next) => {
 export const handlePublicGet = async (req, res, next) => {
     try {
         const locations = await getLocations();
-        res.status(200).json(locations.map(pluckPublicFields));
+        res.status(200).json(locations.filter(isActive).map(pluckPublicFields));
     } catch (err) {
         next(err);
     }
