@@ -2,7 +2,7 @@ import mainStorage from '../services/mainStorage';
 
 import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
 import { notFound, isRequired, actionFailed } from '../services/errorMessages';
-import { pluckPublicFields } from './subjects.model';
+import { pluckPublicFields, isActive } from './subjects.model';
 
 const Location = mainStorage.db.models.location;
 const Subject = mainStorage.db.models.subject;
@@ -131,7 +131,7 @@ export const handleGet = async (req, res, next) => {
 export const handlePublicGet = async (req, res, next) => {
     try {
         const subjects = await getSubjects(req.body);
-        res.status(200).json(subjects.map(pluckPublicFields));
+        res.status(200).json(subjects.filter(isActive).map(pluckPublicFields));
     } catch (err) {
         next(err);
     }
