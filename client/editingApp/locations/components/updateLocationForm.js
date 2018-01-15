@@ -7,7 +7,7 @@ import { redirectTo, id } from '../../../utils';
 
 import Form from '../../../components/form/index';
 
-const FORM_FIELDS = ['name', 'calendarId', 'address', 'phone', 'email', 'description', 'pictureLink'];
+const FORM_FIELDS = ['name', 'isActive', 'calendarId', 'address', 'phone', 'email', 'description', 'pictureLink'];
 
 class UpdateLocationForm extends Component {
     constructor() {
@@ -22,7 +22,7 @@ class UpdateLocationForm extends Component {
     }
 
     render() {
-        const { name, calendarId, address, phone, email, description, pictureLink } = this.props.fields;
+        const { name, isActive, calendarId, address, phone, email, description, pictureLink } = this.props.fields;
 
         const onSubmit = (data) => {
             this.setState({ success: false });
@@ -39,6 +39,9 @@ class UpdateLocationForm extends Component {
             {
                 label: 'Name',
                 input: { type: 'text', binding: name },
+            }, {
+                label: 'Active',
+                input: { type: 'checkbox', binding: isActive },
             }, {
                 label: 'Google Calendar ID',
                 input: { type: 'text', binding: calendarId },

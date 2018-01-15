@@ -32,6 +32,9 @@ class EditLocations extends Component {
                 dataKey: 'name',
                 label: 'Name',
             }, {
+                dataKey: 'isActive',
+                label: 'Active',
+            }, {
                 dataKey: 'calendarId',
                 label: 'Calendar ID',
             }, {
