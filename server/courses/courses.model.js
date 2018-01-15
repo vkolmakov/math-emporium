@@ -4,11 +4,11 @@ export const pluckPublicFields = ({ id, name, code, location, subject }) => ({
     id,
     name,
     code,
-    location: locationModel.pluckPublicFields(location),
-    subject: {
-        id: subject.id,
-    },
+    location: { id: location.id },
+    subject: { id: subject.id },
 });
+
+export const isActive = ({ location }) => locationModel.isActive(location);
 
 export default function createCourseModel(sequelize, DataTypes) {
     const course = sequelize.define('course', {
