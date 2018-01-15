@@ -28,7 +28,7 @@ export default ({ header, datum }) => {
                 ({ value, display }) => value == datum[key]
             ).display;
         } else {
-            displayValue = datum[key].toString();
+            displayValue = datum[key] ? datum[key].toString() : '';
         }
         DisplayDataElement = () => (<span>{displayValue}</span>);
     }
