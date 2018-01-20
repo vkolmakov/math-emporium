@@ -27,6 +27,8 @@ export default ({ header, datum }) => {
             displayValue = mapValuesToLabels.find(
                 ({ value, display }) => value == datum[key]
             ).display;
+        } else if (typeof datum[key] === 'boolean') {
+            displayValue = datum[key] ? 'true' : 'false';
         } else {
             displayValue = datum[key] ? datum[key].toString() : '';
         }
