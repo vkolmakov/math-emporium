@@ -4,7 +4,7 @@
 nav {
     display: flex;
     flex-flow: column nowrap;
-    border-bottom: 1px solid darken($tertiary-color, 50%);
+    border-bottom: 1px solid darken($tertiary-color, 25%);
 
     @include breakpoint($medium-screen) {
         flex-flow: row nowrap;
