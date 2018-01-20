@@ -37,6 +37,8 @@
         max-width: 20em;
         margin: 0 auto;
 
+        text-align: center;
+
         @include breakpoint($medium-screen) {
             padding-top: 3em;
 
