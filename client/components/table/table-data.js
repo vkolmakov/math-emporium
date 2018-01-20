@@ -24,9 +24,7 @@ export default ({ header, datum }) => {
         // just a value
         let displayValue;
         if (mapValuesToLabels) {
-            displayValue = mapValuesToLabels.find(
-                ({ value, display }) => value == datum[key]
-            ).display;
+            displayValue = mapValuesToLabels(datum[key]);
         } else if (typeof datum[key] === 'boolean') {
             displayValue = datum[key] ? 'true' : 'false';
         } else {
