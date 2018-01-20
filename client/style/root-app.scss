@@ -1,5 +1,10 @@
 @import "variables";
 
+@mixin block-separator {
+    $separator-color: darken($tertiary-color, 25%);
+    border-bottom: 1px solid $separator-color;
+}
+
 @mixin home-entry-min-height {
     $home-entry-min-height-desktop: 30em;
     $home-entry-min-height-mobile: 25em;
@@ -17,6 +22,8 @@
 
     background-color: #1c1f21; // fallback for when there's no picture
     color: white;
+
+    @include block-separator;
 
     @include home-entry-min-height;
 
@@ -91,6 +98,10 @@
 
     .locations-info-location-container {
         display: flex;
+
+        &:not(:last-child) {
+            @include block-separator;
+        }
 
         @include home-entry-min-height;
 
