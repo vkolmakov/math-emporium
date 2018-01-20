@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import moment from 'moment';
+
 import { selectTransformOptions } from '../../editingApp/utils';
-import { BASE_PATH, AUTH_GROUPS_OPTIONS } from '../constants';
+import { BASE_PATH, AUTH_GROUPS, TIMESTAMP_DISPLAY_FORMAT } from '../constants';
 
 import LoadingSpinner from '../../components/loadingSpinner';
 import Table from '../../components/table/index';
 import FilterControls from '../../components/filterControls';
+import { S } from '../../utils';
+
+function getAuthGroupOptions(groups) {
+    return Object.keys(groups).map(
+        display => ({ value: groups[display], display }));
+}
 
 class ManageUsers extends Component {
     constructor() {
@@ -18,7 +26,8 @@ class ManageUsers extends Component {
 
     setSelectedGroup(groupOption) {
         if (groupOption) {
-            const selectedGroup = AUTH_GROUPS_OPTIONS.find(g => g.value === groupOption.value);
+            const selectedGroup = getAuthGroupOptions(AUTH_GROUPS)
+                  .find(g => g.value === groupOption.value);
             this.setState({ selectedGroup });
         } else {
             this.setState({ selectedGroup: null });
@@ -28,7 +37,7 @@ class ManageUsers extends Component {
     render() {
         let { users } = this.props;
 
-        const groupOptions = selectTransformOptions('value', 'display')(AUTH_GROUPS_OPTIONS);
+        const groupOptions = selectTransformOptions('value', 'display')(getAuthGroupOptions(AUTH_GROUPS));
 
         if (!users.all) {
             return (
@@ -54,7 +63,11 @@ class ManageUsers extends Component {
             }, {
                 dataKey: 'group',
                 label: 'group',
-                mapValuesToLabels: AUTH_GROUPS_OPTIONS,
+                mapValuesToLabels: (val) => S.invertObj(AUTH_GROUPS)[val],
+            }, {
+                dataKey: 'lastSigninAt',
+                label: 'last sign-in time',
+                mapValuesToLabels: (val) => moment(val).format(TIMESTAMP_DISPLAY_FORMAT),
             },
         ];
 

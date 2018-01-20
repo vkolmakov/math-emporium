@@ -101,6 +101,13 @@ export function backgroundPictureOverlayStyle() {
     };
 }
 
+export function invertObj(obj) {
+    return Object.keys(obj).reduce((acc, key) => {
+        const val = obj[key];
+        return { ...acc, [val]: key };
+    }, {});
+}
+
 export const Either = {
     Right: _S.Right,
     Left: _S.Left,
@@ -110,4 +117,5 @@ export const Either = {
 
 export const S = {
     compose: _S.compose,
+    invertObj,
 };
