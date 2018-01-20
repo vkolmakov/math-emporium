@@ -6,7 +6,7 @@ export default ({ weekday, schedule }) => {
     const tableHeaders = [
         {
             dataKey: 'time',
-            mapValuesToLabels: TIME_OPTIONS,
+            mapValuesToLabels: (val) => TIME_OPTIONS.find(({ value }) => value === val).display,
             label: 'Time',
         }, {
             dataKey: 'tutors->name',

@@ -57,7 +57,7 @@ class ManageEvents extends Component {
         }, {
             dataKey: 'type',
             label: 'type',
-            mapValuesToLabels: EVENT_TYPES_OPTIONS,
+            mapValuesToLabels: (val) => EVENT_TYPES_OPTIONS.find(({ value }) => value === val).display,
         }, {
             dataKey: 'user',
             label: 'user',

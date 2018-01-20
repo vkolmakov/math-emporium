@@ -93,11 +93,11 @@ class EditSchedules extends Component {
         const tableHeaders = [
             {
                 dataKey: 'weekday',
-                mapValuesToLabels: WEEKDAY_OPTIONS,
+                mapValuesToLabels: (val) => WEEKDAY_OPTIONS.find(({ value }) => value === val).display,
                 label: 'Weekday',
             }, {
                 dataKey: 'time',
-                mapValuesToLabels: TIME_OPTIONS,
+                mapValuesToLabels: (val) => TIME_OPTIONS.find(({ value }) => value === val).display,
                 label: 'Time',
             }, {
                 dataKey: 'location->name',
