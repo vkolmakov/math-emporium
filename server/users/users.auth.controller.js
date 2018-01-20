@@ -5,34 +5,44 @@ import config from '../config';
 
 const SECRET = config.SECRET;
 
+function updateLastSignInStatus(user) {
+    const now = Date.now();
+    return user.update({ lastSigninAt: now });
+}
 
-export const tokenForUser = (user) => {
+export function tokenForUser(user) {
     const timestamp = new Date().getTime();
     return jwt.encode({ sub: user.dataValues.id, iat: timestamp }, SECRET);
-};
+}
 
-export const signin = (req, res, next) => {
-    const user = req.user;
-    const { group, email } = user.dataValues;
-    const data = {
-        group,
-        email,
-        token: tokenForUser(user),
+export function signin(logEvent) {
+    return (req, res, next) => {
+        const user = req.user;
+        const { group, email } = user.dataValues;
+        const data = {
+            group,
+            email,
+            token: tokenForUser(user),
+        };
+
+        Object.keys(data).forEach(k => res.cookie(k, data[k], { httpOnly: false }));
+
+        const redirectToRoot = () => res.redirect('/');
+
+        return logEvent(req)
+            .then(() => updateLastSignInStatus(user))
+            .then(redirectToRoot)
+            .catch(redirectToRoot);
     };
+}
 
-    Object.keys(data).forEach(k => res.cookie(k, data[k], { httpOnly: false }));
-    res.redirect('/');
-};
+export function recordSignin() {
+    return (req, res, next) => {
+        const user = req.user;
 
-export const recordSignin = async (req, res, next) => {
-    const user = req.user;
-    const now = Date.now();
-
-    try {
-        await user.update({ lastSigninAt: now });
-    } catch (err) {
-        return next(err);
-    }
-
-    return res.status(200).json(successMessage());
-};
+        return updateLastSignInStatus(user).then(
+            () => res.status(200).json(successMessage()),
+            next
+        );
+    };
+}

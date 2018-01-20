@@ -24,8 +24,8 @@ function getAdditionalData(eventType, requestBody) {
     }
 }
 
-export default function logEvent(type) {
-    return (req, res, next) => {
+export default function createEventLogger(type) {
+    return (req) => {
         const { user } = req;
 
         const userEmail = user.get('email');
@@ -40,8 +40,6 @@ export default function logEvent(type) {
             data: getAdditionalData(type, req.body),
         };
 
-        eventStorage.save(event);
-
-        next();
+        return eventStorage.save(event);
     };
 }

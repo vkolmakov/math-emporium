@@ -17,7 +17,7 @@ const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 
                        'next', 'googleCalendarAppointmentDate'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
-export const updateProfile = async (req, res, next) => {
+export const updateProfile = () => async (req, res, next) => {
     const allowedToWrite = ['firstName', 'lastName'];
 
     try {
@@ -92,7 +92,7 @@ export const updateProfile = async (req, res, next) => {
     }
 };
 
-export const getProfile = async (req, res, next) => {
+export const getProfile = () => async (req, res, next) => {
     try {
         const userId = req.user.dataValues.id;
         const user = await User.findOne({
@@ -109,7 +109,7 @@ export const getProfile = async (req, res, next) => {
     }
 };
 
-export const scheduleAppointment = async (req, res, next) => {
+export const scheduleAppointment = (logEvent) => async (req, res, next) => {
     /* required request params:
 
      location: { id },
@@ -198,6 +198,8 @@ export const scheduleAppointment = async (req, res, next) => {
             course,
         });
 
+        await logEvent(req);
+
         res.status(200).json(extractDataValues(user));
     } catch (err) {
         if (err.message.startsWith('VISIBLE::')) {
@@ -208,7 +210,7 @@ export const scheduleAppointment = async (req, res, next) => {
     }
 };
 
-export const deleteAppointment = async (req, res, next) => {
+export const deleteAppointment = (logEvent) => async (req, res, next) => {
     const user = req.user;
 
     try {
@@ -234,6 +236,8 @@ export const deleteAppointment = async (req, res, next) => {
         });
 
         await user.sendAppoinmentRemovalConfirmation({ appointmentTime });
+
+        await logEvent(req);
     } catch (err) {
         next(err);
     }

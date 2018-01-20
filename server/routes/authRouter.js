@@ -3,7 +3,7 @@ import express from 'express';
 import passport from 'passport';
 import passportService from '../services/passport';
 import requireGroup from '../middleware/requireGroup';
-import logEvent from '../middleware/logEvent';
+import createEventLogger from '../middleware/logEvent';
 import { authGroups, events } from '../aux';
 
 function requireSignin() {
@@ -22,12 +22,11 @@ export default function createAuthRouter() {
                requireSignin());
     router.get('/auth/oauth2/callback',
                requireSignin(),
-               controller.signin);
+               controller.signin(createEventLogger(events.USER_SIGNED_IN)));
 
     router.post('/auth/record-signin',
                 requireGroup(authGroups.USER),
-                logEvent(events.USER_SIGNED_IN),
-                controller.recordSignin);
+                controller.recordSignin());
 
     return router;
 }
