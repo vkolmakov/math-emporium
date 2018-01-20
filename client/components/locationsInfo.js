@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 
 import { Either, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../utils';
 
@@ -12,7 +13,23 @@ function createMapLink(address) {
     return `https://maps.google.com/?q=${address}`;
 }
 
-const Location = ({ shouldDisplayImageBackground }) => (location) => {
+const Location = ({ shouldDisplayImageBackground, onLocationTitleClick, getLocationTitleLink }) => (location) => {
+    const Title = ({ location, onClick, getLocationLink }) => {
+        if (typeof onClick === 'function' && typeof getLocationLink === 'function') {
+            return (
+                <Link onClick={() => onClick(location)} to={getLocationLink(location)} className="name">
+                  <strong>{location.name}</strong>
+                </Link>
+            );
+        }
+
+        return (
+            <p className="name">
+              <strong>{location.name}</strong>
+            </p>
+        );
+    };
+
     const Address = (address) => (
         <p className="address">
           <a onClick={openInNewTab} className="location-info-link" href={createMapLink(address)}>{address}</a>
@@ -49,9 +66,7 @@ const Location = ({ shouldDisplayImageBackground }) => (location) => {
         <li key={location.id} className="locations-info-location-container" style={shouldDisplayImageBackground ? backgroundPictureStyle(location.pictureLink) : {}}>
           <div className="location-info-location-overlay" style={shouldDisplayImageBackground ? backgroundPictureOverlayStyle() : {}}>
             <div className="location-info-location-data">
-              <p className="name">
-                <strong>{location.name}</strong>
-              </p>
+              <Title location={location} onClick={onLocationTitleClick} getLocationLink={getLocationTitleLink}></Title>
               {Either.either(Empty, Description, description)}
               <div className="contact-info">
                 {Either.either(Empty, Address, contacts.address)}

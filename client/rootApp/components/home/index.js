@@ -5,6 +5,7 @@ import MainContentWrap from '../../../components/mainContentWrap';
 import LocationsInfo from '../../../components/locationsInfo';
 
 import { getLocations } from '../../../sharedPublicData/actions';
+import { setLocation } from '../../../schedulingApp/actions';
 import { redirectTo, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../../../utils';
 
 class Home extends Component {
@@ -21,7 +22,11 @@ class Home extends Component {
     render() {
         const Locations = () => (
             <div className="locations">
-              <LocationsInfo shouldDisplayImageBackground></LocationsInfo>
+              <LocationsInfo
+                shouldDisplayImageBackground
+                onLocationTitleClick={(location) => this.props.setLocation(location)}
+                getLocationTitleLink={() => '/schedule'}>
+              </LocationsInfo>
             </div>
         );
 
@@ -62,4 +67,7 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { getLocations })(Home);
+export default connect(mapStateToProps, {
+    getLocations,
+    setLocation,
+})(Home);

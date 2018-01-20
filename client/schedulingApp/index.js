@@ -11,9 +11,11 @@ import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 
 class SchedulingApp extends Component {
     componentDidMount() {
+        const alreadyInitializedLocations = this.props.locations.all.length > 0;
+
         if (!this.props.initialized) {
             Promise.all([
-                this.props.getLocations(),
+                alreadyInitializedLocations ? Promise.resolve() : this.props.getLocations(),
                 this.props.getSubjects(),
                 this.props.getCourses(),
             ]).then(() => {
@@ -71,6 +73,9 @@ function mapStateToProps(state) {
         authenticated: state.auth.authenticated,
         profile: state.scheduling.profile,
         initialized: state.scheduling.shared.initialized,
+        locations: {
+            all: state.scheduling.shared.locations.all,
+        },
     };
 }
 
