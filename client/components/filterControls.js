@@ -3,7 +3,7 @@ import React from 'react';
 const handleChange = (options, event) => (onChange) =>
       onChange(options.find(o => o.value == event.target.value));
 
-export default ({ options, currentValue, onChange, placeholder, error, selectRef, label, disableNullOption }) => {
+export default ({ options, currentValue, onChange, placeholder, error, selectRef, label, disableNullOption, disabled }) => {
     const createClassName = (error, currentValue) => {
         const classNames = {
             error: 'select-filter-error',
@@ -32,6 +32,7 @@ export default ({ options, currentValue, onChange, placeholder, error, selectRef
             <select
                 value={currentValue || 0}
                 id={selectElementId}
+                disabled={!!disabled}
                 ref={select => selectRef ? selectRef(select) : null}
                 className={createClassName(error, currentValue)}
                 onChange={(event) => handleChange(options, event)(onChange)}>

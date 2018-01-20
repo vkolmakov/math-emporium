@@ -34,7 +34,11 @@ $gutter-size: 0.75em;
         }
 
         .select-filter-empty {
-            color: #aaa;
+            color: $primary-text-color;
+            &:disabled,
+            &[disabled]{
+                color: #aaa;
+            }
         }
 
         > .dual-datepicker-wrap {

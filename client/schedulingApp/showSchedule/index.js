@@ -124,7 +124,9 @@ class ShowSchedule extends Component {
         };
 
         // target order is significant here
-        const nextFocusTarget = [location, subject, course].find((t) => t.shouldFocus);
+        const targets = [location, subject, course];
+
+        const nextFocusTarget = targets.find((t) => t.shouldFocus);
 
         if (nextFocusTarget && nextFocusTarget.elementRef) {
             // focus on the next target must be performed on next tick
@@ -294,21 +296,23 @@ class ShowSchedule extends Component {
                     </div>
 
                     <div className="column">
-                        <FilterControls options={subjectsOptions}
-                                        currentValue={subjects.selected ? subjects.selected.id : null}
-                                        placeholder="Select..."
-                                        label="Subject"
-                                        error={locations.selected && !subjects.selected}
-                                        selectRef={input => { this.subjectSelect = input; } }
-                                        onChange={this.onSubjectChange.bind(this)} />
+                      <FilterControls options={subjectsOptions}
+                                      currentValue={subjects.selected ? subjects.selected.id : null}
+                                      disabled={!this.props.locations.selected}
+                                      placeholder="Select..."
+                                      label="Subject"
+                                      error={locations.selected && !subjects.selected}
+                                      selectRef={input => { this.subjectSelect = input; } }
+                                      onChange={this.onSubjectChange.bind(this)} />
 
-                            <FilterControls options={coursesOptions}
-                                            currentValue={courses.selected ? courses.selected.id : null}
-                                            placeholder="Select..."
-                                            label="Course"
-                                            error={locations.selected && subjects.selected && !courses.selected}
-                                            selectRef={input => { this.courseSelect = input; } }
-                                            onChange={this.onCourseChange.bind(this)} />
+                        <FilterControls options={coursesOptions}
+                                        currentValue={courses.selected ? courses.selected.id : null}
+                                        disabled={!this.props.subjects.selected}
+                                        placeholder="Select..."
+                                        label="Course"
+                                        error={locations.selected && subjects.selected && !courses.selected}
+                                        selectRef={input => { this.courseSelect = input; } }
+                                        onChange={this.onCourseChange.bind(this)} />
                     </div>
 
               </div>
