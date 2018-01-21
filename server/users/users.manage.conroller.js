@@ -6,7 +6,7 @@ const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
 
-const allowedToRead = ['id', 'email', 'firstName', 'lastName', 'group', 'location', 'course', 'lastSigninAt'];
+const allowedToRead = ['id', 'email', 'firstName', 'lastName', 'group', 'location', 'course', 'lastSigninAt', 'phoneNumber'];
 const allowedToWrite = ['email', 'group'];
 const relatedModels = [Location, Course];
 

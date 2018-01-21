@@ -61,6 +61,9 @@ class ManageUsers extends Component {
                 dataKey: 'email',
                 label: 'email',
             }, {
+                dataKey: 'phoneNumber',
+                label: 'phone number',
+            }, {
                 dataKey: 'group',
                 label: 'group',
                 mapValuesToLabels: (val) => S.invertObj(AUTH_GROUPS)[val],
