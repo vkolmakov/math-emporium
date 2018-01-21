@@ -25,10 +25,6 @@ export default function createUserModel(sequelize, DataTypes) {
             type: DataTypes.STRING,
             validate: {
                 isPhoneNumberOrNull(value) {
-                    if (!value) {
-                        return true;
-                    }
-
                     return phoneNumber.isValid(value);
                 },
             },

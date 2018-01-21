@@ -132,8 +132,8 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
     moment.tz.setDefault(TIMEZONE);
 
     try {
-        if (!user.firstName || !user.lastName) {
-            throw new Error('VISIBLE::Error: first and last names are required.');
+        if (!user.firstName || !user.lastName || !user.phoneNumber) {
+            throw new Error('VISIBLE::Error: first name, last name and phone number are required to schedule an appointment.');
         }
 
         const {

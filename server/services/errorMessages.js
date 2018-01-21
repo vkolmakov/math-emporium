@@ -30,6 +30,7 @@ export function getValidationErrorText(err) {
     const ERROR_TEXT = {
         UNKNOWN: 'An unknown error occurred',
         TOO_LONG: 'The value of a field is too long',
+        INVALID_PHONE_NUMBER: 'Invalid phone number',
     };
 
     const SEQUELIZE_ERROR_NAME = {
@@ -38,13 +39,25 @@ export function getValidationErrorText(err) {
 
     const ERROR_MESSAGE_TOKENS = {
         TOO_LONG: 'too long',
+        PHONE_NUMBER: 'phone',
     };
 
-    function convertSequelizeDatabaseErrorMessage(err) {
+    function hasToken(token, err) {
         const message = !!err.message ? err.message.toLowerCase() : '';
+        return message.includes(token);
+    }
 
-        if (message.includes(ERROR_MESSAGE_TOKENS.TOO_LONG)) {
+    function convertSequelizeDatabaseErrorMessage(err) {
+        if (hasToken(ERROR_MESSAGE_TOKENS.TOO_LONG, err)) {
             return ERROR_TEXT.TOO_LONG;
+        }
+
+        return ERROR_TEXT.UNKNOWN;
+    }
+
+    function convertGenericErrorMessage(err) {
+        if (hasToken(ERROR_MESSAGE_TOKENS.PHONE_NUMBER, err)) {
+            return ERROR_TEXT.INVALID_PHONE_NUMBER;
         }
 
         return ERROR_TEXT.UNKNOWN;
@@ -53,6 +66,8 @@ export function getValidationErrorText(err) {
 
     if (err.name === SEQUELIZE_ERROR_NAME.DATABASE) {
         return convertSequelizeDatabaseErrorMessage(err);
+    } else if (!!err.message) {
+        return convertGenericErrorMessage(err);
     }
 
     return ERROR_TEXT.UNKNOWN;
