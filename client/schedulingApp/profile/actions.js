@@ -16,25 +16,13 @@ export function getUserProfile() {
     };
 }
 
-export function getUserProfileAndSetOpenSpotsData() {
-    return dispatch => {
-        axios.get(`${BASE_URL}/profile`)
-            .then(response => {
-                const { locationId, courseId, subjectId } = response.data;
+export function setOpenSpotDataFromProfile(profile) {
+    return (dispatch) => {
+        const { location, course, subject } = profile;
 
-                const location = locationId ? { id: locationId } : null;
-                const subject = subjectId ? { id: subjectId } : null;
-                const course = courseId ? { id: courseId } : null;
-
-                dispatch({
-                    type: SA_SET_USER_PROFILE,
-                    payload: response,
-                });
-
-                dispatch(setLocation(location));
-                dispatch(setSubject(subject));
-                dispatch(setCourse(course));
-            });
+        dispatch(setLocation(location));
+        dispatch(setSubject(subject));
+        dispatch(setCourse(course));
     };
 }
 

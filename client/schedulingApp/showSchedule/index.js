@@ -41,6 +41,17 @@ class ShowSchedule extends Component {
 
         if (hasPreSelectedOpenSpot) {
             const { time, course, location, subject } = selectedOpenSpotInfo;
+            this.props.setLocation(location);
+            this.props.setSubject(subject);
+            this.props.setCourse(course);
+
+            this.props.getOpenSpots({
+                location,
+                course,
+                startDate,
+                subject,
+            });
+
             this.createAvailableOpenSpotHandler(time, course, location, subject)();
         } else if (courses.selected && locations.selected && subjects.selected) {
             this.props.getOpenSpots({

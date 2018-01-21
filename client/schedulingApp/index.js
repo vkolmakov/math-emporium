@@ -7,23 +7,34 @@ import MainContentWrap from '../components/mainContentWrap';
 
 import { BASE_PATH } from './constants';
 import { getLocations, getCourses, getSubjects, markAsInitialized } from './actions';
-import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
+import { getUserProfile, setOpenSpotDataFromProfile } from './profile/actions';
 
 class SchedulingApp extends Component {
     componentDidMount() {
+        const hasPreSelectedOpenSpot = !!this.props.preSelectedOpenSpotInfo.time
+              && !!this.props.preSelectedOpenSpotInfo.course
+              && !!this.props.preSelectedOpenSpotInfo.location;
+
+        const hasPreSelectedLocation = !!this.props.locations.selected;
         const alreadyInitializedLocations = this.props.locations.all.length > 0;
-        // if no location is selected, try to populate open spots data from user profile
-        const shouldSetOpenSpotsDataFromProfile = !this.props.locations.selected;
+        const alreadyInitializedProfile = this.props.authenticated && this.props.profile;
+
+        // if no location or open spot are pre-selected, try to populate open spots data from user profile
+        const shouldSetOpenSpotDataFromProfile = !(hasPreSelectedOpenSpot || hasPreSelectedLocation);
 
         if (!this.props.initialized) {
             Promise.all([
                 alreadyInitializedLocations ? Promise.resolve() : this.props.getLocations(),
+                alreadyInitializedProfile ? Promise.resolve() : this.props.getUserProfile(),
                 this.props.getSubjects(),
                 this.props.getCourses(),
             ]).then(() => {
-                return this.props.authenticated && shouldSetOpenSpotsDataFromProfile
-                    ? this.props.getUserProfileAndSetOpenSpotsData()
-                    : Promise.resolve();
+                const profile = this.props.profile;
+                if (this.props.authenticated && !!profile && shouldSetOpenSpotDataFromProfile) {
+                    return this.props.setOpenSpotDataFromProfile(profile);
+                }
+
+                return Promise.resolve();
             }).then(() => this.props.markAsInitialized());
         }
     }
@@ -54,7 +65,6 @@ class SchedulingApp extends Component {
 
         const isReady = !authenticated || (authenticated && profile && initialized);
 
-
         const maybeContent = isReady
               ? this.props.children
               : <div className="main-content"><LoadingSpinner /></div>;
@@ -79,6 +89,7 @@ function mapStateToProps(state) {
             all: state.scheduling.shared.locations.all,
             selected: state.scheduling.shared.locations.selected,
         },
+        preSelectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
     };
 }
 
@@ -86,6 +97,7 @@ export default connect(mapStateToProps, {
     getLocations,
     getSubjects,
     getCourses,
-    getUserProfileAndSetOpenSpotsData,
+    getUserProfile,
+    setOpenSpotDataFromProfile,
     markAsInitialized,
 })(SchedulingApp);
