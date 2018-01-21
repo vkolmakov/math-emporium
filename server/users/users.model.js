@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { calendarService } from '../services/googleApis';
-import { TIMEZONE, authGroups,
+import phoneNumber from '../services/phoneNumber';
+import { TIMEZONE, authGroups, Either,
          TIMESTAMP_VISIBLE_FORMAT, APPOINTMENT_LENGTH } from '../aux';
 import sendEmail from '../services/email';
 import cache from '../services/cache';
@@ -19,6 +20,28 @@ export default function createUserModel(sequelize, DataTypes) {
         },
         lastName: {
             type: DataTypes.STRING,
+        },
+        phoneNumber: {
+            type: DataTypes.STRING,
+            validate: {
+                isPhoneNumberOrNull(value) {
+                    if (!value) {
+                        return true;
+                    }
+
+                    return phoneNumber.isValid(value);
+                },
+            },
+            set(value) {
+                const parsedPhoneNumberOrNull = Either.either(
+                    (err) => { throw new Error('Invalid phone number'); },
+                    (p) => p,
+                    phoneNumber.parse(value)
+                );
+
+                this.setDataValue('phoneNumber', parsedPhoneNumberOrNull);
+            },
+
         },
         group: {
             type: DataTypes.INTEGER,
