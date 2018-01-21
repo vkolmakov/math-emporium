@@ -9,63 +9,97 @@ import { displayLoadingModal,
          displayTutorSelectionModal,
          getAvailableTutors } from '../actions';
 
+import { isPotentialPhoneNumber } from '../../../utils';
+
 class MiniProfileForm extends Component {
     constructor() {
         super();
 
         this.state = {
-            firstName: '',
-            lastName: '',
+            phoneNumber: '',
             success: false,
             error: null,
         };
     }
 
     render() {
+        function chainErrorHandler(errorHandler) {
+            // this pattern is required because each step of the submission has it's own error handler
+            // and it is crucial that ONLY the error handler of the failed step executes
+            return (err) => {
+                if (typeof err.handler === 'function') {
+                    // a handler already exists, don't do anything
+                    // and run the first handler instead at the end
+                    return Promise.reject(err);
+                }
+
+                return Promise.reject({
+                    handler: errorHandler,
+                    originalError: err,
+                });
+            };
+        }
+
         const onSubmit = e => {
             e.preventDefault();
-            const { firstName, lastName } = this.state;
+            this.setState({ success: false, error: null });
 
-            if (firstName && lastName) {
-                const { time, course, location, subject } = this.props.selectedOpenSpotInfo;
-                this.setState({ error: null });
+            const { phoneNumber } = this.state;
+
+            const displayLoadingModalAndGetAvailableTutors = (selectedOpenSpotInfo) => () => {
+                const { time, course, location, subject } = selectedOpenSpotInfo;
                 this.props.displayLoadingModal();
-                this.props.updateUserProfile({ firstName, lastName }).then(
-                    res => this.props.getAvailableTutors({ time, course, location, subject }),
-                    err => this.props.displayMessageModal({ message: 'Something went wrong, please try again.' })
+                return this.props.getAvailableTutors({ time, course, location, subject });
+            };
+
+            const displayErrorMessageModal = (err) => this.props.displayMessageModal({
+                message: err.data && err.data.error
+                    ? `${err.data.error}`
+                    : 'Something went wrong, please try again.',
+            });
+
+            const setFormError = (err) => {
+                if (typeof err === 'object' && !!err.data) {
+                    // server-side error
+                    this.setState({ error: err.data.error });
+                } else if (typeof err === 'string') {
+                    this.setState({ error: err });
+                }
+            };
+
+            const displayTutorSelectionModalOrError = (tutors) => tutors.length > 0
+                  ? this.props.displayTutorSelectionModal({ tutors })
+                  : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' });
+
+            if (!!phoneNumber && isPotentialPhoneNumber(phoneNumber)) {
+                this.props.updateUserProfile({ phoneNumber }).then(
+                    displayLoadingModalAndGetAvailableTutors(this.props.selectedOpenSpotInfo),
+                    chainErrorHandler(setFormError)
                 ).then(
-                    res => res.data,
-                    err => this.props.displayMessageModal({
-                        message: err.data && err.data.error
-                            ? `${err.data.error}`
-                            : 'Something went wrong, please try again.',
-                    })
-                ).then(tutors => tutors.length > 0
-                       ? this.props.displayTutorSelectionModal({ tutors })
-                       : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
+                    (res) => res.data,
+                    chainErrorHandler(displayErrorMessageModal)
+                ).then(
+                    displayTutorSelectionModalOrError,
+                    chainErrorHandler(displayErrorMessageModal)
+                ).catch(
+                    (err) => err.handler(err.originalError)
+                );
             } else {
-                this.setState({ error: 'Please enter your first and last name' });
+                setFormError('Please enter a valid phone number');
             }
         };
 
         const handleSubmit = onSubmit.bind(this);
         const config = {
             handleSubmit,
-            title: 'Update your profile',
+            title: 'Please enter your phone number',
             fields: [{
-                label: 'First Name',
+                label: 'Phone number',
                 input: {
                     type: 'text',
                     binding: {
-                        onChange: e => this.setState({ firstName: e.target.value }),
-                    },
-                },
-            }, {
-                label: 'Last Name',
-                input: {
-                    type: 'text',
-                    binding: {
-                        onChange: e => this.setState({ lastName: e.target.value }),
+                        onChange: e => this.setState({ phoneNumber: e.target.value }),
+                        value: this.state.phoneNumber,
                     },
                 },
             }],

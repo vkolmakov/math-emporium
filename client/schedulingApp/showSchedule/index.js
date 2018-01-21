@@ -237,7 +237,7 @@ class ShowSchedule extends Component {
                 return this.context.router.push('/signin');
             }
 
-            const isCompleteProfile = profile && profile.firstName && profile.lastName;
+            const isCompleteProfile = profile && profile.firstName && profile.lastName && profile.phoneNumber;
 
             if (!isCompleteProfile) {
                 return this.props.displayProfileModal();

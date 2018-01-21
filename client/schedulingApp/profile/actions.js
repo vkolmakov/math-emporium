@@ -37,17 +37,22 @@ export function updateUserProfile(values) {
             phoneNumber,
         } = values;
 
-        const location = locationId ? { id: locationId } : null;
-        const course = courseId ? { id: courseId } : null;
-        const subject = subjectId ? { id: subjectId } : null;
+        let defaultOptions;
+        if ([locationId, courseId, subjectId].every((x) => x === void 0)) {
+            defaultOptions = {};
+        } else {
+            defaultOptions = {
+                location: locationId ? { id: locationId } : null,
+                course: courseId ? { id: courseId } : null,
+                subject: subjectId ? { id: subjectId } : null,
+            };
+        }
 
         const requestBody = {
-            location,
-            course,
-            subject,
             firstName,
             lastName,
             phoneNumber,
+            ...defaultOptions,
         };
 
         return axios.put(`${BASE_URL}/profile`, requestBody)
