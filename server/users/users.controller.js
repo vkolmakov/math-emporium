@@ -4,7 +4,7 @@ import moment from 'moment';
 import { createExtractDataValuesFunction, isObject,
          hasOneOf, pickOneFrom, TIMESTAMP_FORMAT, TIMEZONE,
          APPOINTMENT_LENGTH } from '../aux';
-import { notFound, actionFailed } from '../services/errorMessages';
+import { notFound, actionFailed, getValidationErrorText } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { availableTutors } from '../services/openSpots/openSpots.service';
 
@@ -14,15 +14,16 @@ const Course = db.models.course;
 const Subject = db.models.subject;
 
 const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'subjectId',
-                       'next', 'googleCalendarAppointmentDate'];
+                       'googleCalendarAppointmentDate', 'phoneNumber'];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 export const updateProfile = () => async (req, res, next) => {
-    const allowedToWrite = ['firstName', 'lastName'];
+    const allowedToWrite = ['firstName', 'lastName', 'phoneNumber'];
+    let user;
 
     try {
         const userId = req.user.dataValues.id;
-        const user = await User.findOne({
+        user = await User.findOne({
             where: { id: userId },
         });
 
@@ -81,14 +82,19 @@ export const updateProfile = () => async (req, res, next) => {
                 await user.setCourse(null);
             }
         }
+    } catch (err) {
+        next(err);
+    }
 
+    try {
         const result = await user.update(req.body, {
             fields: allowedToWrite,
         });
 
         res.status(200).json(extractDataValues(result));
     } catch (err) {
-        next(err);
+        const validationErrorMessage = getValidationErrorText(err);
+        next(actionFailed('update', 'profile', validationErrorMessage));
     }
 };
 

@@ -25,3 +25,35 @@ export function errorMessage(message, status) {
         status,
     };
 }
+
+export function getValidationErrorText(err) {
+    const ERROR_TEXT = {
+        UNKNOWN: 'An unknown error occurred',
+        TOO_LONG: 'The value of a field is too long',
+    };
+
+    const SEQUELIZE_ERROR_NAME = {
+        DATABASE: 'SequelizeDatabaseError',
+    };
+
+    const ERROR_MESSAGE_TOKENS = {
+        TOO_LONG: 'too long',
+    };
+
+    function convertSequelizeDatabaseErrorMessage(err) {
+        const message = !!err.message ? err.message.toLowerCase() : '';
+
+        if (message.includes(ERROR_MESSAGE_TOKENS.TOO_LONG)) {
+            return ERROR_TEXT.TOO_LONG;
+        }
+
+        return ERROR_TEXT.UNKNOWN;
+    }
+
+
+    if (err.name === SEQUELIZE_ERROR_NAME.DATABASE) {
+        return convertSequelizeDatabaseErrorMessage(err);
+    }
+
+    return ERROR_TEXT.UNKNOWN;
+}
