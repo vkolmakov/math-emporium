@@ -81,9 +81,16 @@ const Location = ({ shouldDisplayImageBackground, onLocationTitleClick, getLocat
 
 class LocationsInfo extends Component {
     render() {
-        const locations = this.props.onlySelected
-              ? [this.props.locations.selected]
-              : this.props.locations.all;
+        let locations;
+        if (this.props.onlySelected) {
+            const hasSelectedLocation = !!this.props.locations.selected;
+
+            locations = hasSelectedLocation
+                ? [this.props.locations.selected]
+                : [];
+        } else {
+            locations = this.props.locations.all;
+        }
 
         return (
             <ul className="locations-info">
