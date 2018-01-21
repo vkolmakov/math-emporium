@@ -25,6 +25,8 @@ nav {
 
         @include breakpoint($medium-screen) {
             flex: inherit;
+            text-align: center;
+            @include reserve-space-for-bold-text;
         }
     }
     .auth-links {

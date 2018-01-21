@@ -13,6 +13,7 @@ class Sidebar extends Component {
         const url = `/${BASE_PATH}/${entry}`;
         return (
             <Link to={url}
+                  data-text={text}
                   className={'sidebar-link'}>
               {text}
             </Link>

@@ -9,9 +9,16 @@ function isSelected(currentPath, linkPath) {
     return linkPath === `/${currentTab[1]}`; // account for the leading '/'
 }
 
-const navLinkConstructor = (currentRouterPath) => ({ to, className, children }) => (
-    <Link to={to} key={to} className={createClassName(['nav-link', className, isSelected(currentRouterPath, to) ? 'selected' : ''])}>{children}</Link>
-);
+const navLinkConstructor = (currentRouterPath) => ({ to, className, children }) => {
+    const text = children;
+
+    return (
+        <Link to={to}
+              key={to}
+              data-text={text}
+              className={createClassName(['nav-link', className, isSelected(currentRouterPath, to) ? 'selected' : ''])}>{text}</Link>
+    );
+};
 
 class Navbar extends Component {
     links() {

@@ -13,10 +13,7 @@
 
         list-style: none;
 
-        margin: 1em;
-        margin-top: 0;
-        margin-left: 0;
-
+        margin: 0.5em 0;
         padding: 0;
     }
 
@@ -26,6 +23,7 @@
         @include rounded-border();
 
         margin-right: 0.5em;
+        margin-bottom: 0.5em;
 
         &.selected {
             @include in-focus();
@@ -34,6 +32,7 @@
 
     .sidebar-link {
         flex: 1;
+        text-align: center;
 
         padding: 0.5em;
 
@@ -43,5 +42,7 @@
         &:hover, &:focus {
             @include in-focus();
         }
+
+        @include reserve-space-for-bold-text;
     }
 }
