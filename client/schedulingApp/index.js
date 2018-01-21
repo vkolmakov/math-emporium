@@ -12,6 +12,8 @@ import { getUserProfileAndSetOpenSpotsData } from './profile/actions';
 class SchedulingApp extends Component {
     componentDidMount() {
         const alreadyInitializedLocations = this.props.locations.all.length > 0;
+        // if no location is selected, try to populate open spots data from user profile
+        const shouldSetOpenSpotsDataFromProfile = !this.props.locations.selected;
 
         if (!this.props.initialized) {
             Promise.all([
@@ -19,7 +21,7 @@ class SchedulingApp extends Component {
                 this.props.getSubjects(),
                 this.props.getCourses(),
             ]).then(() => {
-                return this.props.authenticated
+                return this.props.authenticated && shouldSetOpenSpotsDataFromProfile
                     ? this.props.getUserProfileAndSetOpenSpotsData()
                     : Promise.resolve();
             }).then(() => this.props.markAsInitialized());
@@ -75,6 +77,7 @@ function mapStateToProps(state) {
         initialized: state.scheduling.shared.initialized,
         locations: {
             all: state.scheduling.shared.locations.all,
+            selected: state.scheduling.shared.locations.selected,
         },
     };
 }
