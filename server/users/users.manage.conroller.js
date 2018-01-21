@@ -7,7 +7,7 @@ const Location = db.models.location;
 const Course = db.models.course;
 
 const allowedToRead = ['id', 'email', 'firstName', 'lastName', 'group', 'location', 'course', 'lastSigninAt', 'phoneNumber'];
-const allowedToWrite = ['email', 'group'];
+const allowedToWrite = ['group'];
 const relatedModels = [Location, Course];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);

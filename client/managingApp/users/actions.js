@@ -15,10 +15,9 @@ export function getUsers() {
 }
 
 export function updateUser(id, data) {
-    const { email, group } = data;
+    const { group } = data;
 
     const requestData = {
-        email,
         group,
     };
 
