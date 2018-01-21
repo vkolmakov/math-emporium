@@ -53,6 +53,19 @@ export const selectTransformOptions = (valueKey = 'id', labelKey = 'name', color
         }, {})
     );
 
+export function inRangeInclusive(l, h, x) {
+    return x >= l && x <= h;
+}
+
+export function isPotentialPhoneNumber(rawNumber) {
+    const LOWER_BOUND_NUM_DIGITS = 10;
+    const UPPER_BOUND_NUM_DIGITS = 11;
+
+    const numDigits = rawNumber.replace(/\D/g, '').length;
+
+    return inRangeInclusive(LOWER_BOUND_NUM_DIGITS, UPPER_BOUND_NUM_DIGITS, numDigits);
+}
+
 export const locationComparator = (location1, location2) =>
     location1.name.toLowerCase() > location2.name.toLowerCase() ? 1 : -1;
 

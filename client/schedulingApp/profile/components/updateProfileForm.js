@@ -5,8 +5,9 @@ import Form from '../../../components/form/index';
 
 import { updateUserProfile } from '../actions';
 import { selectTransformOptions } from '../../../editingApp/utils';
+import { isPotentialPhoneNumber } from '../../../utils';
 
-const FORM_FIELDS = ['firstName', 'lastName', 'location', 'course', 'subject'];
+const FORM_FIELDS = ['firstName', 'lastName', 'phoneNumber', 'location', 'course', 'subject'];
 const FORM_NAME = 'UpdateProfileForm';
 
 class UpdateProfileForm extends Component {
@@ -14,6 +15,7 @@ class UpdateProfileForm extends Component {
         super();
         this.state = {
             success: false,
+            error: null,
             selectedCourse: null,
             selectedLocation: null,
             selectedSubject: null,
@@ -25,10 +27,11 @@ class UpdateProfileForm extends Component {
     }
 
     updateForm() {
-        const { firstName, lastName, location, course, subject } = this.props.profile;
+        const { firstName, lastName, phoneNumber, location, course, subject } = this.props.profile;
         this.props.dispatch(initialize(FORM_NAME, {
             firstName: firstName || '',
             lastName: lastName || '',
+            phoneNumber: phoneNumber || '',
             location: location ? location.id : null,
             course: course ? course.id : null,
             subject: subject ? subject.id : null,
@@ -36,7 +39,7 @@ class UpdateProfileForm extends Component {
     }
 
     render() {
-        const { firstName, lastName, location, course, subject } = this.props.fields;
+        const { firstName, lastName, phoneNumber, location, course, subject } = this.props.fields;
         const locationsOptions = selectTransformOptions()(this.props.locations.all);
 
         let coursesOptions = [];
@@ -58,11 +61,19 @@ class UpdateProfileForm extends Component {
         }
 
         const onSubmit = (data) => {
+            this.setState({ success: false, error: null });
+
             if (this.props.submitCallback) {
                 this.props.submitCallback();
             }
-            this.props.updateUserProfile(data);
-            this.setState({ success: true });
+            this.props.updateUserProfile(data).then(
+                (result) => {
+                    this.setState({ success: true, error: null });
+                },
+                (err) => {
+                    this.setState({ success: false, error: err.data.error });
+                }
+            );
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
@@ -81,6 +92,12 @@ class UpdateProfileForm extends Component {
                 input: {
                     type: 'text',
                     binding: lastName,
+                },
+            }, {
+                label: 'Phone number',
+                input: {
+                    type: 'text',
+                    binding: phoneNumber,
                 },
             }, {
                 label: 'Default location',
@@ -139,7 +156,7 @@ class UpdateProfileForm extends Component {
             handleSubmit,
             title,
             fields,
-            error: null, // TODO
+            error: this.state.error,
             success: this.state.success,
         };
 
@@ -158,11 +175,20 @@ function validate(values) {
     const requiredFields = {
         firstName: 'First name is required',
         lastName: 'Last name is required',
+        phoneNumber: 'Valid phone number is required',
     };
 
     Object.keys(requiredFields).forEach(
         field => {
-            if (!values[field]) errors[field] = requiredFields[field];
+            if (field === 'phoneNumber') {
+                if (!!values[field] && !isPotentialPhoneNumber(values[field])) {
+                    errors[field] = requiredFields[field];
+                }
+            } else {
+                if (!values[field]) {
+                    errors[field] = requiredFields[field];
+                }
+            }
         }
     );
 

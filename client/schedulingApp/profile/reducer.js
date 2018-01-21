@@ -15,6 +15,7 @@ export default (state = INITIAL_STATE, action) => {
             subject: data.subjectId ? { id: data.subjectId } : null,
             firstName: data.firstName,
             lastName: data.lastName,
+            phoneNumber: data.phoneNumber,
             googleCalendarAppointmentDate: data.googleCalendarAppointmentDate,
         };
 
@@ -27,6 +28,7 @@ export default (state = INITIAL_STATE, action) => {
             subject: data.subjectId ? { id: data.subjectId } : null,
             firstName: data.firstName,
             lastName: data.lastName,
+            phoneNumber: data.phoneNumber,
         };
 
     default:

@@ -34,6 +34,7 @@ export function updateUserProfile(values) {
             subject: subjectId,
             firstName,
             lastName,
+            phoneNumber,
         } = values;
 
         const location = locationId ? { id: locationId } : null;
@@ -46,6 +47,7 @@ export function updateUserProfile(values) {
             subject,
             firstName,
             lastName,
+            phoneNumber,
         };
 
         return axios.put(`${BASE_URL}/profile`, requestBody)
