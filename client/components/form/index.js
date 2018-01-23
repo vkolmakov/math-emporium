@@ -4,6 +4,7 @@ import Alert from './formAlert';
 import Success from './formSuccess';
 
 export default ({ handleSubmit,
+                  hideSubmitButton,
                   title,
                   fields,
                   error,
@@ -16,10 +17,11 @@ export default ({ handleSubmit,
       ))}
 
       <div className="form-field submit-field">
-        <button className="button" type="submit">Submit</button>
+        {!!hideSubmitButton
+           ? (<span></span>)
+           : (<button className="button" type="submit">Submit</button>)}
         <Alert error={error}/>
         <Success success={success} />
-
       </div>
     </form>
 );

@@ -94,6 +94,7 @@ class MiniProfileForm extends Component {
     render() {
         const handleSubmit = this.onFormSubmit.bind(this);
         const config = {
+            hideSubmitButton: true,
             handleSubmit,
             title: 'Please enter your phone number',
             fields: [{
