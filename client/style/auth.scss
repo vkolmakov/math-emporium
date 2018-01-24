@@ -2,14 +2,13 @@
 
 .auth-content-wrap {
     display: flex;
-    justify-content: center;
-
-    margin-top: 2em;
+    flex-flow: column nowrap;
 }
 
 .oauth2-button {
     height: 8em;
 
+    margin: 2em auto;
     padding: 0 1.5em;
 
     @include breakpoint($medium-screen) {
@@ -35,4 +34,8 @@
 
         }
     }
+}
+
+.signout-message {
+    font-size: 1.2em;
 }
