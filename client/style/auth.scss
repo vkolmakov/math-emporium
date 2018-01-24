@@ -1,0 +1,38 @@
+@import "variables";
+
+.auth-content-wrap {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 2em;
+}
+
+.oauth2-button {
+    height: 8em;
+
+    padding: 0 1.5em;
+
+    @include breakpoint($medium-screen) {
+        padding: 0 3em;
+    }
+
+    border: 1px solid darken($tertiary-color, 25%);
+
+    background-color: transparent;
+
+    .oauth2-button-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 1.75em;
+
+        .oauth2-button-content-logo {
+            height: 1.5em;
+        }
+
+        .oauth2-button-content-text {
+
+        }
+    }
+}

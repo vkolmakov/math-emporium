@@ -5,6 +5,7 @@ import LoadingSpinner from '../../components/loadingSpinner';
 import MainContentWrap from '../../components/mainContentWrap';
 
 import { OAUTH2_SIGNIN_URL } from '../constants';
+import { redirectOutside } from '../../utils';
 import { saveSelectedOpenSpotInLocalStorage,
          clearOpenSpotSelection } from '../../schedulingApp/showSchedule/actions';
 import schoolLogo from '../../assets/school-logo.png';
@@ -15,6 +16,7 @@ class Signin extends Component {
         super();
         this.state = {
             initiated: false,
+            buttonWidthBeforeInitialization: 'auto',
         };
     }
 
@@ -32,33 +34,51 @@ class Signin extends Component {
     }
 
     initiateSignin() {
-        this.setState(
-            () => ({ initiated: true }));
+        // button width has to be stashed to prevent jump in button width when transitioning to spinner
+        const buttonWidthBeforeInitialization = !!this.authButtonRef
+              ? `${this.authButtonRef.offsetWidth.toString()}px`
+              : 'auto';
+
+        this.setState(() => ({ initiated: true, buttonWidthBeforeInitialization }));
+        redirectOutside(OAUTH2_SIGNIN_URL);
     }
 
     render() {
-        const Wrap = content => () => (
-            <a href={OAUTH2_SIGNIN_URL}
-               role="button"
-               className="oauth2-link"
-               onClick={this.initiateSignin.bind(this)}>
-                <div className="oauth2-button-wrap">
-                    {content}
-                </div>
-            </a>);
+        const getAuthButtonRefAndFocus = (buttonRef) => {
+            if (buttonRef) {
+                buttonRef.focus(); this.authButtonRef = buttonRef;
+            }
+        };
 
-        const ButtonOrSpinner = this.state.initiated
-              ? Wrap(<LoadingSpinner />)
-              : Wrap([<img alt="School Logo" src={schoolLogo} key={0}/>,
-                      <span key={1}>Sign in with your school account</span>]);
+        const AuthButton = () => (
+            <button className="oauth2-button"
+                    onClick={this.initiateSignin.bind(this)}
+                    ref={getAuthButtonRefAndFocus}>
+              <div className="oauth2-button-content">
+                <img className="oauth2-button-content-logo" alt="School Logo" src={schoolLogo} />
+                <span className="oauth2-button-content-text">Sign in with your school account</span>
+              </div>
+            </button>
+        );
+
+        const SpinnerButton = () => (
+            <button disabled className="oauth2-button"
+                    style={{ width: this.state.buttonWidthBeforeInitialization }}>
+              <div className="oauth2-button-content">
+                <LoadingSpinner />
+              </div>
+            </button>
+        );
+
+        const AuthOrSpinnerButton = this.state.initiated ? SpinnerButton : AuthButton;
 
         return (
             <MainContentWrap>
-                <div className="wrap">
-                    <div className="auth-form-wrap">
-                        <ButtonOrSpinner />
-                    </div>
+              <div className="wrap">
+                <div className="auth-content-wrap">
+                  <AuthOrSpinnerButton></AuthOrSpinnerButton>
                 </div>
+              </div>
             </MainContentWrap>
         );
     }

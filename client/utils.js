@@ -71,6 +71,10 @@ export const locationComparator = (location1, location2) =>
 
 export const redirectTo = page => browserHistory.push(page);
 
+export function redirectOutside(url) {
+    window.location.href = url;
+}
+
 export function setKey(obj, key, val) {
     obj[key] = val;
     return obj;
