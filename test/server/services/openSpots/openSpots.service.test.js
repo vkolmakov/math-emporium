@@ -61,6 +61,7 @@ describe('openSpots.service', () => {
                 courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
             },
             { id: 4, name: 'HermesC', courses: [{ id: 4 }] },
+            { id: 5, name: 'PhillipJ', courses: [{ id: 3 }] },
         ],
         schedules: [
             {
@@ -98,6 +99,12 @@ describe('openSpots.service', () => {
                 weekday: 2,
                 time: 600,
                 tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+            },
+            {
+                id: 8,
+                weekday: 3,
+                time: 600,
+                tutors: [{ id: 5, name: 'PhillipJ' }, { id: 2, name: 'PhillipF' }],
             },
         ],
     };
@@ -165,6 +172,11 @@ describe('openSpots.service', () => {
                         [540, locationData.schedules[3].tutors],
                         [600, locationData.schedules[4].tutors],
                     ]),
+                ], [
+                    3,
+                    new Map([
+                        [600, locationData.schedules[5].tutors],
+                    ]),
                 ],
             ]);
 
@@ -194,6 +206,10 @@ describe('openSpots.service', () => {
                 weekday: 2,
                 time: 600,
                 tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+            }, {
+                weekday: 3,
+                time: 600,
+                tutors: [{ id: 5, name: 'PhillipJ' }, { id: 2, name: 'PhillipF' }],
             }];
 
             const result = convertScheduleMapToList(
@@ -213,37 +229,50 @@ describe('openSpots.service', () => {
         it('accepts tutor objects that have ids and produces correct result', () => {
             expect(
                 tutors.map(t => canTutorCourse(tutors, course1, t))
-            ).toEqual([true, true, true, false]);
+            ).toEqual([true, true, true, false, false]);
 
             expect(
                 tutors.map(t => canTutorCourse(tutors, course2, t))
-            ).toEqual([true, false, true, false]);
+            ).toEqual([true, false, true, false, true]);
         });
 
         it('accepts tutor objects that have names and produces correct result', () => {
             expect(
                 tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course1, t))
-            ).toEqual([true, true, true, false]);
+            ).toEqual([true, true, true, false, false]);
 
             expect(
                 tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course2, t))
-            ).toEqual([true, false, true, false]);
+            ).toEqual([true, false, true, false, true]);
         });
 
         it('accepts tutor objects with misspelled names and produces correct result', () => {
             expect([
                 canTutorCourse(tutors, course1, { name: 'amy' }),
-                canTutorCourse(tutors, course1, { name: 'philllipp' }),
+                canTutorCourse(tutors, course1, { name: 'philllippf' }),
                 canTutorCourse(tutors, course1, { name: 'hubirTf' }),
                 canTutorCourse(tutors, course1, { name: 'hermZ' }),
-            ]).toEqual([true, true, true, false]);
+                canTutorCourse(tutors, course2, { name: 'philipj' }),
+            ]).toEqual([true, true, true, false, true]);
 
             expect([
                 canTutorCourse(tutors, course2, { name: 'amy' }),
-                canTutorCourse(tutors, course2, { name: 'philllipp' }),
+                canTutorCourse(tutors, course2, { name: 'philllippf' }),
                 canTutorCourse(tutors, course2, { name: 'hubirTf' }),
                 canTutorCourse(tutors, course2, { name: 'hermZ' }),
-            ]).toEqual([true, false, true, false]);
+                canTutorCourse(tutors, course2, { name: 'philipj' }),
+            ]).toEqual([true, false, true, false, true]);
+        });
+
+        it('returns false when input is ambiguous', () => {
+            expect([
+                canTutorCourse(tutors, course1, { name: 'phil' }),
+                canTutorCourse(tutors, course1, { name: 'phill' }),
+                canTutorCourse(tutors, course1, { name: 'phillipp' }),
+                canTutorCourse(tutors, course2, { name: 'phil' }),
+                canTutorCourse(tutors, course2, { name: 'phill' }),
+                canTutorCourse(tutors, course2, { name: 'phillipp' }),
+            ]).toEqual([false, false, false, false, false, false]);
         });
     });
 
@@ -259,6 +288,7 @@ describe('openSpots.service', () => {
                 { weekday: 1, time: 660, count: 1 },
                 { weekday: 2, time: 540, count: 2 },
                 { weekday: 2, time: 600, count: 2 },
+                { weekday: 3, time: 600, count: 1 },
             ];
 
             const result = getOpenSpots(
@@ -283,6 +313,7 @@ describe('openSpots.service', () => {
                 { weekday: 1, time: 660, count: 1 },
                 { weekday: 2, time: 540, count: 2 },
                 { weekday: 2, time: 600, count: 2 },
+                { weekday: 3, time: 600, count: 1 },
             ];
 
             const result = getOpenSpots(
@@ -308,6 +339,7 @@ describe('openSpots.service', () => {
                 { weekday: 2, time: 540, count: 1 },
                 { weekday: 2, time: 600, count: 1 },
                 { weekday: 2, time: 660, count: 2 },
+                { weekday: 3, time: 600, count: 1 },
             ];
 
             const result = getOpenSpots(
@@ -333,6 +365,7 @@ describe('openSpots.service', () => {
                 { weekday: 2, time: 540, count: 2 },
                 { weekday: 2, time: 600, count: 2 },
                 { weekday: 2, time: 660, count: 2 },
+                { weekday: 3, time: 600, count: 1 },
             ];
 
             const result = getOpenSpots(
