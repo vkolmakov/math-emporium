@@ -253,6 +253,8 @@ export async function openSpots(location, course, startDate, endDate) {
 export function getAvailableTutors(schedules, tutors, appointments, specialInstructions, parameters) {
     const { time, weekday, course } = parameters;
 
+    const allTutorNames = tutors.map(R.prop('name'));
+
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const selectTutorsForCourse = R.filter(canTutorSelectedCourse);
     const selectedTutors = selectTutorsForCourse(tutors);
@@ -284,16 +286,20 @@ export function getAvailableTutors(schedules, tutors, appointments, specialInstr
         const predictTutorFromAppointment = appointment =>
               R.map(
                   n => ({ name: n }),
-                  predictTutorName(selectedTutorNames, appointment.tutor));
+                  predictTutorName(allTutorNames, appointment.tutor));
 
         const takenTutors =
               Either.rights(R.map(predictTutorFromAppointment, appointments));
         const scheduledTutors = scheduleMap.get(weekday).get(time);
         const availableTutors = R.differenceWith(
             compareTutorsByName, scheduledTutors, takenTutors);
+        const availableSelectedTutors = R.innerJoin(
+            (availableTutor, selectedTutorName) => availableTutor.name === selectedTutorName,
+            availableTutors,
+            selectedTutorNames);
 
         const nextScheduleMap = new Map(scheduleMap);
-        nextScheduleMap.get(weekday).set(time, availableTutors);
+        nextScheduleMap.get(weekday).set(time, availableSelectedTutors);
 
         return nextScheduleMap;
     };

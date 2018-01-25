@@ -109,6 +109,7 @@ export const R = {
     slice: _R.slice,
     equals: _R.equals,
     identity: _R.identity,
+    innerJoin: _R.innerJoin,
 };
 
 export const trace = msg => x => { console.log(msg, x); return x; };
