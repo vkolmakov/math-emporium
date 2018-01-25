@@ -493,9 +493,43 @@ describe('openSpots.service', () => {
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
+
+        it('should handle a case when two candidate tutors have the same first name and do not share the same course', () => {
+            const parameters = {
+                course: { id: 2 },
+                weekday: 2,
+                time: 600,
+            };
+            const appointments = [{
+                tutor: 'PhillipJ',
+                student: 'Zoidberg',
+                course: 'MATH101',
+                startDateTime: '2017-05-29-09-00',
+                weekday: 2,
+                time: 600,
+            }];
+            const specialInstructions = [{
+                overwriteTutors: [{ name: 'PhillipF' }, { name: 'PhillipJ' }],
+                startDateTime: '2017-05-30-11-00',
+                weekday: 2,
+                time: 600,
+            }];
+
+            const expected = [{ id: 2, name: 'PhillipF' }];
+
+            const result = getAvailableTutors(
+                locationData.schedules,
+                locationData.tutors,
+                appointments,
+                specialInstructions,
+                parameters);
+
+            expect(result).toHaveLength(expected.length);
+            expected.forEach(expectIn(result));
+        });
     });
 
-    describe('getAvailableTutors', () => {
+    describe('predictTutorName', () => {
         const options = ['PhillipF', 'HubertF', 'HermesC',
                          'AmyW', 'AmyZ',
                          'JohnD', 'JohnT', 'JohnZ'];
