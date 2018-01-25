@@ -96,7 +96,8 @@ class MiniProfileForm extends Component {
         const config = {
             hideSubmitButton: true,
             handleSubmit,
-            title: 'Please enter your phone number',
+            title: 'Please provide a phone number',
+            description: 'In the event that your scheduled tutor becomes unavailable or is running late, we will reach out to you to let you know',
             fields: [{
                 label: 'Phone number',
                 input: {

@@ -3,25 +3,37 @@ import FormField from './formField';
 import Alert from './formAlert';
 import Success from './formSuccess';
 
-export default ({ handleSubmit,
-                  hideSubmitButton,
-                  title,
-                  fields,
-                  error,
-                  success }) => (
-    <form onSubmit={handleSubmit}>
-      <h2>{title}</h2>
-      {fields.map(field => (
-          <FormField field={field}
-                     key={field.label} />
-      ))}
+export default function Form({
+    handleSubmit,
+    description,
+    hideSubmitButton,
+    title,
+    fields,
+    error,
+    success,
+}) {
+    const MaybeSubmitButton = () => !!hideSubmitButton
+          ? (<span></span>)
+          : (<button className="button" type="submit">Submit</button>);
 
-      <div className="form-field submit-field">
-        {!!hideSubmitButton
-           ? (<span></span>)
-           : (<button className="button" type="submit">Submit</button>)}
-        <Alert error={error}/>
-        <Success success={success} />
-      </div>
-    </form>
-);
+    const MaybeDescription = () => !!description
+          ? (<p>{description}</p>)
+          : (<span></span>);
+
+    return (
+        <form onSubmit={handleSubmit}>
+          <h2>{title}</h2>
+          <MaybeDescription></MaybeDescription>
+          {fields.map(field => (
+              <FormField field={field}
+                         key={field.label} />
+          ))}
+
+          <div className="form-field submit-field">
+            <MaybeSubmitButton></MaybeSubmitButton>
+            <Alert error={error}/>
+            <Success success={success} />
+         </div>
+        </form>
+    );
+}
