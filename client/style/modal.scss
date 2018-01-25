@@ -42,8 +42,9 @@
         margin: 0.5em 0;
         justify-content: space-between;
         > button {
+            font-size: 1em;
+
             @include button;
-            @include modal-controls-font-size;
             @include modal-button-border;
             padding: 10px;
             width: 7.5em;
