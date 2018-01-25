@@ -78,8 +78,8 @@ class TutorSelectionModal extends Component {
                    onRequestClose={onRequestClose}
                    contentLabel="Tutor Selecion Modal"
                    className="scheduling-modal">
-                <h1>Confirm your appointment details</h1>
-                <h2>{getAppointmentInfoDisplay(selectedOpenSpotInfo)}</h2>
+                <h2 className="modal-title">Confirm your appointment details</h2>
+                <h3 className="modal-subtitle">{getAppointmentInfoDisplay(selectedOpenSpotInfo)}</h3>
 
                 <FilterControls options={getTutorOptions(this.state)}
                                 disableNullOption
