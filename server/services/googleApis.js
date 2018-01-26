@@ -31,10 +31,14 @@ function getAuth(resource) {
 }
 
 class CalendarService {
-    async create() {
+    constructor() {
+        this.isInitialized = false;
+    }
+
+    async initialize() {
         this.auth = await getAuth('calendar');
         this.calendar = googleapis.calendar('v3');
-        this.isCreated = true;
+        this.isInitialized = true;
     }
 
     getCalendarEvents(calendarId, startDate, endDate, options) {
@@ -119,11 +123,11 @@ class CalendarService {
     }
 }
 
-const _calendarService = new CalendarService;
+const _calendarService = new CalendarService();
 
 export async function calendarService() {
-    if (!_calendarService.isCreated) {
-        await _calendarService.create();
+    if (!_calendarService.isInitialized) {
+        await _calendarService.initialize();
     }
 
     return _calendarService;
