@@ -4,7 +4,6 @@ import { TIMEZONE, R, Either } from '../../aux';
 import { getAppData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { calendarService } from '../googleApis';
-import cache from '../cache';
 
 
 export function predictTutorName(options, rawName) {
@@ -222,20 +221,11 @@ export async function openSpots(location, course, startDate, endDate) {
     const calendarId = locationData.location.calendarId;
     const calendar = await calendarService();
 
-    const fetchAndCacheCalendarEvents = () => {
-        const cacheEvents = (events) =>
-              cache.calendarEvents.put(calendarId, startDate.toISOString(), events);
-
-        return calendar.getCalendarEvents(
-            calendarId,
-            startDate.toISOString(),
-            endDate.toISOString()).then(cacheEvents);
-    };
-
-    const calendarEvents = await Either.either(
-        fetchAndCacheCalendarEvents,
-        R.identity,
-        cache.calendarEvents.get(calendarId, startDate.toISOString()));
+    const calendarEvents = await calendar.getCalendarEvents(
+        calendarId,
+        startDate.toISOString(),
+        endDate.toISOString(),
+        { useCache: true });
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);
@@ -343,7 +333,8 @@ export async function availableTutors(location, course, startDate, endDate) {
     const calendarEvents = await calendar.getCalendarEvents(
         calendarId,
         startDate.toISOString(),
-        endDate.toISOString());
+        endDate.toISOString(),
+        { useCache: false });
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
     const appointments = getAppointments(calendarEvents);

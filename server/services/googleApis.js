@@ -1,5 +1,8 @@
 import googleapis from 'googleapis';
-import { TIMEZONE, R } from '../aux';
+
+import cache from './cache';
+
+import { TIMEZONE, R, Either } from '../aux';
 import config from '../config';
 
 function decodeServiceKey(base64ServiceKey) {
@@ -34,10 +37,11 @@ class CalendarService {
         this.isCreated = true;
     }
 
-    getCalendarEvents(calendarId, startDate, endDate) {
+    getCalendarEvents(calendarId, startDate, endDate, options) {
+        const { useCache } = options;
         const pickRequiredFields = R.pick(['summary', 'start']);
 
-        return new Promise((resolve, reject) => {
+        const fetchEvents = () => new Promise((resolve, reject) => {
             this.calendar.events.list({
                 auth: this.auth,
                 calendarId,
@@ -54,6 +58,20 @@ class CalendarService {
                 }
             });
         });
+
+        const cacheAndReturnEvents = (events) => {
+            cache.calendarEvents.put(calendarId, startDate, events);
+            return Promise.resolve(events);
+        };
+
+        if (!useCache) {
+            return fetchEvents();
+        }
+
+        return Either.either(
+            () => fetchEvents().then(cacheAndReturnEvents),
+            (events) => Promise.resolve(events),
+            cache.calendarEvents.get(calendarId, startDate));
     }
 
     createCalendarEvent({ calendarId, startTime, endTime, summary, description, colorId }) {
