@@ -35,42 +35,40 @@ const _cache = {
     },
 };
 
-function invalidateCalendarEventsCache(calendarId) {
-    const toRemove = memoryCache.keys().filter((key) => key.includes(calendarId));
-    toRemove.forEach(_cache.remove);
-    return toRemove;
-}
+const calendarEvents = {
+    invalidate(calendarId) {
+        const toRemove = memoryCache.keys().filter((key) => key.includes(calendarId));
+        toRemove.forEach(_cache.remove);
+        return toRemove;
+    },
 
-function putCalendarEvents(calendarId, weekStartIsoString, events) {
-    return _cache.put(
-        _cache.keys.calendarEvents(calendarId, weekStartIsoString),
-        events,
-        _cache.DURATIONS.CALENDAR_EVENTS);
-}
+    put(calendarId, weekStartIsoString, events) {
+        return _cache.put(
+            _cache.keys.calendarEvents(calendarId, weekStartIsoString),
+            events,
+            _cache.DURATIONS.CALENDAR_EVENTS);
+    },
+    get(calendarId, weekStartIsoString) {
+        return _cache.get(_cache.keys.calendarEvents(calendarId, weekStartIsoString));
+    },
+};
 
-function getCalendarEvents(calendarId, weekStartIsoString) {
-    return _cache.get(_cache.keys.calendarEvents(calendarId, weekStartIsoString));
-}
+const appData = {
+    invalidate() {
+        return memoryCache.keys()
+            .filter((key) => key === _cache.keys.appData())
+            .forEach(_cache.remove);
+    },
+    put(data) {
+        return _cache.put(_cache.keys.appData(), data, _cache.DURATIONS.APP_DATA);
+    },
 
-function putAppData(data) {
-    return _cache.put(_cache.keys.appData(), data, _cache.DURATIONS.APP_DATA);
-}
-
-function getAppData() {
-    return _cache.get(_cache.keys.appData());
-}
-
-function invalidateAppDataCache() {
-    return memoryCache.keys().filter((key) => key === _cache.keys.appData());
-}
+    get() {
+        return _cache.get(_cache.keys.appData());
+    },
+};
 
 export default {
-    // calendar events
-    invalidateCalendarEventsCache,
-    putCalendarEvents,
-    getCalendarEvents,
-    // app data
-    invalidateAppDataCache,
-    putAppData,
-    getAppData,
+    calendarEvents,
+    appData,
 };

@@ -62,7 +62,7 @@ const collectData = () => new Promise(async (resolve, reject) => {
 
 export const getAppData = () => new Promise((resolve, reject) => {
     return Either.either(
-        () => collectData().then(cache.putAppData).then(resolve),
+        () => collectData().then(cache.appData.put).then(resolve),
         resolve,
-        cache.getAppData());
+        cache.appData.get());
 });
