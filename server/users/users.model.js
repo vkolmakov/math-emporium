@@ -97,7 +97,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                     // invalidate the cache for a given location as soon
                     // as new appointment is registered
-                    cache.invalidateCalendarEventsCache(calendarId);
+                    cache.calendarEvents.invalidate(calendarId);
 
                     resolve(result);
                 });
@@ -136,7 +136,7 @@ export default function createUserModel(sequelize, DataTypes) {
 
                         // invalidate the cache for a given location as soon
                         // as an appointment is deleted
-                        cache.invalidateCalendarEventsCache(calendarId);
+                        cache.calendarEvents.invalidate(calendarId);
 
                         resolve(result);
                     } catch (err) {
