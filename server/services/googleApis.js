@@ -1,5 +1,5 @@
 import googleapis from 'googleapis';
-import { TIMEZONE } from '../aux';
+import { TIMEZONE, R } from '../aux';
 import config from '../config';
 
 function decodeServiceKey(base64ServiceKey) {
@@ -35,6 +35,8 @@ class CalendarService {
     }
 
     getCalendarEvents(calendarId, startDate, endDate) {
+        const pickRequiredFields = R.pick(['summary', 'start']);
+
         return new Promise((resolve, reject) => {
             this.calendar.events.list({
                 auth: this.auth,
@@ -48,7 +50,7 @@ class CalendarService {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(result.items);
+                    resolve(result.items.map(pickRequiredFields));
                 }
             });
         });
