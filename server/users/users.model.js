@@ -112,10 +112,14 @@ export default function createUserModel(sequelize, DataTypes) {
                 moment.tz.setDefault(TIMEZONE);
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,
-                    `Course: ${course.code}: ${course.name}`,
-                    `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
-                    'Created online',
-                    comments ? `Comments: ${comments}` : ''].join('\n');
+                        `Email: ${user.email}`,
+                        `Phone number: ${user.phoneNumber}`,
+                        '',
+                        `Course: ${course.code}: ${course.name}`,
+                        `Created on: ${moment().format(TIMESTAMP_VISIBLE_FORMAT)}`,
+                        'Created online',
+                        comments ? `Comments: ${comments}` : '',
+                       ].join('\n');
             },
 
             deleteGoogleCalendarAppointment() {
