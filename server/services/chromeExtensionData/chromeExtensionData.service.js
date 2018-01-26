@@ -1,8 +1,8 @@
-import { getCachedData } from '../appData';
+import { getAppData } from '../appData';
 import { set } from '../../aux';
 
 export const packChromeExtensionData = async () => {
-    const data = await getCachedData();
+    const data = await getAppData();
 
     const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         .reduce((result, weekdayName, idx) => set(result, idx + 1, weekdayName), {});

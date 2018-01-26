@@ -60,12 +60,9 @@ const collectData = () => new Promise(async (resolve, reject) => {
     }
 });
 
-export const getCachedData = () => new Promise(async (resolve, reject) => {
-    const cacheData = (data) =>
-          cache.put(cache.keys.appData(), data, cache.DURATIONS.APP_DATA);
-
+export const getAppData = () => new Promise((resolve, reject) => {
     return Either.either(
-        () => collectData().then(cacheData).then(resolve),
+        () => collectData().then(cache.putAppData).then(resolve),
         resolve,
-        cache.get(cache.keys.appData()));
+        cache.getAppData());
 });

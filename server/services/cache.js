@@ -1,4 +1,4 @@
-import cache from 'memory-cache';
+import memoryCache from 'memory-cache';
 
 import { Either } from '../aux';
 
@@ -21,21 +21,21 @@ const DURATIONS = {
 };
 
 function get(key) {
-    return Either.toEither(MESSAGES.MISS, cache.get(key));
+    return Either.toEither(MESSAGES.MISS, memoryCache.get(key));
 }
 
 function remove(key) {
-    cache.del(key);
+    memoryCache.del(key);
     return key;
 }
 
 function put(key, value, duration) {
-    cache.put(key, value, duration);
+    memoryCache.put(key, value, duration);
     return value;
 }
 
 function invalidateCalendarEventsCache(calendarId) {
-    const toRemove = cache.keys().filter((key) => key.includes(calendarId));
+    const toRemove = memoryCache.keys().filter((key) => key.includes(calendarId));
     toRemove.forEach(remove);
     return toRemove;
 }
@@ -51,6 +51,18 @@ function getCalendarEvents(calendarId, weekStartIsoString) {
     return get(keys.calendarEvents(calendarId, weekStartIsoString));
 }
 
+function putAppData(data) {
+    return put(keys.appData(), data, DURATIONS.APP_DATA);
+}
+
+function getAppData() {
+    return get(keys.appData());
+}
+
+function invalidateAppDataCache() {
+    return memoryCache.keys().filter((key) => key === keys.appData());
+}
+
 export default {
     keys,
     get,
@@ -62,4 +74,8 @@ export default {
     invalidateCalendarEventsCache,
     putCalendarEvents,
     getCalendarEvents,
+    // app data
+    invalidateAppDataCache,
+    putAppData,
+    getAppData,
 };

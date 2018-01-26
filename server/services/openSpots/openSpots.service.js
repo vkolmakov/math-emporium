@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import { TIMEZONE, R, Either } from '../../aux';
-import { getCachedData } from '../appData';
+import { getAppData } from '../appData';
 import { getAppointments, getSpecialInstructions } from '../appointments/appointments.service';
 import { calendarService } from '../googleApis';
 import cache from '../cache';
@@ -207,7 +207,7 @@ export async function openSpots(location, course, startDate, endDate) {
        endDate: moment Date,
      */
     moment.tz.setDefault(TIMEZONE);
-    const data = await getCachedData();
+    const data = await getAppData();
 
     const locationData = data.find(d => d.location.id === location.id);
 
@@ -327,7 +327,7 @@ export async function availableTutors(location, course, startDate, endDate) {
        endDate: moment Date,
     */
     moment.tz.setDefault(TIMEZONE);
-    const data = await getCachedData();
+    const data = await getAppData();
     const locationData = data.find(d => d.location.id === location.id);
 
     if (!locationData) {
