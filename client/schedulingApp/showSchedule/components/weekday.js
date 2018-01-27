@@ -1,6 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 
+import { getOpenSpotElementId } from '../constants';
+
 function createAvailableOpenSpotContext(time, count, handlers) {
     return {
         openSpotText: `${time.format('hh:mm a')}: ${count} available`,
@@ -25,7 +27,7 @@ function createExpiredOpenSpotContext(time, count, handlers) {
     };
 }
 
-const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay, id }) => {
+const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) => {
     const count = openSpot.count;
     // Add an ((ISO weekday number of a current spot) - 1)
     // to the start date (which has an ISO date of 1)
@@ -46,10 +48,11 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay, id
               : createUnavailableOpenSpotContext(openSpotTime, count, handlers);
 
     const isInactive = isExpired || !isAvailable;
+    const openSpotElementId = getOpenSpotElementId(openSpotTime);
 
     return (
         <button className={openSpotClass}
-                id={id}
+                id={openSpotElementId}
                 onClick={openSpotHandler(openSpotTime)}
                 aria-label={`${openSpotText}, ${weekdayDisplay}`}
                 aria-hidden={isInactive}
@@ -57,8 +60,6 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay, id
             {openSpotText}
         </button>);
 };
-
-const openSpotId = (os) => `os_${os.weekday}_${os.time}`;
 
 export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
     <div className="weekday">
@@ -68,8 +69,7 @@ export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
                           startDate={startDate}
                           openSpot={os}
                           now={now}
-                          id={openSpotId(os)}
-                          key={openSpotId(os)}
+                          key={`os_${os.weekday}_${os.time}`}
                           handlers={handlers}
                           weekdayDisplay={weekdayDisplay}/>)}
     </div>

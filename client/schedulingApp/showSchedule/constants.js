@@ -6,3 +6,5 @@ export const MODAL_LIFECYCLE = {
 };
 
 export const OPEN_SPOTS_LOADING_MESSAGE = 'OPEN_SPOTS_LOADING_MESSAGE';
+
+export const getOpenSpotElementId = (time) => `os_${time.toISOString()}`;
