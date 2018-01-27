@@ -12,7 +12,7 @@ import LoadingModal from './components/loadingModal';
 import ProfileModal from './components/profileModal';
 import MessageModal from './components/messageModal';
 
-import { MODAL_LIFECYCLE } from './constants';
+import { MODAL_LIFECYCLE, getOpenSpotElementId } from './constants';
 
 import { setLocation,
          setSubject,
@@ -61,7 +61,10 @@ class ShowSchedule extends Component {
                 subject,
             });
 
-            this.createAvailableOpenSpotHandler(time, course, location, subject)();
+            const potentialOpenSpotElementId = getOpenSpotElementId(time);
+            const openSpotHandler = this.createAvailableOpenSpotHandler(time, course, location, subject);
+
+            openSpotHandler({ target: { id: potentialOpenSpotElementId } });
         } else if (courses.selected && locations.selected && subjects.selected) {
             this.props.getOpenSpots({
                 location: locations.selected,
