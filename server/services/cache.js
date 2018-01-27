@@ -1,8 +1,13 @@
 import memoryCache from 'memory-cache';
 
-import { Either } from '../aux';
+import { Either, R } from '../aux';
 
 const minutes = (n) => n * 60 * 1000;
+
+const ITEM_TYPE = {
+    APP_DATA: 1,
+    CALENDAR_EVENTS: 2,
+};
 
 const _cache = {
     ERROR_MESSAGES: {
@@ -10,22 +15,27 @@ const _cache = {
     },
 
     DURATIONS: {
-        CALENDAR_EVENTS: minutes(1),
-        APP_DATA: minutes(1),
+        [ITEM_TYPE.APP_DATA]: minutes(1),
+        [ITEM_TYPE.CALENDAR_EVENTS]: minutes(1),
     },
 
     keyNames: {
-        calendarEvents: (calendarId, startDateIsoString) =>
+        [ITEM_TYPE.APP_DATA]: () => 'APP_DATA',
+        [ITEM_TYPE.CALENDAR_EVENTS]: (calendarId, startDateIsoString) =>
             `CALENDAR_EVENTS-${calendarId}-${startDateIsoString}`,
-        appData: () => 'APP_DATA',
     },
 
-    existingKeys() {
-        return memoryCache.keys();
+    existingKeys(itemType) {
+        return memoryCache.keys().reduce((acc, key) => {
+            const { type } = memoryCache.get(key);
+            return type === itemType ? acc.concat([key]) : acc;
+        }, []);
     },
 
     get(key) {
-        return Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key));
+        return R.map(
+            R.prop('value'),
+            Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key)));
     },
 
     remove(key) {
@@ -33,42 +43,54 @@ const _cache = {
         return key;
     },
 
-    put(key, value, duration) {
-        memoryCache.put(key, value, duration);
+    put(itemType, key, value, duration) {
+        memoryCache.put(key, { value, type: itemType }, duration);
         return value;
     },
 };
 
 const calendarEvents = {
+    type: ITEM_TYPE.CALENDAR_EVENTS,
+
     invalidate(calendarId) {
-        const toRemove = _cache.existingKeys().filter((key) => key.includes(calendarId));
-        toRemove.forEach(_cache.remove);
-        return toRemove;
+        return _cache.existingKeys(calendarEvents.type)
+            .filter((key) => !!calendarId ? key.includes(calendarId) : true)
+            .forEach(_cache.remove);
     },
 
     put(calendarId, weekStartIsoString, events) {
+        const type = calendarEvents.type;
+
         return _cache.put(
-            _cache.keyNames.calendarEvents(calendarId, weekStartIsoString),
+            type,
+            _cache.keyNames[type](calendarId, weekStartIsoString),
             events,
-            _cache.DURATIONS.CALENDAR_EVENTS);
+            _cache.DURATIONS[type]);
     },
     get(calendarId, weekStartIsoString) {
-        return _cache.get(_cache.keyNames.calendarEvents(calendarId, weekStartIsoString));
+        return _cache.get(_cache.keyNames[calendarEvents.type](calendarId, weekStartIsoString));
     },
 };
 
 const appData = {
+    type: ITEM_TYPE.APP_DATA,
+
     invalidate() {
-        return _cache.existingKeys()
-            .filter((key) => key === _cache.keyNames.appData())
+        return _cache.existingKeys(appData.type)
+            .filter((key) => key === _cache.keyNames[appData.type]())
             .forEach(_cache.remove);
     },
     put(data) {
-        return _cache.put(_cache.keyNames.appData(), data, _cache.DURATIONS.APP_DATA);
+        const type = appData.type;
+        return _cache.put(
+            type,
+            _cache.keyNames[type](),
+            data,
+            _cache.DURATIONS[type]);
     },
 
     get() {
-        return _cache.get(_cache.keyNames.appData());
+        return _cache.get(_cache.keyNames[appData.type]());
     },
 };
 
