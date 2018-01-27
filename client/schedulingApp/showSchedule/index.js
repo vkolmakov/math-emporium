@@ -30,7 +30,7 @@ import { setStartDate,
 import { selectTransformOptions } from '../../editingApp/utils';
 import { redirectTo } from '../../utils';
 
-function withFocusOnLastActiveElement(event) {
+function getLastActiveElementInfo(event) {
     return {
         lastActiveElement: {
             shouldFocus: true,
@@ -197,7 +197,7 @@ class ShowSchedule extends Component {
         return () => {
             switch (currentModalStatus) {
             case MODAL_LIFECYCLE.SELECTING_TUTOR:
-                return (<TutorSelectionModal />);
+                return (<TutorSelectionModal onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.LOADING:
                 return (<LoadingModal onRequestClose={onRequestClose} />);
@@ -251,6 +251,8 @@ class ShowSchedule extends Component {
         const { authenticated, profile } = this.props;
 
         return e => {
+            const lastActiveElementInfo = getLastActiveElementInfo(e);
+
             this.props.selectOpenSpot({ time, course, subject, location });
 
             if (!authenticated) {
@@ -260,14 +262,18 @@ class ShowSchedule extends Component {
             const isCompleteProfile = profile && profile.firstName && profile.lastName && profile.phoneNumber;
 
             if (!isCompleteProfile) {
-                return this.props.displayProfileModal(withFocusOnLastActiveElement(e));
+                return this.props.displayProfileModal(lastActiveElementInfo);
             }
 
             return this.props.getAvailableTutors({ time, course, location, subject })
-                .then(res => res.data)
-                .then(tutors => tutors.length > 0
-                      ? this.props.displayTutorSelectionModal({ tutors })
-                      : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' }));
+                .then((res) => res.data)
+                .then((tutors) => {
+                    if (tutors.length > 0) {
+                        this.props.displayTutorSelectionModal({ tutors, ...lastActiveElementInfo });
+                    } else {
+                        this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' });
+                    }
+                });
         };
     }
 

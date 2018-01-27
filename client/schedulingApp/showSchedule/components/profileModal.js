@@ -47,6 +47,7 @@ class MiniProfileForm extends Component {
         this.setState({ success: false, error: null });
 
         const { phoneNumber } = this.state;
+        const { lastActiveElement } = this.props;
 
         const displayLoadingModalAndGetAvailableTutors = (selectedOpenSpotInfo) => () => {
             const { time, course, location, subject } = selectedOpenSpotInfo;
@@ -70,7 +71,7 @@ class MiniProfileForm extends Component {
         };
 
         const displayTutorSelectionModalOrError = (tutors) => tutors.length > 0
-              ? this.props.displayTutorSelectionModal({ tutors })
+              ? this.props.displayTutorSelectionModal({ tutors, lastActiveElement })
               : this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' });
 
         if (!!phoneNumber && isPotentialPhoneNumber(phoneNumber)) {
@@ -123,6 +124,7 @@ class MiniProfileForm extends Component {
 function mapStateToProps(state) {
     return {
         selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
+        lastActiveElement: state.scheduling.showSchedule.modalInfo.lastActiveElement,
     };
 }
 

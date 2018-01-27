@@ -105,12 +105,16 @@ export default (state = INITIAL_STATE, action) => {
     case SA_DISPLAY_TUTOR_SELECTION_MODAL:
         return {
             ...state,
-            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.SELECTING_TUTOR },
+            modalInfo: {
+                displayModal: true,
+                status: MODAL_LIFECYCLE.SELECTING_TUTOR,
+                lastActiveElement: payload.lastActiveElement,
+            },
             selectedOpenSpotInfo: {
                 ...state.selectedOpenSpotInfo,
                 // ensure _a_ valid time is present
                 time: state.selectedOpenSpotInfo.time || state.selectedOpenSpotInfo.previouslySelectedTime,
-                tutors: payload,
+                tutors: payload.tutors,
             },
         };
 

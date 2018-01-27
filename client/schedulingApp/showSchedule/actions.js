@@ -80,10 +80,13 @@ export function clearOpenSpotSelection() {
     };
 }
 
-export function displayTutorSelectionModal({ tutors }) {
+export function displayTutorSelectionModal({ tutors, lastActiveElement }) {
     return {
         type: SA_DISPLAY_TUTOR_SELECTION_MODAL,
-        payload: tutors,
+        payload: {
+            tutors,
+            lastActiveElement,
+        },
     };
 }
 

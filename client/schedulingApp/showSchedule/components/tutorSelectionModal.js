@@ -51,8 +51,6 @@ class TutorSelectionModal extends Component {
             return appointmentInfoDisplay;
         };
 
-        const onRequestClose = this.props.clearOpenSpotSelection;
-
         const onTutorSelect = tutorOption => this.setState((state, _) => {
             return { ...state, requestedTutor: state.tutors.find(t => t.id === tutorOption.value) };
         });
@@ -73,7 +71,7 @@ class TutorSelectionModal extends Component {
         };
         return (
             <Modal isOpen={true}
-                   onRequestClose={onRequestClose}
+                   onRequestClose={this.props.onRequestClose.bind(this)}
                    contentLabel="Tutor Selecion Modal"
                    className="scheduling-modal">
                 <h2 className="modal-title">Confirm your appointment details</h2>
@@ -94,7 +92,7 @@ class TutorSelectionModal extends Component {
                 </div>
 
                 <div className="buttons-input-group-wrap">
-                    <button onClick={onRequestClose}
+                    <button onClick={this.props.onRequestClose.bind(this)}
                             className="destructive">Cancel</button>
                     <button onClick={onScheduleAppointment}
                             className="nondestructive">Schedule</button>
