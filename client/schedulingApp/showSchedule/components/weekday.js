@@ -25,7 +25,7 @@ function createExpiredOpenSpotContext(time, count, handlers) {
     };
 }
 
-const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) => {
+const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay, id }) => {
     const count = openSpot.count;
     // Add an ((ISO weekday number of a current spot) - 1)
     // to the start date (which has an ISO date of 1)
@@ -49,6 +49,7 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
 
     return (
         <button className={openSpotClass}
+                id={id}
                 onClick={openSpotHandler(openSpotTime)}
                 aria-label={`${openSpotText}, ${weekdayDisplay}`}
                 aria-hidden={isInactive}
@@ -56,6 +57,8 @@ const SingleOpenSpot = ({ startDate, openSpot, now, handlers, weekdayDisplay }) 
             {openSpotText}
         </button>);
 };
+
+const openSpotId = (os) => `os_${os.weekday}_${os.time}`;
 
 export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
     <div className="weekday">
@@ -65,7 +68,8 @@ export default ({ startDate, weekdayDisplay, openSpots, now, handlers }) => (
                           startDate={startDate}
                           openSpot={os}
                           now={now}
-                          key={os.time}
+                          id={openSpotId(os)}
+                          key={openSpotId(os)}
                           handlers={handlers}
                           weekdayDisplay={weekdayDisplay}/>)}
     </div>

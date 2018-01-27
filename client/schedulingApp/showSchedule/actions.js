@@ -103,9 +103,12 @@ export function displayMessageModal({ message, redirectToAfterClosing }) {
     };
 }
 
-export function displayProfileModal() {
+export function displayProfileModal({ lastActiveElement }) {
     return {
         type: SA_DISPLAY_PROFILE_MODAL,
+        payload: {
+            lastActiveElement,
+        },
     };
 }
 

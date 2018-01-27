@@ -30,6 +30,15 @@ import { setStartDate,
 import { selectTransformOptions } from '../../editingApp/utils';
 import { redirectTo } from '../../utils';
 
+function withFocusOnLastActiveElement(event) {
+    return {
+        lastActiveElement: {
+            shouldFocus: true,
+            nodeId: event.target.id,
+        },
+    };
+}
+
 class ShowSchedule extends Component {
     componentDidMount() {
         const { selectedOpenSpotInfo, courses, locations, subjects, startDate } = this.props;
@@ -167,25 +176,36 @@ class ShowSchedule extends Component {
     }
 
     selectModal(currentModalStatus) {
+        const onRequestClose = () => {
+            this.props.clearOpenSpotSelection();
+
+            const { modalInfo } = this.props;
+
+            if (!!modalInfo.redirectToAfterClosing) {
+                const redirectPath = this.props.modalInfo.redirectToAfterClosing;
+                redirectTo(redirectPath);
+            } else if (!!modalInfo.lastActiveElement
+                       && modalInfo.lastActiveElement.shouldFocus
+                       && !!modalInfo.lastActiveElement.nodeId) {
+                const lastActiveElementRef = document.getElementById(modalInfo.lastActiveElement.nodeId);
+                if (!!lastActiveElementRef) {
+                    lastActiveElementRef.focus();
+                }
+            }
+        };
+
         return () => {
             switch (currentModalStatus) {
             case MODAL_LIFECYCLE.SELECTING_TUTOR:
                 return (<TutorSelectionModal />);
 
             case MODAL_LIFECYCLE.LOADING:
-                return (<LoadingModal onRequestClose={this.props.clearOpenSpotSelection} />);
+                return (<LoadingModal onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
-                return (<ProfileModal onRequestClose={this.props.clearOpenSpotSelection} />);
+                return (<ProfileModal onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
-                const onRequestClose = () => {
-                    this.props.clearOpenSpotSelection();
-                    if (this.props.modalInfo.redirectToAfterClosing) {
-                        const redirectPath = this.props.modalInfo.redirectToAfterClosing;
-                        redirectTo(redirectPath);
-                    }
-                };
                 return (
                     <MessageModal onRequestClose={onRequestClose}
                                   message={this.props.modalMessage} />
@@ -240,7 +260,7 @@ class ShowSchedule extends Component {
             const isCompleteProfile = profile && profile.firstName && profile.lastName && profile.phoneNumber;
 
             if (!isCompleteProfile) {
-                return this.props.displayProfileModal();
+                return this.props.displayProfileModal(withFocusOnLastActiveElement(e));
             }
 
             return this.props.getAvailableTutors({ time, course, location, subject })

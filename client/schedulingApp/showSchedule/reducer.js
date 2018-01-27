@@ -27,6 +27,10 @@ const INITIAL_STATE = {
         displayModal: false,
         status: MODAL_LIFECYCLE.LOADING,
         redirectToAfterClosing: '',
+        lastActiveElement: {
+            shouldFocus: false,
+            nodeId: '',
+        },
     },
     selectedOpenSpotInfo: {
         time: null,
@@ -130,7 +134,11 @@ export default (state = INITIAL_STATE, action) => {
     case SA_DISPLAY_PROFILE_MODAL:
         return {
             ...state,
-            modalInfo: { displayModal: true, status: MODAL_LIFECYCLE.MISSING_PROFILE },
+            modalInfo: {
+                displayModal: true,
+                status: MODAL_LIFECYCLE.MISSING_PROFILE,
+                lastActiveElement: action.payload.lastActiveElement,
+            },
         };
 
     default:
