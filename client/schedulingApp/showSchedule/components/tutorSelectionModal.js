@@ -56,9 +56,7 @@ class TutorSelectionModal extends Component {
         const onTutorSelect = tutorOption => this.setState((state, _) => {
             return { ...state, requestedTutor: state.tutors.find(t => t.id === tutorOption.value) };
         });
-        const onAdditionalCommentsChange = e => this.setState((state, _) => {
-            return { ...state, additionalComments: e.target.value };
-        });
+        const onAdditionalCommentsChange = e => this.setState({ additionalComments: e.target.value });
 
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
