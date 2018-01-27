@@ -29,6 +29,15 @@
         margin: 0.25em 0;
     }
 
+    .modal-title {
+        font-size: 1.5em;
+    }
+
+    .modal-subtitle {
+        margin-bottom: 0.5em;
+        font-size: 1.25em;
+    }
+
     > .buttons-input-group-wrap {
         @mixin modal-button-border {
             padding: 10px;
@@ -83,6 +92,8 @@
         margin-top: 0.25em;
 
         > textarea {
+            font-size: 1em;
+
             @include rounded-border();
             padding: 0.5em;
             margin: 0;
