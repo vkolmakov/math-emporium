@@ -9,6 +9,8 @@ const ITEM_TYPE = {
     CALENDAR_EVENTS: 2,
 };
 
+let caches = [];
+
 const _cache = {
     ERROR_MESSAGES: {
         MISS: 'CACHE_MISS',
@@ -17,6 +19,11 @@ const _cache = {
     DURATIONS: {
         [ITEM_TYPE.APP_DATA]: minutes(1),
         [ITEM_TYPE.CALENDAR_EVENTS]: minutes(1),
+    },
+
+    MAX_SIZE: {
+        [ITEM_TYPE.APP_DATA]: 1,
+        [ITEM_TYPE.CALENDAR_EVENTS]: 15,
     },
 
     keyNames: {
@@ -44,7 +51,12 @@ const _cache = {
     },
 
     put(itemType, key, value, duration) {
+        if (_cache.existingKeys(itemType).length >= _cache.MAX_SIZE[itemType]) {
+            caches.find((cache) => cache.type === itemType).invalidate();
+        }
+
         memoryCache.put(key, { value, type: itemType }, duration);
+
         return value;
     },
 };
@@ -93,6 +105,8 @@ const appData = {
         return _cache.get(_cache.keyNames[appData.type]());
     },
 };
+
+caches = [appData, calendarEvents];
 
 export default {
     calendarEvents,
