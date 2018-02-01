@@ -1,30 +1,10 @@
 import passport from 'passport';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as AzureAdOAuth2Strategy } from 'passport-azure-ad-oauth2';
 import jwt from 'jsonwebtoken';
-import db from 'sequelize-connect';
+
+import mainStorage from './mainStorage';
 
 import config from '../config';
-
-
-const jwtOptions = {
-    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-    secretOrKey: config.SECRET,
-};
-
-
-const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
-    const User = db.models.user;
-    const user = await User.findOne({
-        where: { id: payload.sub },
-    });
-
-    if (user) {
-        done(null, user);
-    } else {
-        done(null, false);
-    }
-});
 
 const azureOptions = {
     clientID: config.azure.CLIENT_ID,
@@ -37,7 +17,7 @@ const azureOptions = {
 };
 
 const azureAdOAuth2Login = new AzureAdOAuth2Strategy(azureOptions, async (_aT, _rT, params, _p, done) => {
-    const User = db.models.user;
+    const User = mainStorage.db.models.user;
     const userProfile = jwt.decode(params.id_token);
 
     const email = userProfile.upn;
@@ -53,5 +33,4 @@ const azureAdOAuth2Login = new AzureAdOAuth2Strategy(azureOptions, async (_aT, _
     }
 });
 
-passport.use(jwtLogin);
 passport.use(azureAdOAuth2Login);
