@@ -210,9 +210,9 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
     } catch (err) {
         if (err.message.startsWith('VISIBLE::')) {
             // yes, I feel super hacky doing that
-            res.status(422).json({ error: err.message.split('::')[1] });
+            return res.status(422).json({ error: err.message.split('::')[1] });
         }
-        next(err);
+        return next(err);
     }
 };
 
