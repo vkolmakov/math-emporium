@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import path from 'path';
@@ -15,6 +16,7 @@ import createManageUserRouter from './routes/manageUserRouter';
 import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
 import mainStorage from './services/mainStorage';
+import passportService from './services/passport';
 
 import webpack from 'webpack';
 import webpackConfig from '../webpack.config';
@@ -65,8 +67,18 @@ function connectToEventStorageDatabase() {
         app.use(helmet());
     }
 
-
     app.use(bodyParser.json());
+    app.use(session({
+        secret: config.SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            httpOnly: true,
+        },
+    }));
+
+    app.use(passportService.middleware.initialize());
+
     if (!isProduction) {
         app.use(morgan('dev', {
             // ignore devtools discover requests
