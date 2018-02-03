@@ -16,6 +16,10 @@ const azureOptions = {
     scopeSeparator: '+',
 };
 
+const OAUTH_CALLBACK_OPTIONS = {
+    failureRedirect: '/',
+};
+
 const azureAdOAuth2Login = new AzureAdOAuth2Strategy(azureOptions, async (_aT, _rT, params, _p, done) => {
     const User = mainStorage.db.models.user;
     const userProfile = jwt.decode(params.id_token);
@@ -33,4 +37,36 @@ const azureAdOAuth2Login = new AzureAdOAuth2Strategy(azureOptions, async (_aT, _
     }
 });
 
-passport.use(azureAdOAuth2Login);
+export default {
+    middleware: {
+        initialize: () => {
+            passport.serializeUser((user, done) => {
+                done(null, user.id);
+            });
+
+            passport.deserializeUser((userId, done) => {
+                const User = mainStorage.db.models.user;
+
+                User.findOne({
+                    where: { id: userId },
+                }).then((user) => {
+                    if (!user) {
+                        done('No such user exists', false);
+                    }
+                    done(null, user);
+                }, (err) => done(err, false));
+            });
+
+            passport.use(azureAdOAuth2Login);
+
+            return [
+                passport.initialize(),
+                passport.session(),
+            ];
+        },
+    },
+
+    authenticate: {
+        azure: () => passport.authenticate('azure_ad_oauth2', OAUTH_CALLBACK_OPTIONS),
+    },
+};
