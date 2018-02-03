@@ -5,6 +5,13 @@ export function notFound(item) {
     };
 }
 
+export function unathorized() {
+    return {
+        error: 'Unathorized request. Please sign in.',
+        status: 401,
+    };
+}
+
 export function isRequired(item) {
     return {
         error: `${item} is required`,

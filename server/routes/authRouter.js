@@ -1,17 +1,12 @@
 import express from 'express';
 
-import passport from 'passport';
 import passportService from '../services/passport';
 import requireGroup from '../middleware/requireGroup';
 import createEventLogger from '../middleware/logEvent';
 import { authGroups, events } from '../aux';
 
 function requireSignin() {
-    const oauthOptions = {
-        failureRedirect: '/',
-        session: false,
-    };
-    return passport.authenticate('azure_ad_oauth2', oauthOptions);
+    return passportService.authenticate.azure();
 }
 
 export default function createAuthRouter() {
