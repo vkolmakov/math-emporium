@@ -10,6 +10,8 @@ import { clearOpenSpotSelection,
          displayLoadingModal,
          displayMessageModal } from '../actions';
 
+import { signoutUser } from '../../../auth/actions';
+
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
 
 class TutorSelectionModal extends Component {
@@ -59,10 +61,20 @@ class TutorSelectionModal extends Component {
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
-                .then(res => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' }),
-                      err => {
+                .then((res) => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' }),
+                      (err) => {
                           if (err.data && err.data.error) {
-                              this.props.displayMessageModal({ message: `${err.data.error}` });
+                              switch (err.data.status) {
+                              case 401: {
+                                  this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/signin' });
+                                  this.props.signoutUser();
+                                  break;
+                              }
+                              default: {
+                                  this.props.displayMessageModal({ message: `${err.data.error}` });
+                                  break;
+                              }
+                              }
                           } else {
                               this.props.displayMessageModal({ message: 'Something went wrong, please try again.' });
                           }
@@ -113,4 +125,5 @@ export default connect(mapStateToProps, {
     scheduleAppointment,
     displayLoadingModal,
     displayMessageModal,
+    signoutUser,
 })(TutorSelectionModal);
