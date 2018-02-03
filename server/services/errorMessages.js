@@ -33,6 +33,10 @@ export function errorMessage(message, status) {
     };
 }
 
+export function isCustomError(obj) {
+    return typeof obj.error === 'string' && typeof obj.status === 'number';
+}
+
 export function getValidationErrorText(err) {
     const ERROR_TEXT = {
         UNKNOWN: 'An unknown error occurred',

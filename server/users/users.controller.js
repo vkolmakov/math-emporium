@@ -4,7 +4,7 @@ import moment from 'moment';
 import { createExtractDataValuesFunction, isObject,
          hasOneOf, pickOneFrom, TIMESTAMP_FORMAT, TIMEZONE,
          APPOINTMENT_LENGTH } from '../aux';
-import { notFound, actionFailed, getValidationErrorText } from '../services/errorMessages';
+import { notFound, actionFailed, getValidationErrorText, isCustomError } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 import { availableTutors } from '../services/openSpots/openSpots.service';
 
@@ -131,9 +131,13 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
     const user = req.user;
     moment.tz.setDefault(TIMEZONE);
 
+    const throwVisibleError = (message) => {
+        throw actionFailed('schedule', 'appointment', message);
+    };
+
     try {
         if (!user.firstName || !user.lastName || !user.phoneNumber) {
-            throw new Error('VISIBLE::Error: first name, last name and phone number are required to schedule an appointment.');
+            throwVisibleError('first name, last name and phone number are required to schedule an appointment.');
         }
 
         const {
@@ -145,14 +149,14 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
         } = req.body;
 
         if (!time || !course || !location) {
-            throw new Error('VISIBLE::Error: time, course and location are required');
+            throwVisibleError('time, course and location are required');
         }
 
         // Check if user already has an upcomming appointment
         const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
         const now = moment();
         if (nextAppointment.isAfter(now)) {
-            throw new Error(`VISIBLE::Error: can't have more than one appointment at the same time. You can go to your profile, cancel your previously scheduled appointment and try again.`);
+            throwVisibleError(`can't have more than one appointment at the same time. You can go to your profile, cancel your previously scheduled appointment and try again.`);
         }
 
         const locationRes = await Location.findOne({
@@ -160,7 +164,7 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
         });
 
         if (!locationRes.isActive) {
-            throw new Error('VISIBLE::Error: selected location is not active');
+            throwVisibleError('selected location is not active');
         }
 
         const courseRes = await Course.findOne({
@@ -208,9 +212,8 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
 
         res.status(200).json(extractDataValues(user));
     } catch (err) {
-        if (err.message.startsWith('VISIBLE::')) {
-            // yes, I feel super hacky doing that
-            return res.status(422).json({ error: err.message.split('::')[1] });
+        if (isCustomError(err)) {
+            return res.status(err.status).json(err);
         }
         return next(err);
     }
