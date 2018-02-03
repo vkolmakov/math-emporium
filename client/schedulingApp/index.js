@@ -16,16 +16,16 @@ class SchedulingApp extends Component {
               && !!this.props.preSelectedOpenSpotInfo.location;
 
         const hasPreSelectedLocation = !!this.props.locations.selected;
-        const alreadyInitializedLocations = this.props.locations.all.length > 0;
-        const alreadyInitializedProfile = this.props.authenticated && this.props.profile;
+        const shouldInitializeLocations = !this.props.locations.all.length > 0;
+        const shouldInitializeProfile = this.props.authenticated && !this.props.profile;
 
         // if no location or open spot are pre-selected, try to populate open spots data from user profile
         const shouldSetOpenSpotDataFromProfile = !(hasPreSelectedOpenSpot || hasPreSelectedLocation);
 
         if (!this.props.initialized) {
             Promise.all([
-                alreadyInitializedLocations ? Promise.resolve() : this.props.getLocations(),
-                alreadyInitializedProfile ? Promise.resolve() : this.props.getUserProfile(),
+                shouldInitializeLocations ? this.props.getLocations() : Promise.resolve(),
+                shouldInitializeProfile ? this.props.getUserProfile() : Promise.resolve(),
                 this.props.getSubjects(),
                 this.props.getCourses(),
             ]).then(() => {
