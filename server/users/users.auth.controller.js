@@ -1,18 +1,8 @@
-import jwt from 'jwt-simple';
-
 import { successMessage } from '../services/messages';
-import config from '../config';
-
-const SECRET = config.SECRET;
 
 function updateLastSignInStatus(user) {
     const now = Date.now();
     return user.update({ lastSigninAt: now });
-}
-
-export function tokenForUser(user) {
-    const timestamp = new Date().getTime();
-    return jwt.encode({ sub: user.dataValues.id, iat: timestamp }, SECRET);
 }
 
 export function signin(logEvent) {
@@ -22,9 +12,9 @@ export function signin(logEvent) {
         const data = {
             group,
             email,
-            token: tokenForUser(user),
         };
 
+        // sending public data
         Object.keys(data).forEach(k => res.cookie(k, data[k], { httpOnly: false }));
 
         const redirectToRoot = () => res.redirect('/');
