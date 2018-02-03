@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './constants';
-import { parseCookies, cleanCookies } from '../utils';
+import { parseCookies, cleanCookies, redirectTo } from '../utils';
 
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
@@ -13,27 +13,19 @@ export const SET_USER_EMAIL = 'SET_USER_EMAIL';
 export const RECORD_USER_SIGNIN = 'RECORD_USER_SIGNIN';
 
 
-export function startUsingAuthToken(token) {
-    axios.defaults.headers.common['Authorization'] = token;
-}
-
-function addAuthData({ token, group, email }) {
-    localStorage.setItem('token', token);
+function addAuthData({ group, email }) {
     localStorage.setItem('group', group);
     // replace in case an encoded value comes from a cookie
     localStorage.setItem('email', email.replace('%40', '@'));
-    startUsingAuthToken(token);
 }
 
 function removeAuthData() {
-    localStorage.removeItem('token');
     localStorage.removeItem('group');
     localStorage.removeItem('email');
-    axios.defaults.headers.common['Authorization'] = null;
 }
 
 function authCookieKeys() {
-    return ['token', 'group', 'email'];
+    return ['group', 'email'];
 }
 
 export function authError(error) {
@@ -49,7 +41,15 @@ export function clearAuthError() {
     };
 }
 
+function removeLegacyJwtAuthData() {
+    // TODO: this and its usages could be safely removed
+    // in a couple of months from the moment it was added
+    axios.defaults.headers.common['Authorization'] = null;
+    localStorage.removeItem('token');
+}
+
 export function signoutUser() {
+    removeLegacyJwtAuthData();
     removeAuthData();
     cleanupAuthDataFromCookies();
     return {
@@ -78,9 +78,17 @@ export function authorizeUser() {
 }
 
 export function recordUserSignin() {
-    return {
-        type: RECORD_USER_SIGNIN,
-        payload: axios.post(`${BASE_URL}/record-signin`),
+    return (dispatch) => {
+        const dispatchSigninAction = (recordSigninResult) =>
+              dispatch({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
+
+        const dispatchSignoutActionAndRedirectToSignin = (error) => {
+            dispatch(signoutUser());
+            redirectTo('/signin');
+        };
+
+        return axios.post(`${BASE_URL}/record-signin`)
+            .then(dispatchSigninAction, dispatchSignoutActionAndRedirectToSignin);
     };
 }
 
