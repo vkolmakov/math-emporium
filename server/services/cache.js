@@ -1,8 +1,6 @@
 import memoryCache from 'memory-cache';
 
-import { Either, R } from '../aux';
-
-const minutes = (n) => n * 60 * 1000;
+import { Either, R, timeUnits } from '../aux';
 
 const ITEM_TYPE = {
     APP_DATA: 1,
@@ -17,8 +15,8 @@ const _cache = {
     },
 
     DURATIONS: {
-        [ITEM_TYPE.APP_DATA]: minutes(1),
-        [ITEM_TYPE.CALENDAR_EVENTS]: minutes(1),
+        [ITEM_TYPE.APP_DATA]: timeUnits.minutes(1),
+        [ITEM_TYPE.CALENDAR_EVENTS]: timeUnits.minutes(1),
     },
 
     MAX_SIZE: {

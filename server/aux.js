@@ -74,6 +74,10 @@ export function pickOneFrom(list) {
     return list[randomIndex];
 }
 
+export const timeUnits = {
+    minutes: (n) => n * 60 * 1000,
+};
+
 export const Either = {
     Right: _S.Right,
     Left: _S.Left,
