@@ -56,12 +56,10 @@ if (hasNewUserJustSignedIn()) {
 cleanupAuthDataFromCookies();
 cleanupSelectedOpenSpotFromLocalStorage();
 
-const token = localStorage.getItem('token');
 const authGroup = localStorage.getItem('group');
 const email = localStorage.getItem('email');
 
-if (token && authGroup && email) {
-    startUsingAuthToken(token);
+if (authGroup && email) {
     store.dispatch(authorizeUser());
     store.dispatch(recordUserSignin());
     store.dispatch(setUserAuthGroup(authGroup));
