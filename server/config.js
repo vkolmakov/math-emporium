@@ -1,8 +1,11 @@
+const aux = require('./aux');
+
 module.exports = {
     HOSTNAME: process.env.HOSTNAME || 'http://localhost:3000',
     IS_PRODUCTION: process.env.NODE_ENV === 'production',
     PORT: process.env.PORT || 3000,
     SECRET: process.env.SECRET || 'this is supersecret',
+    SESSION_LENGTH: aux.timeUnits.days(7),
     email: {
         SPARKPOST_API_KEY: process.env.EMAIL_SPARKPOST_API_KEY,
         ADDRESS: process.env.EMAIL_ADDRESS,

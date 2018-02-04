@@ -73,13 +73,17 @@ function connectToEventStorageDatabase() {
 
     app.use(bodyParser.json());
     app.use(session({
-        store: sessionStorage.create(session),
         secret: config.SECRET,
+
+        store: sessionStorage.create(session),
+
         resave: false,
-        saveUninitialized: true,
+        rolling: true,
+        saveUninitialized: false,
+
         cookie: {
             httpOnly: true,
-            maxAge: timeUnits.days(14),
+            maxAge: config.SESSION_LENGTH,
         },
     }));
 
