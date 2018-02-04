@@ -29,4 +29,7 @@ module.exports = {
         USER: process.env.EVENTSTORAGE_USER || null,
         PASSWORD: process.env.EVENTSTORAGE_PASSWORD || null,
     },
+    redis: {
+        URL: process.env.REDIS_URL || '',
+    },
 };

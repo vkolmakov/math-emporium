@@ -16,7 +16,11 @@ import createManageUserRouter from './routes/manageUserRouter';
 import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
 import mainStorage from './services/mainStorage';
+import sessionStorage from './services/sessionStorage';
+
 import passportService from './services/passport';
+
+import { timeUnits } from './aux';
 
 import webpack from 'webpack';
 import webpackConfig from '../webpack.config';
@@ -69,11 +73,13 @@ function connectToEventStorageDatabase() {
 
     app.use(bodyParser.json());
     app.use(session({
+        store: sessionStorage.create(session),
         secret: config.SECRET,
         resave: false,
         saveUninitialized: true,
         cookie: {
             httpOnly: true,
+            maxAge: timeUnits.days(14),
         },
     }));
 

@@ -76,6 +76,8 @@ export function pickOneFrom(list) {
 
 export const timeUnits = {
     minutes: (n) => n * 60 * 1000,
+    hours: (n) => timeUnits.minutes(60 * n),
+    days: (n) => timeUnits.hours(24 * n),
 };
 
 export const Either = {
