@@ -20,8 +20,6 @@ import sessionStorage from './services/sessionStorage';
 
 import passportService from './services/passport';
 
-import { timeUnits } from './aux';
-
 import webpack from 'webpack';
 import webpackConfig from '../webpack.config';
 import morgan from 'morgan';

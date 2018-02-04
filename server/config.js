@@ -41,5 +41,8 @@ module.exports = {
     },
     redis: {
         URL: process.env.REDIS_URL || '',
+        DB_NUMBER: {
+            SESSION: 1,
+        },
     },
 };
