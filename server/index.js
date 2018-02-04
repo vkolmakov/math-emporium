@@ -74,11 +74,11 @@ function connectToEventStorageDatabase() {
         secret: config.SECRET,
 
         store: sessionStorage.create(session),
-
         resave: false,
-        rolling: true,
         saveUninitialized: false,
+        rolling: true,
 
+        name: 'SID',
         cookie: {
             httpOnly: true,
             maxAge: config.SESSION_LENGTH,
