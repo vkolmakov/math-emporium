@@ -1,11 +1,18 @@
 const aux = require('./aux');
 
+function getSessionLength(rawSessionLength) {
+    const DEFAULT_SESSION_LENGTH = aux.timeUnits.days(7);
+    const sessionLength = parseInt(rawSessionLength, 10);
+
+    return !isNaN(sessionLength) ? sessionLength : DEFAULT_SESSION_LENGTH;
+}
+
 module.exports = {
     HOSTNAME: process.env.HOSTNAME || 'http://localhost:3000',
     IS_PRODUCTION: process.env.NODE_ENV === 'production',
     PORT: process.env.PORT || 3000,
     SECRET: process.env.SECRET || 'this is supersecret',
-    SESSION_LENGTH: aux.timeUnits.days(7),
+    SESSION_LENGTH: getSessionLength(process.env.SESSION_LENGTH),
     email: {
         SPARKPOST_API_KEY: process.env.EMAIL_SPARKPOST_API_KEY,
         ADDRESS: process.env.EMAIL_ADDRESS,
