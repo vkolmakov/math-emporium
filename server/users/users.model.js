@@ -74,7 +74,7 @@ export default function createUserModel(sequelize, DataTypes) {
                                  { subjectConstructor, emailBodyConstructor });
             },
 
-            createGoogleCalendarAppointment({ time, course, location, tutor, comments }) {
+            createGoogleCalendarAppointment({ time, course, location, tutorData, comments }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);
                 return new Promise(async (resolve, reject) => {
@@ -83,8 +83,14 @@ export default function createUserModel(sequelize, DataTypes) {
                     const calendarId = location.calendarId;
                     const startTime = time.toISOString();
                     const endTime = moment(time).add(APPOINTMENT_LENGTH, 'minutes').toISOString();
-                    const summary = user.getAppointmentSummary({ course, tutor });
-                    const description = user.getAppointmentDescription({ course, tutor, comments });
+                    const summary = user.getAppointmentSummary({
+                        course,
+                        tutorData,
+                    });
+                    const description = user.getAppointmentDescription({
+                        course,
+                        comments,
+                    });
 
                     const result = await calendar.createCalendarEvent({
                         calendarId,
@@ -103,12 +109,17 @@ export default function createUserModel(sequelize, DataTypes) {
                 });
             },
 
-            getAppointmentSummary({ course, tutor }) {
+            getAppointmentSummary({ course, tutorData }) {
+                const EXPLICITLY_REQUESTED_TUTOR_SYMBOL = ' ## ';
+
                 const user = this;
-                return `${tutor.name} (${user.firstName}) ${course.code}`;
+                const tutorName = tutorData.tutor.name;
+                const wasTutorExplicitlyRequested = tutorData.wasExplicitlyRequested;
+
+                return `${tutorName}${wasTutorExplicitlyRequested ? EXPLICITLY_REQUESTED_TUTOR_SYMBOL : ' '}(${user.firstName}) ${course.code}`;
             },
 
-            getAppointmentDescription({ course, tutor, comments }) {
+            getAppointmentDescription({ course, comments }) {
                 moment.tz.setDefault(TIMEZONE);
                 const user = this;
                 return [`Student: ${user.firstName} ${user.lastName}`,

@@ -178,18 +178,24 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
             moment(time, TIMESTAMP_FORMAT).add(APPOINTMENT_LENGTH, 'minutes'),
         );
 
-        let tutor;
+        let tutorData;
         if (requestedTutor) {
-            tutor = tutors.find(t => t.id === requestedTutor.id);
+            tutorData = {
+                tutor: tutors.find(t => t.id === requestedTutor.id),
+                wasExplicitlyRequested: true,
+            };
         } else {
-            tutor = pickOneFrom(tutors);
+            tutorData = {
+                tutor: pickOneFrom(tutors),
+                wasExplicitlyRequested: false,
+            };
         }
 
         const result = await user.createGoogleCalendarAppointment({
             time: moment(time, TIMESTAMP_FORMAT),
             course: courseRes.dataValues,
             location: locationRes.dataValues,
-            tutor,
+            tutorData,
             comments,
         });
 
@@ -204,7 +210,7 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
         await user.sendAppointmentReminder({
             time: moment(result.start.dateTime),
             location,
-            tutor,
+            tutor: tutorData.tutor,
             course,
         });
 
