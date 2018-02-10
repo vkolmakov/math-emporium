@@ -6,12 +6,11 @@ import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
 import attachUtilEventListeners from './util/attachUtilEventListeners';
-import { getPublicApplicationSettings } from './util/actions';
+import { getPublicApplicationStartupSettings } from './util/actions';
 import reducers from './reducers';
 import { authorizeUser, setUserAuthGroup, setUserEmail,
-         recordUserSignin, startUsingAuthToken,
-         hasNewUserJustSignedIn, addAuthDataFromCookies,
-         cleanupAuthDataFromCookies } from './auth/actions';
+         recordUserSignin, hasNewUserJustSignedIn,
+         addAuthDataFromCookies, cleanupAuthDataFromCookies } from './auth/actions';
 
 import { selectOpenSpot, hasNewUserSelectedOpenSpotBeforeSignIn,
          cleanupSelectedOpenSpotFromLocalStorage,
@@ -66,7 +65,7 @@ if (authGroup && email) {
     store.dispatch(setUserEmail(email));
 }
 
-store.dispatch(getPublicApplicationSettings()).then(() => {
+store.dispatch(getPublicApplicationStartupSettings()).then(() => {
     ReactDOM.render(
         <Provider store={store}>
           <Router history={browserHistory} routes={routes} />

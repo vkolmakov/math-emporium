@@ -16,18 +16,25 @@ export function setPageTitle(title) {
     document.title = title;
 }
 
-export function getPublicApplicationSettings() {
-    return (dispatch) => {
-        return axios.get(BASE_URL_SETTINGS)
-            .then((response) => {
-                dispatch({
-                    type: UT_GET_PUBLIC_SETTINGS,
-                    payload: response.data,
-                });
+export function getPublicApplicationStartupSettings() {
+    const REQUIRED_STARTUP_SETTINGS_ITEMS = [
+        'applicationTitle',
+        'applicationMainHomePictureLink',
+    ];
+    const REQUESTED_ITEMS_SEPARATOR = ',';
 
-                setPageTitle(response.data.applicationTitle);
+    return (dispatch) => axios.get(BASE_URL_SETTINGS, {
+        params: {
+            items: REQUIRED_STARTUP_SETTINGS_ITEMS.join(REQUESTED_ITEMS_SEPARATOR),
+        },
+    }).then((response) => {
+        dispatch({
+            type: UT_GET_PUBLIC_SETTINGS,
+            payload: response.data,
+        });
 
-                return Promise.resolve();
-            }, () => {}); // proceed with default settings on error
-    };
+        setPageTitle(response.data.applicationTitle);
+
+        return Promise.resolve();
+    }, () => {}); // proceed with default settings on error
 }
