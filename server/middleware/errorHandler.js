@@ -1,4 +1,4 @@
-import errorStorage from '../services/errorStorage';
+import errorEventStorage from '../services/errorEventStorage';
 import { errorMessage } from '../services/errorMessages';
 
 export default (err, req, res, next) => {
@@ -10,7 +10,7 @@ export default (err, req, res, next) => {
     case 404: res.status(err.status).json(err); break;
     case 422: res.status(err.status).json(err); break;
     default:
-        errorStorage.save({
+        errorEventStorage.save({
             type: 500,
             user: !!req.user.id ? { id: req.user.id, email: req.user.email } : { id: -1, email: '' },
             data: err,

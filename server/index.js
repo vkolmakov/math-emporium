@@ -15,7 +15,7 @@ import createManageUserRouter from './routes/manageUserRouter';
 
 import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
-import errorStorage from './services/errorStorage';
+import errorEventStorage from './services/errorEventStorage';
 import mainStorage from './services/mainStorage';
 import sessionStorage from './services/sessionStorage';
 
@@ -58,7 +58,7 @@ function connectToEventStorageDatabase() {
     }
 
     try {
-        await errorStorage.connect(config.eventStorage.URL, {
+        await errorEventStorage.connect(config.eventStorage.URL, {
             user: config.eventStorage.USER,
             password: config.eventStorage.PASSWORD,
         });
