@@ -80,10 +80,7 @@ export default {
     updateDefaultSettings(values) {
         return findOrCreateSettings(DEFAULT_SETTINGS_ID)
             .then((settings) => {
-                settings.values = {
-                    ...settings.values,
-                    ...values,
-                };
+                settings.values = values;
                 settings.markModified('values');
                 return settings.save();
             });
