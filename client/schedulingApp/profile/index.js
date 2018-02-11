@@ -8,7 +8,7 @@ import LoadingSpinner from '../../components/loadingSpinner';
 import { getUserProfile } from './actions';
 
 class Profile extends Component {
-    componentWillMount() {
+    componentDidMount() {
         this.props.getUserProfile();
     }
 
