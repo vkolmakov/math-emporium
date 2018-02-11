@@ -4,6 +4,13 @@ import { connect } from 'react-redux';
 import Form from '../../components/form/index';
 import { updateSettings } from './actions';
 
+const VISIBLE_SETTINGS_INPUT_TYPE = {
+    applicationTitle: 'text',
+    duplicateAllEmailsTo: 'text',
+    applicationMainHomePictureLink: 'text',
+    faqText: 'textarea',
+};
+
 class ManageSettings extends Component {
     constructor(props) {
         super(props);
@@ -41,7 +48,7 @@ class ManageSettings extends Component {
             return {
                 label: settingKey,
                 input: {
-                    type: 'text',
+                    type: VISIBLE_SETTINGS_INPUT_TYPE[settingKey],
                     controlValue: this.state.settings[settingKey],
                     binding: {
                         onChange: (event) => {
@@ -57,7 +64,9 @@ class ManageSettings extends Component {
         const config = {
             handleSubmit: onSubmit.bind(this),
             title: 'Update application settings',
-            fields: Object.keys(this.props.settings).map(toFormTextField),
+            fields: Object.keys(this.props.settings)
+                .filter((key) => Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key))
+                .map(toFormTextField),
             error: this.state.form.error,
             success: this.state.form.success,
         };
