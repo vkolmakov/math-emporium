@@ -1,4 +1,4 @@
-import errorEventStorage from '../services/errorEventStorage';
+import errorEventStorage from '../services/errorEvent/errorEventStorage';
 import { errorMessage } from '../services/errorMessages';
 
 export default (err, req, res, next) => {

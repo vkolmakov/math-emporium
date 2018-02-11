@@ -15,7 +15,7 @@ import createManageUserRouter from './routes/manageUserRouter';
 
 import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
-import errorEventStorage from './services/errorEventStorage';
+import errorEventStorage from './services/errorEvent/errorEventStorage';
 import mainStorage from './services/mainStorage';
 import sessionStorage from './services/sessionStorage';
 

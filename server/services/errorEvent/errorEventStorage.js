@@ -40,6 +40,6 @@ export default {
         return saveErrorEvent(errorEvent);
     },
     getAll() {
-        return ErrorEvent.find({});
+        return ErrorEvent.find({}, null, { sort: { createdAt: -1 } });
     },
 };
