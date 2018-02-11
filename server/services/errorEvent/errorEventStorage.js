@@ -7,7 +7,7 @@ const ErrorEvent = mongoose.model('ErrorEvent', mongoose.Schema({
     stacktrace: String,
     data: mongoose.Schema.Types.Mixed,
 }, {
-    capped: { size: 65536, max: 100 },
+    capped: { size: 131072, max: 100 },
     timestamps: true,
 }));
 
