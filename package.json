@@ -90,7 +90,8 @@
     "showdown": "^1.8.6",
     "sparkpost": "^2.1.2",
     "susy": "^2.2.12",
-    "webpack": "2.2.0-rc.2"
+    "webpack": "2.2.0-rc.2",
+    "xss": "^0.3.7"
   },
   "babel": {
     "presets": [

@@ -1,4 +1,7 @@
 import showdown from 'showdown';
+import xss from 'xss';
+
+import { R } from '../aux';
 
 function mdToHtml(text) {
     const converter = new showdown.Converter({
@@ -9,8 +12,14 @@ function mdToHtml(text) {
     return converter.makeHtml(text);
 }
 
+function sanitizeHtml(text) {
+    return xss(text);
+}
+
 export default {
     compileToHtml(markdown) {
-        return mdToHtml(markdown);
+        const compile = R.compose(sanitizeHtml, mdToHtml);
+
+        return compile(markdown);
     },
 };
