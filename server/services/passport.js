@@ -3,6 +3,7 @@ import { Strategy as AzureAdOAuth2Strategy } from 'passport-azure-ad-oauth2';
 import jwt from 'jsonwebtoken';
 
 import mainStorage from './mainStorage';
+import { successMessage } from './messages';
 
 import config from '../config';
 
@@ -68,5 +69,21 @@ export default {
 
     authenticate: {
         azure: () => passport.authenticate('azure_ad_oauth2', OAUTH_CALLBACK_OPTIONS),
+    },
+
+    destroySession() {
+        return (req, res, next) => {
+            if (!!req.session) {
+                req.session.destroy((err) => {
+                    if (err) {
+                        next(err);
+                    }
+
+                    return res.status(200).json(successMessage());
+                });
+            } else {
+                return res.status(200).json(successMessage());
+            }
+        };
     },
 };

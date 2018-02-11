@@ -9,6 +9,10 @@ function requireSignin() {
     return passportService.authenticate.azure();
 }
 
+function destroySession() {
+    return passportService.destroySession();
+}
+
 export default function createAuthRouter() {
     const controller = require('../users/users.auth.controller');
     const router = express.Router();
@@ -18,6 +22,9 @@ export default function createAuthRouter() {
     router.get('/auth/oauth2/callback',
                requireSignin(),
                controller.signin(createEventLogger(events.USER_SIGNED_IN)));
+
+    router.post('/auth/signout',
+                destroySession());
 
     router.post('/auth/record-signin',
                 requireGroup(authGroups.USER),

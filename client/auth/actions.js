@@ -49,11 +49,14 @@ function removeLegacyJwtAuthData() {
 }
 
 export function signoutUser() {
-    removeLegacyJwtAuthData();
-    removeAuthData();
-    cleanupAuthDataFromCookies();
-    return {
-        type: UNAUTH_USER,
+    return (dispatch) => {
+        return axios.post(`${BASE_URL}/signout`)
+            .then(() => {
+                removeLegacyJwtAuthData();
+                removeAuthData();
+                cleanupAuthDataFromCookies();
+            })
+            .then(() => dispatch({ type: UNAUTH_USER }));
     };
 }
 
