@@ -7,6 +7,7 @@ import { handleGetAppointments } from '../services/appointments/appointments.con
 import { handleGetChromeExtensionData } from '../services/chromeExtensionData/chromeExtensionData.controller';
 import { handleGetAllEvents, handleGetLatestEvents } from '../services/events/events.controller';
 import { handleGetSettings, handleGetPublicSettings, handleUpdateSettings } from '../services/settings/settings.controller';
+import { handleGetAllErrorEvents } from '../services/errorEvent/errorEvent.controller';
 
 
 export default function createUtilRouter() {
@@ -30,6 +31,10 @@ export default function createUtilRouter() {
     router.get('/events/latest',
                requireGroup(authGroups.EMPLOYER),
                handleGetLatestEvents);
+
+    router.get('/error-events',
+               requireGroup(authGroups.ADMIN),
+               handleGetAllErrorEvents);
 
     router.get('/public/settings',
                handleGetPublicSettings);

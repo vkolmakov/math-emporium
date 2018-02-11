@@ -12,7 +12,7 @@ export default (err, req, res, next) => {
     default:
         errorEventStorage.save({
             type: 500,
-            user: !!req.user.id ? { id: req.user.id, email: req.user.email } : { id: -1, email: '' },
+            user: !!req.user ? { id: req.user.id, email: req.user.email } : { id: -1, email: '' },
             data: err,
             stacktrace: !!err.stack ? err.stack : '',
         });
