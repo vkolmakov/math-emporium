@@ -12,6 +12,8 @@ import UserDetail from './users/components/userDetail';
 
 import ManageEvents from './events/index';
 
+import ManageErrorEvents from './errorEvents/index';
+
 import ManageSettings from './settings/index';
 
 export default (
@@ -19,6 +21,7 @@ export default (
       <Route path="users" component={ManageUsers} />
       <Route path="users/:id" component={UserDetail} />
       <Route path="events" component={ManageEvents} />
+      <Route path="error-events" component={ManageErrorEvents} />
       <Route path="settings" component={ManageSettings} />
     </Route>
 );

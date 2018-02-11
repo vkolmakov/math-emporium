@@ -10,6 +10,7 @@ import { BASE_PATH, LATEST_EVENT_LIMIT_DEFAULT } from './constants';
 import { getUsers } from './users/actions';
 import { getEvents } from './events/actions';
 import { getSettings } from './settings/actions';
+import { getErrorEvents } from './errorEvents/actions';
 
 class ManagingApp extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class ManagingApp extends Component {
             this.props.getUsers(),
             this.props.getEvents(LATEST_EVENT_LIMIT_DEFAULT),
             this.props.getSettings(),
+            this.props.getErrorEvents(),
         ]).then(() => this.setState({ initialized: true }));
     }
 
@@ -32,6 +34,7 @@ class ManagingApp extends Component {
         const links = [
             ['users', 'Users'],
             ['events', 'Events'],
+            ['error-events', 'Error Events'],
             ['settings', 'Settings'],
         ];
 
@@ -70,4 +73,4 @@ class ManagingApp extends Component {
 }
 
 export default connect(null, {
-    getUsers, getEvents, getSettings })(ManagingApp);
+    getUsers, getEvents, getSettings, getErrorEvents })(ManagingApp);
