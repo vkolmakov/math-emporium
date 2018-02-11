@@ -152,7 +152,7 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
             throwVisibleError('time, course and location are required');
         }
 
-        // Check if user already has an upcomming appointment
+        // Check if user already has an upcoming appointment
         const nextAppointment = moment(user.dataValues.googleCalendarAppointmentDate);
         const now = moment();
         if (nextAppointment.isAfter(now)) {
