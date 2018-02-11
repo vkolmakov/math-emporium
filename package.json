@@ -87,6 +87,7 @@
     "sequelize": "^3.23.1",
     "sequelize-cli": "^3.2.0",
     "sequelize-connect": "^1.2.2",
+    "showdown": "^1.8.6",
     "sparkpost": "^2.1.2",
     "susy": "^2.2.12",
     "webpack": "2.2.0-rc.2"
