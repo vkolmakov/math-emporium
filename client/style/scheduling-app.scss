@@ -256,23 +256,11 @@ $gutter-size: 0.75em;
             font-weight: 400;
         }
     }
+}
 
-    > .faq {
-        > ul {
-            list-style-type: none;
-            padding-left: 0;
-
-            > li {
-                > .question {
-                    font-weight: 600;
-                    margin-bottom: 0;
-                }
-
-                > .answer {
-                    padding-left: 20px;
-                    margin-top: 0;
-                }
-            }
-        }
+.faq {
+    .faq-content {
+        // styles for html elements generated from markdown
+        a { color: $primary-text-color; }
     }
 }
