@@ -15,6 +15,7 @@ import createManageUserRouter from './routes/manageUserRouter';
 
 import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
+import errorStorage from './services/errorStorage';
 import mainStorage from './services/mainStorage';
 import sessionStorage from './services/sessionStorage';
 
@@ -54,6 +55,15 @@ function connectToEventStorageDatabase() {
         });
     } catch (err) {
         console.error(`Could not connect to the settings storage database: ${err}`);
+    }
+
+    try {
+        await errorStorage.connect(config.eventStorage.URL, {
+            user: config.eventStorage.USER,
+            password: config.eventStorage.PASSWORD,
+        });
+    } catch (err) {
+        console.error(`Could not connect to the error storage database: ${err}`);
     }
 
     const app = express();
