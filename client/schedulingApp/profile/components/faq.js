@@ -19,7 +19,6 @@ class Faq extends Component {
 
         return (
             <div className="faq">
-              <h2>FAQ</h2>
               <Content></Content>
             </div>
         );

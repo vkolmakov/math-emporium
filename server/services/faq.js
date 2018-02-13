@@ -5,7 +5,7 @@ import { R } from '../aux';
 
 function mdToHtml(text) {
     const converter = new showdown.Converter({
-        headerLevelStart: 3,
+        headerLevelStart: 2,
         noHeaderId: true,
     });
 

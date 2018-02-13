@@ -262,5 +262,7 @@ $gutter-size: 0.75em;
     .faq-content {
         // styles for html elements generated from markdown
         a { color: $primary-text-color; }
+        h2 { margin: 0.25em 0; }
+        h3, p { margin: 0.75em 0; }
     }
 }
