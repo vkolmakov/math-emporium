@@ -181,6 +181,20 @@ export default function createUserModel(sequelize, DataTypes) {
 
                 return user.sendEmail({ subjectConstructor, emailBodyConstructor });
             },
+
+            hasDefaultAppointmentPreferences() {
+                return !!this.getDataValue('locationId');
+            },
+
+            setDefaultAppointmentPreferences(locationRes, subjectRes, courseRes) {
+                const user = this;
+
+                return Promise.all([
+                    user.setLocation(locationRes),
+                    user.setSubject(subjectRes),
+                    user.setCourse(courseRes),
+                ]);
+            },
         },
     });
     return user;

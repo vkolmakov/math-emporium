@@ -143,6 +143,7 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
         const {
             time,
             course,
+            subject,
             location,
             tutor: requestedTutor,
             comments,
@@ -169,6 +170,10 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
 
         const courseRes = await Course.findOne({
             where: { id: course.id },
+        });
+
+        const subjectRes = await Subject.findOne({
+            where: { id: subject.id },
         });
 
         const tutors = await availableTutors(
@@ -215,6 +220,10 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
         });
 
         await logEvent(req);
+
+        if (!user.hasDefaultAppointmentPreferences()) {
+            await user.setDefaultAppointmentPreferences(locationRes, subjectRes, courseRes);
+        }
 
         res.status(200).json(extractDataValues(user));
     } catch (err) {

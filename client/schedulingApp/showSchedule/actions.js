@@ -115,14 +115,15 @@ export function displayProfileModal({ lastActiveElement }) {
     };
 }
 
-export function scheduleAppointment({ location, course, time, requestedTutor, additionalComments }) {
-    return dispatch => {
+export function scheduleAppointment({ location, subject, course, time, requestedTutor, additionalComments }) {
+    return (dispatch) => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
         const tutor = isRandomTutor ? null : requestedTutor;
         const comments = additionalComments || null;
 
         const requestData = {
             location,
+            subject,
             course,
             time: time.format(TIMESTAMP_FORMAT),
             tutor,
@@ -134,7 +135,7 @@ export function scheduleAppointment({ location, course, time, requestedTutor, ad
 }
 
 export function getAvailableTutors({ time, course, location, subject }) {
-    return dispatch => {
+    return (dispatch) => {
         const requestParams = {
             time: time.format(TIMESTAMP_FORMAT),
             courseId: course.id,

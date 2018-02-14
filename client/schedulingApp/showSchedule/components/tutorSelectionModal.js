@@ -42,7 +42,7 @@ class TutorSelectionModal extends Component {
 
     render() {
         const { selectedOpenSpotInfo } = this.props;
-        const { course, location, time } = selectedOpenSpotInfo;
+        const { course, subject, location, time } = selectedOpenSpotInfo;
 
         const getTutorOptions = (state) => state.tutors.map(t => ({ label: t.name, value: t.id }));
 
@@ -60,7 +60,7 @@ class TutorSelectionModal extends Component {
 
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
-            this.props.scheduleAppointment({ location, course, time, requestedTutor, additionalComments })
+            this.props.scheduleAppointment({ location, subject, course, time, requestedTutor, additionalComments })
                 .then((res) => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' }),
                       (err) => {
                           if (err.data && err.data.error) {
