@@ -68,6 +68,17 @@ class TutorSelectionModal extends Component {
                     this.props.signoutUser();
                     break;
                 }
+                case 422: {
+                    const shouldRedirectToProfile = (message) => message.toLowerCase().includes('profile');
+
+                    if (shouldRedirectToProfile(err.data.error)) {
+                        this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/schedule/profile' });
+                    } else {
+                        this.props.displayMessageModal({ message: `${err.data.error}` });
+                    }
+
+                    break;
+                }
                 default: {
                     this.props.displayMessageModal({ message: `${err.data.error}` });
                     break;
