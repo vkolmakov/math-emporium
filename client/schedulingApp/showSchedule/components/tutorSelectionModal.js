@@ -10,6 +10,8 @@ import { clearOpenSpotSelection,
          displayLoadingModal,
          displayMessageModal } from '../actions';
 
+import { getUserProfile } from '../../profile/actions';
+
 import { signoutUser } from '../../../auth/actions';
 
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
@@ -58,27 +60,34 @@ class TutorSelectionModal extends Component {
         });
         const onAdditionalCommentsChange = e => this.setState({ additionalComments: e.target.value });
 
+        const handleScheduleAppointmentError = (err) => {
+            if (err.data && err.data.error) {
+                switch (err.data.status) {
+                case 401: {
+                    this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/signin' });
+                    this.props.signoutUser();
+                    break;
+                }
+                default: {
+                    this.props.displayMessageModal({ message: `${err.data.error}` });
+                    break;
+                }
+                }
+            } else {
+                this.props.displayMessageModal({ message: 'Something went wrong, please try again.' });
+            }
+        };
+
         const onScheduleAppointment = () => {
             const { requestedTutor, additionalComments } = this.state;
             this.props.scheduleAppointment({ location, subject, course, time, requestedTutor, additionalComments })
-                .then((res) => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' }),
-                      (err) => {
-                          if (err.data && err.data.error) {
-                              switch (err.data.status) {
-                              case 401: {
-                                  this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/signin' });
-                                  this.props.signoutUser();
-                                  break;
-                              }
-                              default: {
-                                  this.props.displayMessageModal({ message: `${err.data.error}` });
-                                  break;
-                              }
-                              }
-                          } else {
-                              this.props.displayMessageModal({ message: 'Something went wrong, please try again.' });
-                          }
-                      });
+                .then(
+                    (res) => this.props.getUserProfile().then(
+                        // profile must be re-retreived after scheduling an
+                        // appointment and before redirect because it will be
+                        // updated if no preferences are already in place
+                        () => this.props.displayMessageModal({ message: this.successMessage({ location, course, time }), redirectToAfterClosing: '/schedule/profile' })),
+                    (err) => handleScheduleAppointmentError(err));
             this.props.displayLoadingModal();
         };
         return (
@@ -126,4 +135,5 @@ export default connect(mapStateToProps, {
     displayLoadingModal,
     displayMessageModal,
     signoutUser,
+    getUserProfile,
 })(TutorSelectionModal);
