@@ -7,7 +7,46 @@
     <title>Tutoring @ Wright</title>
   </head>
   <body>
-    <div class="root"></div>
+    <div class="root">
+      <style>
+        .nav-placeholder {
+          display: flex;
+          flex-flow: column nowrap;
+
+          border-bottom: 1px solid #bebebe;
+        }
+
+        @media (min-width: 768px) {
+          .nav-placeholder {
+            height: 3em;
+          }
+        }
+
+        .nav-placeholder-item {
+          flex: 1;
+          background-color: white;
+          height: 2.75em;
+
+          border-bottom: 1px solid #fbfbfb;
+        }
+
+        @media (min-width: 768px) {
+          .nav-placeholder-item {
+            border-bottom: none;
+            height: 0;
+            flex: 0;
+          }
+        }
+      </style>
+
+      <div class="nav-placeholder">
+        <div class="nav-placeholder-item"></div>
+        <div class="nav-placeholder-item"></div>
+        <div class="nav-placeholder-item auth"></div>
+      </div>
+
+      <div class="content-placeholder"></div>
+    </div>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
