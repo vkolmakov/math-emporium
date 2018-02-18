@@ -1,7 +1,11 @@
-const aux = require('./aux');
+const timeUnits = {
+    minutes: (n) => n * 60 * 1000,
+    hours: (n) => timeUnits.minutes(60 * n),
+    days: (n) => timeUnits.hours(24 * n),
+};
 
 function getSessionLength(rawSessionLength) {
-    const DEFAULT_SESSION_LENGTH = aux.timeUnits.days(7);
+    const DEFAULT_SESSION_LENGTH = timeUnits.days(7);
     const sessionLength = parseInt(rawSessionLength, 10);
 
     return !isNaN(sessionLength) ? sessionLength : DEFAULT_SESSION_LENGTH;
