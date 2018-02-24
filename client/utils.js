@@ -130,6 +130,8 @@ export const storage = {
 
     KEYS: {
         SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION: 'SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION',
+        USER_EMAIL: 'USER_EMAIL',
+        USER_AUTH_GROUP: 'USER_AUTH_GROUP',
     },
 
     clear: () => storage._provider.clear(),

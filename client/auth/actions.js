@@ -13,15 +13,10 @@ export const SET_USER_EMAIL = 'SET_USER_EMAIL';
 export const RECORD_USER_SIGNIN = 'RECORD_USER_SIGNIN';
 
 
-function addAuthData({ group, email }) {
-    localStorage.setItem('group', group);
+function persistUserSessionInformation({ group, email }) {
+    storage.set(storage.KEYS.USER_AUTH_GROUP, group);
     // replace in case an encoded value comes from a cookie
-    localStorage.setItem('email', email.replace('%40', '@'));
-}
-
-function removeAuthData() {
-    localStorage.removeItem('group');
-    localStorage.removeItem('email');
+    storage.set(storage.KEYS.USER_EMAIL, email.replace('%40', '@'));
 }
 
 function authCookieKeys() {
@@ -45,7 +40,9 @@ function removeLegacyJwtAuthData() {
     // TODO: this and its usages could be safely removed
     // in a couple of months from the moment it was added
     axios.defaults.headers.common['Authorization'] = null;
-    localStorage.removeItem('token');
+    window.localStorage.removeItem('token');
+    window.localStorage.removeItem('group');
+    window.localStorage.removeItem('email');
 }
 
 export function signoutUser() {
@@ -53,9 +50,8 @@ export function signoutUser() {
         return axios.post(`${BASE_URL}/signout`)
             .then(() => {
                 removeLegacyJwtAuthData();
-                removeAuthData();
-                storage.clear();
                 cleanupAuthDataFromCookies();
+                storage.clear();
             })
             .then(() => dispatch({ type: UNAUTH_USER }));
     };
@@ -112,11 +108,11 @@ export function hasNewUserJustSignedIn() {
 }
 
 export function addAuthDataFromCookies() {
-    const cookies = parseCookies(authCookieKeys(), document.cookie);
-    addAuthData(cookies);
+    const parsedCookies = parseCookies(authCookieKeys(), document.cookie);
+    persistUserSessionInformation(parsedCookies);
 }
 
 export function cleanupAuthDataFromCookies() {
-    const setCookie = newCookie => document.cookie = newCookie;
+    const setCookie = (newCookie) => { document.cookie = newCookie; };
     cleanCookies(authCookieKeys(), document.cookie).forEach(setCookie);
 }

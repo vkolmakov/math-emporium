@@ -54,8 +54,8 @@ if (hasNewUserJustSignedIn()) {
 cleanupAuthDataFromCookies();
 cleanupSelectedOpenSpotFromLocalStorage();
 
-const authGroup = localStorage.getItem('group');
-const email = localStorage.getItem('email');
+const authGroup = storage.get(storage.KEYS.USER_AUTH_GROUP);
+const email = storage.get(storage.KEYS.USER_EMAIL);
 
 if (authGroup && email) {
     store.dispatch(signInUser(authGroup, email));
