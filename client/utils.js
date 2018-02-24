@@ -132,11 +132,13 @@ export const storage = {
         SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION: 'SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION',
         USER_EMAIL: 'USER_EMAIL',
         USER_AUTH_GROUP: 'USER_AUTH_GROUP',
+        PRESELECTED_OPEN_SPOT: 'PRESELECTED_OPEN_SPOT',
     },
 
     clear: () => storage._provider.clear(),
     set: (key, value) => storage._provider.setItem(key, value),
     get: (key) => storage._provider.getItem(key),
+    remove: (key) => storage._provider.removeItem(key),
 };
 
 export const Either = {

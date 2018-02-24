@@ -11,9 +11,9 @@ import reducers from './reducers';
 import { signInUser, hasNewUserJustSignedIn,
          addAuthDataFromCookies, cleanupAuthDataFromCookies } from './auth/actions';
 
-import { selectOpenSpot, hasNewUserSelectedOpenSpotBeforeSignIn,
-         cleanupSelectedOpenSpotFromLocalStorage,
-         retrieveSelectedOpenSpotFromLocalStorage } from './schedulingApp/showSchedule/actions';
+import { selectOpenSpot, didUserPreselectAnOpenSpotBeforeSignIn,
+         cleanupPreselectedOpenSpot,
+         retrievePreselectedOpenSpot } from './schedulingApp/showSchedule/actions';
 
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
@@ -45,14 +45,14 @@ attachUtilEventListeners(window, store);
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
     redirectTo('/schedule/show');
-    if (hasNewUserSelectedOpenSpotBeforeSignIn()) {
-        const selectedOpenSpot = retrieveSelectedOpenSpotFromLocalStorage();
-        store.dispatch(selectOpenSpot(selectedOpenSpot));
+    if (didUserPreselectAnOpenSpotBeforeSignIn()) {
+        const preselectedOpenSpot = retrievePreselectedOpenSpot();
+        store.dispatch(selectOpenSpot(preselectedOpenSpot));
     }
 }
 
 cleanupAuthDataFromCookies();
-cleanupSelectedOpenSpotFromLocalStorage();
+cleanupPreselectedOpenSpot();
 
 const authGroup = storage.get(storage.KEYS.USER_AUTH_GROUP);
 const email = storage.get(storage.KEYS.USER_EMAIL);

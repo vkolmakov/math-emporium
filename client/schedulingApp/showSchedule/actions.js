@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 
+import { storage } from '../../utils';
 import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
 
 export const SA_GET_OPEN_SPOTS = 'SA_GET_OPEN_SPOTS';
@@ -20,8 +21,6 @@ export const SA_SAVE_SELECTED_OPEN_SPOT = 'SA_SAVE_SELECTED_OPEN_SPOT';
 const BASE_URL = '/api/open-spots';
 const BASE_URL_APPOINTMENT = '/api/user/appointment';
 const BASE_URL_TUTORS = '/api/available-tutors';
-
-const SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY = 'selectedOpenSpotInfo';
 
 export function getOpenSpots({ location, course, startDate, subject }) {
     const requestParams = {
@@ -149,7 +148,7 @@ export function getAvailableTutors({ time, course, location, subject }) {
     };
 }
 
-export function saveSelectedOpenSpotInLocalStorage({ course, location, time, subject }) {
+export function persistPreselectedOpenSpot({ course, location, time, subject }) {
     const serialized = JSON.stringify({
         subject,
         course,
@@ -157,20 +156,20 @@ export function saveSelectedOpenSpotInLocalStorage({ course, location, time, sub
         time: time.valueOf(),
     });
 
-    localStorage.setItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY, serialized);
+    storage.set(storage.KEYS.PRESELECTED_OPEN_SPOT, serialized);
 
     return {
         type: SA_SAVE_SELECTED_OPEN_SPOT,
     };
 }
 
-export function hasNewUserSelectedOpenSpotBeforeSignIn() {
-    return !!localStorage.getItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY);
+export function didUserPreselectAnOpenSpotBeforeSignIn() {
+    return !!storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT);
 }
 
-export function retrieveSelectedOpenSpotFromLocalStorage() {
+export function retrievePreselectedOpenSpot() {
     const { course, location, time, subject } =
-          JSON.parse(localStorage.getItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY));
+          JSON.parse(storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT));
 
     return {
         course,
@@ -180,6 +179,6 @@ export function retrieveSelectedOpenSpotFromLocalStorage() {
     };
 }
 
-export function cleanupSelectedOpenSpotFromLocalStorage() {
-    return localStorage.removeItem(SELECTED_OPEN_SPOT_LOCAL_STORAGE_KEY);
+export function cleanupPreselectedOpenSpot() {
+    return storage.remove(storage.KEYS.PRESELECTED_OPEN_SPOT);
 }

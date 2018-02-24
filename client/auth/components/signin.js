@@ -6,7 +6,7 @@ import MainContentWrap from '../../components/mainContentWrap';
 
 import { OAUTH2_SIGNIN_URL } from '../constants';
 import { redirectOutside } from '../../utils';
-import { saveSelectedOpenSpotInLocalStorage,
+import { persistPreselectedOpenSpot,
          clearOpenSpotSelection } from '../../schedulingApp/showSchedule/actions';
 import schoolLogo from '../../assets/school-logo.png';
 
@@ -28,7 +28,7 @@ class Signin extends Component {
         const { selectedOpenSpotInfo } = this.props;
         const { course, location, time, subject } = selectedOpenSpotInfo;
         if (course && location && time && subject) {
-            this.props.saveSelectedOpenSpotInLocalStorage(selectedOpenSpotInfo);
+            this.props.persistPreselectedOpenSpot(selectedOpenSpotInfo);
             this.props.clearOpenSpotSelection();
         }
     }
@@ -91,6 +91,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-    saveSelectedOpenSpotInLocalStorage,
+    persistPreselectedOpenSpot,
     clearOpenSpotSelection,
 })(Signin);
