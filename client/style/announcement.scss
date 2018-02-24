@@ -10,10 +10,23 @@
     align-items: center;
 
     .announcement-hide-button {
+        font-size: 0.9em;
 
+        &:hover,&:focus {
+            transform: scale(1.25);
+        }
+
+        &:after {
+            content: '✖'; /* heh */
+        }
+
+        background-color: transparent;
+        border: none;
     }
 
     .announcement-content {
+        max-width: 75em;
+
         // styles for html elements generated from markdown
         p { margin: 0; }
         a { color: $primary-text-color; }
