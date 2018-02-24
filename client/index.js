@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import promise from 'redux-promise';
 import reduxThunk from 'redux-thunk';
 import attachUtilEventListeners from './util/attachUtilEventListeners';
-import { getPublicApplicationStartupSettings } from './util/actions';
+import { getAndApplyPublicApplicationStartupSettings } from './util/actions';
 import reducers from './reducers';
 import { authorizeUser, setUserAuthGroup, setUserEmail,
          recordUserSignin, hasNewUserJustSignedIn,
@@ -65,7 +65,7 @@ if (authGroup && email) {
     store.dispatch(setUserEmail(email));
 }
 
-store.dispatch(getPublicApplicationStartupSettings()).then(() => {
+store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {
     ReactDOM.render(
         <Provider store={store}>
           <Router history={browserHistory} routes={routes} />
