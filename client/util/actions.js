@@ -31,6 +31,9 @@ export function getPublicApplicationStartupSettings() {
     const REQUIRED_STARTUP_SETTINGS_ITEMS = [
         'applicationTitle',
         'applicationMainHomePictureLink',
+        'announcementContent',
+        'announcementBackgroundColor',
+        'announcementTextColor',
     ];
 
     return (dispatch) => getSettings(REQUIRED_STARTUP_SETTINGS_ITEMS).then((response) => {

@@ -9,6 +9,9 @@ const VISIBLE_SETTINGS_INPUT_TYPE = {
     duplicateAllEmailsTo: 'text',
     applicationMainHomePictureLink: 'text',
     faqText: 'textarea',
+    announcementText: 'textarea',
+    announcementBackgroundColor: 'text',
+    announcementTextColor: 'text',
 };
 
 class ManageSettings extends Component {
@@ -44,7 +47,7 @@ class ManageSettings extends Component {
                 });
         };
 
-        const toFormTextField = (settingKey) => {
+        const toFormField = (settingKey) => {
             return {
                 label: settingKey,
                 input: {
@@ -66,7 +69,7 @@ class ManageSettings extends Component {
             title: 'Update application settings',
             fields: Object.keys(this.props.settings)
                 .filter((key) => Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key))
-                .map(toFormTextField),
+                .map(toFormField),
             error: this.state.form.error,
             success: this.state.form.success,
         };
