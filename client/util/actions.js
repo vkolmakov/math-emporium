@@ -29,9 +29,9 @@ export function displayAnnouncement() {
     };
 }
 
-export function hideAnnouncement() {
+export function hideAnnouncement(announcementContent) {
     function persistHiddenAnnouncementForSession() {
-        storage.set(storage.KEYS.SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION, true);
+        storage.set(storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN, announcementContent);
     }
 
     persistHiddenAnnouncementForSession();
@@ -60,19 +60,22 @@ export function getAndApplyPublicApplicationStartupSettings() {
         'announcementTextColor',
     ];
 
-    function shouldShowAnnouncementForSession() {
-        return !storage.get(storage.KEYS.SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION);
+    function wasGivenAnnouncementRequestedToBeHidden(announcement) {
+        return storage.get(storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN) === announcement;
     }
 
     return (dispatch) => getSettings(REQUIRED_STARTUP_SETTINGS_ITEMS).then((response) => {
+        const settings = response.data;
+        const { applicationTitle, announcementContent } = settings;
+
         dispatch({
             type: UT_GET_PUBLIC_SETTINGS,
-            payload: response.data,
+            payload: settings,
         });
 
-        setPageTitle(response.data.applicationTitle);
+        setPageTitle(applicationTitle);
 
-        if (!!response.data.announcementContent && shouldShowAnnouncementForSession()) {
+        if (!!announcementContent && !wasGivenAnnouncementRequestedToBeHidden(announcementContent)) {
             dispatch(displayAnnouncement());
         }
 
