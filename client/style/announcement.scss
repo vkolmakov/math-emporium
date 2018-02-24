@@ -10,18 +10,22 @@
     align-items: center;
 
     .announcement-hide-button {
-        font-size: 0.9em;
+        border: none;
 
-        &:hover,&:focus {
-            transform: scale(1.25);
-        }
+        background-color: transparent;
+        color: inherit;
+
+        cursor: pointer;
+
+        font-size: 0.9em;
 
         &:after {
             content: '✖'; /* heh */
         }
 
-        background-color: transparent;
-        border: none;
+        &:hover,&:focus {
+            transform: scale(1.25);
+        }
     }
 
     .announcement-content {
@@ -29,6 +33,6 @@
 
         // styles for html elements generated from markdown
         p { margin: 0; }
-        a { color: $primary-text-color; }
+        a { color: inherit; }
     }
 }
