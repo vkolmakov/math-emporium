@@ -8,6 +8,9 @@ export const PUBLIC_SETTINGS_KEYS = [
     SETTINGS_KEYS.applicationTitle,
     SETTINGS_KEYS.applicationMainHomePictureLink,
     SETTINGS_KEYS.faqContent,
+    SETTINGS_KEYS.announcementContent,
+    SETTINGS_KEYS.announcementBackgroundColor,
+    SETTINGS_KEYS.announcementTextColor,
 ];
 
 export function getDefaultSettings() {
@@ -21,9 +24,17 @@ function addFaqContentTransformation(settingsValues) {
     };
 }
 
+function addAnnouncementContentTransformation(settingsValues) {
+    return {
+        ...settingsValues,
+        [SETTINGS_KEYS.announcementContent]: faq.compileToHtml(settingsValues[SETTINGS_KEYS.announcementText]),
+    };
+}
+
 export function updateDefaultSettings(values) {
     const transformations = [
         addFaqContentTransformation,
+        addAnnouncementContentTransformation,
     ];
 
     const validSettingsKeys = Object.keys(SETTINGS_KEYS);

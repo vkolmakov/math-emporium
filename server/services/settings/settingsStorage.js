@@ -11,16 +11,28 @@ const SETTINGS_KEYS = {
     applicationTitle: 'applicationTitle',
     duplicateAllEmailsTo: 'duplicateAllEmailsTo',
     applicationMainHomePictureLink: 'applicationMainHomePictureLink',
+
     faqText: 'faqText',
     faqContent: 'faqContent',
+
+    announcementText: 'announcementText',
+    announcementContent: 'announcementContent',
+    announcementBackgroundColor: 'announcementBackgroundColor',
+    announcementTextColor: 'announcementTextColor',
 };
 
 const DEFAULT_SETTINGS_VALUES = {
     [SETTINGS_KEYS.applicationTitle]: 'math-emporium',
     [SETTINGS_KEYS.duplicateAllEmailsTo]: '',
     [SETTINGS_KEYS.applicationMainHomePictureLink]: '',
+
     [SETTINGS_KEYS.faqText]: '',
     [SETTINGS_KEYS.faqContent]: '',
+
+    [SETTINGS_KEYS.announcementText]: '',
+    [SETTINGS_KEYS.announcementContent]: '',
+    [SETTINGS_KEYS.announcementBackgroundColor]: '#D9EDF9',
+    [SETTINGS_KEYS.announcementTextColor]: '#111111',
 };
 
 function findOrCreateSettings(id) {
