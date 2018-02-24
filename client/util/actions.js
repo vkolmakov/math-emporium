@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { storage } from '../utils';
+
 const BASE_URL_SETTINGS = '/api/public/settings';
 
 export const UT_ROUTE_CHANGE = 'UT_ROUTE_CHANGE';
@@ -28,6 +30,12 @@ export function displayAnnouncement() {
 }
 
 export function hideAnnouncement() {
+    function persistHiddenAnnouncementForSession() {
+        storage.set(storage.KEYS.SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION, true);
+    }
+
+    persistHiddenAnnouncementForSession();
+
     return {
         type: UT_HIDE_ANNOUNCEMENT,
     };
@@ -52,6 +60,10 @@ export function getAndApplyPublicApplicationStartupSettings() {
         'announcementTextColor',
     ];
 
+    function shouldShowAnnouncementForSession() {
+        return !storage.get(storage.KEYS.SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION);
+    }
+
     return (dispatch) => getSettings(REQUIRED_STARTUP_SETTINGS_ITEMS).then((response) => {
         dispatch({
             type: UT_GET_PUBLIC_SETTINGS,
@@ -60,10 +72,8 @@ export function getAndApplyPublicApplicationStartupSettings() {
 
         setPageTitle(response.data.applicationTitle);
 
-        if (!!response.data.announcementContent) {
-            dispatch({
-                type: UT_DISPLAY_ANNOUNCEMENT,
-            });
+        if (!!response.data.announcementContent && shouldShowAnnouncementForSession()) {
+            dispatch(displayAnnouncement());
         }
 
         return Promise.resolve();

@@ -125,6 +125,18 @@ export function invertObj(obj) {
     }, {});
 }
 
+export const storage = {
+    _provider: window.sessionStorage,
+
+    KEYS: {
+        SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION: 'SHOULD_HIDE_ANNOUNCEMENT_FOR_CURRENT_SESSION',
+    },
+
+    clear: () => storage._provider.clear(),
+    set: (key, value) => storage._provider.setItem(key, value),
+    get: (key) => storage._provider.getItem(key),
+};
+
 export const Either = {
     Right: _S.Right,
     Left: _S.Left,
