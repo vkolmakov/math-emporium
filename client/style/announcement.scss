@@ -1,0 +1,21 @@
+.announcement {
+    // color and background-color are set through JS
+
+    display: flex;
+
+    padding: 0.5em 0.75em;
+    border-bottom: 1px solid darken($tertiary-color, 25%);
+
+    justify-content: space-between;
+    align-items: center;
+
+    .announcement-hide-button {
+
+    }
+
+    .announcement-content {
+        // styles for html elements generated from markdown
+        p { margin: 0; }
+        a { color: $primary-text-color; }
+    }
+}
