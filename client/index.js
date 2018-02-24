@@ -8,8 +8,7 @@ import reduxThunk from 'redux-thunk';
 import attachUtilEventListeners from './util/attachUtilEventListeners';
 import { getAndApplyPublicApplicationStartupSettings } from './util/actions';
 import reducers from './reducers';
-import { authorizeUser, setUserAuthGroup, setUserEmail,
-         recordUserSignin, hasNewUserJustSignedIn,
+import { signInUser, hasNewUserJustSignedIn,
          addAuthDataFromCookies, cleanupAuthDataFromCookies } from './auth/actions';
 
 import { selectOpenSpot, hasNewUserSelectedOpenSpotBeforeSignIn,
@@ -18,7 +17,7 @@ import { selectOpenSpot, hasNewUserSelectedOpenSpotBeforeSignIn,
 
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
-import { redirectTo } from './utils';
+import { redirectTo, storage } from './utils';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -59,10 +58,9 @@ const authGroup = localStorage.getItem('group');
 const email = localStorage.getItem('email');
 
 if (authGroup && email) {
-    store.dispatch(authorizeUser());
-    store.dispatch(recordUserSignin());
-    store.dispatch(setUserAuthGroup(authGroup));
-    store.dispatch(setUserEmail(email));
+    store.dispatch(signInUser(authGroup, email));
+} else {
+    storage.clear();
 }
 
 store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {

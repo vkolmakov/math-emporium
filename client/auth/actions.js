@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './constants';
-import { parseCookies, cleanCookies, redirectTo } from '../utils';
+import { parseCookies, cleanCookies, redirectTo, storage } from '../utils';
 
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
@@ -54,44 +54,54 @@ export function signoutUser() {
             .then(() => {
                 removeLegacyJwtAuthData();
                 removeAuthData();
+                storage.clear();
                 cleanupAuthDataFromCookies();
             })
             .then(() => dispatch({ type: UNAUTH_USER }));
     };
 }
 
-export function setUserAuthGroup(authGroup) {
-    return {
-        type: SET_USER_GROUP,
-        payload: authGroup,
-    };
-}
-
-export function setUserEmail(email) {
-    return {
-        type: SET_USER_EMAIL,
-        payload: email,
-    };
-}
-
-export function authorizeUser() {
-    return {
-        type: AUTH_USER,
-    };
-}
-
-export function recordUserSignin() {
-    return (dispatch) => {
-        const dispatchSigninAction = (recordSigninResult) =>
-              dispatch({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
-
-        const dispatchSignoutActionAndRedirectToSignin = (error) => {
-            dispatch(signoutUser());
-            redirectTo('/signin');
+export function signInUser(authGroup, email) {
+    function setUserAuthGroup(authGroup) {
+        return {
+            type: SET_USER_GROUP,
+            payload: authGroup,
         };
+    }
 
-        return axios.post(`${BASE_URL}/record-signin`)
-            .then(dispatchSigninAction, dispatchSignoutActionAndRedirectToSignin);
+    function setUserEmail(email) {
+        return {
+            type: SET_USER_EMAIL,
+            payload: email,
+        };
+    }
+
+    function authorizeUser() {
+        return {
+            type: AUTH_USER,
+        };
+    }
+
+    function recordUserSignin() {
+        return (dispatch) => {
+            const dispatchSigninAction = (recordSigninResult) =>
+                  dispatch({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
+
+            const dispatchSignoutActionAndRedirectToSignin = (error) => {
+                dispatch(signoutUser());
+                redirectTo('/signin');
+            };
+
+            return axios.post(`${BASE_URL}/record-signin`)
+                .then(dispatchSigninAction, dispatchSignoutActionAndRedirectToSignin);
+        };
+    }
+
+    return (dispatch) => {
+        dispatch(recordUserSignin());
+        dispatch(authorizeUser());
+        dispatch(setUserAuthGroup(authGroup));
+        dispatch(setUserEmail(email));
     };
 }
 
