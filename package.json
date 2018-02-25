@@ -14,8 +14,9 @@
     "clean": "rimraf dist",
     "production": "NODE_ENV=production npm run start",
     "dev": "NODE_ENV=serverdev nodemon -w ./ -x npm run start",
-    "test": "jest -o --verbose || true",
-    "test:all": "jest"
+    "test:unit": "jest -o --verbose || true",
+    "test:unit:all": "jest",
+    "test:integration:all": "jest ./test/integration/**"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
@@ -25,6 +26,7 @@
     "eslint-plugin-react": "^5.2.2",
     "jest-cli": "^18.1.0",
     "nodemon": "^1.9.2",
+    "puppeteer": "^1.1.1",
     "react-test-renderer": "^15.4.1",
     "redux-logger": "^2.6.1",
     "webpack-dev-middleware": "^1.6.1",
