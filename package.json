@@ -12,14 +12,16 @@
     "main-storage:migration:undo": "sequelize db:migrate:undo",
     "postinstall": "npm run clean && node node_modules/node-sass/scripts/install.js && npm rebuild node-sass && webpack --config ./webpack.production.config.js",
     "clean": "rimraf dist",
-    "production": "NODE_ENV=production npm run start",
-    "dev": "NODE_ENV=serverdev nodemon -w ./ -x npm run start",
+    "production": "cross-env NODE_ENV=production npm run start",
+    "dev:client": "cross-env NODE_ENV=dev npm run start -- -dev-client",
+    "dev:server": "webpack --config ./webpack.production.config.js && cross-env NODE_ENV=dev nodemon -w ./ -x npm run start",
     "test:unit": "jest -o --verbose || true",
     "test:unit:all": "jest",
     "test:integration:all": "jest ./test/integration/**"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
+    "cross-env": "^5.1.3",
     "eslint": "^2.9.0",
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.7.0",
