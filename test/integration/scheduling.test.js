@@ -6,6 +6,32 @@ jest.setTimeout(30000);
 beforeAll(() => browser.setup());
 afterAll(() => browser.teardown());
 
+async function signInFromSignInPage(user) {
+    // At /signin
+    await browser.page.waitForSelector('.oauth2-button');
+    await browser.page.click('.oauth2-button');
+
+    // Provider sign-in page
+    await browser.page.waitForSelector('input[type=email]');
+    await browser.page.type('input[type=email]', user.email);
+    await browser.page.click('input[type=submit]');
+    await browser.page.waitFor(1000); // redirect
+
+    // Institution sign-in page
+    await browser.page.waitForSelector('input[type=password]');
+    await browser.page.type('input[type=password]', user.password);
+    await browser.page.waitFor(1000); // wait until full password is typed in
+    await browser.page.click('#submitButton');
+    await browser.page.waitFor(1000); // redirect
+
+    // Additional steps after sign-in
+    await browser.page.waitForSelector('input[type=submit]');
+    await browser.page.click('input[type=submit]');
+
+    // At /schedule
+    return browser.page.waitForSelector('.open-spots-display');
+}
+
 describe('scheduling', () => {
     it('some stuff works', async () => {
         await browser.page.goto(APP_ADDRESS);
