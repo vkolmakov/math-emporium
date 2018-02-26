@@ -17,7 +17,7 @@
     "dev:server": "webpack --config ./webpack.production.config.js && cross-env NODE_ENV=dev nodemon -w ./ -x npm run start",
     "test:unit": "jest -o --verbose || true",
     "test:unit:all": "jest",
-    "test:integration:all": "jest ./test/integration/**"
+    "test:integration:all": "cross-env NODE_ENV=test jest ./test/integration/** --globalSetup ./test/integration/setup.js --globalTeardown ./test/integration/teardown.js"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
@@ -25,7 +25,8 @@
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-react": "^5.2.2",
-    "jest-cli": "^18.1.0",
+    "jest": "^22.4.2",
+    "jest-cli": "^22.4.2",
     "nodemon": "^1.9.2",
     "puppeteer": "^1.1.1",
     "react-test-renderer": "^15.4.1",

@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 
+const TEST_TIME_LIMIT = 10000;
+
 const browser = {
     driver: null,
     page: null,
@@ -10,6 +12,8 @@ const browser = {
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
 beforeAll(async () => {
+    jest.setTimeout(TEST_TIME_LIMIT);
+
     browser.driver = await puppeteer.launch({
         headless: false,
         slowMo: 80,
