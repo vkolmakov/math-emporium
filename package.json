@@ -17,7 +17,7 @@
     "dev:server": "webpack --config ./webpack.production.config.js && cross-env NODE_ENV=dev nodemon -w ./ -x npm run start",
     "test:unit": "jest -o --verbose || true",
     "test:unit:all": "jest",
-    "test:integration:all": "cross-env NODE_ENV=test jest ./test/integration/** --globalSetup ./test/integration/setup.js --globalTeardown ./test/integration/teardown.js"
+    "test:integration:all": "cross-env NODE_ENV=test jest ./test/integration/**"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",

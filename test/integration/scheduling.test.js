@@ -1,31 +1,10 @@
-import puppeteer from 'puppeteer';
-
-const TEST_TIME_LIMIT = 10000;
-
-const browser = {
-    driver: null,
-    page: null,
-    width: 1024,
-    height: 768,
-};
+import browser from './browser';
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
-beforeAll(async () => {
-    jest.setTimeout(TEST_TIME_LIMIT);
-
-    browser.driver = await puppeteer.launch({
-        headless: false,
-        slowMo: 80,
-        args: [`--window-size=${browser.width},${browser.height}`],
-    });
-    browser.page = await browser.driver.newPage();
-    await browser.page.setViewport({ width: browser.width, height: browser.height });
-});
-
-afterAll(() => {
-    browser.driver.close();
-});
+jest.setTimeout(30000);
+beforeAll(() => browser.setup());
+afterAll(() => browser.teardown());
 
 describe('scheduling', () => {
     it('some stuff works', async () => {
