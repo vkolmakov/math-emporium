@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 
 const browser = {
+    name: 'browser',
+
     async setup() {
         browser.driver = await puppeteer.launch({
             headless: false,

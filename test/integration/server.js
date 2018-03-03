@@ -5,6 +5,8 @@ const LOG_FILE = './intergration-test-server.log';
 const SERVER_STARTED_MESSAGE = 'running on port';
 
 const server = {
+    name: 'server',
+
     _serverProcessPid: null,
 
     setup() {

@@ -8,8 +8,14 @@ const runInOrder = (action) => (xs) => {
     }, Promise.resolve());
 };
 
-const setupInOrder = runInOrder((item) => item.setup());
-const teardownInOrder = runInOrder((item) => item.teardown());
+const setupInOrder = runInOrder((item) => {
+    console.log(`Setting up ${item.name}`);
+    return item.setup();
+});
+const teardownInOrder = runInOrder((item) => {
+    console.log(`Tearing down ${item.name}`);
+    return item.teardown();
+});
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
