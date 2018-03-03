@@ -1,3 +1,4 @@
+import mainStorage from './mainStorage';
 import server from './server';
 import browser from './browser';
 
@@ -12,9 +13,9 @@ const teardownInOrder = runInOrder((item) => item.teardown());
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
-jest.setTimeout(30000);
-beforeAll(() => setupInOrder([server, browser]));
-afterAll(() => teardownInOrder([server, browser]));
+jest.setTimeout(50000);
+beforeAll(() => setupInOrder([mainStorage, server, browser]));
+afterAll(() => teardownInOrder([mainStorage, server, browser]));
 
 async function signInFromSignInPage(user) {
     // At /signin
