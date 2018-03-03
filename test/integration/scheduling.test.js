@@ -1,10 +1,20 @@
+import server from './server';
 import browser from './browser';
+
+const runInOrder = (action) => (xs) => {
+    return xs.reduce((acc, x) => {
+        return acc.then(() => action(x));
+    }, Promise.resolve());
+};
+
+const setupInOrder = runInOrder((item) => item.setup());
+const teardownInOrder = runInOrder((item) => item.teardown());
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
 jest.setTimeout(30000);
-beforeAll(() => browser.setup());
-afterAll(() => browser.teardown());
+beforeAll(() => setupInOrder([server, browser]));
+afterAll(() => teardownInOrder([server, browser]));
 
 async function signInFromSignInPage(user) {
     // At /signin

@@ -9,6 +9,8 @@ const browser = {
         });
         browser.page = await browser.driver.newPage();
         await browser.page.setViewport({ width: browser.width, height: browser.height });
+
+        return Promise.resolve(browser);
     },
 
     teardown() {
