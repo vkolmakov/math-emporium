@@ -1,6 +1,6 @@
 import pg from 'pg';
 
-import config from '../../server/config.js';
+import config from '../../../server/config.js';
 
 function getClient(dbConfig) {
     function runRawQuery(client, queryText) {

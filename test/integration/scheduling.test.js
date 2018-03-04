@@ -1,6 +1,6 @@
-import mainStorage from './mainStorage';
-import server from './server';
-import browser from './browser';
+import mainStorage from './components/mainStorage';
+import server from './components/server';
+import browser from './components/browser';
 
 import { setupInOrder, teardownInOrder, R } from './utils';
 
