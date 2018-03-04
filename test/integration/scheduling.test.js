@@ -1,31 +1,16 @@
-import R from 'ramda';
-
 import mainStorage from './mainStorage';
 import server from './server';
 import browser from './browser';
 
-const runInOrder = (action) => (xs) => {
-    return xs.reduce((acc, x) => {
-        return acc.then(() => action(x));
-    }, Promise.resolve());
-};
-
-const setupInOrder = runInOrder((item) => {
-    console.log(`Setting up ${item.name}`);
-    return item.setup();
-});
-const teardownInOrder = runInOrder((item) => {
-    console.log(`Tearing down ${item.name}`);
-    return item.teardown();
-});
+import { setupInOrder, teardownInOrder, R } from './utils';
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
-const requiredModulesInOrder = [mainStorage, server, browser];
+const requiredModules = [mainStorage, server, browser];
 
 jest.setTimeout(50000);
-beforeAll(() => setupInOrder(requiredModulesInOrder));
-afterAll(() => teardownInOrder(R.reverse(requiredModulesInOrder)));
+beforeAll(() => setupInOrder(requiredModules));
+afterAll(() => teardownInOrder(R.reverse(requiredModules)));
 
 async function signInFromSignInPage(user) {
     // At /signin
