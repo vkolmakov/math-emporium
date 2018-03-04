@@ -1,3 +1,5 @@
+import R from 'ramda';
+
 import mainStorage from './mainStorage';
 import server from './server';
 import browser from './browser';
@@ -19,9 +21,11 @@ const teardownInOrder = runInOrder((item) => {
 
 const APP_ADDRESS = 'https://tutoringatwright.com';
 
+const requiredModulesInOrder = [mainStorage, server, browser];
+
 jest.setTimeout(50000);
-beforeAll(() => setupInOrder([mainStorage, server, browser]));
-afterAll(() => teardownInOrder([mainStorage, server, browser]));
+beforeAll(() => setupInOrder(requiredModulesInOrder));
+afterAll(() => teardownInOrder(R.reverse(requiredModulesInOrder)));
 
 async function signInFromSignInPage(user) {
     // At /signin
