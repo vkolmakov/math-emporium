@@ -1,6 +1,10 @@
 import pg from 'pg';
 
+import * as data from './data';
+import { R, runInOrder } from '../utils';
+
 import config from '../../../server/config.js';
+import _mainStorage from '../../../server/services/mainStorage';
 
 function getClient(dbConfig) {
     function runRawQuery(client, queryText) {
@@ -41,6 +45,10 @@ function dropDatabaseQuery(dbConfig) {
     return `DROP DATABASE ${dbConfig.database}`;
 }
 
+function insertRecords(model, records) {
+    return () => model.bulkCreate(records);
+}
+
 const mainStorage = {
     name: 'main-storage',
 
@@ -55,8 +63,26 @@ const mainStorage = {
         const client = await getClient(mainStorage.dbConfig);
 
         await client.query(createDatabaseQuery(mainStorage.dbConfig));
-
         await client.end();
+
+        // create tables
+        await _mainStorage.connect();
+
+        const Location = _mainStorage.db.models.location;
+        const Subject = _mainStorage.db.models.subject;
+        const Course = _mainStorage.db.models.course;
+        const Tutor = _mainStorage.db.models.tutor;
+
+        const models = [
+            Location, Subject, Course, Tutor,
+        ];
+
+        const records = [
+            data.locations, data.subjects, data.courses, data.tutors,
+        ];
+
+        await runInOrder((f) => f.call())(R.zipWith(insertRecords, models, records));
+
         return Promise.resolve();
     },
 
