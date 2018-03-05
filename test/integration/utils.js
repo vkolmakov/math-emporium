@@ -1,10 +1,12 @@
 import _R from 'ramda';
 
-export const runInOrder = (action) => (xs) => {
+const runInOrder = (action) => (xs) => {
     return xs.reduce((acc, x) => {
         return acc.then(() => action(x));
     }, Promise.resolve());
 };
+
+export const expandThunksInOrder = runInOrder((fn) => fn.call());
 
 export const setupInOrder = runInOrder((item) => {
     console.log(`Setting up ${item.name}`);

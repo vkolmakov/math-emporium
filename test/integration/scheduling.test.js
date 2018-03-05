@@ -1,14 +1,14 @@
-import mainStorage from './components/mainStorage';
+import initialState from './components/initialState';
 import server from './components/server';
 import browser from './components/browser';
 
 import { setupInOrder, teardownInOrder, R } from './utils';
 
-const APP_ADDRESS = 'https://tutoringatwright.com';
+const APP_ADDRESS = 'localhost:3000';
 
-const requiredModules = [mainStorage, server, browser];
+const requiredModules = [initialState, server, browser];
 
-jest.setTimeout(50000);
+jest.setTimeout(500000);
 beforeAll(() => setupInOrder(requiredModules));
 afterAll(() => teardownInOrder(R.reverse(requiredModules)));
 
@@ -59,5 +59,7 @@ describe('scheduling', () => {
         await browser.page.select('select#select-course', '1');
 
         await browser.page.waitForSelector('.open-spots-display');
+
+        await browser.page.waitFor(50000);
     });
 });

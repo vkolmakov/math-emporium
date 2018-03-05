@@ -1,8 +1,5 @@
 import pg from 'pg';
 
-import * as data from './data';
-import { R, runInOrder } from '../utils';
-
 import config from '../../../server/config.js';
 import _mainStorage from '../../../server/services/mainStorage';
 
@@ -45,10 +42,6 @@ function dropDatabaseQuery(dbConfig) {
     return `DROP DATABASE ${dbConfig.database}`;
 }
 
-function insertRecords(model, records) {
-    return () => model.bulkCreate(records);
-}
-
 const mainStorage = {
     name: 'main-storage',
 
@@ -57,6 +50,17 @@ const mainStorage = {
         defaultDatabase: 'postgres',
 
         database: config.db.NAME,
+    },
+
+    insertRecords(model, records) {
+        return () => model.bulkCreate(records);
+    },
+
+    models: {
+        Location: null,
+        Subject: null,
+        Course: null,
+        Tutor: null,
     },
 
     async setup() {
@@ -68,20 +72,10 @@ const mainStorage = {
         // create tables
         await _mainStorage.connect();
 
-        const Location = _mainStorage.db.models.location;
-        const Subject = _mainStorage.db.models.subject;
-        const Course = _mainStorage.db.models.course;
-        const Tutor = _mainStorage.db.models.tutor;
-
-        const models = [
-            Location, Subject, Course, Tutor,
-        ];
-
-        const records = [
-            data.locations, data.subjects, data.courses, data.tutors,
-        ];
-
-        await runInOrder((f) => f.call())(R.zipWith(insertRecords, models, records));
+        mainStorage.models.Location = _mainStorage.db.models.location;
+        mainStorage.models.Subject = _mainStorage.db.models.subject;
+        mainStorage.models.Course = _mainStorage.db.models.course;
+        mainStorage.models.Tutor = _mainStorage.db.models.tutor;
 
         return Promise.resolve();
     },
