@@ -18,6 +18,10 @@ nav {
         color: $primary-text-color;
         padding: 0.75em;
 
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
         &:hover, &:focus, &.selected {
             background: $primary-color;
             font-weight: bold;
