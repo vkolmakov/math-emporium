@@ -1,13 +1,17 @@
 import { expandThunksInOrder } from '../utils';
 
 import mainStorage from './mainStorage';
+import calendar from './calendar';
 import * as data from './data';
 
 const initialState = {
     name: 'initial-state',
 
     async setup() {
-        await mainStorage.setup();
+        await Promise.all([
+            mainStorage.setup(),
+            calendar.setup(),
+        ]);
 
         await expandThunksInOrder([
             mainStorage.insertRecords(mainStorage.models.Location, data.locations),
@@ -20,7 +24,10 @@ const initialState = {
     },
 
     async teardown() {
-        mainStorage.teardown();
+        return Promise.all([
+            mainStorage.teardown(),
+            calendar.teardown(),
+        ]);
     },
 };
 
