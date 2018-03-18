@@ -33,7 +33,7 @@ function makeCourse(locationId = randomInRange(1, NUM_LOCATIONS),
     return {
         name,
         code: `${R.take(2, name).toUpperCase()}${faker.random.number() % 500}`,
-        color: faker.internet.color(),
+        color: randomInRange(1, 11).toString(),
         locationId,
         subjectId,
     };
@@ -62,23 +62,28 @@ export const getLocations = (knownCalendarId) => withOneBasedId([
 ]);
 
 export const getSubjects = () => withOneBasedId([
-    makeSubject(GUARANTEED_ITEMS.LOCATION), // guarantee at least one subject with a known location
+    // guarantee at least one subject with a known location
+    makeSubject(GUARANTEED_ITEMS.LOCATION),
     ...R.times(() => makeSubject(), NUM_SUBJECTS - 1),
 ]);
 
 export const getCourses = () => withOneBasedId([
-    makeCourse(GUARANTEED_ITEMS.LOCATION, GUARANTEED_ITEMS.SUBJECT),  // guarantee at least one course with known location+subject
+    // guarantee at least one course with known location+subject
+    makeCourse(GUARANTEED_ITEMS.LOCATION, GUARANTEED_ITEMS.SUBJECT),
     ...R.times(() => makeCourse(), NUM_COURSES - 1),
 ]);
 
 export const getTutors = () => withOneBasedId([
-    makeTutor(GUARANTEED_ITEMS.LOCATION), // guarantee at least one tutor with a known location
+    // guarantee at least one tutor with a known location
+    makeTutor(GUARANTEED_ITEMS.LOCATION),
     ...R.times(() => makeTutor(), NUM_TUTORS - 1),
 ]);
 
 export const getSchedules = (locations, tutors, startTimes) => withOneBasedId([
     // only one schedule with tutors from guaranteed location
-    { location: locations[0], tutors: tutors.filter((t) => t.locationId === GUARANTEED_ITEMS.LOCATION), time: startTimes[0] },
+    { location: locations[0],
+      tutors: tutors.filter((t) => t.locationId === GUARANTEED_ITEMS.LOCATION),
+      time: startTimes[0] },
 ]);
 
 export const getTutorCourseLinks = (tutors) => tutors
