@@ -1,4 +1,8 @@
+import moment from 'moment';
+
 import { calendarService } from '../../../server/services/googleApis';
+
+const APPOINTMENT_LENGTH = 60;
 
 const calendar = {
     _calendarService: null,
@@ -15,6 +19,21 @@ const calendar = {
 
     teardown() {
         return calendar._deleteTestCalendar();
+    },
+
+    insertSchedules(schedules) {
+        const getEndTimeString = (time) => moment(time).add(APPOINTMENT_LENGTH, 'minutes').toISOString();
+        const getStartTimeString = (time) => moment(time).toISOString();
+        const createSummary = (schedule) => `_2(${schedule.tutors.map((t) => t.name).join('_')})`;
+
+        const createEvent = (schedule) => calendar._calendarService.createCalendarEvent({
+            calendarId: calendar.testCalendarId,
+            startTime: getStartTimeString(schedule.time),
+            endTime: getEndTimeString(schedule.time),
+            summary: createSummary(schedule),
+        });
+
+        return Promise.all(schedules.map(createEvent));
     },
 
     _deleteTestCalendar() {
