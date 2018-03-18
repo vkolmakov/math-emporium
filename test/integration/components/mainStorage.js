@@ -56,6 +56,18 @@ const mainStorage = {
         return () => model.bulkCreate(records);
     },
 
+    insertTutorCourseLinks(links) {
+        const createLink = (link) => {
+            const { tutorId, courseId } = link;
+
+            return mainStorage.models.Tutor.findOne({
+                where: { id: tutorId },
+            }).then((tutor) => tutor.setCourses([courseId]));
+        };
+
+        return () => Promise.all(links.map(createLink));
+    },
+
     models: {
         Location: null,
         Subject: null,
