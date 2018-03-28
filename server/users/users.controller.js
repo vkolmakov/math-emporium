@@ -237,34 +237,45 @@ export const scheduleAppointment = (logEvent) => async (req, res, next) => {
 export const deleteAppointment = (logEvent) => async (req, res, next) => {
     const user = req.user;
 
-    try {
-        // Go to Google Calendar and remove the actual event
-        await user.deleteGoogleCalendarAppointment();
-    } catch (err) {
-        // check if the appointment was deleted by hand
-        const isAlreadyDeleted = err.message.toLowerCase().indexOf('delete') > -1;
-        if (!isAlreadyDeleted) {
+    const hasNextAppointment = !!user.dataValues.googleCalendarAppointmentId
+          && !!user.dataValues.googleCalendarAppointmentDate
+          && !!user.dataValues.googleCalendarId;
+
+    if (!hasNextAppointment) {
+        next(actionFailed('remove', 'appointment', 'Appointment was already removed'));
+    } else {
+        try {
+            // Go to Google Calendar and remove the actual event
+            await user.deleteGoogleCalendarAppointment();
+        } catch (err) {
+            // check if the appointment was deleted by hand
+            const isAlreadyDeleted = err.message.toLowerCase().indexOf('delete') > -1;
+            if (!isAlreadyDeleted) {
+                // something went horribly wrong
+                next(err);
+            }
+        }
+
+        try {
+            const appointmentTime = moment(user.dataValues.googleCalendarAppointmentDate);
+            await user.update({
+                googleCalendarAppointmentId: null,
+                googleCalendarAppointmentDate: null,
+                googleCalendarId: null,
+            }, {
+                fields: [
+                    'googleCalendarAppointmentId',
+                    'googleCalendarAppointmentDate',
+                    'googleCalendarId',
+                ],
+            });
+
+            await user.sendAppoinmentRemovalConfirmation({ appointmentTime });
+            await logEvent(req);
+        } catch (err) {
             next(err);
         }
+
+        res.status(200).json(successMessage());
     }
-
-    // Change calendarAppointmentId and nextAppointment in the user profile to null
-    try {
-        const appointmentTime = moment(user.dataValues.googleCalendarAppointmentDate);
-        await user.update({
-            googleCalendarAppointmentId: null,
-            googleCalendarAppointmentDate: null,
-            googleCalendarId: null,
-        }, {
-            fields: ['googleCalendarAppointmentId', 'googleCalendarAppointmentDate', 'googleCalendarId'],
-        });
-
-        await user.sendAppoinmentRemovalConfirmation({ appointmentTime });
-
-        await logEvent(req);
-    } catch (err) {
-        next(err);
-    }
-
-    res.status(200).json(successMessage());
 };
