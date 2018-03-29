@@ -10,8 +10,37 @@ const VISIBLE_SETTINGS_INPUT_TYPE = {
     applicationMainHomePictureLink: 'text',
     faqText: 'textarea',
     announcementText: 'textarea',
-    announcementBackgroundColor: 'text',
-    announcementTextColor: 'text',
+    announcementBackgroundColor: 'select',
+    announcementTextColor: 'select',
+};
+
+const VISIBLE_SETTINGS_OPTIONS = {
+    announcementBackgroundColor: [{
+        value: '#ADD3E9',
+        label: 'blue',
+        color: '#ADD3E9',
+    }, {
+        value: '#FF5C5C',
+        label: 'red',
+        color: '#FF5C5C',
+    }, {
+        value: '#111111',
+        label: 'black',
+        color: '#111111',
+    }, {
+        value: '#FFD097',
+        label: 'yellow',
+        color: '#FFD097',
+    }],
+    announcementTextColor: [{
+        value: '#111111',
+        label: 'black',
+        color: '#111111',
+    }, {
+        value: '#FFFFFF',
+        label: 'white',
+        color: '#FFFFFF',
+    }],
 };
 
 class ManageSettings extends Component {
@@ -53,10 +82,24 @@ class ManageSettings extends Component {
                 input: {
                     type: VISIBLE_SETTINGS_INPUT_TYPE[settingKey],
                     controlValue: this.state.settings[settingKey],
+                    options: VISIBLE_SETTINGS_OPTIONS[settingKey],
                     binding: {
                         onChange: (event) => {
                             const state = this.state;
-                            state.settings[settingKey] = event.target.value;
+
+                            if (!!event) {
+                                if (!!event.target) {
+                                    // regular event from text input
+                                    state.settings[settingKey] = event.target.value;
+                                } else if (!!event.value || !!event.label) {
+                                    // change event from a dropdown
+                                    state.settings[settingKey] = event.value;
+                                }
+                            } else {
+                                // empty value coming from a dropdown
+                                state.settings[settingKey] = null;
+                            }
+
                             this.setState(state);
                         },
                     },
