@@ -75,7 +75,7 @@
     cursor: pointer;
 
     &:hover, &:focus {
-        background-color: darken($primary-color, 16%);
+        background-color: $primary-color-focused;
         font-weight: bold;
     }
 

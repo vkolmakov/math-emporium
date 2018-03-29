@@ -191,7 +191,7 @@ select {
                 color: black;
                 cursor: pointer;
                 &:hover,&:focus {
-                    color: darken($primary-color, 50%);
+                    color: $primary-color-focused;
                     text-decoration: underline;
                 }
             }
@@ -262,7 +262,7 @@ select {
     width: $size;
     height: $size;
     border: .25rem solid $primary-color;
-    border-top-color: darken($primary-color, 15%);
+    border-top-color: $primary-color-focused;
     animation: spin $spin-duration infinite;
 }
 
@@ -273,7 +273,7 @@ select {
     position: relative;
 
     li a {
-        color: darken($primary-color, 32%);
+        color: $primary-color-focused;
         background-color: #fff;
         display: block;
 

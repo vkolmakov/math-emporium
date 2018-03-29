@@ -69,7 +69,7 @@ $gutter-size: 0.75em;
     background-color: $primary-color;
     color: black;
     &:hover,&:focus {
-        background-color: darken($primary-color, 15%);
+        background-color: $primary-color-focused;
     }
 }
 
@@ -207,7 +207,7 @@ $gutter-size: 0.75em;
             color: $primary-text-color;
 
             &:hover,&:focus {
-                background-color: darken($primary-color, 15%);
+                background-color: $primary-color-focused;
             }
         }
 
