@@ -10,7 +10,7 @@ function makeLocation(calendarId = faker.internet.exampleEmail()) {
     return {
         calendarId,
         name: faker.company.companyName(),
-        pictureLink: faker.image.cats(),
+        pictureLink: '',
         phone: faker.phone.phoneNumber(),
         email: faker.internet.exampleEmail(),
         address: faker.address.streetAddress(),
