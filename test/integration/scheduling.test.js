@@ -46,20 +46,20 @@ describe('scheduling', () => {
         await browser.page.click('.schedule-appointment-button');
 
         await browser.page.waitForSelector('select#select-location');
-        await browser.page.select('select#select-location', '1');
+        await browser.page.select('select#select-location', initialState.data.GUARANTEED_ITEMS.LOCATION.toString());
 
         await browser.page.waitForSelector('.open-spots-message-main');
 
         await browser.page.waitForSelector('select#select-subject');
-        await browser.page.select('select#select-subject', '1');
+        await browser.page.select('select#select-subject', initialState.data.GUARANTEED_ITEMS.SUBJECT.toString());
 
         await browser.page.waitForSelector('.open-spots-message-main');
 
         await browser.page.waitForSelector('select#select-course');
-        await browser.page.select('select#select-course', '1');
+        await browser.page.select('select#select-course', initialState.data.GUARANTEED_ITEMS.COURSE.toString());
 
         await browser.page.waitForSelector('.open-spots-display');
 
-        await browser.page.waitFor(50000);
+        await browser.page.waitFor(10000);
     });
 });

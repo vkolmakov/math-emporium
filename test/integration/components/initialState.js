@@ -16,12 +16,21 @@ const initialState = {
         locations: [],
         tutorCourseLinks: [],
         schedules: [],
+
+        GUARANTEED_ITEMS: {
+            LOCATION: null,
+            SUBJECT: null,
+            COURSE: null,
+        },
     },
 
     _initializeData() {
-        const twoHoursFromNow = moment()
+        // one day distance works for all cases
+        // Mo-Sa -> current week is visible and this time is on the current week
+        // Su -> next week is visible, and this time is on the next week
+        const dayFromNow = moment()
               .startOf('hour')
-              .add(2, 'hours')
+              .add(1, 'day')
               .toISOString();
 
         initialState.data.subjects = data.getSubjects();
@@ -32,8 +41,10 @@ const initialState = {
         initialState.data.schedules = data.getSchedules(
             initialState.data.locations,
             initialState.data.tutors,
-            [twoHoursFromNow]
+            [dayFromNow]
         );
+
+        initialState.data.GUARANTEED_ITEMS = data.GUARANTEED_ITEMS;
     },
 
     async setup() {
