@@ -1,7 +1,9 @@
 const puppeteer = require('puppeteer');
+const { TEST_ID } = require('../../../client/constants');
 
 const browser = {
     name: 'browser',
+    TEST_ID,
 
     async setup() {
         browser.driver = await puppeteer.launch({
