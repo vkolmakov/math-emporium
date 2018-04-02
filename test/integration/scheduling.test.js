@@ -5,6 +5,7 @@ import browser from './components/browser';
 import { setupInOrder, teardownInOrder, R } from './utils';
 
 const APP_ADDRESS = 'localhost:3000';
+const SCHEDULE_APPOINTMENT_BUTTON_SELECTOR = '.schedule-appointment-button';
 
 const requiredModules = [initialState, server, browser];
 
@@ -12,19 +13,27 @@ jest.setTimeout(500000);
 beforeAll(() => setupInOrder(requiredModules));
 afterAll(() => teardownInOrder(R.reverse(requiredModules)));
 
-
 const USER_DATA = {
     email: '',
     password: '',
 };
 
+function escapeSelectorCharacters(x) {
+    return x.replace(/:/g, '\\:').replace(/\./, '\\\.');
+}
+
 function getSelectorForTestId(testId) {
     return `[data-test="${testId}"]`;
 }
 
-async function signInFromSignInPage(user) {
+function getGuaranteedOpenSpotSelector(state) {
+    return escapeSelectorCharacters(`#os_${state.data.schedules[0].time}`);
+}
+
+async function signinFromSignInPage(user) {
     async function performProviderSignin() {
         // Provider sign-in page
+        await browser.page.waitFor(1000); // redirect
         await browser.page.waitForSelector('input[type=email]');
         await browser.page.type('input[type=email]', user.email);
         await browser.page.click('input[type=submit]');
@@ -77,7 +86,7 @@ async function ensureUserAuthStateAndNavigateToHomePage(user, { hasToBeSignedIn 
     if (hasToBeSignedIn && !isUserSignedIn) {
         // must sign in
         await browser.page.click(getSelectorForTestId(browser.TEST_ID.SIGNIN_LINK));
-        await signInFromSignInPage(user);
+        await signinFromSignInPage(user);
     } else if (!hasToBeSignedIn && isUserSignedIn) {
         // must sign out
         await browser.page.click(getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK));
@@ -121,17 +130,39 @@ describe('appointment scheduling screen', () => {
 
         describe('selection of an open spot and following sign in followed by', () => {
             it('a phone number request modal for a user with no phone number listed following a scheduling modal if a user has no phone number', async (done) => {
-                await browser.page.waitForSelector('.schedule-appointment-button');
-                await browser.page.click('.schedule-appointment-button');
+                const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(initialState);
 
-                await browser.page.waitFor(5000);
+                // at /
+                await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+                await browser.page.click(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+
+                // at /schedule
+                await selectGuaranteedCourseOnSchedulingPage();
+                await browser.page.waitForSelector(guaranteedOpenSpotSelector);
+                await browser.page.click(guaranteedOpenSpotSelector);
+
+                // at /signin
+                await signinFromSignInPage(USER_DATA);
+
+                // phone number modal
+                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD));
+                await browser.page.type(getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD), initialState.data.fakeData.phoneNumber);
+                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
+
+                // tutor selection modal
+                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT));
+                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
+
+                // confirmation modal
+                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
+                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
 
                 done();
             });
 
             it('a scheduling modal if a user has a phone number', async (done) => {
-                await browser.page.waitForSelector('.schedule-appointment-button');
-                await browser.page.click('.schedule-appointment-button');
+                await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+                await browser.page.click(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
 
                 await browser.page.waitFor(5000);
 
@@ -148,8 +179,8 @@ describe('appointment scheduling screen', () => {
 
         describe('selection of an open spot and following sign in followed by', () => {
             it('a phone number request modal for a user with no phone number listed following a scheduling modal for user without phone number', async (done) => {
-                await browser.page.waitForSelector('.schedule-appointment-button');
-                await browser.page.click('.schedule-appointment-button');
+                await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+                await browser.page.click(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
 
                 await browser.page.waitFor(5000);
 
@@ -157,8 +188,8 @@ describe('appointment scheduling screen', () => {
             });
 
             it('a scheduling modal if a user has a phone number', async (done) => {
-                await browser.page.waitForSelector('.schedule-appointment-button');
-                await browser.page.click('.schedule-appointment-button');
+                await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+                await browser.page.click(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
 
                 await browser.page.waitFor(5000);
 
