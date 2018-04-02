@@ -15,6 +15,7 @@ import { getUserProfile } from '../../profile/actions';
 import { signoutUser } from '../../../auth/actions';
 
 import { TIMESTAMP_DISPLAY_FORMAT, RANDOM_TUTOR } from '../../constants';
+import { TEST_ID } from '../../../constants';
 
 class TutorSelectionModal extends Component {
     constructor(props) {
@@ -111,6 +112,7 @@ class TutorSelectionModal extends Component {
 
                 <FilterControls options={getTutorOptions(this.state)}
                                 disableNullOption
+                                testId={TEST_ID.MODAL_TUTOR_SELECT}
                                 label="Select your tutor"
                                 currentValue={this.state.requestedTutor ? this.state.requestedTutor.id : null}
                                 onChange={onTutorSelect}
@@ -127,6 +129,7 @@ class TutorSelectionModal extends Component {
                     <button onClick={this.props.onRequestClose.bind(this)}
                             className="destructive">Cancel</button>
                     <button onClick={onScheduleAppointment}
+                            data-test={TEST_ID.MODAL_SUBMIT_BUTTON}
                             className="nondestructive">Schedule</button>
                 </div>
             </Modal>

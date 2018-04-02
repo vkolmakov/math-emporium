@@ -10,6 +10,7 @@ import { displayLoadingModal,
          getAvailableTutors } from '../actions';
 
 import { isPotentialPhoneNumber } from '../../../utils';
+import { TEST_ID } from '../../../constants';
 
 class MiniProfileForm extends Component {
     constructor() {
@@ -103,6 +104,7 @@ class MiniProfileForm extends Component {
                 label: 'Phone number',
                 input: {
                     type: 'text',
+                    testId: TEST_ID.MODAL_PHONE_NUMBER_FIELD,
                     binding: {
                         onChange: e => this.setState({ phoneNumber: e.target.value }),
                         value: this.state.phoneNumber,
@@ -156,7 +158,8 @@ export default class ProfileModal extends Component {
                 <button onClick={onRequestClose}
                         className="destructive">Cancel</button>
                 <button onClick={() => this.profileFormRef.onFormSubmit()}
-                  className="nondestructive">Submit</button>
+                        data-test={TEST_ID.MODAL_SUBMIT_BUTTON}
+                        className="nondestructive">Submit</button>
               </div>
             </Modal>
         );
