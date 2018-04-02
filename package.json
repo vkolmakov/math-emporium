@@ -18,7 +18,7 @@
     "dev:server": "npm run build:production && cross-env NODE_ENV=dev nodemon -w ./ -x npm run start",
     "test:unit": "jest -o --verbose || true",
     "test:unit:all": "jest",
-    "test:integration:all": "npm run build:production && cross-env NODE_ENV=test jest ./test/integration/**"
+    "test:integration:all": "npm run build:production && cross-env NODE_ENV=test jest ./test/integration/** --runInBand"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
