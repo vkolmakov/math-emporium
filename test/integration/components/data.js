@@ -90,3 +90,7 @@ export const getTutorCourseLinks = (tutors) => tutors
     .filter((tutor) => tutor.locationId === GUARANTEED_ITEMS.LOCATION)
     // guarantee that tutors from a known location can tutor a known course
     .map((tutor) => ({ tutorId: tutor.id, courseId: GUARANTEED_ITEMS.COURSE }));
+
+export const fakeData = {
+    phoneNumber: faker.phone.phoneNumberFormat(),
+};

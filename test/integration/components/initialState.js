@@ -17,6 +17,10 @@ const initialState = {
         tutorCourseLinks: [],
         schedules: [],
 
+        fakeData: {
+            phoneNumber: '',
+        },
+
         GUARANTEED_ITEMS: {
             LOCATION: null,
             SUBJECT: null,
@@ -43,6 +47,10 @@ const initialState = {
             initialState.data.tutors,
             [dayFromNow]
         );
+
+        initialState.data.fakeData = {
+            phoneNumber: data.fakeData.phoneNumber,
+        };
 
         initialState.data.GUARANTEED_ITEMS = data.GUARANTEED_ITEMS;
     },
