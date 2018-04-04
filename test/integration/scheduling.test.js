@@ -127,6 +127,9 @@ describe('appointment scheduling screen', () => {
             it('a phone number request modal for a user with no phone number listed following a scheduling modal if a user has no phone number', async (done) => {
                 const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(applicationState);
 
+                // setup
+                await applicationState.setUserState({ shouldHavePhoneNumber: false });
+
                 // execution
                 // at /
                 await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
@@ -157,7 +160,33 @@ describe('appointment scheduling screen', () => {
             });
 
             it('a scheduling modal if a user has a phone number', async (done) => {
+                const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(applicationState);
 
+                // setup
+                await applicationState.setUserState({ shouldHavePhoneNumber: true });
+
+                // execution
+                // at /
+                await browser.page.waitForSelector(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+                await browser.page.click(SCHEDULE_APPOINTMENT_BUTTON_SELECTOR);
+
+                // at /schedule
+                await selectGuaranteedCourseOnSchedulingPage();
+                await browser.page.waitForSelector(guaranteedOpenSpotSelector);
+                await browser.page.click(guaranteedOpenSpotSelector);
+
+                // at /signin
+                await signinFromSignInPage(applicationState.USER);
+
+                // tutor selection modal
+                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT));
+                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
+
+                // confirmation modal
+                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
+                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
+
+                done();
             });
         });
     });
