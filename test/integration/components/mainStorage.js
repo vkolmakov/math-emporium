@@ -73,6 +73,7 @@ const mainStorage = {
         Subject: null,
         Course: null,
         Tutor: null,
+        User: null,
     },
 
     async setup() {
@@ -88,6 +89,7 @@ const mainStorage = {
         mainStorage.models.Subject = _mainStorage.db.models.subject;
         mainStorage.models.Course = _mainStorage.db.models.course;
         mainStorage.models.Tutor = _mainStorage.db.models.tutor;
+        mainStorage.models.User = _mainStorage.db.models.user;
 
         return Promise.resolve();
     },
