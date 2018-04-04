@@ -6,6 +6,9 @@ import mainStorage from './mainStorage';
 import calendar from './calendar';
 import * as data from './data';
 
+const USER_EMAIL = '';
+const USER_PASSWORD = '';
+
 const applicationState = {
     name: 'initial-state',
 
@@ -16,9 +19,10 @@ const applicationState = {
         locations: [],
         tutorCourseLinks: [],
         schedules: [],
+        users: [{ email: USER_EMAIL, group: 1, firstName: 'John', lastName: 'Doe' }],
 
         fakeData: {
-            phoneNumber: '',
+            phoneNumber: '12312312345',
         },
 
         GUARANTEED_ITEMS: {
@@ -28,8 +32,8 @@ const applicationState = {
         },
 
         USER: {
-            email: '',
-            password: '',
+            email: USER_EMAIL,
+            password: USER_PASSWORD,
         },
     },
 
@@ -53,10 +57,6 @@ const applicationState = {
             [dayFromNow]
         );
 
-        applicationState.data.fakeData = {
-            phoneNumber: data.fakeData.phoneNumber,
-        };
-
         applicationState.data.GUARANTEED_ITEMS = data.GUARANTEED_ITEMS;
     },
 
@@ -69,6 +69,7 @@ const applicationState = {
         applicationState._initializeData();
 
         await expandThunksInOrder([
+            mainStorage.insertRecords(mainStorage.models.User, applicationState.data.users),
             mainStorage.insertRecords(mainStorage.models.Location, applicationState.data.locations),
             mainStorage.insertRecords(mainStorage.models.Subject, applicationState.data.subjects),
             mainStorage.insertRecords(mainStorage.models.Course, applicationState.data.courses),
@@ -92,7 +93,7 @@ const applicationState = {
         const updatedData = {};
         updatedData.phone = shouldHavePhoneNumber ? applicationState.data.fakeData.phoneNumber : (void 0);
 
-        const user = await mainStorage.models.User.findOne({ where: { email: applicationState.USER.email } });
+        const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
         return user.update(updatedData);
     },
 };

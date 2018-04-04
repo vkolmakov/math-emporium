@@ -119,7 +119,7 @@ describe('appointment scheduling screen', () => {
 
     describe('for non-signed in user', () => {
         beforeEach(async (done) => {
-            await ensureUserAuthStateAndNavigateToHomePage(applicationState.USER, { hasToBeSignedIn: false });
+            await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: false });
             done();
         });
 
@@ -141,7 +141,7 @@ describe('appointment scheduling screen', () => {
                 await browser.page.click(guaranteedOpenSpotSelector);
 
                 // at /signin
-                await signinFromSignInPage(applicationState.USER);
+                await signinFromSignInPage(applicationState.data.USER);
 
                 // phone number modal
                 await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD));
@@ -176,7 +176,7 @@ describe('appointment scheduling screen', () => {
                 await browser.page.click(guaranteedOpenSpotSelector);
 
                 // at /signin
-                await signinFromSignInPage(applicationState.USER);
+                await signinFromSignInPage(applicationState.data.USER);
 
                 // tutor selection modal
                 await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT));
@@ -193,7 +193,7 @@ describe('appointment scheduling screen', () => {
 
     describe('for signed in user', () => {
         beforeEach(async (done) => {
-            await ensureUserAuthStateAndNavigateToHomePage(applicationState.USER, { hasToBeSignedIn: true });
+            await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: true });
             done();
         });
 
