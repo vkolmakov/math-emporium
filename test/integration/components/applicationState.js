@@ -10,8 +10,14 @@ const USER_EMAIL = '';
 const USER_PASSWORD = '';
 
 const applicationState = {
-    name: 'initial-state',
+    name: 'application-state',
 
+    // will change throughout the course of running tests
+    state: {
+        appointments: [],
+    },
+
+    // should not change over the course of running tests after initialization
     data: {
         subjects: [],
         courses: [],
@@ -95,6 +101,12 @@ const applicationState = {
 
         const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
         return user.update(updatedData);
+    },
+
+    async syncAppointmentsFromCalendar() {
+        const appointments = await calendar.getAppointments(applicationState.data.schedules);
+        applicationState.state.appointments = appointments;
+        return Promise.resolve();
     },
 };
 
