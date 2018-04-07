@@ -37,6 +37,15 @@ const calendar = {
         return Promise.all(schedules.map(createEvent));
     },
 
+    removeAppointments(appointments) {
+        const removeAppointment = (appointment) => calendar._calendarService.deleteCalendarEvent({
+            calendarId: appointment.calendarId,
+            eventId: appointment.eventId,
+        });
+
+        return Promise.all(appointments.map(removeAppointment));
+    },
+
     getAppointments(schedules) {
         const getAppointments = (schedule) => {
             return calendar._calendarService.getCalendarEvents(
@@ -58,6 +67,7 @@ const calendar = {
                     : {
                         summary: calendarEvent.summary,
                         eventId: calendarEvent.id,
+                        calendarId: calendar.testCalendarId,
                     };
             };
 
