@@ -4,6 +4,11 @@ import { calendarService } from '../../../server/services/googleApis';
 
 const APPOINTMENT_LENGTH = 60;
 
+const getScheduleEndTimeString = (schedule) => moment(schedule.time).add(APPOINTMENT_LENGTH, 'minutes').toISOString();
+const getScheduleStartTimeString = (schedule) => moment(schedule.time).toISOString();
+const createScheduleSummary = (schedule) => `_2(${schedule.tutors.map((t) => t.name).join('_')})`;
+const isSchedulePlaceholderSummary = (summary) => summary.startsWith('_');
+
 const calendar = {
     _calendarService: null,
     testCalendarId: null,
@@ -22,18 +27,46 @@ const calendar = {
     },
 
     insertSchedules(schedules) {
-        const getEndTimeString = (time) => moment(time).add(APPOINTMENT_LENGTH, 'minutes').toISOString();
-        const getStartTimeString = (time) => moment(time).toISOString();
-        const createSummary = (schedule) => `_2(${schedule.tutors.map((t) => t.name).join('_')})`;
-
         const createEvent = (schedule) => calendar._calendarService.createCalendarEvent({
             calendarId: calendar.testCalendarId,
-            startTime: getStartTimeString(schedule.time),
-            endTime: getEndTimeString(schedule.time),
-            summary: createSummary(schedule),
+            startTime: getScheduleStartTimeString(schedule),
+            endTime: getScheduleEndTimeString(schedule),
+            summary: createScheduleSummary(schedule),
         });
 
         return Promise.all(schedules.map(createEvent));
+    },
+
+    getAppointments(schedules) {
+        const getAppointments = (schedule) => {
+            return calendar._calendarService.getCalendarEvents(
+                calendar.testCalendarId,
+                getScheduleStartTimeString(schedule),
+                getScheduleEndTimeString(schedule),
+                { useCache: false }
+            ).then(((result) =>
+                result.map((event) => ({ id: event.id, summary: event.summary }))
+            ));
+        };
+
+        const transformCalendarEvents = (acc, calendarEvents) => {
+            const transformSingleCalendarEvent = (calendarEvent) => {
+                const isSchedulePlaceholder = isSchedulePlaceholderSummary(calendarEvent.summary);
+
+                return isSchedulePlaceholder
+                    ? null
+                    : {
+                        summary: calendarEvent.summary,
+                        eventId: calendarEvent.id,
+                    };
+            };
+
+            return [...acc,
+                    ...calendarEvents.map(transformSingleCalendarEvent).filter((appointment) => appointment !== null)];
+        };
+
+        return Promise.all(schedules.map(getAppointments))
+            .then((appointments) => appointments.reduce(transformCalendarEvents, []));
     },
 
     _deleteTestCalendar() {
