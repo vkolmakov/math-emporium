@@ -95,11 +95,35 @@ const applicationState = {
         ]);
     },
 
-    async setUserState({ shouldHavePhoneNumber }) {
+    async setUserState({ shouldHavePhoneNumber, ensureNoAppointments }) {
+        const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
+
         const updatedData = {};
         updatedData.phone = shouldHavePhoneNumber ? applicationState.data.fakeData.phoneNumber : (void 0);
 
-        const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
+        if (ensureNoAppointments) {
+            const getAppointments = (userData) => {
+                let appointments = [];
+                if (!!userData.googleCalendarAppointmentId && !!userData.googleCalendarId) {
+                    appointments = appointments.concat([{
+                        calendarId: userData.googleCalendarId,
+                        eventId: userData.googleCalendarAppointmentId,
+                    }]);
+                }
+
+                return appointments;
+            };
+
+            const currentlyScheduledAppointments = getAppointments(user);
+
+            await calendar.removeAppointments(currentlyScheduledAppointments);
+            await applicationState.syncAppointmentsFromCalendar();
+
+            updatedData.googleCalendarAppointmentId = null;
+            updatedData.googleCalendarId = null;
+            updatedData.googleCalendarAppointmentDate = null;
+        }
+
         return user.update(updatedData);
     },
 

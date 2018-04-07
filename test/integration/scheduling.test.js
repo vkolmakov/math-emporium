@@ -120,6 +120,7 @@ describe('appointment scheduling screen', () => {
     describe('for non-signed in user', () => {
         beforeEach(async (done) => {
             await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: false });
+            await applicationState.setUserState({ ensureNoAppointments: true });
             done();
         });
 
