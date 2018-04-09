@@ -174,6 +174,15 @@ describe('appointment scheduling screen', () => {
 
                 // tutor selection modal
                 await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT));
+
+                // assert that all available tutors are selectable
+                const presentTutorNames = await browser.page.$eval(
+                    getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT),
+                    (element) => Array.from(element.options).map((option) => option.text.toLowerCase()));
+                const isEveryTutorNamePresent = applicationState.data.tutorsAvailableForGuaranteedOpenSpot.every(
+                    (tutor) => presentTutorNames.includes(tutor.name.toLowerCase()));
+                expect(isEveryTutorNamePresent).toBe(true);
+
                 await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
 
                 // confirmation modal
