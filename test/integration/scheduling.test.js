@@ -112,6 +112,24 @@ async function selectGuaranteedCourseOnSchedulingPage() {
     return browser.page.waitForSelector('.open-spots-display');
 }
 
+function areIncludedInAppointmentSummary({ userId, courseId }) {
+    const course = applicationState.data.courses.find((course) => course.id === courseId);
+    const user = applicationState.data.users.find((user) => user.id === userId);
+    const tutorNames = applicationState.data.tutorsAvailableForGuaranteedOpenSpot.map((tutor) => tutor.name);
+    const expectedSummaryTokens = [tutorNames, course.code, user.firstName];
+
+    return (appointment) => {
+        const summaryHasToken = (token) => appointment.summary.toLowerCase().includes(token.toLowerCase());
+
+        return expectedSummaryTokens.every((tokenOrCollectionOfTokens) => {
+            if (Array.isArray(tokenOrCollectionOfTokens)) {
+                return tokenOrCollectionOfTokens.some(summaryHasToken);
+            }
+            return summaryHasToken(tokenOrCollectionOfTokens);
+        });
+    };
+}
+
 describe('appointment scheduling screen', () => {
     it('displays available appointments', () => {
 
@@ -121,6 +139,11 @@ describe('appointment scheduling screen', () => {
         beforeEach(async (done) => {
             await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: false });
             await applicationState.setUserState({ ensureNoAppointments: true });
+            done();
+        });
+
+        afterAll(async (done) => {
+            await applicationState.setUserState({ ensureNoAppointments: true, shouldHavePhoneNumber: false });
             done();
         });
 
@@ -156,6 +179,17 @@ describe('appointment scheduling screen', () => {
                 // confirmation modal
                 await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
                 await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
+
+                // assert correct list of appointments
+                await applicationState.syncAppointmentsFromCalendar();
+                const isScheduledAppointmentPresentInCalendarWithCorrectSummary = applicationState.state.appointments.some(
+                    areIncludedInAppointmentSummary({
+                        courseId: applicationState.data.GUARANTEED_ITEMS.COURSE,
+                        userId: applicationState.data.USER.id,
+                    })
+                );
+                expect(applicationState.state.appointments.length).toBe(1);
+                expect(isScheduledAppointmentPresentInCalendarWithCorrectSummary).toBe(true);
 
                 done();
             });

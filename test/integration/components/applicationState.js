@@ -25,7 +25,8 @@ const applicationState = {
         locations: [],
         tutorCourseLinks: [],
         schedules: [],
-        users: [{ email: USER_EMAIL, group: 1, firstName: 'John', lastName: 'Doe' }],
+        tutorsAvailableForGuaranteedOpenSpot: [],
+        users: [{ id: 1, email: USER_EMAIL, group: 1, firstName: 'John', lastName: 'Doe' }],
 
         fakeData: {
             phoneNumber: '12312312345',
@@ -40,6 +41,8 @@ const applicationState = {
         USER: {
             email: USER_EMAIL,
             password: USER_PASSWORD,
+            id: 1,
+            firstName: 'John',
         },
     },
 
@@ -64,6 +67,8 @@ const applicationState = {
         );
 
         applicationState.data.GUARANTEED_ITEMS = data.GUARANTEED_ITEMS;
+        // assumption is that tutors from guaranteed location can tutor a known course
+        applicationState.data.tutorsAvailableForGuaranteedOpenSpot = applicationState.data.schedules[0].tutors;
     },
 
     async setup() {
