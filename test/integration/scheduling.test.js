@@ -149,6 +149,15 @@ describe('appointment scheduling screen', () => {
 
         describe('selection of an open spot and following sign in followed by', () => {
             it('a phone number request modal for a user with no phone number listed following a scheduling modal if a user has no phone number', async (done) => {
+                const selectors = {
+                    modalPhoneNumberField: getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD),
+                    modalSubmitButton: getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON),
+                    modalTutorSelect: getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT),
+                    modalCloseButton: getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON),
+                };
+
+                const { USER, GUARANTEED_ITEMS, tutorsAvailableForGuaranteedOpenSpot, fakeData } = applicationState.data;
+
                 const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(applicationState);
 
                 // setup
@@ -165,39 +174,40 @@ describe('appointment scheduling screen', () => {
                 await browser.page.click(guaranteedOpenSpotSelector);
 
                 // at /signin
-                await signinFromSignInPage(applicationState.data.USER);
+                await signinFromSignInPage(USER);
 
                 // phone number modal
-                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD));
-                await browser.page.type(getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD), applicationState.data.fakeData.phoneNumber);
-                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
+                await browser.page.waitForSelector(selectors.modalPhoneNumberField);
+                await browser.page.type(selectors.modalPhoneNumberField, fakeData.phoneNumber);
+                await browser.page.click(selectors.modalSubmitButton);
 
                 // tutor selection modal
-                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT));
+                await browser.page.waitForSelector(selectors.modalTutorSelect);
 
                 // assert that all available tutors are selectable
                 const presentTutorNames = await browser.page.$eval(
-                    getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT),
+                    selectors.modalTutorSelect,
                     (element) => Array.from(element.options).map((option) => option.text.toLowerCase()));
-                const isEveryTutorNamePresent = applicationState.data.tutorsAvailableForGuaranteedOpenSpot.every(
+                const isEveryTutorNamePresent = tutorsAvailableForGuaranteedOpenSpot.every(
                     (tutor) => presentTutorNames.includes(tutor.name.toLowerCase()));
                 expect(isEveryTutorNamePresent).toBe(true);
 
-                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON));
+                await browser.page.click(selectors.modalSubmitButton);
 
                 // confirmation modal
-                await browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
-                await browser.page.click(getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON));
+                await browser.page.waitForSelector(selectors.modalCloseButton);
+                await browser.page.click(selectors.modalCloseButton);
 
                 // assert correct list of appointments
                 await applicationState.syncAppointmentsFromCalendar();
-                const isScheduledAppointmentPresentInCalendarWithCorrectSummary = applicationState.state.appointments.some(
+                const currentAppointments = applicationState.state.appointments;
+                const isScheduledAppointmentPresentInCalendarWithCorrectSummary = currentAppointments.some(
                     areIncludedInAppointmentSummary({
-                        courseId: applicationState.data.GUARANTEED_ITEMS.COURSE,
-                        userId: applicationState.data.USER.id,
+                        courseId: GUARANTEED_ITEMS.COURSE,
+                        userId: USER.id,
                     })
                 );
-                expect(applicationState.state.appointments.length).toBe(1);
+                expect(currentAppointments.length).toBe(1);
                 expect(isScheduledAppointmentPresentInCalendarWithCorrectSummary).toBe(true);
 
                 done();
