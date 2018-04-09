@@ -104,7 +104,7 @@ const applicationState = {
         const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
 
         const updatedData = {};
-        updatedData.phone = shouldHavePhoneNumber ? applicationState.data.fakeData.phoneNumber : (void 0);
+        updatedData.phoneNumber = shouldHavePhoneNumber ? applicationState.data.fakeData.phoneNumber : null;
 
         if (ensureNoAppointments) {
             const getAppointments = (userData) => {
