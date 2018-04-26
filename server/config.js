@@ -1,3 +1,5 @@
+const { NODE_ENV_VALUE } = require('./constants');
+
 const timeUnits = {
     minutes: (n) => n * 60 * 1000,
     hours: (n) => timeUnits.minutes(60 * n),
@@ -13,7 +15,7 @@ function getSessionLength(rawSessionLength) {
 
 module.exports = {
     HOSTNAME: process.env.HOSTNAME || 'http://localhost:3000',
-    IS_PRODUCTION: process.env.NODE_ENV === 'production',
+    IS_PRODUCTION: process.env.NODE_ENV === NODE_ENV_VALUE.PRODUCTION,
     PORT: process.env.PORT || 3000,
     SECRET: process.env.SECRET || 'this is supersecret',
     SESSION_LENGTH: getSessionLength(process.env.SESSION_LENGTH),
@@ -23,7 +25,7 @@ module.exports = {
         NAME: process.env.EMAIL_NAME,
     },
     db: {
-        NAME: process.env.DB_NAME || 'mathcenterapp_main_dev',
+        NAME: process.env.DB_NAME || `mathcenterapp_main_${process.env.NODE_ENV}`,
         USER: process.env.DB_USER || 'postgres',
         PASSWORD: process.env.DB_PASSWORD || '',
         PORT: process.env.DB_PORT || null,
@@ -39,7 +41,7 @@ module.exports = {
         CALLBACK: process.env.AZURE_CALLBACK,
     },
     eventStorage: {
-        URL: process.env.EVENTSTORAGE_URL || 'mongodb://localhost/mathcenterapp_eventstorage_dev',
+        URL: process.env.EVENTSTORAGE_URL || `mongodb://localhost/mathcenterapp_eventstorage_${process.env.NODE_ENV}`,
         USER: process.env.EVENTSTORAGE_USER || null,
         PASSWORD: process.env.EVENTSTORAGE_PASSWORD || null,
     },

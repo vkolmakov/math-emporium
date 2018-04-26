@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { AUTH_GROUPS } from '../../../constants';
+import { AUTH_GROUPS, TEST_ID } from '../../../constants';
 import { createClassName } from '../../../utils';
 
 function isSelected(currentPath, linkPath) {
@@ -9,12 +9,13 @@ function isSelected(currentPath, linkPath) {
     return linkPath === `/${currentTab[1]}`; // account for the leading '/'
 }
 
-const navLinkConstructor = (currentRouterPath) => ({ to, className, children }) => {
+const navLinkConstructor = (currentRouterPath) => ({ to, className, children, testId }) => {
     const text = children;
 
     return (
         <Link to={to}
               key={to}
+              data-test={testId}
               data-text={text}
               className={createClassName(['nav-link', className, isSelected(currentRouterPath, to) ? 'selected' : ''])}>{text}</Link>
     );
@@ -56,8 +57,8 @@ class Navbar extends Component {
     }
     authLinks() {
         return this.props.authenticated
-            ? [{ to: '/signout', className: 'auth-link', children: `Sign out (${this.props.email})` }]
-            : [{ to: '/signin', className: 'auth-link', children: 'Sign in' }];
+            ? [{ to: '/signout', className: 'auth-link', children: `Sign out (${this.props.email})`, testId: TEST_ID.SIGNOUT_LINK }]
+            : [{ to: '/signin', className: 'auth-link', children: 'Sign in', testId: TEST_ID.SIGNIN_LINK }];
     }
 }
 

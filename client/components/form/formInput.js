@@ -3,7 +3,7 @@ import Select from '../select/reactSelectWrapper';
 
 import ColorIcon from '../colorIcon';
 
-export default ({ type, binding, options, onSelect, controlValue, placeholder, ...rest }) => {
+export default ({ type, testId, binding, options, onSelect, controlValue, placeholder, ...rest }) => {
     let inputElement;
 
     const textInputTypes = ['text', 'password', 'email', 'textarea'];
@@ -17,11 +17,19 @@ export default ({ type, binding, options, onSelect, controlValue, placeholder, .
 
         if (type === 'textarea') {
             inputElement = (
-                <textarea style={{ resize: 'vertical' }} rows={3} value={value} {...binding}></textarea>
+                <textarea style={{ resize: 'vertical' }}
+                          rows={3}
+                          value={value}
+                          data-test={testId}
+                          {...binding}></textarea>
             );
         } else {
             inputElement = (
-                <input type={type} value={value} {...binding} placeholder={placeholder} />
+                <input type={type}
+                       value={value}
+                       placeholder={placeholder}
+                       data-test={testId}
+                       {...binding}/>
             );
         }
 

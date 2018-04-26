@@ -26,6 +26,7 @@ import webpackConfig from '../webpack.config';
 import morgan from 'morgan';
 
 import config from './config';
+import { CLI_OPTIONS } from './constants';
 
 
 function connectToEventStorageDatabase() {
@@ -70,7 +71,7 @@ function connectToEventStorageDatabase() {
     const port = config.PORT;
 
     const isProduction = config.IS_PRODUCTION;
-    const isDevClient = !isProduction && process.env.NODE_ENV !== 'serverdev';
+    const isDevClient = !!process.argv.find((a) => a === CLI_OPTIONS.DEV_CLIENT);
 
     if (isDevClient) {
         // allow mimetype sniffing for client-side development

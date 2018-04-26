@@ -43,7 +43,7 @@ class CalendarService {
 
     getCalendarEvents(calendarId, startDate, endDate, options) {
         const { useCache } = options;
-        const pickRequiredFields = R.pick(['summary', 'start']);
+        const pickRequiredFields = R.pick(['summary', 'start', 'id']);
 
         const fetchEvents = () => new Promise((resolve, reject) => {
             this.calendar.events.list({
