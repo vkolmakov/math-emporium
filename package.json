@@ -16,8 +16,8 @@
     "production": "cross-env NODE_ENV=production npm run start",
     "dev:client": "cross-env NODE_ENV=dev npm run start -- -dev-client",
     "dev:server": "npm run build:production && cross-env NODE_ENV=dev nodemon -w ./ -x npm run start",
-    "test:unit": "jest -o --verbose || true",
-    "test:unit:all": "jest",
+    "test:unit": "cross-env NODE_ENV=test jest -o --verbose || true",
+    "test:unit:all": "cross-env NODE_ENV=test jest",
     "test:integration:all": "npm run build:production && cross-env NODE_ENV=test jest ./test/integration/** --runInBand"
   },
   "devDependencies": {
