@@ -13,7 +13,7 @@ export default function createScheduledAppointmentRouter() {
 
     router.post('/scheduled-appointment',
                 requireGroup(authGroups.USER),
-                controller.create.bind(controller));
+                (req, res, next) => controller.create()(req, res, next));
     router.delete('/scheduled-appointment',
                   requireGroup(authGroups.USER),
                   controller.delete.bind(controller));
