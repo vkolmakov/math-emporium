@@ -11,6 +11,7 @@ import createCrudRouter from './routes/crudRouter';
 import createAuthRouter from './routes/authRouter';
 import createUtilRouter from './routes/utilRouter';
 import createUserRouter from './routes/userRouter';
+import createScheduledAppointmentRouter from './routes/scheduledAppointmentRouter';
 import createManageUserRouter from './routes/manageUserRouter';
 
 import { connectToEventStorage } from './services/eventStorage';
@@ -119,6 +120,7 @@ function connectToEventStorageDatabase() {
     app.use('/api', createAuthRouter());
     app.use('/api', createUtilRouter());
     app.use('/api', createManageUserRouter());
+    app.use('/api', createScheduledAppointmentRouter());
 
     app.use(errorHandler);
 
