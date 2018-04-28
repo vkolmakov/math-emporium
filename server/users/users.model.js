@@ -43,15 +43,6 @@ export default function createUserModel(sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             defaultValue: authGroups.USER,
         },
-        googleCalendarAppointmentId: {
-            type: DataTypes.STRING,
-        },
-        googleCalendarAppointmentDate: {
-            type: DataTypes.DATE,
-        },
-        googleCalendarId: {
-            type: DataTypes.STRING,
-        },
         lastSigninAt: {
             type: DataTypes.DATE,
         },
