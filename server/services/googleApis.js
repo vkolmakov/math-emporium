@@ -35,10 +35,12 @@ class CalendarService {
         this.isInitialized = false;
     }
 
-    async initialize() {
-        this.auth = await getAuth('calendar');
-        this.calendar = googleapis.calendar('v3');
-        this.isInitialized = true;
+    initialize() {
+        getAuth('calendar').then((auth) => {
+            this.auth = auth;
+            this.calendar = googleapis.calendar('v3');
+            this.isInitialized = true;
+        });
     }
 
     getCalendarEvents(calendarId, startDate, endDate, options) {
@@ -124,11 +126,16 @@ class CalendarService {
 }
 
 const _calendarService = new CalendarService();
+_calendarService.initialize();
 
 export async function calendarService() {
     if (!_calendarService.isInitialized) {
         await _calendarService.initialize();
     }
 
+    return _calendarService;
+}
+
+export function calendarServiceFactory() {
     return _calendarService;
 }
