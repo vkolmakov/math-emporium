@@ -19,10 +19,8 @@ export default (mainStorage, calendarService) => ({
         };
     },
 
-    createAppointment(user, appointmentData) {
-        const createGoogleCalendarAppointment = (location, course, tutor) => {
-            const { time, comments } = appointmentData;
-
+    createAppointment(user, completeAppointmentData) {
+        const createGoogleCalendarAppointment = ({ location, course, tutor, comments, time }) => {
             const calendarId = location.calendarId;
 
             const startTime = new Date(time);
@@ -48,29 +46,33 @@ export default (mainStorage, calendarService) => ({
             });
         };
 
-        const { subject, tutor, time, comments } = appointmentData; // shallow objects
-        const googleCalendarAppointmentId = 'test';
-        const googleCalendarAppointmentDate = time;
-        const googleCalendarId = 'test';
+        const saveAppointment = ({ googleCalendarAppointmentId, time, location, subject, course, tutor }) => {
+            const googleCalendarAppointmentDate = time;
+            const googleCalendarId = location.calendarId;
 
-        return Promise.all([
-            mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } }),
-            mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id } }),
-            mainStorage.db.models.tutor.findOne({ where: { id: appointmentData.tutor.id } }),
-        ]).then(([location, course, tutor]) => {
-            return createGoogleCalendarAppointment(location, course, tutor);
-        });
+            const appointment = mainStorage.db.models.scheduledAppointment.build({
+                userId: user.id,
+                subjectId: subject.id,
+                courseId: course.id,
+                locationId: location.id,
+                tutorId: tutor.id,
+                googleCalendarAppointmentId,
+                googleCalendarAppointmentDate,
+                googleCalendarId,
+            });
+            return appointment.save();
+        };
 
-        // const appointment = mainStorage.db.models.scheduledAppointment.build({
-        //     userId: user.id,
-        //     subjectId: subject.id,
-        //     courseId: course.id,
-        //     locationId: location.id,
-        //     tutorId: tutor.id,
-        //     googleCalendarAppointmentId,
-        //     googleCalendarAppointmentDate,
-        //     googleCalendarId,
-        // });
-        // return appointment.save();
+        const { subject, course, location, tutor, time, comments } = completeAppointmentData;
+
+        return createGoogleCalendarAppointment({ location, course, tutor, comments, time })
+            .then((result) => saveAppointment({
+                googleCalendarAppointmentId: result.id,
+                time,
+                location,
+                subject,
+                course,
+                tutor,
+            }));
     },
 });
