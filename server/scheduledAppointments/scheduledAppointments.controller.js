@@ -56,7 +56,7 @@ export default class ScheduledAppointmentsController {
             tutorPromise,
         ]).then(([userAppointments, locations, location, course, tutor]) => {
             const completeAppointmentData = {
-                ...appointmentData,
+                comments: appointmentData.comments,
                 time: dateTime.parse(appointmentData.time),
                 location,
                 course,
