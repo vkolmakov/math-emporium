@@ -1,4 +1,5 @@
 import * as _R from 'ramda';
+import * as _dateFns from 'date-fns';
 import { create, env } from 'sanctuary';
 
 const _S = create({ checkTypes: false, env });
@@ -119,3 +120,23 @@ export const R = {
 };
 
 export const trace = msg => x => { console.log(msg, x); return x; };
+
+export const dateTime = {
+    now(timezone = TIMEZONE) {
+        const now = new Date();
+        now.setTimezone(timezone);
+        return now;
+    },
+
+    formatVisible(dt) {
+        return _dateFns.format(dt, TIMESTAMP_VISIBLE_FORMAT);
+    },
+
+    parse(other) {
+        return _dateFns.parse(other);
+    },
+
+    addMinutes(dt, minutes) {
+        return _dateFns.addMinutes(dt, minutes);
+    },
+};

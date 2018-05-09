@@ -1,3 +1,4 @@
+import { dateTime } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 
@@ -9,7 +10,7 @@ export default class ScheduledAppointmentsController {
 
     create(req, res, next) {
         const scheduleOrRejectAppointment = (userAppointments, locations, completeAppointmentData) => {
-            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, new Date());
+            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, dateTime.now());
             const { reason, canCreateAppointment } = this.helper.canCreateAppointment(existingAppointments, locations);
 
             let result;
@@ -56,7 +57,7 @@ export default class ScheduledAppointmentsController {
         ]).then(([userAppointments, locations, location, course, tutor]) => {
             const completeAppointmentData = {
                 ...appointmentData,
-                time: new Date(appointmentData.time),
+                time: dateTime.parse(appointmentData.time),
                 location,
                 course,
                 tutor,
