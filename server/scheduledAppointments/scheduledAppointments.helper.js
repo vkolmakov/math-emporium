@@ -1,6 +1,13 @@
-import { addMinutes } from 'date-fns';
+import { TIMEZONE, TIMESTAMP_VISIBLE_FORMAT } from '../aux';
+import { addMinutes, format, parse } from 'date-fns';
 
 const APPOINTMENT_LENGTH = 60;
+
+const formatTime = (time) => {
+    const localizedTime = parse(time); // to avoid mutating time object
+    localizedTime.setTimezone(TIMEZONE);
+    return format(localizedTime, TIMESTAMP_VISIBLE_FORMAT);
+};
 
 export default (mainStorage, calendarService) => ({
     getExistingActiveAppointments(appointments, now) {
@@ -21,8 +28,7 @@ export default (mainStorage, calendarService) => ({
 
     sendAppointmentCreationConfirmation(completeAppointmentData) {
         const { location, course, tutor, time, user } = completeAppointmentData;
-
-        const formattedTime = time.toISOString();
+        const formattedTime = formatTime(time);
         const contactInfo = !!location.phone || !!location.email
               ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
               : '';

@@ -29,6 +29,8 @@ import morgan from 'morgan';
 import config from './config';
 import { CLI_OPTIONS } from './constants';
 
+require('time')(Date); // add node-time to Date to be able to set timezone
+
 
 function connectToEventStorageDatabase() {
     return connectToEventStorage(config.eventStorage.URL, {
