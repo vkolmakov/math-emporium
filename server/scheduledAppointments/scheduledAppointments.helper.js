@@ -9,7 +9,7 @@ const formatTime = (time) => {
     return format(localizedTime, TIMESTAMP_VISIBLE_FORMAT);
 };
 
-export default (mainStorage, calendarService) => ({
+export default (mainStorage, calendarService, sendEmail) => ({
     getExistingActiveAppointments(appointments, now) {
         return [];
     },
@@ -36,7 +36,7 @@ export default (mainStorage, calendarService) => ({
         const emailBodyConstructor = () =>
               `Your appointment for ${course.code} with ${tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
         const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
-        return user.sendEmail({ subjectConstructor, emailBodyConstructor });
+        return sendEmail(user, { subjectConstructor, emailBodyConstructor });
     },
 
     createAppointment(completeAppointmentData) {

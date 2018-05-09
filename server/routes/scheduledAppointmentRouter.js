@@ -5,13 +5,15 @@ import { authGroups } from '../aux';
 
 import mainStorage from '../services/mainStorage';
 import { calendarServiceFactory } from '../services/googleApis';
+import sendEmail from '../services/email';
+
 import scheduledAppointmentsHelper from '../scheduledAppointments/scheduledAppointments.helper';
 import ScheduledAppointmentsController from '../scheduledAppointments/scheduledAppointments.controller';
 
 export default function createScheduledAppointmentRouter() {
     const router = express.Router();
 
-    const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory());
+    const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail);
     const controller = new ScheduledAppointmentsController(mainStorage, helper);
 
     router.post('/scheduled-appointment',
