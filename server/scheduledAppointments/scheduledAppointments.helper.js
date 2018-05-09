@@ -19,11 +19,25 @@ export default (mainStorage, calendarService) => ({
         };
     },
 
-    createAppointment(user, completeAppointmentData) {
-        const createGoogleCalendarAppointment = ({ location, course, tutor, comments, time }) => {
+    sendAppointmentCreationConfirmation(completeAppointmentData) {
+        const { location, course, tutor, time, user } = completeAppointmentData;
+
+        const formattedTime = time.toISOString();
+        const contactInfo = !!location.phone || !!location.email
+              ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
+              : '';
+
+        const emailBodyConstructor = () =>
+              `Your appointment for ${course.code} with ${tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
+        const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
+        return user.sendEmail({ subjectConstructor, emailBodyConstructor });
+    },
+
+    createAppointment(completeAppointmentData) {
+        const createGoogleCalendarAppointment = ({ user, location, course, tutor, comments, time }) => {
             const calendarId = location.calendarId;
 
-            const startTime = new Date(time);
+            const startTime = time;
             const endTime = addMinutes(startTime, APPOINTMENT_LENGTH);
 
             const summary = user.getAppointmentSummary({
@@ -46,7 +60,7 @@ export default (mainStorage, calendarService) => ({
             });
         };
 
-        const saveAppointment = ({ googleCalendarAppointmentId, time, location, subject, course, tutor }) => {
+        const saveAppointment = ({ user, googleCalendarAppointmentId, time, location, subject, course, tutor }) => {
             const googleCalendarAppointmentDate = time;
             const googleCalendarId = location.calendarId;
 
@@ -63,10 +77,11 @@ export default (mainStorage, calendarService) => ({
             return appointment.save();
         };
 
-        const { subject, course, location, tutor, time, comments } = completeAppointmentData;
+        const { subject, course, location, tutor, time, comments, user } = completeAppointmentData;
 
-        return createGoogleCalendarAppointment({ location, course, tutor, comments, time })
+        return createGoogleCalendarAppointment({ user, location, course, tutor, comments, time })
             .then((result) => saveAppointment({
+                user,
                 googleCalendarAppointmentId: result.id,
                 time,
                 location,

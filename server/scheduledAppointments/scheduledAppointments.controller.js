@@ -8,10 +8,28 @@ export default class ScheduledAppointmentsController {
     }
 
     create(req, res, next) {
+        const scheduleOrRejectAppointment = (userAppointments, locations, completeAppointmentData) => {
+            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, new Date());
+            const { reason, canCreateAppointment } = this.helper.canCreateAppointment(existingAppointments, locations);
+
+            let result;
+            if (canCreateAppointment) {
+                result = this.helper.createAppointment(completeAppointmentData);
+            } else {
+                result = Promise.reject(reason);
+            }
+
+            return result;
+        };
+
+        const sendEmailConfirmation = (completeAppointmentData) => {
+            return this.helper.sendAppointmentCreationConfirmation(completeAppointmentData);
+        };
+
         const { user } = req;
         /**
          * {
-         *     time: Date,
+         *     time: String (ISO),
          *     course: { id: Number },
          *     subject: { id: Number },
          *     location: { id: Number },
@@ -36,28 +54,20 @@ export default class ScheduledAppointmentsController {
             coursePromise,
             tutorPromise,
         ]).then(([userAppointments, locations, location, course, tutor]) => {
-            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, new Date());
-            const { reason, canCreateAppointment } = this.helper.canCreateAppointment(existingAppointments, locations);
+            const completeAppointmentData = {
+                ...appointmentData,
+                time: new Date(appointmentData.time),
+                location,
+                course,
+                tutor,
+                user,
+            };
 
-            let result;
-            if (canCreateAppointment) {
-                const completeAppointmentData = {
-                    ...appointmentData,
-                    location,
-                    course,
-                    tutor,
-                };
-
-                result = this.helper.createAppointment(user, completeAppointmentData);
-            } else {
-                result = Promise.reject(reason);
-            }
-
-            return result;
-        }).then(
-            () => res.status(200).json(successMessage()),
-            (reason) => next(actionFailed('schedule', 'appointment', reason)) // convert to error message
-        );
+            return scheduleOrRejectAppointment(userAppointments, locations, completeAppointmentData)
+                .then(() => sendEmailConfirmation(completeAppointmentData));
+        }).then(() => {
+            res.status(200).json(successMessage());
+        }).catch((reason) => next(actionFailed('schedule', 'appointment', reason)));
     }
 
     delete(req, res, next) {
