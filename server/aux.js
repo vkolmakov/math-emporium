@@ -132,8 +132,10 @@ export const dateTime = {
         return _dateFns.format(dt, TIMESTAMP_VISIBLE_FORMAT);
     },
 
-    parse(other) {
-        return _dateFns.parse(other);
+    parse(other, timezone = TIMEZONE) {
+        const result = _dateFns.parse(other);
+        result.setTimezone(timezone);
+        return result;
     },
 
     addMinutes(dt, minutes) {
