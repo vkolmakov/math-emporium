@@ -147,21 +147,6 @@ export default function createUserModel(sequelize, DataTypes) {
                 });
             },
 
-            sendAppointmentReminder({ time, location, course, tutor }) {
-                const user = this;
-                moment.tz.setDefault(TIMEZONE);
-                const formattedTime = time.format(TIMESTAMP_VISIBLE_FORMAT);
-
-                const contactInfo = !!location.phone || !!location.email
-                      ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
-                      : '';
-
-                const emailBodyConstructor = () =>
-                      `Your appointment for ${course.code} with ${tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
-                const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
-                return user.sendEmail({ subjectConstructor, emailBodyConstructor });
-            },
-
             sendAppoinmentRemovalConfirmation({ appointmentTime }) {
                 const user = this;
                 moment.tz.setDefault(TIMEZONE);

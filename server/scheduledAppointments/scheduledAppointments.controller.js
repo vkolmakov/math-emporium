@@ -1,6 +1,8 @@
-import { dateTime } from '../aux';
+import { dateTime, pickOneFrom, APPOINTMENT_LENGTH, R } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
+
+import * as openSpotsService from '../services/openSpots/openSpots.service';
 
 export default class ScheduledAppointmentsController {
     constructor(mainStorage, helper) {
@@ -11,7 +13,11 @@ export default class ScheduledAppointmentsController {
     create(req, res, next) {
         const scheduleOrRejectAppointment = (userAppointments, locations, completeAppointmentData) => {
             const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, dateTime.now());
-            const { reason, canCreateAppointment } = this.helper.canCreateAppointment(existingAppointments, locations);
+            const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
+                completeAppointmentData,
+                existingAppointments,
+                locations
+            );
 
             let result;
             if (canCreateAppointment) {
@@ -39,28 +45,54 @@ export default class ScheduledAppointmentsController {
          * }
          */
         const appointmentData = req.body;
-        const userAppointmentsPromise = this.mainStorage.db.models.scheduledAppointment.findAll({
-            where: { id: user.id },
-        });
-        const locationsPromise = this.mainStorage.db.models.location.findAll();
 
+        const appointmentTime = dateTime.parse(appointmentData.time);
+
+        const userAppointmentsPromise = this.mainStorage.db.models.scheduledAppointment.findAll({ where: { id: user.id } });
+        const locationsPromise = this.mainStorage.db.models.location.findAll();
         const locationPromise = this.mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
         const coursePromise = this.mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id } });
-        const tutorPromise = this.mainStorage.db.models.tutor.findOne({ where: { id: appointmentData.tutor.id } });
+        const tutorDataPromise = openSpotsService.availableTutors(
+            appointmentData.location,
+            appointmentData.course,
+            appointmentTime,
+            dateTime.addMinutes(appointmentTime, APPOINTMENT_LENGTH)
+        ).then((availableTutors) => {
+            const wasExplicitlyRequested = !!appointmentData.tutor;
+            const tutorRef = wasExplicitlyRequested
+                  ? appointmentData.tutor
+                  : pickOneFrom(availableTutors);
+            const isSelectedTutorAvailable = !!tutorRef && availableTutors.map(R.prop('id')).includes(tutorRef.id);
+
+            let result;
+            if (isSelectedTutorAvailable) {
+                result = this.mainStorage.db.models.tutor.findOne({ where: { id: tutorRef.id } })
+                    .then((tutor) => ({ wasExplicitlyRequested, tutor }));
+            } else {
+                const rejectionReason = wasExplicitlyRequested
+                      ? 'Requested tutor is no longer available'
+                      : 'There are no more tutors available for this time slot';
+
+                result = Promise.reject(rejectionReason);
+            }
+
+            return result;
+        });
 
         return Promise.all([
             userAppointmentsPromise,
             locationsPromise,
             locationPromise,
             coursePromise,
-            tutorPromise,
-        ]).then(([userAppointments, locations, location, course, tutor]) => {
+            tutorDataPromise,
+        ]).then(([userAppointments, locations, location, course, tutorData]) => {
             const completeAppointmentData = {
                 comments: appointmentData.comments,
-                time: dateTime.parse(appointmentData.time),
+                time: appointmentTime,
                 location,
+                subject: appointmentData.subject, // actually a subjectRef
                 course,
-                tutor,
+                tutorData,
                 user,
             };
 

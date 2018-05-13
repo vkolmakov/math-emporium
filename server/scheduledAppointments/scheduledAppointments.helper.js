@@ -1,51 +1,53 @@
-import { dateTime } from '../aux';
-
-const APPOINTMENT_LENGTH = 60;
+import { dateTime, APPOINTMENT_LENGTH } from '../aux';
 
 export default (mainStorage, calendarService, sendEmail) => ({
     getExistingActiveAppointments(appointments, now) {
         return [];
     },
 
-    canCreateAppointment(existingAppointments, locations) {
-        const isValidRequest = (appointmentData) => {
+    canCreateAppointment(completeAppointmentData, existingAppointments, locations) {
+        const isValidRequest = ({ tutorData }) => {
+            let result;
+            if (!tutorData.tutor) {
+                result = {
+                    canCreateAppointment: false,
+                    reason: 'Requested tutor is no longer available',
+                };
+            } else {
+                result = {
+                    canCreateAppointment: true,
+                    reason: '',
+                };
+            }
+
             // check if valid location / course / subject / tutor
-            return true;
+            return result;
         };
 
-        return {
-            canCreateAppointment: true,
-            reason: '',
-        };
+        return isValidRequest(completeAppointmentData);
     },
 
     sendAppointmentCreationConfirmation(completeAppointmentData) {
-        const { location, course, tutor, time, user } = completeAppointmentData;
+        const { location, course, tutorData, time, user } = completeAppointmentData;
         const formattedTime = dateTime.formatVisible(time);
         const contactInfo = !!location.phone || !!location.email
               ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
               : '';
 
         const emailBodyConstructor = () =>
-              `Your appointment for ${course.code} with ${tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
+              `Your appointment for ${course.code} with ${tutorData.tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
         const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
         return sendEmail(user, { subjectConstructor, emailBodyConstructor });
     },
 
     createAppointment(completeAppointmentData) {
-        const createGoogleCalendarAppointment = ({ user, location, course, tutor, comments, time }) => {
+        const createGoogleCalendarAppointment = ({ user, location, course, tutorData, comments, time }) => {
             const calendarId = location.calendarId;
 
             const startTime = time;
             const endTime = dateTime.addMinutes(startTime, APPOINTMENT_LENGTH);
 
-            const summary = user.getAppointmentSummary({
-                course,
-                tutorData: {
-                    wasExplicitlyRequested: true,
-                    tutor,
-                },
-            });
+            const summary = user.getAppointmentSummary({ course, tutorData });
             const description = user.getAppointmentDescription({ course, comments });
             const colorId = course.color;
 
@@ -59,7 +61,7 @@ export default (mainStorage, calendarService, sendEmail) => ({
             });
         };
 
-        const saveAppointment = ({ user, googleCalendarAppointmentId, time, location, subject, course, tutor }) => {
+        const saveAppointment = ({ user, googleCalendarAppointmentId, time, location, subject, course, tutorData }) => {
             const googleCalendarAppointmentDate = time;
             const googleCalendarId = location.calendarId;
 
@@ -68,7 +70,7 @@ export default (mainStorage, calendarService, sendEmail) => ({
                 subjectId: subject.id,
                 courseId: course.id,
                 locationId: location.id,
-                tutorId: tutor.id,
+                tutorId: tutorData.tutor.id,
                 googleCalendarAppointmentId,
                 googleCalendarAppointmentDate,
                 googleCalendarId,
@@ -76,9 +78,9 @@ export default (mainStorage, calendarService, sendEmail) => ({
             return appointment.save();
         };
 
-        const { subject, course, location, tutor, time, comments, user } = completeAppointmentData;
+        const { subject, course, location, tutorData, time, comments, user } = completeAppointmentData;
 
-        return createGoogleCalendarAppointment({ user, location, course, tutor, comments, time })
+        return createGoogleCalendarAppointment({ user, location, course, tutorData, comments, time })
             .then((result) => saveAppointment({
                 user,
                 googleCalendarAppointmentId: result.id,
@@ -86,7 +88,7 @@ export default (mainStorage, calendarService, sendEmail) => ({
                 location,
                 subject,
                 course,
-                tutor,
+                tutorData,
             }));
     },
 });
