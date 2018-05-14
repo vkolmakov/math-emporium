@@ -1,6 +1,5 @@
 import { dateTime, APPOINTMENT_LENGTH } from '../aux';
 
-
 const itemQuantityDescription = (item, quantity) => {
     let result;
     if (quantity === 1) {
@@ -11,9 +10,8 @@ const itemQuantityDescription = (item, quantity) => {
     return result;
 };
 
-
 export default (mainStorage, calendarService, sendEmail) => ({
-    canCreateAppointment(completeAppointmentData, existingAppointments, now) {
+    canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
         const hasTutor = ({ tutorData }) => ({
             isValid: !!tutorData.tutor,
             error: 'Requested tutor is no longer available',
@@ -27,7 +25,7 @@ export default (mainStorage, calendarService, sendEmail) => ({
         const doesNotExceedLocationMaximum = ({ location }) => {
             const { maximumAppointmentsPerLocation } = location;
             return {
-                isValid: false,
+                isValid: activeAppointmentsForUserAtLocation.length < maximumAppointmentsPerLocation,
                 error: `Cannot have more than ${itemQuantityDescription('appointment', maximumAppointmentsPerLocation)} at this location at the same time`,
             };
         };
