@@ -5,8 +5,9 @@ import { successMessage } from '../services/messages';
 import * as openSpotsService from '../services/openSpots/openSpots.service';
 
 export default class ScheduledAppointmentsController {
-    constructor(mainStorage, helper) {
+    constructor(mainStorage, cacheService, helper) {
         this.mainStorage = mainStorage;
+        this.cacheService = cacheService;
         this.helper = helper;
     }
 
@@ -26,10 +27,6 @@ export default class ScheduledAppointmentsController {
             }
 
             return result;
-        };
-
-        const sendEmailConfirmation = (completeAppointmentData) => {
-            return this.helper.sendAppointmentCreationConfirmation(completeAppointmentData);
         };
 
         const { user } = req;
@@ -97,7 +94,8 @@ export default class ScheduledAppointmentsController {
             };
 
             return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
-                .then(() => sendEmailConfirmation(completeAppointmentData));
+                .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
+                .then(() => this.helper.sendAppointmentCreationConfirmation(completeAppointmentData));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('schedule', 'appointment', reason)));
