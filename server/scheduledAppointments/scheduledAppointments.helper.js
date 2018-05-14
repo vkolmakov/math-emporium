@@ -1,11 +1,19 @@
 import { dateTime, APPOINTMENT_LENGTH } from '../aux';
 
-export default (mainStorage, calendarService, sendEmail) => ({
-    getExistingActiveAppointments(appointments, now) {
-        return [];
-    },
 
-    canCreateAppointment(completeAppointmentData, existingAppointments, locations, now) {
+const itemQuantityDescription = (item, quantity) => {
+    let result;
+    if (quantity === 1) {
+        result = `${quantity} ${item}`;
+    } else {
+        result = `${quantity} ${item}s`;
+    }
+    return result;
+};
+
+
+export default (mainStorage, calendarService, sendEmail) => ({
+    canCreateAppointment(completeAppointmentData, existingAppointments, now) {
         const hasTutor = ({ tutorData }) => ({
             isValid: !!tutorData.tutor,
             error: 'Requested tutor is no longer available',
@@ -16,9 +24,18 @@ export default (mainStorage, calendarService, sendEmail) => ({
             error: 'Requested appointment time is no longer available',
         });
 
+        const doesNotExceedLocationMaximum = ({ location }) => {
+            const { maximumAppointmentsPerLocation } = location;
+            return {
+                isValid: false,
+                error: `Cannot have more than ${itemQuantityDescription('appointment', maximumAppointmentsPerLocation)} at this location at the same time`,
+            };
+        };
+
         const validators = [
             hasTutor,
             isAfterNow,
+            doesNotExceedLocationMaximum,
         ];
 
         const applyValidators = (validators) => {

@@ -11,13 +11,10 @@ export default class ScheduledAppointmentsController {
     }
 
     create(req, res, next) {
-        const scheduleOrRejectAppointment = (userAppointments, locations, completeAppointmentData) => {
-            const now = dateTime.now();
-            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, now);
+        const scheduleOrRejectAppointment = (activeAppointmentsForUserAtLocation, completeAppointmentData, now) => {
             const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
                 completeAppointmentData,
-                existingAppointments,
-                locations,
+                activeAppointmentsForUserAtLocation,
                 now
             );
 
@@ -48,10 +45,12 @@ export default class ScheduledAppointmentsController {
          */
         const appointmentData = req.body;
 
+        const now = dateTime.now();
         const appointmentTime = dateTime.parse(appointmentData.time);
 
-        const userAppointmentsPromise = this.mainStorage.db.models.scheduledAppointment.findAll({ where: { id: user.id } });
-        const locationsPromise = this.mainStorage.db.models.location.findAll();
+        const userAppointmentsPromise = this.mainStorage.db.models.scheduledAppointment.findAll({
+            where: { userId: user.id, locationId: appointmentData.location.id, googleCalendarAppointmentDate: { $gt: now } },
+        });
         const locationPromise = this.mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
         const coursePromise = this.mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id } });
         const tutorDataPromise = openSpotsService.availableTutors(
@@ -83,11 +82,10 @@ export default class ScheduledAppointmentsController {
 
         return Promise.all([
             userAppointmentsPromise,
-            locationsPromise,
             locationPromise,
             coursePromise,
             tutorDataPromise,
-        ]).then(([userAppointments, locations, location, course, tutorData]) => {
+        ]).then(([activeAppointmentsForUserAtLocation, location, course, tutorData]) => {
             const completeAppointmentData = {
                 comments: appointmentData.comments,
                 time: appointmentTime,
@@ -98,7 +96,7 @@ export default class ScheduledAppointmentsController {
                 user,
             };
 
-            return scheduleOrRejectAppointment(userAppointments, locations, completeAppointmentData)
+            return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
                 .then(() => sendEmailConfirmation(completeAppointmentData));
         }).then(() => {
             res.status(200).json(successMessage());
