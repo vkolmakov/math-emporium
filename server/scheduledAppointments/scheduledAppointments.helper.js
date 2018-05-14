@@ -1,6 +1,6 @@
 import { dateTime, APPOINTMENT_LENGTH } from '../aux';
 
-const itemQuantityDescription = (item, quantity) => {
+const quantityItemDescription = (quantity, item) => {
     let result;
     if (quantity === 1) {
         result = `${quantity} ${item}`;
@@ -26,7 +26,7 @@ export default (mainStorage, calendarService, sendEmail) => ({
             const { maximumAppointmentsPerLocation } = location;
             return {
                 isValid: activeAppointmentsForUserAtLocation.length < maximumAppointmentsPerLocation,
-                error: `Cannot have more than ${itemQuantityDescription('appointment', maximumAppointmentsPerLocation)} at this location at the same time`,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerLocation, 'appointment')} at this location at the same time`,
             };
         };
 
@@ -38,12 +38,12 @@ export default (mainStorage, calendarService, sendEmail) => ({
 
         const applyValidators = (validators) => {
             const result = validators.reduce((result, validator) => {
-                const individualValidationResult = validator(completeAppointmentData);
+                const { isValid, error } = validator(completeAppointmentData);
 
                 return {
-                    isValid: result.isValid && individualValidationResult.isValid,
-                    accumulatedErrors: !individualValidationResult.isValid
-                        ? result.accumulatedErrors.concat([individualValidationResult.error])
+                    isValid: result.isValid && isValid,
+                    accumulatedErrors: !isValid
+                        ? result.accumulatedErrors.concat([error])
                         : result.accumulatedErrors,
                 };
             }, { isValid: true, accumulatedErrors: [] });

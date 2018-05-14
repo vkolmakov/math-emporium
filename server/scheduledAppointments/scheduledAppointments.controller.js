@@ -48,7 +48,7 @@ export default class ScheduledAppointmentsController {
             where: { userId: user.id, locationId: appointmentData.location.id, googleCalendarAppointmentDate: { $gt: now } },
         });
         const locationPromise = this.mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
-        const coursePromise = this.mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id } });
+        const coursePromise = this.mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id, locationId: appointmentData.location.id } });
         const tutorDataPromise = this.openSpotsService.availableTutors(
             appointmentData.location,
             appointmentData.course,
