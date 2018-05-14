@@ -52,6 +52,15 @@ class EditLocations extends Component {
             }, {
                 dataKey: 'pictureLink',
                 label: 'Link to a picture',
+            }, {
+                dataKey: 'maximumAppointmentsPerLocation',
+                label: 'Maximum number of appointments per location',
+            }, {
+                dataKey: 'maximumAppointmentsPerSubject',
+                label: 'Maximum number of appointments per subject',
+            }, {
+                dataKey: 'maximumAppointmentsPerCourse',
+                label: 'Maximum number of appointments per course',
             },
         ];
 

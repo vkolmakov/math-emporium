@@ -3,8 +3,35 @@ import { createExtractDataValuesFunction } from '../aux';
 import { notFound, actionFailed } from '../services/errorMessages';
 import { pluckPublicFields, isActive } from './locations.model';
 
-const allowedToRead = ['id', 'name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description', 'isActive'];
-const allowedToWrite = ['name', 'calendarId', 'pictureLink', 'phone', 'email', 'address', 'description', 'isActive'];
+
+const allowedToRead = [
+    'id',
+    'name',
+    'calendarId',
+    'pictureLink',
+    'phone',
+    'email',
+    'address',
+    'description',
+    'isActive',
+    'maximumAppointmentsPerLocation',
+    'maximumAppointmentsPerSubject',
+    'maximumAppointmentsPerCourse',
+];
+
+const allowedToWrite = [
+    'name',
+    'calendarId',
+    'pictureLink',
+    'phone',
+    'email',
+    'address',
+    'description',
+    'isActive',
+    'maximumAppointmentsPerLocation',
+    'maximumAppointmentsPerSubject',
+    'maximumAppointmentsPerCourse',
+];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
