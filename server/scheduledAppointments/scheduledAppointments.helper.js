@@ -5,26 +5,41 @@ export default (mainStorage, calendarService, sendEmail) => ({
         return [];
     },
 
-    canCreateAppointment(completeAppointmentData, existingAppointments, locations) {
-        const isValidRequest = ({ tutorData }) => {
-            let result;
-            if (!tutorData.tutor) {
-                result = {
-                    canCreateAppointment: false,
-                    reason: 'Requested tutor is no longer available',
-                };
-            } else {
-                result = {
-                    canCreateAppointment: true,
-                    reason: '',
-                };
-            }
+    canCreateAppointment(completeAppointmentData, existingAppointments, locations, now) {
+        const hasTutor = ({ tutorData }) => ({
+            isValid: !!tutorData.tutor,
+            error: 'Requested tutor is no longer available',
+        });
 
-            // check if valid location / course / subject / tutor
-            return result;
+        const isAfterNow = ({ time }) => ({
+            isValid: dateTime.isAfter(time, now),
+            error: 'Requested appointment time is no longer available',
+        });
+
+        const validators = [
+            hasTutor,
+            isAfterNow,
+        ];
+
+        const applyValidators = (validators) => {
+            const result = validators.reduce((result, validator) => {
+                const individualValidationResult = validator(completeAppointmentData);
+
+                return {
+                    isValid: result.isValid && individualValidationResult.isValid,
+                    accumulatedErrors: !individualValidationResult.isValid
+                        ? result.accumulatedErrors.concat([individualValidationResult.error])
+                        : result.accumulatedErrors,
+                };
+            }, { isValid: true, accumulatedErrors: [] });
+
+            return {
+                canCreateAppointment: result.isValid,
+                reason: result.accumulatedErrors.join('; '),
+            };
         };
 
-        return isValidRequest(completeAppointmentData);
+        return applyValidators(validators);
     },
 
     sendAppointmentCreationConfirmation(completeAppointmentData) {

@@ -141,4 +141,8 @@ export const dateTime = {
     addMinutes(dt, minutes) {
         return _dateFns.addMinutes(dt, minutes);
     },
+
+    isAfter(dt, other) {
+        return _dateFns.isAfter(dt, other);
+    },
 };

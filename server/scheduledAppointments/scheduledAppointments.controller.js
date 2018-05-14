@@ -12,11 +12,13 @@ export default class ScheduledAppointmentsController {
 
     create(req, res, next) {
         const scheduleOrRejectAppointment = (userAppointments, locations, completeAppointmentData) => {
-            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, dateTime.now());
+            const now = dateTime.now();
+            const existingAppointments = this.helper.getExistingActiveAppointments(userAppointments, now);
             const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
                 completeAppointmentData,
                 existingAppointments,
-                locations
+                locations,
+                now
             );
 
             let result;
