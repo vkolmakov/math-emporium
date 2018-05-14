@@ -1,3 +1,9 @@
+const DEFAULT_MAXIMUM_NUMBER_OF_APPOINTMENTS = {
+    LOCATION: 1,
+    SUBJECT: 1,
+    COURSE: 1,
+};
+
 export const pluckPublicFields =
     ({ id, name, pictureLink, phone, email, address, description }) =>
     ({ id, name, pictureLink, phone, email, address, description });
@@ -43,6 +49,35 @@ export default function createLocationModel(sequelize, DataTypes) {
         isActive: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
+        },
+        maximumAppointmentsPerLocation: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: DEFAULT_MAXIMUM_NUMBER_OF_APPOINTMENTS.LOCATION,
+        },
+        maximumAppointmentsPerSubject: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: DEFAULT_MAXIMUM_NUMBER_OF_APPOINTMENTS.SUBJECT,
+            validate: {
+                ensureUnderLocationMaximum(value) {
+                    if (value > this.maximumAppointmentsPerLocation) {
+                        throw new Error('Maximum number of appointments for subject must be at most as large as maximum for the location');
+                    }
+                },
+            },
+        },
+        maximumAppointmentsPerCourse: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: DEFAULT_MAXIMUM_NUMBER_OF_APPOINTMENTS.COURSE,
+            validate: {
+                ensureUnderSubjectMaximum(value) {
+                    if (value > this.maximumAppointmentsPerSubject) {
+                        throw new Error('Maximum number of appointments for course must be at most as large as maximum for the subject');
+                    }
+                },
+            },
         },
     }, {
         timestamps: true,
