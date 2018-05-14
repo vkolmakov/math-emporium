@@ -7,6 +7,7 @@ import mainStorage from '../services/mainStorage';
 import { calendarServiceFactory } from '../services/googleApis';
 import sendEmail from '../services/email';
 import cache from '../services/cache';
+import * as openSpotsService from '../services/openSpots/openSpots.service';
 
 import scheduledAppointmentsHelper from '../scheduledAppointments/scheduledAppointments.helper';
 import ScheduledAppointmentsController from '../scheduledAppointments/scheduledAppointments.controller';
@@ -14,7 +15,7 @@ import ScheduledAppointmentsController from '../scheduledAppointments/scheduledA
 export default function createScheduledAppointmentRouter() {
     const router = express.Router();
 
-    const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail);
+    const helper = scheduledAppointmentsHelper(mainStorage, openSpotsService, calendarServiceFactory(), sendEmail);
     const controller = new ScheduledAppointmentsController(mainStorage, cache, helper);
 
     router.post('/scheduled-appointment',

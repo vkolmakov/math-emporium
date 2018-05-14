@@ -2,11 +2,10 @@ import { dateTime, pickOneFrom, APPOINTMENT_LENGTH, R } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 
-import * as openSpotsService from '../services/openSpots/openSpots.service';
-
 export default class ScheduledAppointmentsController {
-    constructor(mainStorage, cacheService, helper) {
+    constructor(mainStorage, openSpotsService, cacheService, helper) {
         this.mainStorage = mainStorage;
+        this.openSpotsService = openSpotsService;
         this.cacheService = cacheService;
         this.helper = helper;
     }
@@ -50,7 +49,7 @@ export default class ScheduledAppointmentsController {
         });
         const locationPromise = this.mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
         const coursePromise = this.mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id } });
-        const tutorDataPromise = openSpotsService.availableTutors(
+        const tutorDataPromise = this.openSpotsService.availableTutors(
             appointmentData.location,
             appointmentData.course,
             appointmentTime,
