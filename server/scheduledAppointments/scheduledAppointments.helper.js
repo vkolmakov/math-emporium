@@ -12,6 +12,21 @@ const quantityItemDescription = (quantity, item) => {
 
 export default (mainStorage, calendarService, sendEmail) => ({
     canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
+        const isLocationActive = ({ location }) => ({
+            isValid: location.isActive,
+            error: 'Requested location is not active',
+        });
+
+        const courseBelongsToLocation = ({ course, location }) => ({
+            isValid: course.locationId === location.id,
+            error: 'Requested location and course are not matching',
+        });
+
+        const courseBelongsToSubject = ({ course, subject }) => ({
+            isValid: course.subjectId === subject.id,
+            error: 'Requested course and subject are not matching',
+        });
+
         const hasTutor = ({ tutorData }) => ({
             isValid: !!tutorData.tutor,
             error: 'Requested tutor is no longer available',
@@ -30,10 +45,35 @@ export default (mainStorage, calendarService, sendEmail) => ({
             };
         };
 
+        const doesNotExceedSubjectMaximum = ({ location, subject }) => {
+            const { maximumAppointmentsPerSubject } = location;
+            const activeAppointmentsForUserAtLocationWithSubject = activeAppointmentsForUserAtLocation.filter((appointment) => appointment.subjectId === subject.id);
+
+            return {
+                isValid: activeAppointmentsForUserAtLocationWithSubject.length < maximumAppointmentsPerSubject,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} at for this subject at this location at the same time`,
+            };
+        };
+
+        const doesNotExceedCourseMaximum = ({ location, course }) => {
+            const { maximumAppointmentsPerCourse } = location;
+            const activeAppointmentsForUserAtLocationWithCourse = activeAppointmentsForUserAtLocation.filter((appointment) => appointment.courseId === course.id);
+
+            return {
+                isValid: activeAppointmentsForUserAtLocationWithCourse.length < maximumAppointmentsPerCourse,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} at for this course at this location at the same time`,
+            };
+        };
+
         const validators = [
+            isLocationActive,
+            courseBelongsToSubject,
+            courseBelongsToLocation,
             hasTutor,
             isAfterNow,
             doesNotExceedLocationMaximum,
+            doesNotExceedSubjectMaximum,
+            doesNotExceedCourseMaximum,
         ];
 
         const applyValidators = (validators) => {
