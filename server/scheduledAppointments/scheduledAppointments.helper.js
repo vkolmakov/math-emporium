@@ -199,15 +199,36 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
         return sendEmail(user, { subjectConstructor, emailBodyConstructor });
     },
 
-    createAppointment(completeAppointmentData) {
+    createAppointment(completeAppointmentData, now) {
         const createGoogleCalendarAppointment = ({ user, location, course, tutorData, comments, time }) => {
             const calendarId = location.calendarId;
 
             const startTime = time;
             const endTime = dateTime.addMinutes(startTime, APPOINTMENT_LENGTH);
 
-            const summary = user.getAppointmentSummary({ course, tutorData });
-            const description = user.getAppointmentDescription({ course, comments });
+            const getAppointmentSummary = () => {
+                const EXPLICITLY_REQUESTED_TUTOR_SYMBOL = ' ## ';
+
+                const tutorName = tutorData.tutor.name;
+                const wasTutorExplicitlyRequested = tutorData.wasExplicitlyRequested;
+
+                return `${tutorName}${wasTutorExplicitlyRequested ? EXPLICITLY_REQUESTED_TUTOR_SYMBOL : ' '}(${user.firstName}) ${course.code}`;
+            };
+
+            const getAppointmentDescription = () => {
+                return [`Student: ${user.firstName} ${user.lastName}`,
+                        `Email: ${user.email}`,
+                        `Phone number: ${user.phoneNumber}`,
+                        '',
+                        `Course: ${course.code}: ${course.name}`,
+                        `Created on: ${dateTime.formatVisible(now)}`,
+                        'Created online',
+                        comments ? `Comments: ${comments}` : '',
+                       ].join('\n');
+            };
+
+            const summary = getAppointmentSummary();
+            const description = getAppointmentDescription();
             const colorId = course.color;
 
             return calendarService.createCalendarEvent({

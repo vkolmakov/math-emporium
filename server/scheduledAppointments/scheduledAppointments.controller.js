@@ -25,7 +25,7 @@ export default class ScheduledAppointmentsController {
 
             let result;
             if (canCreateAppointment) {
-                result = this.helper.createAppointment(completeAppointmentData);
+                result = this.helper.createAppointment(completeAppointmentData, now);
             } else {
                 result = Promise.reject(reason);
             }
