@@ -1,12 +1,13 @@
-import { dateTime, pickOneFrom, APPOINTMENT_LENGTH, R } from '../aux';
+import { pickOneFrom, APPOINTMENT_LENGTH, R } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 
 export default class ScheduledAppointmentsController {
-    constructor(mainStorage, openSpotsService, cacheService, helper) {
+    constructor(mainStorage, openSpotsService, cacheService, dateTime, helper) {
         this.mainStorage = mainStorage;
         this.openSpotsService = openSpotsService;
         this.cacheService = cacheService;
+        this.dateTime = dateTime;
         this.helper = helper;
     }
 
@@ -41,8 +42,8 @@ export default class ScheduledAppointmentsController {
          */
         const appointmentData = req.body;
 
-        const now = dateTime.now();
-        const appointmentTime = dateTime.parse(appointmentData.time);
+        const now = this.dateTime.now();
+        const appointmentTime = this.dateTime.parse(appointmentData.time);
 
         const userAppointmentsPromise = this.mainStorage.db.models.scheduledAppointment.findAll({
             where: { userId: user.id, locationId: appointmentData.location.id, googleCalendarAppointmentDate: { $gt: now } },
@@ -53,7 +54,7 @@ export default class ScheduledAppointmentsController {
             appointmentData.location,
             appointmentData.course,
             appointmentTime,
-            dateTime.addMinutes(appointmentTime, APPOINTMENT_LENGTH)
+            this.dateTime.addMinutes(appointmentTime, APPOINTMENT_LENGTH)
         ).then((availableTutors) => {
             const wasExplicitlyRequested = !!appointmentData.tutor;
             const tutorRef = wasExplicitlyRequested

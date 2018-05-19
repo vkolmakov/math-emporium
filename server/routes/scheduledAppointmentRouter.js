@@ -1,7 +1,7 @@
 import express from 'express';
 
 import requireGroup from '../middleware/requireGroup';
-import { authGroups } from '../aux';
+import { authGroups, dateTime } from '../aux';
 
 import mainStorage from '../services/mainStorage';
 import { calendarServiceFactory } from '../services/googleApis';
@@ -16,11 +16,11 @@ export default function createScheduledAppointmentRouter() {
     const router = express.Router();
 
     const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail);
-    const controller = new ScheduledAppointmentsController(mainStorage, openSpotsService, cache, helper);
+    const controller = new ScheduledAppointmentsController(mainStorage, openSpotsService, cache, dateTime, helper);
 
     router.post('/scheduled-appointment',
                 requireGroup(authGroups.USER),
-                (req, res, next) => controller.create(req, res, next));
+                controller.create.bind(controller));
     router.delete('/scheduled-appointment',
                   requireGroup(authGroups.USER),
                   controller.delete.bind(controller));
