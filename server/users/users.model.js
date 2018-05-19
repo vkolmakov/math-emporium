@@ -165,11 +165,21 @@ export default function createUserModel(sequelize, DataTypes) {
             setDefaultAppointmentPreferences(locationRes, subjectRes, courseRes) {
                 const user = this;
 
-                return Promise.all([
-                    user.setLocation(locationRes),
-                    user.setSubject(subjectRes),
-                    user.setCourse(courseRes),
-                ]);
+                return user.update({
+                    locationId: locationRes.id,
+                    subjectId: subjectRes.id,
+                    courseId: courseRes.id,
+                }, {
+                    fields: ['locationId', 'subjectId', 'courseId'],
+                });
+            },
+
+            setDefaultAppointmentPreferencesIfNoneSet(location, subject, course) {
+                let result = Promise.resolve();
+                if (!this.hasDefaultAppointmentPreferences()) {
+                    result = this.setDefaultAppointmentPreferences(location, subject, course);
+                }
+                return result;
             },
         },
     });

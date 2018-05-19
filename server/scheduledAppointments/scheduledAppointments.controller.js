@@ -10,8 +10,8 @@ export default class ScheduledAppointmentsController {
             log: {
                 createEvent: createEventLogger(events.USER_CREATED_APPOINTMENT),
                 deleteEvent: createEventLogger(events.USER_REMOVED_APPOINTMENT),
-            }
-        },
+            },
+        };
         this.helper = helper;
     }
 
@@ -20,7 +20,7 @@ export default class ScheduledAppointmentsController {
             const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
                 completeAppointmentData,
                 activeAppointmentsForUserAtLocation,
-                now
+                now,
             );
 
             let result;
@@ -58,13 +58,14 @@ export default class ScheduledAppointmentsController {
             completeAppointmentDataPromise,
             activeAppointmentsForUserAtLocationPromise,
         ]).then(([completeAppointmentData, activeAppointmentsForUserAtLocation]) => {
-            const { location } = completeAppointmentData;
+            const { location, subject, course } = completeAppointmentData;
 
             return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
                 .then(() => Promise.all([
                     this.cacheService.calendarEvents.invalidate(location.calendarId),
                     this.helper.sendAppointmentCreationConfirmation(completeAppointmentData),
                     this.logger.log.createEvent(req),
+                    user.setDefaultAppointmentPreferencesIfNoneSet(location, subject, course),
                 ]));
         }).then(() => {
             res.status(200).json(successMessage());
