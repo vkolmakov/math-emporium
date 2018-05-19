@@ -15,8 +15,8 @@ import ScheduledAppointmentsController from '../scheduledAppointments/scheduledA
 export default function createScheduledAppointmentRouter() {
     const router = express.Router();
 
-    const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail);
-    const controller = new ScheduledAppointmentsController(mainStorage, openSpotsService, cache, dateTime, helper);
+    const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail, openSpotsService);
+    const controller = new ScheduledAppointmentsController(cache, dateTime, helper);
 
     router.post('/scheduled-appointment',
                 requireGroup(authGroups.USER),

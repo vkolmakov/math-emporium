@@ -1,4 +1,4 @@
-import { dateTime, APPOINTMENT_LENGTH } from '../aux';
+import { dateTime, pickOneFrom, R, APPOINTMENT_LENGTH } from '../aux';
 
 const quantityItemDescription = (quantity, item) => {
     let result;
@@ -10,7 +10,62 @@ const quantityItemDescription = (quantity, item) => {
     return result;
 };
 
-export default (mainStorage, calendarService, sendEmail) => ({
+export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
+    gatherCompleteAppointmentData(user, appointmentData, appointmentDateTime) {
+        const locationPromise = mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
+        const coursePromise = mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id, locationId: appointmentData.location.id } });
+        const tutorDataPromise = openSpotsService.availableTutors(
+            appointmentData.location,
+            appointmentData.course,
+            appointmentDateTime,
+            dateTime.addMinutes(appointmentDateTime, APPOINTMENT_LENGTH)
+        ).then((availableTutors) => {
+            const wasExplicitlyRequested = !!appointmentData.tutor;
+            const tutorRef = wasExplicitlyRequested
+                  ? appointmentData.tutor
+                  : pickOneFrom(availableTutors);
+            const isSelectedTutorAvailable = !!tutorRef && availableTutors.map(R.prop('id')).includes(tutorRef.id);
+
+            let result;
+            if (isSelectedTutorAvailable) {
+                result = mainStorage.db.models.tutor.findOne({ where: { id: tutorRef.id } })
+                    .then((tutor) => ({ wasExplicitlyRequested, tutor }));
+            } else {
+                const rejectionReason = wasExplicitlyRequested
+                      ? 'Requested tutor is no longer available'
+                      : 'There are no more tutors available for this time slot';
+
+                result = Promise.reject(rejectionReason);
+            }
+
+            return result;
+        });
+
+        return Promise.all([
+            locationPromise,
+            coursePromise,
+            tutorDataPromise,
+        ]).then(([location, course, tutorData]) => {
+            const completeAppointmentData = {
+                comments: appointmentData.comments,
+                time: appointmentDateTime,
+                location,
+                subject: appointmentData.subject, // actually a subjectRef
+                course,
+                tutorData,
+                user,
+            };
+
+            return completeAppointmentData;
+        });
+    },
+
+    getActiveAppointmentsForUserAtLocation(user, appointmentData, now) {
+        return mainStorage.db.models.scheduledAppointment.findAll({
+            where: { userId: user.id, locationId: appointmentData.location.id, googleCalendarAppointmentDate: { $gt: now } },
+        });
+    },
+
     canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
         const hasAllRequestedAppointmentData = (appointmentData) => {
             const requiredAppointmentDataTypes = {
