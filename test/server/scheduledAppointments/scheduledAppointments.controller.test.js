@@ -1,11 +1,14 @@
 import ScheduledAppointmentsController from '../../../server/scheduledAppointments/scheduledAppointments.controller.js';
 
 describe('ScheduledAppointmentsController', () => {
-    const LOCATIONS = [1];
+    const LOCATION = {
+        calendarId: 'fluffy-doggy-2'
+    };
 
     let scheduledAppointmentsController;
 
-    let mockMainStorage;
+    let mockCacheService;
+    let mockDateTime;
     let mockHelper;
 
     let mockRequest;
@@ -13,32 +16,28 @@ describe('ScheduledAppointmentsController', () => {
     let mockNext;
 
     beforeEach(() => {
-        mockMainStorage = {
-            db: {
-                models: {
-                    location: {
-                        findAll: jest.fn()
-                            .mockReturnValue(Promise.resolve(LOCATIONS)),
-                    },
-
-                    scheduledAppointment: {
-                        findAll: jest.fn()
-                            .mockReturnValue(Promise.resolve([])),
-                    },
-                },
+        mockCacheService = {
+            calendarEvents: {
+                invalidate: jest.fn(),
             },
+        };
+
+        mockDateTime = {
+            now: jest.fn(),
+            parse: jest.fn(),
         };
 
         mockHelper = {
-            getExistingActiveAppointments: jest.fn(),
             canCreateAppointment: jest.fn(),
             createAppointment: jest.fn(),
+            sendAppointmentCreationConfirmation: jest.fn(),
+            gatherCompleteAppointmentData: jest.fn()
+                .mockReturnValue(Promise.resolve({ location: LOCATION })),
+            getActiveAppointmentsForUserAtLocation: jest.fn(),
         };
 
         mockRequest = {
-            user: {
-                id: 1,
-            },
+            user: { id: 1 },
             body: {},
         };
 
@@ -51,38 +50,73 @@ describe('ScheduledAppointmentsController', () => {
 
         mockNext = jest.fn();
 
-        scheduledAppointmentsController = new ScheduledAppointmentsController(mockMainStorage, mockHelper);
+        scheduledAppointmentsController = new ScheduledAppointmentsController(
+            mockCacheService,
+            mockDateTime,
+            mockHelper);
     });
 
+    const expectNoErrorCaught = (nextFunction) => expect(nextFunction).not.toHaveBeenCalled();
+
     describe('create', () => {
-        it('determines whether the appointment can be scheduled by using existing active appointments that user owns', (done) => {
-            const existingActiveAppointments = [1, 2, 3];
-            mockHelper.getExistingActiveAppointments.mockReturnValue(existingActiveAppointments);
-
-            const postHandler = scheduledAppointmentsController.create();
-            postHandler(mockRequest, mockResponse, mockNext).then(() => {
-                expect(mockHelper.canCreateAppointment).toHaveBeenCalledWith(existingActiveAppointments, LOCATIONS);
-                done();
+        describe('if scheduling appointment is possible', () => {
+            beforeEach(() => {
+                mockHelper.canCreateAppointment.mockReturnValue({
+                    canCreateAppointment: true,
+                    reason: '',
+                });
+                mockHelper.createAppointment.mockReturnValue(Promise.resolve());
             });
+
+            it('schedules an appointment', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockHelper.canCreateAppointment).toHaveBeenCalled();
+                    done();
+                });
+            });
+
+            it('invalidates calendar cache', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockCacheService.calendarEvents.invalidate).toHaveBeenCalledWith(LOCATION.calendarId);
+                    done();
+                });
+            });
+
+            it('sends a confirmation', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockHelper.sendAppointmentCreationConfirmation).toHaveBeenCalled();
+                    done();
+                });
+            });
+
+            it('responds with a success message', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockResponse.status).toHaveBeenCalledWith(200);
+                    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'OK' });
+                    done();
+                });
+            });
+
         });
 
-        it('creates an appointment if user is eligible to create one and responds with OK message', (done) => {
+        it('does not schedule an appointment and delegates the reason upstream if scheduling is not possible', (done) => {
+            const rejectionReason = 'no u';
             mockHelper.canCreateAppointment.mockReturnValue({
-                canCreateAppointment: true,
-                reason: '',
+                canCreateAppointment: false,
+                reason: rejectionReason,
             });
 
-            const postHandler = scheduledAppointmentsController.create();
-            postHandler(mockRequest, mockResponse, mockNext).then(() => {
-                expect(mockHelper.createAppointment).toHaveBeenCalledWith(mockRequest.user, mockRequest.body);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                expect(mockResponse.json).toHaveBeenCalledWith({ message: 'OK' });
+            scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                expect(mockNext).toHaveBeenCalledWith(expect.objectContaining({
+                    error: expect.stringContaining(rejectionReason),
+                    status: 422
+                }));
                 done();
             });
-        });
-
-        it('does not create an appointment and delegates the error upsteam with the reason', () => {
-
         });
     });
 });
