@@ -247,7 +247,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
     canDeleteAppointment(user, appointment, now) {
         return {
-            reason: 'nope',
+            reason: '',
             canDeleteAppointment: true,
         };
     },
@@ -257,10 +257,22 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
         return Promise.resolve();
     },
 
-    getSingleAppointmentWithLocation(user, deletionRecord) {
-        return Promise.resolve({
-            appointment: {},
-            location: {},
+    getSingleActiveAppointmentWithLocation(user, deletionRecord, now) {
+        const { id } = deletionRecord;
+
+        return mainStorage.db.models.scheduledAppointment.findOne({
+            where: { userId: user.id, id: id, googleCalendarAppointmentDate: { $gt: now } },
+        }).then((appointment) => {
+            let result;
+
+            if (!!appointment) {
+                result = mainStorage.db.models.location.findOne({ where: { id: appointment.locationId } })
+                    .then((location) => ({ appointment, location }));
+            } else {
+                result = Promise.reject('Requested appointment was not found');
+            }
+
+            return result;
         });
     },
 

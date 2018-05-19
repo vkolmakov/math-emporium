@@ -85,7 +85,7 @@ export default class ScheduledAppointmentsController {
 
         const now = this.dateTime.now();
 
-        const appointmentWithLocationPromise = this.helper.getSingleAppointmentWithLocation(user, deletionRecord);
+        const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(user, deletionRecord, now);
 
         appointmentWithLocationPromise.then(({ appointment, location }) => {
             return deleteAppointmentOrReject(user, appointment, now)
