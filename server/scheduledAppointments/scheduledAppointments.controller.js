@@ -77,7 +77,7 @@ export default class ScheduledAppointmentsController {
         appointmentWithLocationPromise.then(({ appointment, location }) => {
             return this.helper.deleteAppointment(appointment)
                 .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
-                .then(() => this.helper.sendAppointmentDeletionConfirmation(appointment, location));
+                .then(() => this.helper.sendAppointmentDeletionConfirmation(user, appointment, location));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));

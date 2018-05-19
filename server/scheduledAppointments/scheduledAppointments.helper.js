@@ -245,9 +245,19 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             }));
     },
 
-    sendAppointmentDeletionConfirmation(appointment, location) {
-        console.log('Sending apppointment removal confirmation', location.name, appointment.googleCalendarAppointmentId);
-        return Promise.resolve();
+    sendAppointmentDeletionConfirmation(user, appointment, location) {
+        const appointmentTimeString = appointment.googleCalendarAppointmentDate;
+        const formattedTime = dateTime.formatVisible(dateTime.parse(appointmentTimeString));
+
+        const contactInfo = !!location.phone || !!location.email
+              ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
+              : '';
+
+        const emailBodyConstructor = () =>
+              `We've successfully cancelled your appointment on ${formattedTime} at ${location.name}. ${contactInfo}`;
+        const subjectConstructor = () => `Your appointment at ${location.name} was successfully cancelled`;
+
+        return sendEmail(user, { subjectConstructor, emailBodyConstructor });
     },
 
     getSingleActiveAppointmentWithLocation(user, deletionRecord, now) {
