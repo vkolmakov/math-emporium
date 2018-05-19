@@ -61,9 +61,11 @@ export default class ScheduledAppointmentsController {
             const { location } = completeAppointmentData;
 
             return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
-                .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
-                .then(() => this.helper.sendAppointmentCreationConfirmation(completeAppointmentData))
-                .then(() => this.logger.log.createEvent(req));
+                .then(() => Promise.all([
+                    this.cacheService.calendarEvents.invalidate(location.calendarId),
+                    this.helper.sendAppointmentCreationConfirmation(completeAppointmentData),
+                    this.logger.log.createEvent(req),
+                ]));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('schedule', 'appointment', reason)));
@@ -84,9 +86,11 @@ export default class ScheduledAppointmentsController {
 
         appointmentWithLocationPromise.then(({ appointment, location }) => {
             return this.helper.deleteAppointment(appointment)
-                .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
-                .then(() => this.helper.sendAppointmentDeletionConfirmation(user, appointment, location))
-                .then(() => this.logger.log.deleteEvent(req));
+                .then(() => Promise.all([
+                    this.cacheService.calendarEvents.invalidate(location.calendarId),
+                    this.helper.sendAppointmentDeletionConfirmation(user, appointment, location),
+                    this.logger.log.deleteEvent(req),
+                ]));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));
