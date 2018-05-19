@@ -245,15 +245,8 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             }));
     },
 
-    canDeleteAppointment(user, appointment, now) {
-        return {
-            reason: '',
-            canDeleteAppointment: true,
-        };
-    },
-
     sendAppointmentDeletionConfirmation(appointment, location) {
-        console.log(appointment, location, 'Sending apppointment removal confirmation');
+        console.log('Sending apppointment removal confirmation', location.name, appointment.googleCalendarAppointmentId);
         return Promise.resolve();
     },
 
@@ -277,7 +270,28 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
     },
 
     deleteAppointment(appointment) {
-        console.log(appointment, 'Deleting appointment');
-        return Promise.resolve();
+        const wasAppointmentAlreadyDeletedOnCalendar = (calendarError) => {
+            return !!calendarError
+                && !!calendarError.message
+                && calendarError.message.toLowerCase().includes('deleted');
+        };
+
+        return calendarService.deleteCalendarEvent({
+            eventId: appointment.googleCalendarAppointmentId,
+            calendarId: appointment.googleCalendarId,
+        }).then(
+            () => Promise.resolve(true),
+            // explicitly handle a case when appointment could've
+            // been manually removed from the calendar
+            (error) => Promise.resolve(wasAppointmentAlreadyDeletedOnCalendar(error)),
+        ).then((shouldProceed) => {
+            return shouldProceed
+                ? Promise.resolve()
+                : Promise.reject();
+        }).then(() => {
+            return mainStorage.db.models.scheduledAppointment.destroy({
+                where: { id: appointment.id },
+            });
+        });
     },
 });

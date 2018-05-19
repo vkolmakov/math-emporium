@@ -62,19 +62,6 @@ export default class ScheduledAppointmentsController {
     }
 
     delete(req, res, next) {
-        const deleteAppointmentOrReject = (user, appointment, now) => {
-            const { reason, canDeleteAppointment } = this.helper.canDeleteAppointment(user, appointment);
-
-            let result;
-            if (canDeleteAppointment) {
-                result = this.helper.deleteAppointment(appointment);
-            } else {
-                result = Promise.reject(reason);
-            }
-
-            return result;
-        };
-
         /**
          * {
          *     id: Number,
@@ -88,7 +75,7 @@ export default class ScheduledAppointmentsController {
         const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(user, deletionRecord, now);
 
         appointmentWithLocationPromise.then(({ appointment, location }) => {
-            return deleteAppointmentOrReject(user, appointment, now)
+            return this.helper.deleteAppointment(appointment)
                 .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
                 .then(() => this.helper.sendAppointmentDeletionConfirmation(appointment, location));
         }).then(() => {
