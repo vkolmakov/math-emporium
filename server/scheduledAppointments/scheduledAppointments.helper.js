@@ -13,7 +13,14 @@ const quantityItemDescription = (quantity, item) => {
 export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
     gatherCompleteAppointmentData(user, appointmentData, appointmentDateTime) {
         const locationPromise = mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
-        const coursePromise = mainStorage.db.models.course.findOne({ where: { id: appointmentData.course.id, locationId: appointmentData.location.id } });
+
+        const coursePromise = mainStorage.db.models.course.findOne({
+            where: {
+                id: appointmentData.course.id,
+                locationId: appointmentData.location.id,
+            },
+        });
+
         const tutorDataPromise = openSpotsService.availableTutors(
             appointmentData.location,
             appointmentData.course,
@@ -116,27 +123,29 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             const { maximumAppointmentsPerLocation } = location;
             return {
                 isValid: activeAppointmentsForUserAtLocation.length < maximumAppointmentsPerLocation,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerLocation, 'appointment')} at this location at the same time`,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerLocation, 'appointment')} at this location at the same time`, // eslint-disable-line max-len
             };
         };
 
         const doesNotExceedSubjectMaximum = ({ location, subject }) => {
             const { maximumAppointmentsPerSubject } = location;
-            const activeAppointmentsForUserAtLocationWithSubject = activeAppointmentsForUserAtLocation.filter((appointment) => appointment.subjectId === subject.id);
+            const activeAppointmentsForUserAtLocationWithSubject = activeAppointmentsForUserAtLocation.filter(
+                (appointment) => appointment.subjectId === subject.id);
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithSubject.length < maximumAppointmentsPerSubject,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} at for this subject at this location at the same time`,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} at for this subject at this location at the same time`, // eslint-disable-line max-len
             };
         };
 
         const doesNotExceedCourseMaximum = ({ location, course }) => {
             const { maximumAppointmentsPerCourse } = location;
-            const activeAppointmentsForUserAtLocationWithCourse = activeAppointmentsForUserAtLocation.filter((appointment) => appointment.courseId === course.id);
+            const activeAppointmentsForUserAtLocationWithCourse = activeAppointmentsForUserAtLocation.filter(
+                (appointment) => appointment.courseId === course.id);
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithCourse.length < maximumAppointmentsPerCourse,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} at for this course at this location at the same time`,
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} at for this course at this location at the same time`, // eslint-disable-line max-len
             };
         };
 
@@ -179,8 +188,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
               ? `Please contact us at ${location.phone || location.email} if you have any questions for us.`
               : '';
 
-        const emailBodyConstructor = () =>
-              `Your appointment for ${course.code} with ${tutorData.tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`;
+        const emailBodyConstructor = () => `Your appointment for ${course.code} with ${tutorData.tutor.name} on ${formattedTime} in the ${location.name} has been scheduled. ${contactInfo}`; // eslint-disable-line max-len
         const subjectConstructor = () => `Appointment reminder: ${location.name} on ${formattedTime}`;
         return sendEmail(user, { subjectConstructor, emailBodyConstructor });
     },

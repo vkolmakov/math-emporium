@@ -1,4 +1,3 @@
-import { APPOINTMENT_LENGTH } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 
@@ -50,7 +49,7 @@ export default class ScheduledAppointmentsController {
 
         return Promise.all([
             completeAppointmentDataPromise,
-            activeAppointmentsForUserAtLocationPromise
+            activeAppointmentsForUserAtLocationPromise,
         ]).then(([completeAppointmentData, activeAppointmentsForUserAtLocation]) => {
             const { location } = completeAppointmentData;
 
@@ -63,7 +62,6 @@ export default class ScheduledAppointmentsController {
     }
 
     delete(req, res, next) {
-
         res.status(200).json('hello');
     }
 }
