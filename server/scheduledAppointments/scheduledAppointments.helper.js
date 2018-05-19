@@ -12,6 +12,31 @@ const quantityItemDescription = (quantity, item) => {
 
 export default (mainStorage, calendarService, sendEmail) => ({
     canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
+        const hasAllRequestedAppointmentData = (appointmentData) => {
+            const requiredAppointmentDataTypes = {
+                time: Date,
+                location: Object,
+                subject: Object,
+                course: Object,
+                tutorData: Object,
+                user: Object,
+            };
+
+            const missingProps = Object.keys(requiredAppointmentDataTypes).reduce((acc, requiredProp) => {
+                const isPresentAndCorrectType = !!appointmentData[requiredProp]
+                      && appointmentData[requiredProp] instanceof requiredAppointmentDataTypes[requiredProp];
+
+                return isPresentAndCorrectType
+                    ? acc
+                    : acc.concat(requiredProp);
+            }, []);
+
+            return {
+                isValid: missingProps.length === 0,
+                error: `Following properties were missing: ${missingProps.join(', ')}`,
+            };
+        };
+
         const isLocationActive = ({ location }) => ({
             isValid: location.isActive,
             error: 'Requested location is not active',
@@ -25,11 +50,6 @@ export default (mainStorage, calendarService, sendEmail) => ({
         const courseBelongsToSubject = ({ course, subject }) => ({
             isValid: course.subjectId === subject.id,
             error: 'Requested course and subject are not matching',
-        });
-
-        const hasTutor = ({ tutorData }) => ({
-            isValid: !!tutorData.tutor,
-            error: 'Requested tutor is no longer available',
         });
 
         const isAfterNow = ({ time }) => ({
@@ -66,10 +86,10 @@ export default (mainStorage, calendarService, sendEmail) => ({
         };
 
         const validators = [
+            hasAllRequestedAppointmentData,
             isLocationActive,
             courseBelongsToSubject,
             courseBelongsToLocation,
-            hasTutor,
             isAfterNow,
             doesNotExceedLocationMaximum,
             doesNotExceedSubjectMaximum,
