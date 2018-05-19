@@ -99,6 +99,11 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             };
         };
 
+        const hasCompleteUserProfile = ({ user }) => ({
+            isValid: user.firstName && user.lastName && user.phoneNumber,
+            error: 'Please update your profile: phone number, first and last names are required',
+        });
+
         const isLocationActive = ({ location }) => ({
             isValid: location.isActive,
             error: 'Requested location is not active',
@@ -151,6 +156,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
         const validators = [
             hasAllRequestedAppointmentData,
+            hasCompleteUserProfile,
             isLocationActive,
             courseBelongsToSubject,
             courseBelongsToLocation,
