@@ -26,7 +26,6 @@ export default class ScheduledAppointmentsController {
             return result;
         };
 
-        const { user } = req;
         /**
          * {
          *     time: String (ISO),
@@ -38,6 +37,7 @@ export default class ScheduledAppointmentsController {
          * }
          */
         const appointmentData = req.body;
+        const { user } = req;
 
         const now = this.dateTime.now();
         const appointmentDateTime = this.dateTime.parse(appointmentData.time);
@@ -62,6 +62,37 @@ export default class ScheduledAppointmentsController {
     }
 
     delete(req, res, next) {
-        res.status(200).json('hello');
+        const deleteAppointmentOrReject = (user, appointment, now) => {
+            const { reason, canDeleteAppointment } = this.helper.canDeleteAppointment(user, appointment);
+
+            let result;
+            if (canDeleteAppointment) {
+                result = this.helper.deleteAppointment(appointment);
+            } else {
+                result = Promise.reject(reason);
+            }
+
+            return result;
+        };
+
+        /**
+         * {
+         *     id: Number,
+         * }
+         */
+        const deletionRecord = req.body;
+        const { user } = req;
+
+        const now = this.dateTime.now();
+
+        const appointmentWithLocationPromise = this.helper.getSingleAppointmentWithLocation(user, deletionRecord);
+
+        appointmentWithLocationPromise.then(({ appointment, location }) => {
+            return deleteAppointmentOrReject(user, appointment, now)
+                .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
+                .then(() => this.helper.sendAppointmentDeletionConfirmation(appointment, location));
+        }).then(() => {
+            res.status(200).json(successMessage());
+        }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));
     }
 }

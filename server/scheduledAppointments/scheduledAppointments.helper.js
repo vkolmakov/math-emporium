@@ -244,4 +244,28 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
                 tutorData,
             }));
     },
+
+    canDeleteAppointment(user, appointment, now) {
+        return {
+            reason: 'nope',
+            canDeleteAppointment: true,
+        };
+    },
+
+    sendAppointmentDeletionConfirmation(appointment, location) {
+        console.log(appointment, location, 'Sending apppointment removal confirmation');
+        return Promise.resolve();
+    },
+
+    getSingleAppointmentWithLocation(user, deletionRecord) {
+        return Promise.resolve({
+            appointment: {},
+            location: {},
+        });
+    },
+
+    deleteAppointment(appointment) {
+        console.log(appointment, 'Deleting appointment');
+        return Promise.resolve();
+    },
 });
