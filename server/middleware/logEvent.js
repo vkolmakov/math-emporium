@@ -8,11 +8,9 @@ function getAdditionalData(eventType, requestBody) {
         return {
             time,
             course: {
-                code: course.code,
                 id: course.id,
             },
             location: {
-                name: location.name,
                 id: location.id,
             },
         };

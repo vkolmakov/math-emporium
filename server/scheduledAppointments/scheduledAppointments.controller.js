@@ -1,10 +1,17 @@
+import { events } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
 
 export default class ScheduledAppointmentsController {
-    constructor(cacheService, dateTime, helper) {
+    constructor(cacheService, dateTime, createEventLogger, helper) {
         this.cacheService = cacheService;
         this.dateTime = dateTime;
+        this.logger = {
+            log: {
+                createEvent: createEventLogger(events.USER_CREATED_APPOINTMENT),
+                deleteEvent: createEventLogger(events.USER_REMOVED_APPOINTMENT),
+            }
+        },
         this.helper = helper;
     }
 
@@ -55,7 +62,8 @@ export default class ScheduledAppointmentsController {
 
             return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
                 .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
-                .then(() => this.helper.sendAppointmentCreationConfirmation(completeAppointmentData));
+                .then(() => this.helper.sendAppointmentCreationConfirmation(completeAppointmentData))
+                .then(() => this.logger.log.createEvent(req));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('schedule', 'appointment', reason)));
@@ -77,7 +85,8 @@ export default class ScheduledAppointmentsController {
         appointmentWithLocationPromise.then(({ appointment, location }) => {
             return this.helper.deleteAppointment(appointment)
                 .then(() => this.cacheService.calendarEvents.invalidate(location.calendarId))
-                .then(() => this.helper.sendAppointmentDeletionConfirmation(user, appointment, location));
+                .then(() => this.helper.sendAppointmentDeletionConfirmation(user, appointment, location))
+                .then(() => this.logger.log.deleteEvent(req));
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));
