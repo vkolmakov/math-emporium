@@ -134,7 +134,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithSubject.length < maximumAppointmentsPerSubject,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} at for this subject at this location at the same time`, // eslint-disable-line max-len
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} for this subject at the same time`, // eslint-disable-line max-len
             };
         };
 
@@ -145,7 +145,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithCourse.length < maximumAppointmentsPerCourse,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} at for this course at this location at the same time`, // eslint-disable-line max-len
+                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} for this course at the same time`, // eslint-disable-line max-len
             };
         };
 
