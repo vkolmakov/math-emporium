@@ -1,4 +1,5 @@
-import ScheduledAppointmentsController from '../../../server/scheduledAppointments/scheduledAppointments.controller.js';
+import { events } from '../../../server/aux';
+import ScheduledAppointmentsController from '../../../server/scheduledAppointments/scheduledAppointments.controller';
 
 describe('ScheduledAppointmentsController', () => {
     const LOCATION = {
@@ -9,6 +10,10 @@ describe('ScheduledAppointmentsController', () => {
 
     let mockCacheService;
     let mockDateTime;
+
+    let mockCreateLogger;
+    let mockDeleteLogger;
+    let mockCreateEventLogger;
     let mockHelper;
 
     let mockRequest;
@@ -27,6 +32,27 @@ describe('ScheduledAppointmentsController', () => {
             parse: jest.fn(),
         };
 
+        mockCreateLogger = jest.fn();
+        mockDeleteLogger = jest.fn();
+        mockCreateEventLogger = jest.fn()
+            .mockImplementation((eventName) => {
+                let logger;
+                switch (eventName) {
+                    case events.USER_CREATED_APPOINTMENT: {
+                        logger = mockCreateLogger;
+                        break;
+                    }
+                    case events.USER_REMOVED_APPOINTMENT: {
+                        logger = mockDeleteLogger;
+                        break;
+                    }
+                    default: {
+                        logger = jest.fn();
+                    }
+                }
+                return logger;
+            });
+
         mockHelper = {
             canCreateAppointment: jest.fn(),
             createAppointment: jest.fn(),
@@ -37,7 +63,10 @@ describe('ScheduledAppointmentsController', () => {
         };
 
         mockRequest = {
-            user: { id: 1 },
+            user: {
+                id: 1,
+                setDefaultAppointmentPreferencesIfNoneSet: jest.fn(),
+            },
             body: {},
         };
 
@@ -53,6 +82,7 @@ describe('ScheduledAppointmentsController', () => {
         scheduledAppointmentsController = new ScheduledAppointmentsController(
             mockCacheService,
             mockDateTime,
+            mockCreateEventLogger,
             mockHelper);
     });
 
@@ -92,6 +122,22 @@ describe('ScheduledAppointmentsController', () => {
                 });
             });
 
+            it('logs the appointment creation event', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockCreateLogger).toHaveBeenCalledWith(mockRequest);
+                    done();
+                });
+            });
+
+            it('attempts to set default preferences for the user', (done) => {
+                scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
+                    expectNoErrorCaught(mockNext);
+                    expect(mockRequest.user.setDefaultAppointmentPreferencesIfNoneSet).toHaveBeenCalled();
+                    done();
+                });
+            });
+
             it('responds with a success message', (done) => {
                 scheduledAppointmentsController.create(mockRequest, mockResponse, mockNext).then(() => {
                     expectNoErrorCaught(mockNext);
@@ -100,7 +146,6 @@ describe('ScheduledAppointmentsController', () => {
                     done();
                 });
             });
-
         });
 
         it('does not schedule an appointment and delegates the reason upstream if scheduling is not possible', (done) => {
