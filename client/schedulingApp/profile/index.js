@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import NextAppointment from './components/nextAppointment';
+import Appointments from './components/appointments';
 import UpdateProfileForm from './components/updateProfileForm';
+import Faq from './components/faq';
 import LoadingSpinner from '../../components/loadingSpinner';
 
 import { getUserProfile } from './actions';
@@ -24,12 +25,18 @@ class Profile extends Component {
         }
 
         return (
-            <div className="content">
-                <NextAppointment profile={profile} />
+            <div className="profile-and-appointments">
+              <div className="appointments-faq">
+                <Appointments profile={profile} />
+                <Faq></Faq>
+              </div>
+
+              <div className="profile">
                 <UpdateProfileForm profile={profile}
                                    locations={locations}
                                    courses={courses}
                                    subjects={subjects} />
+              </div>
             </div>
         );
     }

@@ -227,35 +227,16 @@ $gutter-size: 0.75em;
     }
 }
 
-.edit-profile-form-wrap {
-    @include breakpoint($medium-screen) {
-        @include span(4 of 8 last);
-    }
+.profile-and-appointments {
+    display: flex;
 }
 
-.next-appointment-wrap {
-    @include breakpoint($medium-screen) {
-        @include span(4 of 8);
-    }
+.appointments-faq {
+    flex: 3;
+}
 
-    > .next-appointment {
-        @include clearfix();
-        > p {
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-
-        > a {
-            @include button();
-            @include destructive();
-            display: inline-block;
-            padding: 10px;
-            width: 180px;
-
-            margin-bottom: 20px;
-            font-weight: 400;
-        }
-    }
+.profile {
+    flex: 2;
 }
 
 .faq {
