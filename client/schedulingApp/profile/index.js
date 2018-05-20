@@ -17,11 +17,11 @@ class Profile extends Component {
     }
 
     render() {
-        const { profile, courses, locations, subjects, faqContent } = this.props;
+        const { profile, courses, locations, subjects, faqContent, appointments } = this.props;
 
-        if (!(profile && courses.all && locations.all && faqContent)) {
+        if (!(profile && courses.all && locations.all && faqContent && appointments)) {
             return (
-                <div className="content">
+                <div className="profile-and-appointments-loading">
                   <LoadingSpinner />
                 </div>
             );
@@ -30,7 +30,7 @@ class Profile extends Component {
         return (
             <div className="profile-and-appointments">
               <div className="appointments-faq">
-                <Appointments profile={profile} />
+                <Appointments courses={courses.all} locations={locations.all} appointments={appointments} />
                 <Faq content={faqContent}></Faq>
               </div>
 
@@ -61,6 +61,7 @@ function mapStateToProps(state) {
             selected: state.scheduling.shared.subjects.selected,
         },
         faqContent: state.util.settings.faqContent,
+        appointments: state.scheduling.profile.activeUserAppointments,
     };
 }
 

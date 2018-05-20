@@ -227,6 +227,11 @@ $gutter-size: 0.75em;
     }
 }
 
+.profile-and-appointments-loading {
+    display: flex;
+    justify-content: center;
+}
+
 .profile-and-appointments {
     display: flex;
     flex-direction: column;

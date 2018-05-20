@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import moment from 'moment';
 
 import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
@@ -28,7 +27,7 @@ const SingleAppointment = (courses, locations, createAppointmentCancelClickHandl
     );
 };
 
-const _Appointments = ({ appointments, courses, locations }) => {
+export default ({ appointments, courses, locations }) => {
     const createAppointmentCancelClickHandler = (id) => (event) => {
         console.log('Deleting appointment', id, event);
     };
@@ -46,13 +45,3 @@ const _Appointments = ({ appointments, courses, locations }) => {
         </div>
     );
 };
-
-function mapStateToProps(state) {
-    return {
-        appointments: state.scheduling.profile.activeUserAppointments,
-        courses: state.scheduling.shared.courses.all,
-        locations: state.scheduling.shared.locations.all,
-    };
-}
-
-export default connect(mapStateToProps)(_Appointments);
