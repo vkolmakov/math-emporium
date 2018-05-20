@@ -233,10 +233,17 @@ $gutter-size: 0.75em;
 
 .appointments-faq {
     flex: 3;
+    padding-right: 1.5em;
 }
 
 .profile {
     flex: 2;
+}
+
+.individual-appointment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .faq {
