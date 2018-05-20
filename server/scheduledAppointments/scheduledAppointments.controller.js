@@ -74,12 +74,9 @@ export default class ScheduledAppointmentsController {
     }
 
     delete(req, res, next) {
-        /**
-         * {
-         *     id: Number,
-         * }
-         */
-        const deletionRecord = req.body;
+        const deletionRecord = {
+            id: parseInt(req.params.id, 10),
+        };
         const { user } = req;
 
         const now = this.dateTime.now();

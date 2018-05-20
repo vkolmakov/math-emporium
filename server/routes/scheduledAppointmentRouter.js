@@ -27,7 +27,7 @@ export default function createScheduledAppointmentRouter() {
     router.post(ROUTE_PATH,
                 requireGroup(authGroups.USER),
                 controller.create.bind(controller));
-    router.delete(ROUTE_PATH,
+    router.delete(`${ROUTE_PATH}/:id`,
                   requireGroup(authGroups.USER),
                   controller.delete.bind(controller));
 
