@@ -1,4 +1,5 @@
-export const pluckPublicFields = ({ courseId, subjectId, locationId, googleCalendarAppointmentDate  }) => ({
+export const pluckPublicFields = ({ courseId, subjectId, locationId, googleCalendarAppointmentDate, id }) => ({
+    id,
     time: googleCalendarAppointmentDate,
     location: { id: locationId },
     subject: { id: subjectId },
