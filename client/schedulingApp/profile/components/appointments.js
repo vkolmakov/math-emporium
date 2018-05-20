@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Component } from 'react';
+import Modal from 'react-modal';
 import moment from 'moment';
 
 import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
@@ -26,21 +27,69 @@ const SingleAppointment = (courses, locations, createAppointmentCancelClickHandl
     );
 };
 
-export default ({ appointments, courses, locations }) => {
-    const createAppointmentCancelClickHandler = (id) => (event) => {
-        console.log('Deleting appointment', id, event);
+const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => (
+    <Modal isOpen={isOpen}
+           onRequestClose={onClose}
+           className="confirmation-modal">
+      <h2 className="modal-title">Are you sure you want to cancel your appointment?</h2>
+      <div className="buttons-input-group-wrap">
+        <button onClick={onConfirm}
+                className="destructive action">Yes</button>
+        <button onClick={onClose}
+                className="nondestructive nonaction">No</button>
+      </div>
+    </Modal>
+);
+
+export default class Appointments extends Component {
+    constructor() {
+        super();
+        this.state = this.initialState;
+    }
+
+    get initialState() {
+        return {
+            isDeletionConfirmationModalOpen: false,
+            appointmentToDelete: { id: null },
+        };
+    }
+
+    deleteSelectedAppointment() {
+        console.log('deleted', this.state);
+    }
+
+    resetState() {
+        const initialState = this.initialState;
+        this.setState(initialState);
+    }
+
+    createAppointmentCancelClickHandler(id) {
+        return (event) => {
+            this.setState({
+                isDeletionConfirmationModalOpen: true,
+                appointmentToDelete: { id },
+            });
+        };
+    }
+
+    render () {
+        const { appointments, courses, locations } = this.props;
+
+        const Appointments = () => (
+            <ul className="appointments-list">
+              {appointments.map(SingleAppointment(courses, locations, this.createAppointmentCancelClickHandler.bind(this)))}
+            </ul>
+        );
+
+        return (
+            <div className="appointments">
+              <h2>Appointments</h2>
+              <Appointments></Appointments>
+              <ConfirmationModal
+                isOpen={this.state.isDeletionConfirmationModalOpen}
+                onClose={this.resetState.bind(this)}
+                onConfirm={this.deleteSelectedAppointment.bind(this)}></ConfirmationModal>
+            </div>
+        );
     };
-
-    const Appointments = () => (
-        <ul className="appointments-list">
-          {appointments.map(SingleAppointment(courses, locations, createAppointmentCancelClickHandler))}
-        </ul>
-    );
-
-    return (
-        <div className="appointments">
-          <h2>Appointments</h2>
-          <Appointments></Appointments>
-        </div>
-    );
-};
+}
