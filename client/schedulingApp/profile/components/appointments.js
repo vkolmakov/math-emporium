@@ -82,16 +82,16 @@ class Appointments extends Component {
     render () {
         const { appointments, courses, locations } = this.props;
 
-        const Appointments = () => (
+        const AppointmentsOrMessage = () => appointments.length > 0 ? (
             <ul className="appointments-list">
               {appointments.map(SingleAppointment(courses, locations, this.createAppointmentCancelClickHandler.bind(this)))}
             </ul>
-        );
+        ) : <p>You have no upcoming appointments.</p>;
 
         return (
             <div className="appointments">
               <h2>Appointments</h2>
-              <Appointments></Appointments>
+              <AppointmentsOrMessage></AppointmentsOrMessage>
               <ConfirmationModal
                 isOpen={this.state.isDeletionConfirmationModalOpen}
                 onClose={this.resetState.bind(this)}
