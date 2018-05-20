@@ -256,7 +256,11 @@ $gutter-size: 0.75em;
 .individual-appointment {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+
+.individual-appointment-actions {
+    margin-left: 0.5em;
 }
 
 .faq {
