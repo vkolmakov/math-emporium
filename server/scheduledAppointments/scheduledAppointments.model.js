@@ -1,3 +1,10 @@
+export const pluckPublicFields = ({ courseId, subjectId, locationId, googleCalendarAppointmentDate  }) => ({
+    time: googleCalendarAppointmentDate,
+    location: { id: locationId },
+    subject: { id: subjectId },
+    course: { id: courseId },
+});
+
 export default function createScheduledAppointmentModel(sequelize, DataTypes) {
     const scheduledAppointment = sequelize.define('scheduledAppointment', {
         googleCalendarAppointmentId: {

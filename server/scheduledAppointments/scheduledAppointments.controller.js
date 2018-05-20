@@ -1,6 +1,7 @@
 import { events } from '../aux';
 import { actionFailed } from '../services/errorMessages';
 import { successMessage } from '../services/messages';
+import { pluckPublicFields } from './scheduledAppointments.model';
 
 export default class ScheduledAppointmentsController {
     constructor(cacheService, dateTime, createEventLogger, helper) {
@@ -85,7 +86,7 @@ export default class ScheduledAppointmentsController {
 
         const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(user, deletionRecord, now);
 
-        appointmentWithLocationPromise.then(({ appointment, location }) => {
+        return appointmentWithLocationPromise.then(({ appointment, location }) => {
             return this.helper.deleteAppointment(appointment)
                 .then(() => Promise.all([
                     this.cacheService.calendarEvents.invalidate(location.calendarId),
@@ -95,5 +96,14 @@ export default class ScheduledAppointmentsController {
         }).then(() => {
             res.status(200).json(successMessage());
         }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));
+    }
+
+    getForUser(req, res, next) {
+        const { user } = req;
+        const now = this.dateTime.now();
+
+        return this.helper.getActiveAppointmentsForUser(user, now).then((appointments) => {
+            res.status(200).json(appointments.map(pluckPublicFields));
+        }).catch(() => next(actionFailed('get', 'appointments')));
     }
 }

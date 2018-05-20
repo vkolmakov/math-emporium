@@ -19,6 +19,9 @@ export default function createScheduledAppointmentRouter() {
     const helper = scheduledAppointmentsHelper(mainStorage, calendarServiceFactory(), sendEmail, openSpotsService);
     const controller = new ScheduledAppointmentsController(cache, dateTime, createEventLogger, helper);
 
+    router.get('/scheduled-appointment',
+                  requireGroup(authGroups.USER),
+                  controller.getForUser.bind(controller));
     router.post('/scheduled-appointment',
                 requireGroup(authGroups.USER),
                 controller.create.bind(controller));
