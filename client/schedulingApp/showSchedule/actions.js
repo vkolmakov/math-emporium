@@ -19,7 +19,7 @@ export const SA_DISPLAY_PROFILE_MODAL = 'SA_DISPLAY_PROFILE_MODAL';
 export const SA_SAVE_SELECTED_OPEN_SPOT = 'SA_SAVE_SELECTED_OPEN_SPOT';
 
 const BASE_URL = '/api/open-spots';
-const BASE_URL_APPOINTMENT = '/api/scheduled-appointment';
+const BASE_URL_APPOINTMENTS = '/api/scheduled-appointments';
 const BASE_URL_TUTORS = '/api/available-tutors';
 
 export function getOpenSpots({ location, course, startDate, subject }) {
@@ -129,7 +129,7 @@ export function scheduleAppointment({ location, subject, course, time, requested
             comments,
         };
 
-        return axios.post(BASE_URL_APPOINTMENT, requestData);
+        return axios.post(BASE_URL_APPOINTMENTS, requestData);
     };
 }
 
