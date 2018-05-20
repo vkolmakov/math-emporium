@@ -2,7 +2,6 @@ import React from 'react';
 import moment from 'moment';
 
 import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
-import LoadingSpinner from '../../../components/loadingSpinner';
 
 const SingleAppointment = (courses, locations, createAppointmentCancelClickHandler) => ({ id, location, course, time }) => {
     const locationName = locations.find((l) => l.id === location.id).name;
@@ -10,7 +9,7 @@ const SingleAppointment = (courses, locations, createAppointmentCancelClickHandl
     const formattedTime = moment(time).format(TIMESTAMP_DISPLAY_FORMAT);
 
     return (
-        <div key={id} className="individual-appointment">
+        <li key={id} className="individual-appointment">
           <div className="individual-appointment-description">
             <div className="details">
               {courseCode} at {locationName}
@@ -23,7 +22,7 @@ const SingleAppointment = (courses, locations, createAppointmentCancelClickHandl
           <div className="individual-appointment-actions">
             <button onClick={createAppointmentCancelClickHandler(id)}>Cancel</button>
           </div>
-        </div>
+        </li>
     );
 };
 
@@ -32,16 +31,16 @@ export default ({ appointments, courses, locations }) => {
         console.log('Deleting appointment', id, event);
     };
 
-    const AppointmentsOrSpinner = () => !!appointments ? (
-        <div>
+    const Appointments = () => (
+        <ul className="appointments-list">
           {appointments.map(SingleAppointment(courses, locations, createAppointmentCancelClickHandler))}
-        </div>
-    ) : (<LoadingSpinner></LoadingSpinner>);
+        </ul>
+    );
 
     return (
         <div className="appointments">
           <h2>Appointments</h2>
-          <AppointmentsOrSpinner></AppointmentsOrSpinner>
+          <Appointments></Appointments>
         </div>
     );
 };
