@@ -1,36 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 
-import LoadingSpinner from '../../../components/loadingSpinner';
+export default ({ content }) => {
+    const Content = () => (
+        <div className="faq-content" dangerouslySetInnerHTML={{ __html: content }}></div>
+    );
 
-import { getFaqContent } from '../../../util/actions';
-
-class Faq extends Component {
-    componentDidMount() {
-        if (!this.props.content) {
-            this.props.getFaqContent();
-        }
-    }
-
-    render() {
-        const Content = () => !!this.props.content
-              ? <div className="faq-content" dangerouslySetInnerHTML={{ __html: this.props.content }}></div>
-              : <LoadingSpinner></LoadingSpinner>;
-
-        return (
-            <div className="faq">
-              <Content></Content>
-            </div>
-        );
-    }
-}
-
-function mapStateToProps(state) {
-    return {
-        content: state.util.settings.faqContent,
-    };
-}
-
-export default connect(mapStateToProps, {
-    getFaqContent,
-})(Faq);
+    return (
+        <div className="faq">
+          <Content></Content>
+        </div>
+    );
+};

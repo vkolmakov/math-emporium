@@ -7,17 +7,19 @@ import Faq from './components/faq';
 import LoadingSpinner from '../../components/loadingSpinner';
 
 import { getUserProfile, getActiveUserAppointments } from './actions';
+import { getFaqContent } from '../../util/actions';
 
 class Profile extends Component {
     componentDidMount() {
         this.props.getUserProfile();
         this.props.getActiveUserAppointments();
+        this.props.getFaqContent();
     }
 
     render() {
-        const { profile, courses, locations, subjects } = this.props;
+        const { profile, courses, locations, subjects, faqContent } = this.props;
 
-        if (!(profile && courses.all && locations.all)) {
+        if (!(profile && courses.all && locations.all && faqContent)) {
             return (
                 <div className="content">
                   <LoadingSpinner />
@@ -29,7 +31,7 @@ class Profile extends Component {
             <div className="profile-and-appointments">
               <div className="appointments-faq">
                 <Appointments profile={profile} />
-                <Faq></Faq>
+                <Faq content={faqContent}></Faq>
               </div>
 
               <div className="profile">
@@ -58,10 +60,12 @@ function mapStateToProps(state) {
             all: state.scheduling.shared.subjects.all,
             selected: state.scheduling.shared.subjects.selected,
         },
+        faqContent: state.util.settings.faqContent,
     };
 }
 
 export default connect(mapStateToProps, {
     getUserProfile,
     getActiveUserAppointments,
+    getFaqContent,
 })(Profile);
