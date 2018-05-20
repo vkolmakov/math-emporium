@@ -389,7 +389,7 @@ function mapStateToProps(state) {
         openSpots: state.scheduling.showSchedule.openSpots,
         modalInfo: state.scheduling.showSchedule.modalInfo,
         modalMessage: state.scheduling.showSchedule.message,
-        profile: state.scheduling.profile,
+        profile: state.scheduling.profile.user,
         selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
         authenticated: state.auth.authenticated,
     };

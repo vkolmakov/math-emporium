@@ -83,7 +83,7 @@ class SchedulingApp extends Component {
 function mapStateToProps(state) {
     return {
         authenticated: state.auth.authenticated,
-        profile: state.scheduling.profile,
+        profile: state.scheduling.profile.user,
         initialized: state.scheduling.shared.initialized,
         locations: {
             all: state.scheduling.shared.locations.all,

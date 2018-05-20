@@ -44,7 +44,7 @@ class Profile extends Component {
 
 function mapStateToProps(state) {
     return {
-        profile: state.scheduling.profile,
+        profile: state.scheduling.profile.user,
         locations: {
             all: state.scheduling.shared.locations.all,
             selected: state.scheduling.shared.locations.selected,
