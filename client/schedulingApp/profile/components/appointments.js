@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Modal from 'react-modal';
 import moment from 'moment';
 
+import { deleteAppointment } from '../actions';
 import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
 
 const SingleAppointment = (courses, locations, createAppointmentCancelClickHandler) => ({ id, location, course, time }) => {
@@ -41,7 +43,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => (
     </Modal>
 );
 
-export default class Appointments extends Component {
+class Appointments extends Component {
     constructor() {
         super();
         this.state = this.initialState;
@@ -55,7 +57,12 @@ export default class Appointments extends Component {
     }
 
     deleteSelectedAppointment() {
-        console.log('deleted', this.state);
+        const { deleteAppointment } = this.props;
+        const { appointmentToDelete } = this.state;
+
+        return deleteAppointment(appointmentToDelete).then(() => {
+            this.resetState();
+        });
     }
 
     resetState() {
@@ -93,3 +100,7 @@ export default class Appointments extends Component {
         );
     };
 }
+
+export default connect(null, {
+    deleteAppointment,
+})(Appointments);

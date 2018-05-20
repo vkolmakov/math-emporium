@@ -20,7 +20,7 @@ export function getUserProfile() {
 
 export function getActiveUserAppointments() {
     return (dispatch) => {
-        axios.get(`${BASE_URL_APPOINTMENTS}`).then(({ data }) => {
+        return axios.get(BASE_URL_APPOINTMENTS).then(({ data }) => {
             dispatch(setActiveUserAppointments(data));
         });
     };
@@ -40,6 +40,15 @@ export function setOpenSpotDataFromProfile(profile) {
         dispatch(setLocation(location));
         dispatch(setSubject(subject));
         dispatch(setCourse(course));
+    };
+}
+
+export function deleteAppointment(appointment) {
+    const { id } = appointment;
+    return (dispatch) => {
+        return axios.delete(`${BASE_URL_APPOINTMENTS}/${id}`).then(() => {
+            return dispatch(getActiveUserAppointments());
+        });
     };
 }
 
@@ -80,15 +89,5 @@ export function updateUserProfile(values) {
                 });
                 return response;
             });
-    };
-}
-
-export function deleteAppointment() {
-    return dispatch => {
-        axios.delete(`${BASE_URL}/appointment`)
-            .then(response => {
-                dispatch(getUserProfile());
-            });
-        return Promise.resolve();
     };
 }
