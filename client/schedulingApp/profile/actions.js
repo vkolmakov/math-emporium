@@ -4,8 +4,10 @@ import { setCourse, setLocation, setSubject } from '../actions';
 export const SA_GET_USER_PROFILE = 'SA_GET_USER_PROFILE';
 export const SA_UPDATE_USER_PROFILE = 'SA_UPDATE_USER_PROFILE';
 export const SA_SET_USER_PROFILE = 'SA_SET_USER_PROFILE';
+export const SA_SET_ACTIVE_USER_APPOINTMENTS = 'SA_SET_ACTIVE_USER_APPOINTMENTS';
 
 const BASE_URL = '/api/user';
+const BASE_URL_APPOINTMENTS = '/api/scheduled-appointments';
 
 export function getUserProfile() {
     const request = axios.get(`${BASE_URL}/profile`);
@@ -13,6 +15,21 @@ export function getUserProfile() {
     return {
         type: SA_SET_USER_PROFILE,
         payload: request,
+    };
+}
+
+export function getActiveUserAppointments() {
+    return (dispatch) => {
+        axios.get(`${BASE_URL_APPOINTMENTS}`).then(({ data }) => {
+            dispatch(setActiveUserAppointments(data));
+        });
+    };
+}
+
+export function setActiveUserAppointments(appointments) {
+    return {
+        type: SA_SET_ACTIVE_USER_APPOINTMENTS,
+        payload: appointments,
     };
 }
 

@@ -6,11 +6,12 @@ import UpdateProfileForm from './components/updateProfileForm';
 import Faq from './components/faq';
 import LoadingSpinner from '../../components/loadingSpinner';
 
-import { getUserProfile } from './actions';
+import { getUserProfile, getActiveUserAppointments } from './actions';
 
 class Profile extends Component {
     componentDidMount() {
         this.props.getUserProfile();
+        this.props.getActiveUserAppointments();
     }
 
     render() {
@@ -62,4 +63,5 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     getUserProfile,
+    getActiveUserAppointments,
 })(Profile);
