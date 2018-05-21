@@ -3,8 +3,18 @@ import { connect } from 'react-redux';
 import Modal from 'react-modal';
 import moment from 'moment';
 
+import MessageModal from '../../../components/messageModal';
+import LoadingModal from '../../../components/loadingModal';
+
 import { deleteAppointment } from '../actions';
 import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
+
+const MODAL_STATE = {
+    NONE: 0,
+    CONFIRMATION: 1,
+    LOADING: 2,
+    MESSAGE: 3,
+};
 
 const SingleAppointment = (courses, locations, createAppointmentCancelClickHandler) => ({ id, location, course, time }) => {
     const locationName = locations.find((l) => l.id === location.id).name;
@@ -51,7 +61,8 @@ class Appointments extends Component {
 
     get initialState() {
         return {
-            isDeletionConfirmationModalOpen: false,
+            modalState: MODAL_STATE.NONE,
+            modalMessage: '',
             appointmentToDelete: { id: null },
         };
     }
@@ -60,8 +71,10 @@ class Appointments extends Component {
         const { deleteAppointment } = this.props;
         const { appointmentToDelete } = this.state;
 
+        this.setState({ modalState: MODAL_STATE.LOADING });
+
         return deleteAppointment(appointmentToDelete).then(() => {
-            this.resetState();
+            this.setState({ modalState: MODAL_STATE.MESSAGE, modalMessage: 'Your appointment was successfully cancelled.' });
         });
     }
 
@@ -73,7 +86,7 @@ class Appointments extends Component {
     createAppointmentCancelClickHandler(id) {
         return (event) => {
             this.setState({
-                isDeletionConfirmationModalOpen: true,
+                modalState: MODAL_STATE.CONFIRMATION,
                 appointmentToDelete: { id },
             });
         };
@@ -81,6 +94,33 @@ class Appointments extends Component {
 
     render () {
         const { appointments, courses, locations } = this.props;
+
+        const MaybeModal = ({ modalState }) => {
+            switch(modalState) {
+            case MODAL_STATE.CONFIRMATION: {
+                return (
+                    <ConfirmationModal
+                      isOpen={true}
+                      onClose={this.resetState.bind(this)}
+                      onConfirm={this.deleteSelectedAppointment.bind(this)}></ConfirmationModal>
+                );
+            }
+            case MODAL_STATE.LOADING: {
+                return (<LoadingModal height="3em" onRequestClose={this.resetState.bind(this)}></LoadingModal>);
+            }
+            case MODAL_STATE.MESSAGE: {
+                return (
+                    <MessageModal
+                      onRequestClose={this.resetState.bind(this)}
+                      message={this.state.modalMessage}></MessageModal>
+                );
+            }
+            case MODAL_STATE.NONE:
+            default:
+                return (<span></span>);
+            }
+        };
+
 
         const AppointmentsOrMessage = () => appointments.length > 0 ? (
             <ul className="appointments-list">
@@ -92,10 +132,7 @@ class Appointments extends Component {
             <div className="appointments">
               <h2>Appointments</h2>
               <AppointmentsOrMessage></AppointmentsOrMessage>
-              <ConfirmationModal
-                isOpen={this.state.isDeletionConfirmationModalOpen}
-                onClose={this.resetState.bind(this)}
-                onConfirm={this.deleteSelectedAppointment.bind(this)}></ConfirmationModal>
+              <MaybeModal modalState={this.state.modalState}></MaybeModal>
             </div>
         );
     };

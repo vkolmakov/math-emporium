@@ -140,10 +140,6 @@
 
 .loading-modal {
     @include base-modal();
-
-    > .loading {
-        margin: 6em auto;
-    }
 }
 
 .confirmation-modal {
