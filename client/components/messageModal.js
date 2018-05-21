@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-import { TEST_ID } from '../../../constants';
+import { TEST_ID } from '../constants';
 
 export default ({ onRequestClose, message }) => (
     <Modal isOpen={true}

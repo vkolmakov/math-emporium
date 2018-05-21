@@ -1,14 +1,14 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-import LoadingSpinner from '../../../components/loadingSpinner';
+import LoadingSpinner from './loadingSpinner';
 
-export default ({ onRequestClose }) => (
+export default ({ onRequestClose, height }) => (
     <Modal isOpen={true}
            onRequestClose={onRequestClose}
            shouldCloseOnOverlayClick={false}
            contentLabel="Loading Modal"
            className="loading-modal">
-        <LoadingSpinner />
+      <LoadingSpinner height={height}/>
     </Modal>
 );
