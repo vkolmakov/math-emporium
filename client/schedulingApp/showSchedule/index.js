@@ -7,10 +7,11 @@ import DatePicker from 'react-datepicker';
 import FilterControls from '../../components/filterControls';
 import OpenSpots from './components/openSpots';
 
-import TutorSelectionModal from './components/tutorSelectionModal';
-import LoadingModal from './components/loadingModal';
+import LoadingModal from '../../components/loadingModal';
+import MessageModal from '../../components/messageModal';
 import ProfileModal from './components/profileModal';
-import MessageModal from './components/messageModal';
+import TutorSelectionModal from './components/tutorSelectionModal';
+
 
 import { MODAL_LIFECYCLE, getOpenSpotElementId } from './constants';
 
@@ -203,7 +204,7 @@ class ShowSchedule extends Component {
                 return (<TutorSelectionModal onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.LOADING:
-                return (<LoadingModal onRequestClose={onRequestClose} />);
+                return (<LoadingModal height="6em" onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
                 return (<ProfileModal onRequestClose={onRequestClose} />);
