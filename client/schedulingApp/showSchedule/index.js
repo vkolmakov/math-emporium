@@ -204,7 +204,7 @@ class ShowSchedule extends Component {
                 return (<TutorSelectionModal onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.LOADING:
-                return (<LoadingModal height="6em" onRequestClose={onRequestClose} />);
+                return (<LoadingModal height="6.5em" onRequestClose={onRequestClose} />);
 
             case MODAL_LIFECYCLE.MISSING_PROFILE:
                 return (<ProfileModal onRequestClose={onRequestClose} />);

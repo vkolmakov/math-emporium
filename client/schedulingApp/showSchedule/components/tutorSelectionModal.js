@@ -127,10 +127,10 @@ class TutorSelectionModal extends Component {
 
                 <div className="buttons-input-group-wrap">
                     <button onClick={this.props.onRequestClose.bind(this)}
-                            className="destructive">Cancel</button>
+                            className="button-request-close">Cancel</button>
                     <button onClick={onScheduleAppointment}
                             data-test={TEST_ID.MODAL_SUBMIT_BUTTON}
-                            className="nondestructive">Schedule</button>
+                            className="button-confirm-action">Schedule</button>
                 </div>
             </Modal>
         );

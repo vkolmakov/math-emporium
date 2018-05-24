@@ -9,6 +9,16 @@
     align-items: center;
 }
 
+@mixin modal-base-button {
+    @include rounded-border
+
+    font-size: 1em;
+    width: 7.5em;
+    padding: 0.5em;
+
+    cursor: pointer;
+}
+
 @mixin base-modal {
     background-color: $secondary-color;
 
@@ -39,32 +49,28 @@
     }
 
     > .buttons-input-group-wrap {
-        @mixin modal-button-border {
-            padding: 10px;
-            &:hover,&:focus {
-                padding: 9px;
-                @include rounded-border-enlarge;
-            }
-        }
-
         @include input-group-wrap();
         margin: 0.5em 0;
         justify-content: space-between;
-        > button {
-            font-size: 1em;
 
-            @include button;
-            @include modal-button-border;
-            padding: 10px;
-            width: 7.5em;
+        .button-request-close {
+            @include modal-base-button;
 
-            &.destructive {
-                @include destructive;
+            color: $primary-text-color;
 
+            &:hover,&:focus {
+                background-color: $tertiary-color;
             }
+        }
 
-            &.nondestructive {
-                @include nondestructive;
+        .button-confirm-action {
+            @include modal-base-button;
+
+            color: $primary-text-color;
+            background-color: $primary-color;
+
+            &:hover,&:focus {
+                background-color: $primary-color-focused;
             }
         }
     }

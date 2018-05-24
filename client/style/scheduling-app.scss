@@ -267,6 +267,15 @@ $gutter-size: 0.75em;
     margin-left: 0.5em;
 }
 
+.individual-appointment-cancel-action {
+    @include button;
+    @include nondestructive;
+
+    font-size: 1em;
+    padding: 10px;
+    margin-left: 0.25em;
+}
+
 .faq {
     .faq-content {
         // styles for html elements generated from markdown

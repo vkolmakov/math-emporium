@@ -33,7 +33,9 @@ const SingleAppointment = (courses, locations, createAppointmentCancelClickHandl
           </div>
 
           <div className="individual-appointment-actions">
-            <button onClick={createAppointmentCancelClickHandler(id)}>Cancel</button>
+            <button
+              className="individual-appointment-cancel-action"
+              onClick={createAppointmentCancelClickHandler(id)}>Cancel</button>
           </div>
         </li>
     );
@@ -45,10 +47,10 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => (
            className="confirmation-modal">
       <h2 className="modal-title">Are you sure you want to cancel your appointment?</h2>
       <div className="buttons-input-group-wrap">
-        <button onClick={onConfirm}
-                className="destructive action">Yes</button>
         <button onClick={onClose}
-                className="nondestructive nonaction">No</button>
+                className="button-request-close">No</button>
+        <button onClick={onConfirm}
+                className="button-confirm-action">Yes</button>
       </div>
     </Modal>
 );

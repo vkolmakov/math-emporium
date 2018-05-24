@@ -13,7 +13,7 @@ export default ({ onRequestClose, message }) => (
             <span className="filler"></span>
             <button onClick={onRequestClose}
                     data-test={TEST_ID.MODAL_CLOSE_BUTTON}
-                    className="nondestructive">Close</button>
+                    className="button-confirm-action">Close</button>
         </div>
     </Modal>
 );

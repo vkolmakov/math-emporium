@@ -156,10 +156,10 @@ export default class ProfileModal extends Component {
 
               <div className="buttons-input-group-wrap">
                 <button onClick={onRequestClose}
-                        className="destructive">Cancel</button>
+                        className="button-request-close">Cancel</button>
                 <button onClick={() => this.profileFormRef.onFormSubmit()}
                         data-test={TEST_ID.MODAL_SUBMIT_BUTTON}
-                        className="nondestructive">Submit</button>
+                        className="button-confirm-action">Submit</button>
               </div>
             </Modal>
         );
