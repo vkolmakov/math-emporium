@@ -79,7 +79,7 @@ $gutter-size: 0.75em;
 
 .react-datepicker__week {
     &:hover,&:focus {
-        background-color: darken($tertiary-color, 4%);
+        background-color: $tertiary-color;
     }
 }
 
