@@ -187,7 +187,9 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 canCreateAppointment: result.isValid,
-                reason: result.accumulatedErrors.join('; '),
+                reason: result.accumulatedErrors.length > 0
+                    ? result.accumulatedErrors[0]
+                    : ''
             };
         };
 
