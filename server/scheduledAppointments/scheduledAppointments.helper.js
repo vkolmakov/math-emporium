@@ -76,6 +76,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
     getActiveAppointmentsForUser(user, now) {
         return mainStorage.db.models.scheduledAppointment.findAll({
             where: { userId: user.id, googleCalendarAppointmentDate: { $gt: now } },
+            order: [['googleCalendarAppointmentDate', 'ASC']]
         });
     },
 
