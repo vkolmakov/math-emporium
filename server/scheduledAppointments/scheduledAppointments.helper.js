@@ -1,5 +1,9 @@
 import { dateTime, pickOneFrom, R, APPOINTMENT_LENGTH } from '../aux';
 
+const RECOVERY_SUGGESTION = {
+    RESCHEDULE: "RESCHEDULE",
+};
+
 const quantityItemDescription = (quantity, item) => {
     let result;
     if (quantity === 1) {
@@ -81,6 +85,14 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
     },
 
     canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
+        const withRecoverySuggestion = (suggestion, message) => {
+            const suggestionMessage = {
+                [RECOVERY_SUGGESTION.RESCHEDULE]: "Please delete your existing appointment from the profile page to reschedule",
+            };
+
+            return `${message}. ${suggestionMessage[suggestion]}`;
+        };
+
         const hasAllRequestedAppointmentData = (appointmentData) => {
             const requiredAppointmentDataTypes = {
                 time: Date,
@@ -102,40 +114,43 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 isValid: missingProps.length === 0,
-                error: `Following properties were missing: ${missingProps.join(', ')}`,
+                error: `following properties were missing: ${missingProps.join(', ')}`,
             };
         };
 
         const hasCompleteUserProfile = ({ user }) => ({
             isValid: user.firstName && user.lastName && user.phoneNumber,
-            error: 'Please update your profile: phone number, first and last names are required',
+            error: 'please update your profile: phone number, first and last names are required',
         });
 
         const isLocationActive = ({ location }) => ({
             isValid: location.isActive,
-            error: 'Requested location is not active',
+            error: 'requested location is not active',
         });
 
         const courseBelongsToLocation = ({ course, location }) => ({
             isValid: course.locationId === location.id,
-            error: 'Requested location and course are not matching',
+            error: 'requested location and course are not matching',
         });
 
         const courseBelongsToSubject = ({ course, subject }) => ({
             isValid: course.subjectId === subject.id,
-            error: 'Requested course and subject are not matching',
+            error: 'requested course and subject are not matching',
         });
 
         const isAfterNow = ({ time }) => ({
             isValid: dateTime.isAfter(time, now),
-            error: 'Requested appointment time is no longer available',
+            error: 'requested appointment time is no longer available',
         });
 
         const doesNotExceedLocationMaximum = ({ location }) => {
             const { maximumAppointmentsPerLocation } = location;
             return {
                 isValid: activeAppointmentsForUserAtLocation.length < maximumAppointmentsPerLocation,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerLocation, 'appointment')} at this location at the same time`, // eslint-disable-line max-len
+                error: withRecoverySuggestion(
+                    RECOVERY_SUGGESTION.RESCHEDULE,
+                    `cannot have more than ${quantityItemDescription(maximumAppointmentsPerLocation, 'appointment')} at this location at the same time`  // eslint-disable-line max-len
+                ),
             };
         };
 
@@ -146,7 +161,10 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithSubject.length < maximumAppointmentsPerSubject,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} for this subject at the same time`, // eslint-disable-line max-len
+                error: withRecoverySuggestion(
+                    RECOVERY_SUGGESTION.RESCHEDULE,
+                    `cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} for this subject at the same time`, // eslint-disable-line max-len
+                ),
             };
         };
 
@@ -157,21 +175,12 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
             return {
                 isValid: activeAppointmentsForUserAtLocationWithCourse.length < maximumAppointmentsPerCourse,
-                error: `Cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} for this course at the same time`, // eslint-disable-line max-len
+                error: withRecoverySuggestion(
+                    RECOVERY_SUGGESTION.RESCHEDULE,
+                    `cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} for this course at the same time`, // eslint-disable-line max-len
+                ),
             };
         };
-
-        const validators = [
-            hasAllRequestedAppointmentData,
-            hasCompleteUserProfile,
-            isLocationActive,
-            courseBelongsToSubject,
-            courseBelongsToLocation,
-            isAfterNow,
-            doesNotExceedLocationMaximum,
-            doesNotExceedSubjectMaximum,
-            doesNotExceedCourseMaximum,
-        ];
 
         const applyValidators = (validators) => {
             const result = validators.reduce((result, validator) => {
@@ -188,10 +197,22 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             return {
                 canCreateAppointment: result.isValid,
                 reason: result.accumulatedErrors.length > 0
-                    ? result.accumulatedErrors[0]
+                    ? `${result.accumulatedErrors[0]}.`
                     : ''
             };
         };
+
+        const validators = [
+            hasAllRequestedAppointmentData,
+            hasCompleteUserProfile,
+            isLocationActive,
+            courseBelongsToSubject,
+            courseBelongsToLocation,
+            isAfterNow,
+            doesNotExceedLocationMaximum,
+            doesNotExceedSubjectMaximum,
+            doesNotExceedCourseMaximum,
+        ];
 
         return applyValidators(validators);
     },
