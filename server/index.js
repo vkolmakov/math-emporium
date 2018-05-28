@@ -1,9 +1,9 @@
 import express from 'express';
-import session from 'express-session';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import path from 'path';
 
+import session from './middleware/session';
 import errorHandler from './middleware/errorHandler';
 import serveCompressed from './middleware/serveCompressed';
 
@@ -18,7 +18,6 @@ import { connectToEventStorage } from './services/eventStorage';
 import settingsStorage from './services/settings/settingsStorage';
 import errorEventStorage from './services/errorEvent/errorEventStorage';
 import mainStorage from './services/mainStorage';
-import sessionStorage from './services/sessionStorage';
 
 import passportService from './services/passport';
 
@@ -84,21 +83,7 @@ function connectToEventStorageDatabase() {
     }
 
     app.use(bodyParser.json());
-    app.use(session({
-        secret: config.SECRET,
-
-        store: sessionStorage.create(session),
-        resave: false,
-        saveUninitialized: false,
-        rolling: true,
-
-        name: 'SID',
-        cookie: {
-            httpOnly: true,
-            maxAge: config.SESSION_LENGTH,
-        },
-    }));
-
+    app.use(session());
     app.use(passportService.middleware.initialize());
 
     if (!isProduction) {
