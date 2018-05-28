@@ -10,7 +10,7 @@
     "main-storage:migration:create": "sequelize migration:create --name",
     "main-storage:migration:run": "sequelize db:migrate",
     "main-storage:migration:undo": "sequelize db:migrate:undo",
-    "postinstall": "npm run clean && node node_modules/node-sass/scripts/install.js && npm rebuild node-sass && npm run build:production",
+    "postinstall": "npm run clean && node node_modules/node-sass/scripts/install.js && npm rebuild node-sass && npm run build:production && npm run main-storage:migration:run",
     "build:production": "webpack --config ./webpack.production.config.js",
     "clean": "rimraf dist",
     "production": "cross-env NODE_ENV=production npm run start",
