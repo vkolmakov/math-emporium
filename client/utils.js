@@ -126,7 +126,7 @@ export function invertObj(obj) {
 }
 
 export const storage = {
-    _provider: window.sessionStorage,
+    _provider: window.localStorage,
 
     KEYS: {
         ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN: 'ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN',
