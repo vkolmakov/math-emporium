@@ -12,6 +12,7 @@ const VISIBLE_SETTINGS_INPUT_TYPE = {
     announcementText: 'textarea',
     announcementBackgroundColor: 'select',
     announcementTextColor: 'select',
+    maximumAppointmentsPerUser: 'text',
 };
 
 const VISIBLE_SETTINGS_OPTIONS = {

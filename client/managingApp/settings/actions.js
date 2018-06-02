@@ -19,5 +19,5 @@ export function updateSettings(settings) {
         dispatch({
             type: UPDATE_SETTINGS,
         });
-    })
+    });
 }
