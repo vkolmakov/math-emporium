@@ -17,10 +17,10 @@ export default class ScheduledAppointmentsController {
     }
 
     create(req, res, next) {
-        const scheduleOrRejectAppointment = (activeAppointmentsForUserAtLocation, completeAppointmentData, now) => {
+        const scheduleOrRejectAppointment = (activeAppointmentsForUser, completeAppointmentData, now) => {
             const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
                 completeAppointmentData,
-                activeAppointmentsForUserAtLocation,
+                activeAppointmentsForUser,
                 now,
             );
 
@@ -52,16 +52,16 @@ export default class ScheduledAppointmentsController {
 
         const completeAppointmentDataPromise = this.helper.gatherCompleteAppointmentData(
             user, appointmentData, appointmentDateTime);
-        const activeAppointmentsForUserAtLocationPromise = this.helper.getActiveAppointmentsForUserAtLocation(
+        const activeAppointmentsForUserPromise = this.helper.getActiveAppointmentsForUser(
             user, appointmentData, now);
 
         return Promise.all([
             completeAppointmentDataPromise,
-            activeAppointmentsForUserAtLocationPromise,
-        ]).then(([completeAppointmentData, activeAppointmentsForUserAtLocation]) => {
+            activeAppointmentsForUserPromise,
+        ]).then(([completeAppointmentData, activeAppointmentsForUser]) => {
             const { location, subject, course } = completeAppointmentData;
 
-            return scheduleOrRejectAppointment(activeAppointmentsForUserAtLocation, completeAppointmentData, now)
+            return scheduleOrRejectAppointment(activeAppointmentsForUser, completeAppointmentData, now)
                 .then(() => Promise.all([
                     this.cacheService.calendarEvents.invalidate(location.calendarId),
                     this.helper.sendAppointmentCreationConfirmation(completeAppointmentData),

@@ -1,4 +1,5 @@
 import { dateTime, pickOneFrom, R, APPOINTMENT_LENGTH } from '../aux';
+import { SETTINGS_KEYS } from '../services/settings/settings.service';
 
 const RECOVERY_SUGGESTION = {
     RESCHEDULE: "RESCHEDULE",
@@ -14,7 +15,7 @@ const quantityItemDescription = (quantity, item) => {
     return result;
 };
 
-export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
+export default (mainStorage, calendarService, sendEmail, openSpotsService, getSettingsValue) => ({
     gatherCompleteAppointmentData(user, appointmentData, appointmentDateTime) {
         const locationPromise = mainStorage.db.models.location.findOne({ where: { id: appointmentData.location.id } });
 
@@ -52,11 +53,17 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             return result;
         });
 
+        const settingsPromise = getSettingsValue(SETTINGS_KEYS.maximumAppointmentsPerUser)
+              .then((maximumAppointmentsPerUser) => ({
+                  [SETTINGS_KEYS.maximumAppointmentsPerUser]: maximumAppointmentsPerUser
+              }));
+
         return Promise.all([
             locationPromise,
             coursePromise,
             tutorDataPromise,
-        ]).then(([location, course, tutorData]) => {
+            settingsPromise
+        ]).then(([location, course, tutorData, settings]) => {
             const completeAppointmentData = {
                 comments: appointmentData.comments,
                 time: appointmentDateTime,
@@ -65,15 +72,10 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
                 course,
                 tutorData,
                 user,
+                settings,
             };
 
             return completeAppointmentData;
-        });
-    },
-
-    getActiveAppointmentsForUserAtLocation(user, appointmentData, now) {
-        return mainStorage.db.models.scheduledAppointment.findAll({
-            where: { userId: user.id, locationId: appointmentData.location.id, googleCalendarAppointmentDate: { $gt: now } },
         });
     },
 
@@ -84,10 +86,10 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
         });
     },
 
-    canCreateAppointment(completeAppointmentData, activeAppointmentsForUserAtLocation, now) {
+    canCreateAppointment(completeAppointmentData, activeAppointmentsForUser, now) {
         const withRecoverySuggestion = (suggestion, message) => {
             const suggestionMessage = {
-                [RECOVERY_SUGGESTION.RESCHEDULE]: "Please delete your existing appointment from the profile page to reschedule",
+                [RECOVERY_SUGGESTION.RESCHEDULE]: "You can cancel one of your existing appointments from the profile page to reschedule",
             };
 
             return `${message}. ${suggestionMessage[suggestion]}`;
@@ -143,8 +145,23 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             error: 'requested appointment time is no longer available',
         });
 
+        const doesNotExceedUserMaximum = ({ settings }) => {
+            const maximumAppointmentsPerUser = settings[SETTINGS_KEYS.maximumAppointmentsPerUser];
+
+            return {
+                isValid: activeAppointmentsForUser.length < maximumAppointmentsPerUser,
+                error: withRecoverySuggestion(
+                    RECOVERY_SUGGESTION.RESCHEDULE,
+                    `cannot have more than ${quantityItemDescription(maximumAppointmentsPerUser, 'appointment')} the same time`  // eslint-disable-line max-len
+                ),
+            };
+        };
+
         const doesNotExceedLocationMaximum = ({ location }) => {
             const { maximumAppointmentsPerLocation } = location;
+            const activeAppointmentsForUserAtLocation = activeAppointmentsForUser.filter(
+                (appointment) => appointment.locationId === location.id);
+
             return {
                 isValid: activeAppointmentsForUserAtLocation.length < maximumAppointmentsPerLocation,
                 error: withRecoverySuggestion(
@@ -156,11 +173,11 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
         const doesNotExceedSubjectMaximum = ({ location, subject }) => {
             const { maximumAppointmentsPerSubject } = location;
-            const activeAppointmentsForUserAtLocationWithSubject = activeAppointmentsForUserAtLocation.filter(
+            const activeAppointmentsForUserWithSubject = activeAppointmentsForUser.filter(
                 (appointment) => appointment.subjectId === subject.id);
 
             return {
-                isValid: activeAppointmentsForUserAtLocationWithSubject.length < maximumAppointmentsPerSubject,
+                isValid: activeAppointmentsForUserWithSubject.length < maximumAppointmentsPerSubject,
                 error: withRecoverySuggestion(
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(maximumAppointmentsPerSubject, 'appointment')} for this subject at the same time`, // eslint-disable-line max-len
@@ -170,11 +187,11 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
 
         const doesNotExceedCourseMaximum = ({ location, course }) => {
             const { maximumAppointmentsPerCourse } = location;
-            const activeAppointmentsForUserAtLocationWithCourse = activeAppointmentsForUserAtLocation.filter(
+            const activeAppointmentsForUserWithCourse = activeAppointmentsForUser.filter(
                 (appointment) => appointment.courseId === course.id);
 
             return {
-                isValid: activeAppointmentsForUserAtLocationWithCourse.length < maximumAppointmentsPerCourse,
+                isValid: activeAppointmentsForUserWithCourse.length < maximumAppointmentsPerCourse,
                 error: withRecoverySuggestion(
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(maximumAppointmentsPerCourse, 'appointment')} for this course at the same time`, // eslint-disable-line max-len
@@ -209,6 +226,7 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService) => ({
             courseBelongsToSubject,
             courseBelongsToLocation,
             isAfterNow,
+            doesNotExceedUserMaximum,
             doesNotExceedLocationMaximum,
             doesNotExceedSubjectMaximum,
             doesNotExceedCourseMaximum,
