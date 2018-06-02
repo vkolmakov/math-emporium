@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const VENDOR_LIBS = [
@@ -18,14 +19,29 @@ const VENDOR_LIBS = [
 
 module.exports = {
     mode: 'production',
-    entry: './client/index.js',
+    entry: {
+        bundle: './client/index.js',
+        vendor: VENDOR_LIBS,
+    },
 
     plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].[hash].css',
             chunkFilename: '[id].[hash].css',
-        })
+        }),
     ],
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    chunks: 'all'
+                }
+            }
+        }
+    },
 
     module: {
         rules: [{
