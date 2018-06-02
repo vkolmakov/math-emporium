@@ -17,24 +17,39 @@ export function getDefaultSettings() {
     return settingsStorage.getDefaultSettings();
 }
 
-function addFaqContentTransformation(settingsValues) {
-    return {
-        ...settingsValues,
-        [SETTINGS_KEYS.faqContent]: faq.compileToHtml(settingsValues[SETTINGS_KEYS.faqText]),
-    };
-}
+const transform = {
+    addFaqContentTransformation(settingsValues) {
+        return {
+            ...settingsValues,
+            [SETTINGS_KEYS.faqContent]: faq.compileToHtml(settingsValues[SETTINGS_KEYS.faqText]),
+        };
+    },
 
-function addAnnouncementContentTransformation(settingsValues) {
-    return {
-        ...settingsValues,
-        [SETTINGS_KEYS.announcementContent]: faq.compileToHtml(settingsValues[SETTINGS_KEYS.announcementText]),
-    };
-}
+    addAnnouncementContentTransformation(settingsValues) {
+        return {
+            ...settingsValues,
+            [SETTINGS_KEYS.announcementContent]: faq.compileToHtml(settingsValues[SETTINGS_KEYS.announcementText]),
+        };
+    },
+
+    convertMaximumAppointmentsPerUserToNumberOrDefault(settingsValues) {
+        const DEFAULT_VALUE = 0;
+        const maximumAppointmentsPerUser = parseInt(settingsValues[SETTINGS_KEYS.maximumAppointmentsPerUser], 10);
+
+        return {
+            ...settingsValues,
+            [SETTINGS_KEYS.maximumAppointmentsPerUser]: isNaN(maximumAppointmentsPerUser)
+                ? DEFAULT_VALUE
+                : maximumAppointmentsPerUser,
+        };
+    }
+};
 
 export function updateDefaultSettings(values) {
     const transformations = [
-        addFaqContentTransformation,
-        addAnnouncementContentTransformation,
+        transform.addFaqContentTransformation,
+        transform.addAnnouncementContentTransformation,
+        transform.convertMaximumAppointmentsPerUserToNumberOrDefault,
     ];
 
     const validSettingsKeys = Object.keys(SETTINGS_KEYS);

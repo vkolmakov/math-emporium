@@ -19,6 +19,8 @@ const SETTINGS_KEYS = {
     announcementContent: 'announcementContent',
     announcementBackgroundColor: 'announcementBackgroundColor',
     announcementTextColor: 'announcementTextColor',
+
+    maximumAppointmentsPerUser: 'maximumAppointmentsPerUser',
 };
 
 const DEFAULT_SETTINGS_VALUES = {
@@ -33,6 +35,8 @@ const DEFAULT_SETTINGS_VALUES = {
     [SETTINGS_KEYS.announcementContent]: '',
     [SETTINGS_KEYS.announcementBackgroundColor]: '#D9EDF9',
     [SETTINGS_KEYS.announcementTextColor]: '#111111',
+
+    [SETTINGS_KEYS.maximumAppointmentsPerUser]: 5,
 };
 
 function findOrCreateSettings(id) {
