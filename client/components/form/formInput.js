@@ -6,7 +6,7 @@ import ColorIcon from '../colorIcon';
 export default ({ type, testId, binding, options, onSelect, controlValue, placeholder, ...rest }) => {
     let inputElement;
 
-    const textInputTypes = ['text', 'password', 'email', 'textarea'];
+    const textInputTypes = ['text', 'password', 'email', 'textarea', 'number'];
     const isTextInput = !!textInputTypes.find(t => t === type);
 
     const selectInputTypes = ['select', 'multiselect'];

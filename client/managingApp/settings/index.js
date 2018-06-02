@@ -12,7 +12,7 @@ const VISIBLE_SETTINGS_INPUT_TYPE = {
     announcementText: 'textarea',
     announcementBackgroundColor: 'select',
     announcementTextColor: 'select',
-    maximumAppointmentsPerUser: 'text',
+    maximumAppointmentsPerUser: 'number',
 };
 
 const VISIBLE_SETTINGS_OPTIONS = {
