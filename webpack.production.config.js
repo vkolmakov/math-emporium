@@ -1,5 +1,7 @@
 const path = require('path');
+
 const webpack = require('webpack');
+const CompressionPlugin = require('compression-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -40,6 +42,13 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: path.resolve('client', 'index.template.html'),
             inject: 'body',
+        }),
+        new CompressionPlugin({
+            asset: '[path].gz[query]',
+            algorithm: 'gzip',
+            test: /\.(js|css)$/,
+            minRatio: 0.8,
+            deleteOriginalAssets: true,
         }),
     ],
 
