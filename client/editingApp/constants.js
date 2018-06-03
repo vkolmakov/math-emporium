@@ -1,6 +1,6 @@
 import * as constants from '../constants';
 
-export const BASE_PATH = 'edit-schedule';
+export const BASE_PATH = constants.ROUTE_BASE_PATHS.EDIT;
 export const ROUTES = {
     LOCATIONS: `/${BASE_PATH}/locations`,
     SUBJECTS: `/${BASE_PATH}/subjects`,

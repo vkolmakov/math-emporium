@@ -59,3 +59,9 @@ export const USER_EMAIL_REGEX = /.+@(?:student.)?ccc\.edu$/;
 export const validateEmail = (email) => !!email.match(USER_EMAIL_REGEX);
 
 export const DERIVE_SCHEDULES_FROM_CALENDAR = true;
+
+export const ROUTE_BASE_PATHS = {
+    EDIT: 'edit-schedule',
+    SCHEDULE: 'schedule',
+    MANAGE: 'manage-portal',
+};

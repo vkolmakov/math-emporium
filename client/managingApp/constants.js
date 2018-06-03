@@ -1,6 +1,6 @@
 import * as constants from '../constants';
 
-export const BASE_PATH = 'manage-portal';
+export const BASE_PATH = constants.ROUTE_BASE_PATHS.MANAGE;
 export const AUTH_GROUPS = constants.AUTH_GROUPS;
 export const EVENT_TYPES = constants.EVENT_TYPES;
 
