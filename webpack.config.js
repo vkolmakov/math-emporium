@@ -1,19 +1,30 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
+    mode: 'development',
+    target: 'web',
     devtool: 'source-map',
+
     entry: [
         'webpack-hot-middleware/client?reload=true',
-        path.resolve(__dirname, 'client/index.js'),
+        path.resolve('client', 'index.js'),
     ],
+
     output: {
-        path: path.resolve(__dirname, 'dist/'),
+        path: path.resolve('dist'),
         publicPath: '/',
         filename: 'bundle.js',
     },
+
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.resolve('client', 'index.template.html'),
+        }),
+        new webpack.HotModuleReplacementPlugin(),
+    ],
+
     module: {
         rules: [{
             test: /\.js$/,
@@ -24,15 +35,13 @@ module.exports = {
             },
 
         }, {
-            test: /\.scss$/,
-            loader: ExtractTextPlugin.extract({
-                loader: ['css-loader', 'sass-loader'],
-            }),
-        }, {
-            test: /\.css$/,
-            loader: ExtractTextPlugin.extract({
-                loader: 'css-loader',
-            }),
+            test: /\.s?[ac]ss$/,
+            use: [
+                'style-loader',
+                'css-loader',
+                'postcss-loader',
+                'sass-loader',
+            ],
         }, {
             test: /\.(png|jpg|gif|svg|ico)$/,
             loader: 'file-loader',
@@ -41,16 +50,4 @@ module.exports = {
             },
         }],
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'client/index.template.html',
-        }),
-        new ExtractTextPlugin({
-            filename: 'public/style.css',
-            allChunks: true,
-        }),
-
-        new webpack.optimize.OccurrenceOrderPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-    ],
 };
