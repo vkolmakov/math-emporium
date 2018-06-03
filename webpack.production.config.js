@@ -1,5 +1,7 @@
+const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const VENDOR_LIBS = [
     'axios',
@@ -20,14 +22,24 @@ const VENDOR_LIBS = [
 module.exports = {
     mode: 'production',
     entry: {
-        bundle: './client/index.js',
+        bundle: path.resolve('client', 'index.js'),
         vendor: VENDOR_LIBS,
+    },
+
+    output: {
+        path: path.resolve('dist'),
+        filename: '[name].[chunkhash].min.js',
+        publicPath: '/',
     },
 
     plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].[hash].css',
             chunkFilename: '[id].[hash].css',
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve('client', 'index.template.html'),
+            inject: 'body',
         }),
     ],
 
