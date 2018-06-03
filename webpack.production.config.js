@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const VENDOR_LIBS = [
     'axios',
@@ -23,6 +24,8 @@ const VENDOR_LIBS = [
 
 module.exports = {
     mode: 'production',
+    target: 'web',
+
     entry: {
         bundle: path.resolve('client', 'index.js'),
         vendor: VENDOR_LIBS,
@@ -59,6 +62,15 @@ module.exports = {
     ],
 
     optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: { warnings: false },
+                    output: { comments: false },
+                },
+            }),
+        ],
+
         splitChunks: {
             cacheGroups: {
                 commons: {
@@ -82,7 +94,7 @@ module.exports = {
             test: /\.s?[ac]ss$/,
             use: [
                 MiniCssExtractPlugin.loader,
-                'css-loader',
+                { loader: 'css-loader', options: { minimize: true }},
                 'postcss-loader',
                 'sass-loader',
             ],
