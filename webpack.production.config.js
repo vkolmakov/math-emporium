@@ -1,8 +1,10 @@
 const path = require('path');
+
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const VENDOR_LIBS = [
     'axios',
@@ -21,49 +23,65 @@ const VENDOR_LIBS = [
 ];
 
 module.exports = {
+    mode: 'production',
+    target: 'web',
+
     entry: {
-        bundle: './client/index.js',
+        bundle: path.resolve('client', 'index.js'),
         vendor: VENDOR_LIBS,
     },
+
     output: {
-        path: path.resolve(__dirname, 'dist/'),
+        path: path.resolve('dist'),
         filename: '[name].[chunkhash].min.js',
         publicPath: '/',
     },
+
     plugins: [
-        new HtmlWebpackPlugin({
-            template: 'client/index.template.html',
-            inject: 'body',
-        }),
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production'),
             },
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false,
-                screw_ie8: true,
-            },
-            output: {
-                comments: false,
-            },
+        new MiniCssExtractPlugin({
+            filename: '[name].[hash].css',
+            chunkFilename: '[id].[hash].css',
         }),
-        new ExtractTextPlugin({
-            filename: 'style.[chunkhash].css',
-            allChunks: true,
+        new HtmlWebpackPlugin({
+            template: path.resolve('client', 'index.template.html'),
+            inject: 'body',
         }),
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ['vendor', 'manifest'],
-        }),
-        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en-gb)$/),
         new CompressionPlugin({
             asset: '[path].gz[query]',
             algorithm: 'gzip',
             test: /\.(js|css)$/,
-            minRatio: 0,
+            minRatio: 0.8,
+            deleteOriginalAssets: true,
         }),
+        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en-gb)$/),
     ],
+
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: { warnings: false },
+                    output: { comments: false },
+                },
+            }),
+        ],
+
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    chunks: 'all'
+                }
+            }
+        }
+    },
+
     module: {
         rules: [{
             test: /\.jsx?$/,
@@ -73,15 +91,13 @@ module.exports = {
                 presets: ['react', 'es2015'],
             },
         }, {
-            test: /\.scss$/,
-            loader: ExtractTextPlugin.extract({
-                loader: ['css-loader', 'postcss-loader', 'sass-loader'],
-            }),
-        }, {
-            test: /\.css$/,
-            loader: ExtractTextPlugin.extract({
-                loader: ['css-loader'],
-            }),
+            test: /\.s?[ac]ss$/,
+            use: [
+                MiniCssExtractPlugin.loader,
+                { loader: 'css-loader', options: { minimize: true }},
+                'postcss-loader',
+                'sass-loader',
+            ],
         }, {
             test: /\.(png|jpg|gif|svg|ico)$/,
             loader: 'file-loader',

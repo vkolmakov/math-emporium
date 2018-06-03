@@ -20,9 +20,6 @@ import errorEventStorage from './services/errorEvent/errorEventStorage';
 import mainStorage from './services/mainStorage';
 
 import passportService from './services/passport';
-
-import webpack from 'webpack';
-import webpackConfig from '../webpack.config';
 import morgan from 'morgan';
 
 import config from './config';
@@ -112,6 +109,8 @@ function connectToEventStorageDatabase() {
     app.use(errorHandler);
 
     if (isDevClient) {
+        const webpack = require('webpack');
+        const webpackConfig = require('../webpack.config');
         const webpackMiddleware = require('webpack-dev-middleware');
         const webpackHotMiddleware = require('webpack-hot-middleware');
         const compiler = webpack(webpackConfig);
