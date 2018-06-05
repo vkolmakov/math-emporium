@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { BASE_PATH, AUTH_GROUPS } from '@client/constants';
+import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
 import RequireAuthGroup from '@client/auth/components/requireAuthGroup';
 
 import App from '@client/rootApp/index';
@@ -41,7 +41,7 @@ export default class Router extends Component {
               <div>
                 <Route path="/" component={App}></Route>
                 <Route exact path="/" component={Home}></Route>
-                <Route path="/edit-schedule" component={Editing}></Route>
+                <Route path={`/${ROUTE_BASE_PATHS.EDIT}`} component={Editing}></Route>
 
               </div>
             </BrowserRouter>

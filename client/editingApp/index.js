@@ -1,9 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Route, Switch } from 'react-router-dom';
 
-import Sidebar from '../components/sidebar/index';
-import MainContentWrap from '../components/mainContentWrap';
-import { BASE_PATH, AUTH_GROUPS } from './constants';
+import Sidebar from '@client/components/sidebar/index';
+import MainContentWrap from '@client/components/mainContentWrap';
+import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
+
+import EditLocations from '@client/editingApp/locations/index';
+import LocationDetail from '@client/editingApp/locations/components/locationDetail';
+
+const BASE_PATH = ROUTE_BASE_PATHS.EDIT;
+
+const IndexComponent = () => (
+    <div className="content">
+      <div className="middle-help-message-wrap">
+        <h1>Select an option</h1>
+      </div>
+    </div>
+);
 
 class EditingApp extends Component {
     render() {
@@ -39,19 +53,15 @@ class EditingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
-        const displayElems = this.props.children || (
-            <div className="content">
-              <div className="middle-help-message-wrap">
-                <h1>Select an option</h1>
-              </div>
-            </div>
-        );
-
         return (
             <MainContentWrap>
                 <div className="wrap">
                     <Sidebar {...sidebarConfig} />
-                    {displayElems}
+                    <Switch>
+                      <Route exact path={`/${BASE_PATH}`} component={IndexComponent}></Route>
+                      <Route exact path={`/${BASE_PATH}/locations`} component={EditLocations}></Route>
+                      <Route exact path={`/${BASE_PATH}/locations/:id`} component={LocationDetail}></Route>
+                    </Switch>
                 </div>
             </MainContentWrap>
         );
