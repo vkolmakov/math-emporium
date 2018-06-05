@@ -18,6 +18,12 @@ module.exports = {
         filename: 'bundle.js',
     },
 
+    resolve: {
+        alias: {
+            ['@client']: path.resolve('client'),
+        },
+    },
+
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve('client', 'index.template.html'),

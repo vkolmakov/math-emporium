@@ -38,6 +38,12 @@ module.exports = {
         publicPath: '/',
     },
 
+    resolve: {
+        alias: {
+            ['@client']: path.resolve('client'),
+        },
+    },
+
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
