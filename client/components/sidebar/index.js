@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import Link from '@client/components/Link';
 
-import { createClassName } from '../../utils';
+import { createClassName } from '@client/utils';
 
 class Sidebar extends Component {
     getSidebarEntryId(path) {

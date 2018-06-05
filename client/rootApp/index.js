@@ -4,7 +4,6 @@ import SkipLinks from './components/skipLinks';
 import Announcement from './components/announcement';
 import Navbar from './components/navbar/index';
 
-
 export default class App extends Component {
     render() {
         return (
