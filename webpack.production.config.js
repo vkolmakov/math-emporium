@@ -16,6 +16,7 @@ const VENDOR_LIBS = [
     'react-modal',
     'react-redux',
     'react-router',
+    'react-router-dom',
     'react-select',
     'redux-form',
     'redux-promise',
