@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+
+import Link from '../../../components/Link';
 import { AUTH_GROUPS, TEST_ID } from '../../../constants';
 import { createClassName } from '../../../utils';
 
@@ -11,7 +12,6 @@ function isSelected(currentPath, linkPath) {
 
 const navLinkConstructor = (currentRouterPath) => ({ to, className, children, testId }) => {
     const text = children;
-
     return (
         <Link to={to}
               key={to}

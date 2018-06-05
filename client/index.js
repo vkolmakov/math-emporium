@@ -15,8 +15,7 @@ import { selectOpenSpot, didUserPreselectAnOpenSpotBeforeSignIn,
          cleanupPreselectedOpenSpot,
          retrievePreselectedOpenSpot } from './schedulingApp/showSchedule/actions';
 
-import { Router, browserHistory } from 'react-router';
-import routes from './routes';
+import Router from './Router';
 import { redirectTo, storage } from './utils';
 
 import 'react-select/dist/react-select.css';
@@ -64,9 +63,9 @@ if (authGroup && email) {
 }
 
 store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {
-    ReactDOM.render(
+    ReactDOM.render((
         <Provider store={store}>
-          <Router history={browserHistory} routes={routes} />
-        </Provider>,
-        document.querySelector('.root'));
+          <Router></Router>
+        </Provider>
+    ), document.querySelector('.root'));
 });
