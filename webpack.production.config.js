@@ -6,30 +6,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const VENDOR_LIBS = [
-    'axios',
-    'moment',
-    'react',
-    'sanctuary',
-    'react-datepicker',
-    'react-dom',
-    'react-modal',
-    'react-redux',
-    'react-router',
-    'react-router-dom',
-    'react-select',
-    'redux-form',
-    'redux-promise',
-    'redux-thunk',
-];
-
 module.exports = {
     mode: 'production',
     target: 'web',
 
     entry: {
-        bundle: path.resolve('client', 'index.js'),
-        vendor: VENDOR_LIBS,
+        bundle: path.resolve('client', 'index.js')
     },
 
     output: {
