@@ -6,8 +6,11 @@ import Sidebar from '@client/components/sidebar/index';
 import MainContentWrap from '@client/components/mainContentWrap';
 import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
 
-import EditLocations from '@client/editingApp/locations/index';
-import LocationDetail from '@client/editingApp/locations/components/locationDetail';
+import EditLocations from './locations/index';
+import LocationDetail from './locations/components/locationDetail';
+
+import EditSubjects from './subjects/index';
+import SubjectDetail from './subjects/components/subjectDetail';
 
 const BASE_PATH = ROUTE_BASE_PATHS.EDIT;
 
@@ -61,6 +64,8 @@ class EditingApp extends Component {
                       <Route exact path={`/${BASE_PATH}`} component={IndexComponent}></Route>
                       <Route exact path={`/${BASE_PATH}/locations`} component={EditLocations}></Route>
                       <Route exact path={`/${BASE_PATH}/locations/:id`} component={LocationDetail}></Route>
+                      <Route exact path={`/${BASE_PATH}/subjects`} component={EditSubjects} />
+                      <Route exact path={`/${BASE_PATH}/subjects/:id`} component={SubjectDetail} />
                     </Switch>
                 </div>
             </MainContentWrap>

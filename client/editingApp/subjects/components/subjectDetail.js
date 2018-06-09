@@ -16,7 +16,7 @@ class SubjectDetail extends Component {
     render() {
         let { locations, subjects } = this.props;
 
-        const { id } = this.props.params;
+        const { id } = this.props.match.params;
 
         const selectedSubject = subjects.all.find(
             subject => subject.id == id
