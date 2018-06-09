@@ -41,9 +41,10 @@ const store = createStoreWithMiddleware(reducers);
 
 attachUtilEventListeners(window, store);
 
+let immediateRedirect = null;
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
-    redirectTo('/schedule/show');
+    immediateRedirect = '/schedule/show';
     if (didUserPreselectAnOpenSpotBeforeSignIn()) {
         const preselectedOpenSpot = retrievePreselectedOpenSpot();
         store.dispatch(selectOpenSpot(preselectedOpenSpot));
@@ -65,7 +66,7 @@ if (authGroup && email) {
 store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {
     ReactDOM.render((
         <Provider store={store}>
-          <Router></Router>
+          <Router immediatelyRedirectTo={immediateRedirect}></Router>
         </Provider>
     ), document.querySelector('.root'));
 });
