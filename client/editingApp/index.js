@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
+
+import Route from '@client/routing/Route';
+import Switch from '@client/routing/Switch';
 
 import Sidebar from '@client/components/sidebar/index';
 import MainContentWrap from '@client/components/mainContentWrap';
