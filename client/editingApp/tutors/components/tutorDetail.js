@@ -18,7 +18,7 @@ class TutorDetail extends Component {
     render() {
         let { locations, courses, tutors } = this.props;
 
-        const { id } = this.props.params;
+        const { id } = this.props.match.params;
 
         const selectedTutor = tutors.all.find(
             tutor => tutor.id == id
