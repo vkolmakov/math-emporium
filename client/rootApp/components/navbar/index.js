@@ -57,8 +57,8 @@ class Navbar extends Component {
     }
     authLinks() {
         return this.props.authenticated
-            ? [{ to: '/signout', className: 'auth-link', children: `Sign out (${this.props.email})`, testId: TEST_ID.SIGNOUT_LINK }]
-            : [{ to: '/signin', className: 'auth-link', children: 'Sign in', testId: TEST_ID.SIGNIN_LINK }];
+            ? [{ to: '/auth/signout', className: 'auth-link', children: `Sign out (${this.props.email})`, testId: TEST_ID.SIGNOUT_LINK }]
+            : [{ to: '/auth/signin', className: 'auth-link', children: 'Sign in', testId: TEST_ID.SIGNIN_LINK }];
     }
 }
 

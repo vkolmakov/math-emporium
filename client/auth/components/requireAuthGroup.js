@@ -5,13 +5,13 @@ export default (requiredGroup) => (ComposedComponent) => {
     class Authentication extends Component {
         componentWillMount() {
             if (!this.props.authenticated || this.props.group < requiredGroup) {
-                this.props.history.push('/signin');
+                this.props.history.push('/auth/signin');
             }
         }
 
         componentWillUpdate() {
             if (!this.props.authenticated || this.props.group < requiredGroup) {
-                this.props.history.push('/signin');
+                this.props.history.push('/auth/signin');
             }
         }
 

@@ -64,7 +64,7 @@ Promise.all([
     store.dispatch(getAndApplyPublicApplicationStartupSettings())
 ]).then(([authActionResult, _settings]) => {
     if (isPotentiallySignedIn && authActionResult.payload.status !== 200) {
-        immediateRedirect = '/signin';
+        immediateRedirect = '/auth/signin';
     }
 
     ReactDOM.render((
