@@ -18,6 +18,11 @@ import CourseDetail from './courses/components/courseDetail';
 import EditTutors from './tutors/index';
 import TutorDetail from './tutors/components/tutorDetail';
 
+import EditSchedules from './schedules/index';
+
+import SchedulesOverview from './overviews/schedules/index';
+import TutorsOverview from './overviews/tutors/index';
+
 const BASE_PATH = ROUTE_BASE_PATHS.EDIT;
 
 const IndexComponent = () => (
@@ -76,6 +81,9 @@ class EditingApp extends Component {
                       <Route exact path={`/${BASE_PATH}/courses/:id`} component={CourseDetail}></Route>
                       <Route exact path={`/${BASE_PATH}/tutors`} component={EditTutors}></Route>
                       <Route exact path={`/${BASE_PATH}/tutors/:id`} component={TutorDetail}></Route>
+                      <Route exact path={`/${BASE_PATH}/schedules`} component={EditSchedules}></Route>
+                      <Route exact path={`/${BASE_PATH}/schedules-overview`} component={SchedulesOverview}></Route>
+                      <Route exact path={`/${BASE_PATH}/tutors-overview`} component={TutorsOverview}></Route>
                     </Switch>
                 </div>
             </MainContentWrap>
