@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { reduxForm, initialize } from 'redux-form';
 
+import withRouterContext from '@client/routing/withRouterContext';
+import { redirectTo, id } from '@client/utils';
+import Form from '@client/components/form/index';
+
 import { updateCourse, getCourses } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
-import { redirectTo, id } from '../../../utils';
-
-
 import { GOOGLE_CALENDAR_COLORS, ROUTES } from '../../constants';
-
 import { selectTransformOptions } from '../../utils';
-import Form from '../../../components/form/index';
+
 
 const FORM_FIELDS = ['code', 'subject', 'name', 'color', 'location'];
 
@@ -45,7 +45,7 @@ class UpdateCourseForm extends Component {
         const onSubmit = (data) => {
             this.setState({ success: false });
             this.props.updateCourse(this.props.selectedCourse.id, data)
-                .then(result => redirectTo(ROUTES.COURSES),
+                .then(result => redirectTo(this.props.history, ROUTES.COURSES),
                       id);
         };
 
@@ -133,4 +133,4 @@ export default reduxForm({
     form: 'UpdateCourseForm',
     fields: FORM_FIELDS,
     validate,
-}, null, { updateCourse, getCourses, setCurrentLocation })(UpdateCourseForm);
+}, null, { updateCourse, getCourses, setCurrentLocation })(withRouterContext(UpdateCourseForm));

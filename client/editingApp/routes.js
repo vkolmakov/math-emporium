@@ -7,9 +7,6 @@ import { BASE_PATH, AUTH_GROUPS } from './constants';
 
 import EditingApp from './index';
 
-import EditCourses from './courses/index';
-import CourseDetail from './courses/components/courseDetail';
-
 import EditTutors from './tutors/index';
 import TutorDetail from './tutors/components/tutorDetail';
 
@@ -22,8 +19,6 @@ import TutorsOverview from './overviews/tutors/index';
 
 export default (
     <Route path={BASE_PATH} component={RequireAuthGroup(AUTH_GROUPS.employee)(EditingApp)}>
-      <Route path="courses" component={EditCourses} />
-      <Route path="courses/:id" component={CourseDetail} />
       <Route path="tutors" component={EditTutors} />
       <Route path="tutors/:id" component={TutorDetail} />
       <Route path="schedules" component={EditSchedules} />
