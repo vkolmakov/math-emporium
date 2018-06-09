@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './constants';
-import { parseCookies, cleanCookies, redirectTo, storage } from '../utils';
+import { parseCookies, cleanCookies, storage } from '../utils';
 
 export const AUTH_USER = 'AUTH_USER';
 export const UNAUTH_USER = 'UNAUTH_USER';
@@ -80,24 +80,23 @@ export function signInUser(authGroup, email) {
 
     function recordUserSignin() {
         return (dispatch) => {
-            const dispatchSigninAction = (recordSigninResult) =>
-                  dispatch({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
+            const dispatchSigninAction = (recordSigninResult) => ({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
 
-            const dispatchSignoutActionAndRedirectToSignin = (error) => {
+            const dispatchSignoutAction = (error) => {
                 dispatch(signoutUser());
-                redirectTo('/signin');
+                return { type: RECORD_USER_SIGNIN, payload: error };
             };
 
             return axios.post(`${BASE_URL}/record-signin`)
-                .then(dispatchSigninAction, dispatchSignoutActionAndRedirectToSignin);
+                .then(dispatchSigninAction, dispatchSignoutAction);
         };
     }
 
     return (dispatch) => {
-        dispatch(recordUserSignin());
         dispatch(authorizeUser());
         dispatch(setUserAuthGroup(authGroup));
         dispatch(setUserEmail(email));
+        return dispatch(recordUserSignin());
     };
 }
 

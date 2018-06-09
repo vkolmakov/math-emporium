@@ -57,13 +57,16 @@ cleanupPreselectedOpenSpot();
 const authGroup = storage.get(storage.KEYS.USER_AUTH_GROUP);
 const email = storage.get(storage.KEYS.USER_EMAIL);
 
-if (authGroup && email) {
-    store.dispatch(signInUser(authGroup, email));
-} else {
-    storage.clear();
-}
+const isPotentiallySignedIn = !!authGroup && !!email;
 
-store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {
+Promise.all([
+    isPotentiallySignedIn ? store.dispatch(signInUser(authGroup, email)) : Promise.resolve(),
+    store.dispatch(getAndApplyPublicApplicationStartupSettings())
+]).then(([authActionResult, _settings]) => {
+    if (isPotentiallySignedIn && authActionResult.payload.status !== 200) {
+        immediateRedirect = '/signin';
+    }
+
     ReactDOM.render((
         <Provider store={store}>
           <Router immediatelyRedirectTo={immediateRedirect}></Router>
