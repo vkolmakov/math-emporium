@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { reduxForm, initialize } from 'redux-form';
 
+import withRouterContext from '@client/routing/withRouterContext';
+import { redirectTo, id } from '@client/utils';
+import Form from '@client/components/form/index';
+
 import { updateLocation, getLocations } from '../actions';
 import { ROUTES } from '../../constants';
-import { redirectTo, id } from '../../../utils';
-
-import Form from '../../../components/form/index';
 
 const FORM_FIELDS = [
     'name',
@@ -51,7 +52,7 @@ class UpdateLocationForm extends Component {
         const onSubmit = (data) => {
             this.setState({ success: false });
             this.props.updateLocation(this.props.selectedLocation.id, data)
-                .then(result => redirectTo(ROUTES.LOCATIONS),
+                .then(result => redirectTo(this.props.history, ROUTES.LOCATIONS),
                       id);
         };
 
@@ -143,4 +144,4 @@ export default reduxForm({
     form: 'UpdateLocationForm',
     fields: FORM_FIELDS,
     validate,
-}, null, { updateLocation, getLocations })(UpdateLocationForm);
+}, null, { updateLocation, getLocations })(withRouterContext(UpdateLocationForm));
