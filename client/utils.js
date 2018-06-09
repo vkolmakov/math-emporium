@@ -1,4 +1,3 @@
-import { withRouter } from 'react-router-dom';
 import { create, env } from 'sanctuary';
 
 const _S = create({ checkTypes: false, env });
@@ -152,5 +151,3 @@ export const S = {
     compose: _S.compose,
     invertObj,
 };
-
-export const withRouterProvider = withRouter;

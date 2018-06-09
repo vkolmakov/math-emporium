@@ -3,7 +3,8 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateSubject, getSubjects } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
-import { S, withRouterProvider, redirectTo, id } from '@client/utils';
+import { S, redirectTo, id } from '@client/utils';
+import withRouterContext from '@client/routing/withRouterContext';
 
 import { ROUTES } from '../../constants';
 
@@ -99,7 +100,7 @@ function validate(values) {
 }
 
 export default S.compose(
-    withRouterProvider,
+    withRouterContext,
     reduxForm({
         form: 'UpdateSubjectForm',
         fields: ['name', 'location'],

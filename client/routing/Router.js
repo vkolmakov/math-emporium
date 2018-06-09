@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 
 import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
 import RequireAuthGroup from '@client/auth/components/requireAuthGroup';
@@ -31,18 +31,24 @@ function AsyncComponent(getComponent) {
 }
 
 const Editing = RequireAuthGroup(AUTH_GROUPS.employee)(
-    AsyncComponent(() => System.import('./editingApp/index').then((module) => module.default))
+    AsyncComponent(() => System.import('@client/editingApp/index').then((module) => module.default))
 );
 
 export default class Router extends Component {
     render() {
+        const { immediatelyRedirectTo } = this.props;
+
+        let MaybeRedirect = () => immediatelyRedirectTo
+            ? (<Redirect to={immediatelyRedirectTo}></Redirect>)
+            : (<span></span>);
+
         return (
             <BrowserRouter>
               <div>
+                <MaybeRedirect></MaybeRedirect>
                 <Route path="/" component={App}></Route>
                 <Route exact path="/" component={Home}></Route>
                 <Route path={`/${ROUTE_BASE_PATHS.EDIT}`} component={Editing}></Route>
-
               </div>
             </BrowserRouter>
         );

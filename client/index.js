@@ -15,8 +15,8 @@ import { selectOpenSpot, didUserPreselectAnOpenSpotBeforeSignIn,
          cleanupPreselectedOpenSpot,
          retrievePreselectedOpenSpot } from './schedulingApp/showSchedule/actions';
 
-import Router from './Router';
-import { redirectTo, storage } from './utils';
+import Router from './routing/Router';
+import { storage } from './utils';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
