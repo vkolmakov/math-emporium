@@ -34,16 +34,16 @@ function AsyncComponent(getComponent) {
 }
 
 const Editing = RequireAuthGroup(AUTH_GROUPS.employee)(
-    AsyncComponent(() => System.import('@client/editingApp/index').then((module) => module.default))
+    AsyncComponent(() => import('@client/editingApp/index').then((module) => module.default))
 );
 
-const Auth = AsyncComponent(() => System.import('@client/auth/index').then((module) => module.default));
+const Auth = AsyncComponent(() => import('@client/auth/index').then((module) => module.default));
 
 const Managing = RequireAuthGroup(AUTH_GROUPS.employer)(
-    AsyncComponent(() => System.import('@client/managingApp/index').then((module) => module.default))
+    AsyncComponent(() => import('@client/managingApp/index').then((module) => module.default))
 );
 
-const Scheduling = AsyncComponent(() => System.import('@client/schedulingApp/index').then((module) => module.default));
+const Scheduling = AsyncComponent(() => import('@client/schedulingApp/index').then((module) => module.default));
 
 export default class Router extends Component {
     render() {

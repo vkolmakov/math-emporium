@@ -38,6 +38,7 @@ module.exports = {
             exclude: /node_modules/,
             options: {
                 presets: ['react', 'es2015'],
+                plugins: ['syntax-dynamic-import'],
             },
 
         }, {

@@ -78,6 +78,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
                 presets: ['react', 'es2015'],
+                plugins: ['syntax-dynamic-import'],
             },
         }, {
             test: /\.s?[ac]ss$/,
