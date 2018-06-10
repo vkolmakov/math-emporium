@@ -4,14 +4,17 @@ import moment from 'moment';
 
 import DatePicker from 'react-datepicker';
 
-import FilterControls from '../../components/filterControls';
-import OpenSpots from './components/openSpots';
+import FilterControls from '@client/components/filterControls';
+import LoadingModal from '@client/components/loadingModal';
+import MessageModal from '@client/components/messageModal';
+import withRouterContext from '@client/routing/withRouterContext';
 
-import LoadingModal from '../../components/loadingModal';
-import MessageModal from '../../components/messageModal';
+import OpenSpots from './components/openSpots';
 import ProfileModal from './components/profileModal';
 import TutorSelectionModal from './components/tutorSelectionModal';
 
+import { selectTransformOptions } from '@client/editingApp/utils';
+import { redirectTo } from '@client/utils';
 
 import { MODAL_LIFECYCLE, getOpenSpotElementId } from './constants';
 
@@ -27,9 +30,6 @@ import { setStartDate,
          displayTutorSelectionModal,
          displayProfileModal,
          displayMessageModal } from './actions';
-
-import { selectTransformOptions } from '../../editingApp/utils';
-import { redirectTo } from '../../utils';
 
 function getLastActiveElementInfo(event) {
     return {
@@ -187,7 +187,7 @@ class ShowSchedule extends Component {
 
             if (!!modalInfo.redirectToAfterClosing) {
                 const redirectPath = this.props.modalInfo.redirectToAfterClosing;
-                redirectTo(redirectPath);
+                redirectTo(this.props.history, redirectPath);
             } else if (!!modalInfo.lastActiveElement
                        && modalInfo.lastActiveElement.shouldFocus
                        && !!modalInfo.lastActiveElement.nodeId) {
@@ -396,10 +396,6 @@ function mapStateToProps(state) {
     };
 }
 
-ShowSchedule.contextTypes = {
-    router: React.PropTypes.object.isRequired,
-};
-
 export default connect(mapStateToProps, {
     setLocation,
     setSubject,
@@ -412,4 +408,4 @@ export default connect(mapStateToProps, {
     displayTutorSelectionModal,
     displayProfileModal,
     displayMessageModal,
-})(ShowSchedule);
+})(withRouterContext(ShowSchedule));
