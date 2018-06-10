@@ -7,7 +7,7 @@ import UpdateUserForm from './updateUserForm';
 class UserDetail extends Component {
     render() {
         const { users } = this.props;
-        const { id } = this.props.params;
+        const { id } = this.props.match.params;
 
 
         const selectedUser = users.all.find(

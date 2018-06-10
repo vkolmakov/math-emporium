@@ -36,6 +36,10 @@ const Editing = RequireAuthGroup(AUTH_GROUPS.employee)(
 
 const Auth = AsyncComponent(() => System.import('@client/auth/index').then((module) => module.default));
 
+const Managing = RequireAuthGroup(AUTH_GROUPS.employer)(
+    AsyncComponent(() => System.import('@client/managingApp/index').then((module) => module.default))
+);
+
 export default class Router extends Component {
     render() {
         const { immediatelyRedirectTo } = this.props;
@@ -52,6 +56,7 @@ export default class Router extends Component {
                 <Route exact path="/" component={Home}></Route>
                 <Route path={`/${ROUTE_BASE_PATHS.EDIT}`} component={Editing}></Route>
                 <Route path={`/${ROUTE_BASE_PATHS.AUTH}`} component={Auth}></Route>
+                <Route path={`/${ROUTE_BASE_PATHS.MANAGE}`} component={Managing}></Route>
               </div>
             </BrowserRouter>
         );
