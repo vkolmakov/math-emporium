@@ -260,7 +260,7 @@ class ShowSchedule extends Component {
             this.props.selectOpenSpot({ time, course, subject, location });
 
             if (!authenticated) {
-                return this.context.router.push('/auth/signin');
+                return redirectTo(this.props.history, '/auth/signin');
             }
 
             const isCompleteProfile = profile && profile.firstName && profile.lastName && profile.phoneNumber;
