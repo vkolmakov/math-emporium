@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Link from '../../../components/Link';
-import { AUTH_GROUPS, TEST_ID } from '../../../constants';
-import { createClassName } from '../../../utils';
+import Link from '@client/components/Link';
+import withRouterContext from '@client/routing/withRouterContext';
+import { AUTH_GROUPS, TEST_ID } from '@client/constants';
+import { createClassName } from '@client/utils';
 
 function isSelected(currentPath, linkPath) {
     const currentTab = currentPath.split('/');
@@ -45,7 +46,7 @@ class Navbar extends Component {
     render() {
         const links = this.links();
         const authLinks = this.authLinks();
-        const NavLink = navLinkConstructor(this.props.currentRouterPath);
+        const NavLink = navLinkConstructor(this.props.location.pathname);
         return (
             <nav>
               <NavLink to="/">{this.props.applicationTitle}</NavLink>
@@ -68,8 +69,7 @@ function mapStateToProps(state) {
         authGroup: state.auth.group,
         email: state.auth.email,
         applicationTitle: state.util.settings.applicationTitle,
-        currentRouterPath: state.util.currentRouterPath,
     };
 }
 
-export default connect(mapStateToProps)(Navbar);
+export default withRouterContext(connect(mapStateToProps)(Navbar));

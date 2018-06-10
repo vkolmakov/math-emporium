@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import Link from '@client/components/Link';
 
+import Link from '@client/components/Link';
+import withRouterContext from '@client/routing/withRouterContext';
 import { createClassName } from '@client/utils';
 
 class Sidebar extends Component {
@@ -21,7 +21,8 @@ class Sidebar extends Component {
     }
 
     render() {
-        const { BASE_PATH, links, currentRouterPath } = this.props;
+        const { BASE_PATH, links, location } = this.props;
+        const currentRouterPath = location.pathname;
         const currentlySelectedEntry = this.getSidebarEntryId(currentRouterPath);
         const isCurrentlySelectedEntry = (entry) => currentlySelectedEntry === entry;
 
@@ -39,10 +40,4 @@ class Sidebar extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        currentRouterPath: state.util.currentRouterPath,
-    };
-}
-
-export default connect(mapStateToProps, null)(Sidebar);
+export default withRouterContext(Sidebar);
