@@ -1,13 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Sidebar from '../components/sidebar';
-import LoadingSpinner from '../components/loadingSpinner';
-import MainContentWrap from '../components/mainContentWrap';
+import Route from '@client/routing/Route';
+import Redirect from '@client/routing/Redirect';
+import Switch from '@client/routing/Switch';
 
-import { BASE_PATH } from './constants';
+import RequireAuthGroup from '@client/auth/components/requireAuthGroup';
+
+import Sidebar from '@client/components/sidebar';
+import LoadingSpinner from '@client/components/loadingSpinner';
+import MainContentWrap from '@client/components/mainContentWrap';
+
+import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
+
 import { getLocations, getCourses, getSubjects, markAsInitialized } from './actions';
 import { getUserProfile, setOpenSpotDataFromProfile } from './profile/actions';
+
+import ShowSchedule from './showSchedule/index';
+import Profile from './profile/index';
+
+const BASE_PATH = ROUTE_BASE_PATHS.SCHEDULE;
 
 class SchedulingApp extends Component {
     componentDidMount() {
@@ -49,11 +61,11 @@ class SchedulingApp extends Component {
         if (authenticated) {
             links = [
                 ['show', 'Schedule'],
-                ['profile', 'My Profile and Appointments'],
+                ['profile', 'Profile and Appointments'],
             ];
         } else {
             links = [
-                ['show', 'Show Schedule'],
+                ['show', 'Schedule'],
             ];
         }
 
@@ -65,15 +77,27 @@ class SchedulingApp extends Component {
 
         const isReady = !authenticated || (authenticated && profile && initialized);
 
-        const maybeContent = isReady
-              ? this.props.children
-              : <div className="main-content"><LoadingSpinner /></div>;
+        if (!isReady) {
+            return (
+                <MainContentWrap>
+                  <div className="wrap">
+                    <div className="main-content">
+                      <LoadingSpinner></LoadingSpinner>
+                    </div>
+                  </div>
+                </MainContentWrap>
+            );
+        }
 
         return (
             <MainContentWrap>
               <div className="wrap">
                 <Sidebar {...sidebarConfig}></Sidebar>
-                {maybeContent}
+                <Switch>
+                  <Redirect exact from={`/${BASE_PATH}`} to={`/${BASE_PATH}/show`}></Redirect>
+                  <Route exact path={`/${BASE_PATH}/show`} component={ShowSchedule}></Route>
+                  <Route exact path={`/${BASE_PATH}/profile`} component={RequireAuthGroup(AUTH_GROUPS.user)(Profile)}></Route>
+                </Switch>
                 </div>
             </MainContentWrap>
         );
