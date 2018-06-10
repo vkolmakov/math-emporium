@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
 import { ROUTE_BASE_PATHS, AUTH_GROUPS } from '@client/constants';
 import RequireAuthGroup from '@client/auth/components/requireAuthGroup';
 
 import App from '@client/rootApp/index';
 import Home from '@client/rootApp/components/home/index';
+
+import Route from './Route';
+import Redirect from './Redirect';
 
 function AsyncComponent(getComponent) {
     return class AsyncComponent extends Component {
@@ -40,6 +43,8 @@ const Managing = RequireAuthGroup(AUTH_GROUPS.employer)(
     AsyncComponent(() => System.import('@client/managingApp/index').then((module) => module.default))
 );
 
+const Scheduling = AsyncComponent(() => System.import('@client/schedulingApp/index').then((module) => module.default));
+
 export default class Router extends Component {
     render() {
         const { immediatelyRedirectTo } = this.props;
@@ -57,6 +62,7 @@ export default class Router extends Component {
                 <Route path={`/${ROUTE_BASE_PATHS.EDIT}`} component={Editing}></Route>
                 <Route path={`/${ROUTE_BASE_PATHS.AUTH}`} component={Auth}></Route>
                 <Route path={`/${ROUTE_BASE_PATHS.MANAGE}`} component={Managing}></Route>
+                <Route path={`/${ROUTE_BASE_PATHS.SCHEDULE}`} component={Scheduling}></Route>
               </div>
             </BrowserRouter>
         );
