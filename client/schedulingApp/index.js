@@ -51,6 +51,15 @@ class SchedulingApp extends Component {
         }
     }
 
+    shouldComponentUpdate(nextProps) {
+        const isAlreadyInitialized = this.props.initialized;
+        const shouldUpdateBasedOnInitializationChange = nextProps.initialized && !isAlreadyInitialized;
+
+        const shouldUpdateBasedOnLocationChange = this.props.location.pathname !== nextProps.location.pathname;
+
+        return shouldUpdateBasedOnInitializationChange || shouldUpdateBasedOnLocationChange;
+    }
+
     render() {
         const { authenticated, profile, initialized } = this.props;
 
