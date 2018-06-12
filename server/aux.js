@@ -1,13 +1,21 @@
 import * as _R from 'ramda';
 import * as _dateFns from 'date-fns';
+
+import timezone from 'timezone-js';
+import tzdata from 'tzdata';
+
 import { create, env } from 'sanctuary';
 
 const _S = create({ checkTypes: false, env });
 
 export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
 export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
-export const TIMEZONE = 'US/Central';
+export const TIMEZONE = 'America/Chicago';
 export const APPOINTMENT_LENGTH = 60; // in minutes
+
+const _tz = timezone.timezone;
+_tz.loadingScheme = _tz.loadingSchemes.MANUAL_LOAD;
+_tz.loadZoneDataFromObject(tzdata);
 
 export const authGroups = {
     USER: 1,
@@ -122,19 +130,28 @@ export const R = {
 export const trace = msg => x => { console.log(msg, x); return x; };
 
 export const dateTime = {
-    now(timezone = TIMEZONE) {
+    now() {
         const now = new Date();
-        now.setTimezone(timezone);
         return now;
     },
 
     formatVisible(dt) {
-        return _dateFns.format(dt, TIMESTAMP_VISIBLE_FORMAT);
+        const timezoneAwareDate = new timezone.Date(dt, TIMEZONE);
+
+        const targetTimezoneOffset = timezoneAwareDate.getTimezoneOffset();
+        const serverTimezoneOffset = dt.getTimezoneOffset();
+
+        const timezoneOffset = serverTimezoneOffset - targetTimezoneOffset;
+
+        const dateWithTimezoneOffset = timezoneOffset > 0
+              ? _dateFns.addMinutes(dt, timezoneOffset)
+              : _dateFns.subMinutes(dt, -timezoneOffset);
+
+        return _dateFns.format(dateWithTimezoneOffset, TIMESTAMP_VISIBLE_FORMAT);
     },
 
-    parse(other, timezone = TIMEZONE) {
+    parse(other) {
         const result = _dateFns.parse(other);
-        result.setTimezone(timezone);
         return result;
     },
 
