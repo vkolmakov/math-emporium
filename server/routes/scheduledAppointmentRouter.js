@@ -15,7 +15,7 @@ import scheduledAppointmentsHelper from '../scheduledAppointments/scheduledAppoi
 import ScheduledAppointmentsController from '../scheduledAppointments/scheduledAppointments.controller';
 
 export default function createScheduledAppointmentRouter() {
-    const ROUTE_PATH = '/scheduled-appointments';
+    const ROUTE_PATH_NAME = 'scheduled-appointments';
 
     const router = express.Router();
 
@@ -27,15 +27,19 @@ export default function createScheduledAppointmentRouter() {
         getSettingsValue);
     const controller = new ScheduledAppointmentsController(cache, dateTime, createEventLogger, helper);
 
-    router.get(ROUTE_PATH,
+    router.get(`/${ROUTE_PATH_NAME}`,
                requireGroup(authGroups.USER),
                controller.getForUser.bind(controller));
-    router.post(ROUTE_PATH,
+    router.post(`/${ROUTE_PATH_NAME}`,
                 requireGroup(authGroups.USER),
                 controller.create.bind(controller));
-    router.delete(`${ROUTE_PATH}/:id`,
+    router.delete(`/${ROUTE_PATH_NAME}/:id`,
                   requireGroup(authGroups.USER),
                   controller.delete.bind(controller));
+
+    router.get(`/admin/${ROUTE_PATH_NAME}`,
+               requireGroup(authGroups.ADMIN),
+               controller.getAllActiveAppointments.bind(controller));
 
     return router;
 }

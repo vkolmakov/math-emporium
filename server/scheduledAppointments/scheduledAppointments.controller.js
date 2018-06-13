@@ -103,4 +103,24 @@ export default class ScheduledAppointmentsController {
             res.status(200).json(appointments.map(pluckPublicFields));
         }).catch(() => next(actionFailed('get', 'appointments')));
     }
+
+    getAllActiveAppointments(req, res, next) {
+        const now = this.dateTime.now();
+
+        const pluckRequiredFields = ({
+            googleCalendarAppointmentDate,
+            userId,
+            courseId,
+            locationId,
+        }) => ({
+            googleCalendarAppointmentDate,
+            userId,
+            courseId,
+            locationId,
+        });
+
+        return this.helper.getAllActiveAppointments(now).then((appointments) => {
+            res.status(200).json(appointments.map(pluckRequiredFields));
+        }).catch(() => next(actionFailed('get', 'appointments')));
+    }
 }

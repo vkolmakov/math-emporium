@@ -86,6 +86,14 @@ export default (mainStorage, calendarService, sendEmail, openSpotsService, getSe
         });
     },
 
+    getAllActiveAppointments(now) {
+        return mainStorage.db.models.scheduledAppointment.findAll({
+            where: { googleCalendarAppointmentDate: { $gt: now } },
+            order: [['googleCalendarAppointmentDate', 'ASC']]
+        });
+    },
+
+
     canCreateAppointment(completeAppointmentData, activeAppointmentsForUser, now) {
         const withRecoverySuggestion = (suggestion, message) => {
             const suggestionMessage = {
