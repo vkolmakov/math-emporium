@@ -1,16 +1,16 @@
-import moment from 'moment';
+import moment from "moment";
 
-import { expandThunksInOrder } from '../utils';
+import { expandThunksInOrder } from "../utils";
 
-import mainStorage from './mainStorage';
-import calendar from './calendar';
-import * as data from './data';
+import mainStorage from "./mainStorage";
+import calendar from "./calendar";
+import * as data from "./data";
 
-const USER_EMAIL = '';
-const USER_PASSWORD = '';
+const USER_EMAIL = "";
+const USER_PASSWORD = "";
 
 const applicationState = {
-    name: 'application-state',
+    name: "application-state",
 
     // will change throughout the course of running tests
     state: {
@@ -26,10 +26,18 @@ const applicationState = {
         tutorCourseLinks: [],
         schedules: [],
         tutorsAvailableForGuaranteedOpenSpot: [],
-        users: [{ id: 1, email: USER_EMAIL, group: 1, firstName: 'John', lastName: 'Doe' }],
+        users: [
+            {
+                id: 1,
+                email: USER_EMAIL,
+                group: 1,
+                firstName: "John",
+                lastName: "Doe",
+            },
+        ],
 
         fakeData: {
-            phoneNumber: '12312312345',
+            phoneNumber: "12312312345",
         },
 
         GUARANTEED_ITEMS: {
@@ -42,7 +50,7 @@ const applicationState = {
             email: USER_EMAIL,
             password: USER_PASSWORD,
             id: 1,
-            firstName: 'John',
+            firstName: "John",
         },
     },
 
@@ -51,41 +59,60 @@ const applicationState = {
         // Mo-Sa -> current week is visible and this time is on the current week
         // Su -> next week is visible, and this time is on the next week
         const dayFromNow = moment()
-              .startOf('hour')
-              .add(1, 'day')
-              .toISOString();
+            .startOf("hour")
+            .add(1, "day")
+            .toISOString();
 
         applicationState.data.subjects = data.getSubjects();
         applicationState.data.courses = data.getCourses();
         applicationState.data.tutors = data.getTutors();
-        applicationState.data.locations = data.getLocations(calendar.testCalendarId);
-        applicationState.data.tutorCourseLinks = data.getTutorCourseLinks(applicationState.data.tutors);
+        applicationState.data.locations = data.getLocations(
+            calendar.testCalendarId,
+        );
+        applicationState.data.tutorCourseLinks = data.getTutorCourseLinks(
+            applicationState.data.tutors,
+        );
         applicationState.data.schedules = data.getSchedules(
             applicationState.data.locations,
             applicationState.data.tutors,
-            [dayFromNow]
+            [dayFromNow],
         );
 
         applicationState.data.GUARANTEED_ITEMS = data.GUARANTEED_ITEMS;
         // assumption is that tutors from guaranteed location can tutor a known course
-        applicationState.data.tutorsAvailableForGuaranteedOpenSpot = applicationState.data.schedules[0].tutors;
+        applicationState.data.tutorsAvailableForGuaranteedOpenSpot =
+            applicationState.data.schedules[0].tutors;
     },
 
     async setup() {
-        await Promise.all([
-            mainStorage.setup(),
-            calendar.setup(),
-        ]);
+        await Promise.all([mainStorage.setup(), calendar.setup()]);
 
         applicationState._initializeData();
 
         await expandThunksInOrder([
-            mainStorage.insertRecords(mainStorage.models.User, applicationState.data.users),
-            mainStorage.insertRecords(mainStorage.models.Location, applicationState.data.locations),
-            mainStorage.insertRecords(mainStorage.models.Subject, applicationState.data.subjects),
-            mainStorage.insertRecords(mainStorage.models.Course, applicationState.data.courses),
-            mainStorage.insertRecords(mainStorage.models.Tutor, applicationState.data.tutors),
-            mainStorage.insertTutorCourseLinks(applicationState.data.tutorCourseLinks),
+            mainStorage.insertRecords(
+                mainStorage.models.User,
+                applicationState.data.users,
+            ),
+            mainStorage.insertRecords(
+                mainStorage.models.Location,
+                applicationState.data.locations,
+            ),
+            mainStorage.insertRecords(
+                mainStorage.models.Subject,
+                applicationState.data.subjects,
+            ),
+            mainStorage.insertRecords(
+                mainStorage.models.Course,
+                applicationState.data.courses,
+            ),
+            mainStorage.insertRecords(
+                mainStorage.models.Tutor,
+                applicationState.data.tutors,
+            ),
+            mainStorage.insertTutorCourseLinks(
+                applicationState.data.tutorCourseLinks,
+            ),
         ]);
 
         await calendar.insertSchedules(applicationState.data.schedules);
@@ -94,26 +121,32 @@ const applicationState = {
     },
 
     async teardown() {
-        return Promise.all([
-            mainStorage.teardown(),
-            calendar.teardown(),
-        ]);
+        return Promise.all([mainStorage.teardown(), calendar.teardown()]);
     },
 
     async setUserState({ shouldHavePhoneNumber, ensureNoAppointments }) {
-        const user = await mainStorage.models.User.findOne({ where: { email: applicationState.data.USER.email } });
+        const user = await mainStorage.models.User.findOne({
+            where: { email: applicationState.data.USER.email },
+        });
 
         const updatedData = {};
-        updatedData.phoneNumber = shouldHavePhoneNumber ? applicationState.data.fakeData.phoneNumber : null;
+        updatedData.phoneNumber = shouldHavePhoneNumber
+            ? applicationState.data.fakeData.phoneNumber
+            : null;
 
         if (ensureNoAppointments) {
             const getAppointments = (userData) => {
                 let appointments = [];
-                if (!!userData.googleCalendarAppointmentId && !!userData.googleCalendarId) {
-                    appointments = appointments.concat([{
-                        calendarId: userData.googleCalendarId,
-                        eventId: userData.googleCalendarAppointmentId,
-                    }]);
+                if (
+                    !!userData.googleCalendarAppointmentId &&
+                    !!userData.googleCalendarId
+                ) {
+                    appointments = appointments.concat([
+                        {
+                            calendarId: userData.googleCalendarId,
+                            eventId: userData.googleCalendarAppointmentId,
+                        },
+                    ]);
                 }
 
                 return appointments;
@@ -133,7 +166,9 @@ const applicationState = {
     },
 
     async syncAppointmentsFromCalendar() {
-        const appointments = await calendar.getAppointments(applicationState.data.schedules);
+        const appointments = await calendar.getAppointments(
+            applicationState.data.schedules,
+        );
         applicationState.state.appointments = appointments;
         return Promise.resolve();
     },

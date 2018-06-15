@@ -1,11 +1,11 @@
-import applicationState from './components/applicationState';
-import server from './components/server';
-import browser from './components/browser';
+import applicationState from "./components/applicationState";
+import server from "./components/server";
+import browser from "./components/browser";
 
-import { setupInOrder, teardownInOrder, R } from './utils';
+import { setupInOrder, teardownInOrder, R } from "./utils";
 
-const APP_ADDRESS = 'localhost:3000';
-const SCHEDULE_APPOINTMENT_BUTTON_SELECTOR = '.schedule-appointment-button';
+const APP_ADDRESS = "localhost:3000";
+const SCHEDULE_APPOINTMENT_BUTTON_SELECTOR = ".schedule-appointment-button";
 
 const requiredModules = [applicationState, server, browser];
 
@@ -14,7 +14,7 @@ beforeAll(() => setupInOrder(requiredModules));
 afterAll(() => teardownInOrder(R.reverse(requiredModules)));
 
 function escapeSelectorCharacters(x) {
-    return x.replace(/:/g, '\\:').replace(/\./, '\\\.');
+    return x.replace(/:/g, "\\:").replace(/\./, "\\.");
 }
 
 function getSelectorForTestId(testId) {
@@ -29,33 +29,37 @@ async function signinFromSignInPage(user) {
     async function performProviderSignin() {
         // Provider sign-in page
         await browser.page.waitFor(1000); // redirect
-        await browser.page.waitForSelector('input[type=email]');
-        await browser.page.type('input[type=email]', user.email);
-        await browser.page.click('input[type=submit]');
+        await browser.page.waitForSelector("input[type=email]");
+        await browser.page.type("input[type=email]", user.email);
+        await browser.page.click("input[type=submit]");
         await browser.page.waitFor(1000); // redirect
 
         // Institution sign-in page
-        await browser.page.waitForSelector('input[type=password]');
-        await browser.page.type('input[type=password]', user.password);
+        await browser.page.waitForSelector("input[type=password]");
+        await browser.page.type("input[type=password]", user.password);
         await browser.page.waitFor(1000); // wait until full password is typed in
-        await browser.page.click('#submitButton');
+        await browser.page.click("#submitButton");
         await browser.page.waitFor(1000); // redirect
 
         // Additional steps after sign-in
-        await browser.page.waitForSelector('input[type=submit]');
-        await browser.page.click('input[type=submit]');
+        await browser.page.waitForSelector("input[type=submit]");
+        await browser.page.click("input[type=submit]");
     }
 
     // At /signin
-    await browser.page.waitForSelector('.oauth2-button');
-    await browser.page.click('.oauth2-button');
+    await browser.page.waitForSelector(".oauth2-button");
+    await browser.page.click(".oauth2-button");
 
     await Promise.race([
-        browser.page.waitForSelector('input[type=email]'), // end up on the provider page
-        browser.page.waitForSelector(getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK)), // end up right back in the app
+        browser.page.waitForSelector("input[type=email]"), // end up on the provider page
+        browser.page.waitForSelector(
+            getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK),
+        ), // end up right back in the app
     ]);
 
-    const signoutLinkElement = await browser.page.$(getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK));
+    const signoutLinkElement = await browser.page.$(
+        getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK),
+    );
 
     const isAlreadySignedIn = !!signoutLinkElement;
 
@@ -66,56 +70,78 @@ async function signinFromSignInPage(user) {
     // otherwise we know that we're already signed in
 
     // Back at /schedule
-    return browser.page.waitForSelector('#main');
+    return browser.page.waitForSelector("#main");
 }
 
-
-async function ensureUserAuthStateAndNavigateToHomePage(user, { hasToBeSignedIn }) {
+async function ensureUserAuthStateAndNavigateToHomePage(
+    user,
+    { hasToBeSignedIn },
+) {
     await browser.page.goto(APP_ADDRESS);
-    await browser.page.waitForSelector('nav');
+    await browser.page.waitForSelector("nav");
 
-    const signOutLinkElement = await browser.page.$(getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK));
+    const signOutLinkElement = await browser.page.$(
+        getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK),
+    );
     const isUserSignedIn = !!signOutLinkElement;
 
     // check if we are in an incorrect state
     if (hasToBeSignedIn && !isUserSignedIn) {
         // must sign in
-        await browser.page.click(getSelectorForTestId(browser.TEST_ID.SIGNIN_LINK));
+        await browser.page.click(
+            getSelectorForTestId(browser.TEST_ID.SIGNIN_LINK),
+        );
         await signinFromSignInPage(user);
     } else if (!hasToBeSignedIn && isUserSignedIn) {
         // must sign out
-        await browser.page.click(getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK));
+        await browser.page.click(
+            getSelectorForTestId(browser.TEST_ID.SIGNOUT_LINK),
+        );
     }
 
     // in the case where we have to sign out, this will
     // avoid provider sign out and cut on time required to perform other tests
     await browser.page.goto(APP_ADDRESS);
-    await browser.page.reload({ waitUntil: 'domcontentloaded' });
+    await browser.page.reload({ waitUntil: "domcontentloaded" });
 
     return Promise.resolve();
 }
 
 async function selectGuaranteedCourseOnSchedulingPage() {
-    await browser.page.waitForSelector('select#select-location');
-    await browser.page.select('select#select-location', applicationState.data.GUARANTEED_ITEMS.LOCATION.toString());
+    await browser.page.waitForSelector("select#select-location");
+    await browser.page.select(
+        "select#select-location",
+        applicationState.data.GUARANTEED_ITEMS.LOCATION.toString(),
+    );
 
-    await browser.page.waitForSelector('select#select-subject');
-    await browser.page.select('select#select-subject', applicationState.data.GUARANTEED_ITEMS.SUBJECT.toString());
+    await browser.page.waitForSelector("select#select-subject");
+    await browser.page.select(
+        "select#select-subject",
+        applicationState.data.GUARANTEED_ITEMS.SUBJECT.toString(),
+    );
 
-    await browser.page.waitForSelector('select#select-course');
-    await browser.page.select('select#select-course', applicationState.data.GUARANTEED_ITEMS.COURSE.toString());
+    await browser.page.waitForSelector("select#select-course");
+    await browser.page.select(
+        "select#select-course",
+        applicationState.data.GUARANTEED_ITEMS.COURSE.toString(),
+    );
 
-    return browser.page.waitForSelector('.open-spots-display');
+    return browser.page.waitForSelector(".open-spots-display");
 }
 
 function areIncludedInAppointmentSummary({ userId, courseId }) {
-    const course = applicationState.data.courses.find((course) => course.id === courseId);
+    const course = applicationState.data.courses.find(
+        (course) => course.id === courseId,
+    );
     const user = applicationState.data.users.find((user) => user.id === userId);
-    const tutorNames = applicationState.data.tutorsAvailableForGuaranteedOpenSpot.map((tutor) => tutor.name);
+    const tutorNames = applicationState.data.tutorsAvailableForGuaranteedOpenSpot.map(
+        (tutor) => tutor.name,
+    );
     const expectedSummaryTokens = [tutorNames, course.code, user.firstName];
 
     return (appointment) => {
-        const summaryHasToken = (token) => appointment.summary.toLowerCase().includes(token.toLowerCase());
+        const summaryHasToken = (token) =>
+            appointment.summary.toLowerCase().includes(token.toLowerCase());
 
         return expectedSummaryTokens.every((tokenOrCollectionOfTokens) => {
             if (Array.isArray(tokenOrCollectionOfTokens)) {
@@ -126,17 +152,35 @@ function areIncludedInAppointmentSummary({ userId, courseId }) {
     };
 }
 
-async function runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSignin, hasToEnterPhoneNumber }) {
+async function runThroughGuaranteedCourseAppointmentSchedulingProcess({
+    hasToSignin,
+    hasToEnterPhoneNumber,
+}) {
     const selectors = {
-        modalPhoneNumberField: getSelectorForTestId(browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD),
-        modalSubmitButton: getSelectorForTestId(browser.TEST_ID.MODAL_SUBMIT_BUTTON),
-        modalTutorSelect: getSelectorForTestId(browser.TEST_ID.MODAL_TUTOR_SELECT),
-        modalCloseButton: getSelectorForTestId(browser.TEST_ID.MODAL_CLOSE_BUTTON),
+        modalPhoneNumberField: getSelectorForTestId(
+            browser.TEST_ID.MODAL_PHONE_NUMBER_FIELD,
+        ),
+        modalSubmitButton: getSelectorForTestId(
+            browser.TEST_ID.MODAL_SUBMIT_BUTTON,
+        ),
+        modalTutorSelect: getSelectorForTestId(
+            browser.TEST_ID.MODAL_TUTOR_SELECT,
+        ),
+        modalCloseButton: getSelectorForTestId(
+            browser.TEST_ID.MODAL_CLOSE_BUTTON,
+        ),
     };
 
-    const { USER, GUARANTEED_ITEMS, tutorsAvailableForGuaranteedOpenSpot, fakeData } = applicationState.data;
+    const {
+        USER,
+        GUARANTEED_ITEMS,
+        tutorsAvailableForGuaranteedOpenSpot,
+        fakeData,
+    } = applicationState.data;
 
-    const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(applicationState);
+    const guaranteedOpenSpotSelector = getGuaranteedOpenSpotSelector(
+        applicationState,
+    );
 
     // execution
     // at /
@@ -156,7 +200,10 @@ async function runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSig
     if (hasToEnterPhoneNumber) {
         // phone number modal
         await browser.page.waitForSelector(selectors.modalPhoneNumberField);
-        await browser.page.type(selectors.modalPhoneNumberField, fakeData.phoneNumber);
+        await browser.page.type(
+            selectors.modalPhoneNumberField,
+            fakeData.phoneNumber,
+        );
         await browser.page.click(selectors.modalSubmitButton);
     }
 
@@ -166,9 +213,14 @@ async function runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSig
     // assert that all available tutors are selectable
     const presentTutorNames = await browser.page.$eval(
         selectors.modalTutorSelect,
-        (element) => Array.from(element.options).map((option) => option.text.toLowerCase()));
+        (element) =>
+            Array.from(element.options).map((option) =>
+                option.text.toLowerCase(),
+            ),
+    );
     const isEveryTutorNamePresent = tutorsAvailableForGuaranteedOpenSpot.every(
-        (tutor) => presentTutorNames.includes(tutor.name.toLowerCase()));
+        (tutor) => presentTutorNames.includes(tutor.name.toLowerCase()),
+    );
     expect(isEveryTutorNamePresent).toBe(true);
 
     await browser.page.click(selectors.modalSubmitButton);
@@ -184,66 +236,98 @@ async function runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSig
         areIncludedInAppointmentSummary({
             courseId: GUARANTEED_ITEMS.COURSE,
             userId: USER.id,
-        })
+        }),
     );
     expect(currentAppointments.length).toBe(1);
-    expect(isScheduledAppointmentPresentInCalendarWithCorrectSummary).toBe(true);
+    expect(isScheduledAppointmentPresentInCalendarWithCorrectSummary).toBe(
+        true,
+    );
 }
 
-describe('appointment scheduling screen', () => {
-    it('displays available appointments', () => {
+describe("appointment scheduling screen", () => {
+    it("displays available appointments", () => {});
 
-    });
-
-    describe('for non-signed in user', () => {
+    describe("for non-signed in user", () => {
         beforeEach(async (done) => {
-            await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: false });
+            await ensureUserAuthStateAndNavigateToHomePage(
+                applicationState.data.USER,
+                { hasToBeSignedIn: false },
+            );
             await applicationState.setUserState({ ensureNoAppointments: true });
             done();
         });
 
         afterAll(async (done) => {
-            await applicationState.setUserState({ ensureNoAppointments: true, shouldHavePhoneNumber: false });
+            await applicationState.setUserState({
+                ensureNoAppointments: true,
+                shouldHavePhoneNumber: false,
+            });
             done();
         });
 
-        describe('selection of an open spot and following sign in followed by', () => {
-            it('a phone number request modal for a user with no phone number listed following a scheduling modal if a user has no phone number', async (done) => {
-                await applicationState.setUserState({ shouldHavePhoneNumber: false });
-                await runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSignin: true, hasToEnterPhoneNumber: true });
+        describe("selection of an open spot and following sign in followed by", () => {
+            it("a phone number request modal for a user with no phone number listed following a scheduling modal if a user has no phone number", async (done) => {
+                await applicationState.setUserState({
+                    shouldHavePhoneNumber: false,
+                });
+                await runThroughGuaranteedCourseAppointmentSchedulingProcess({
+                    hasToSignin: true,
+                    hasToEnterPhoneNumber: true,
+                });
                 done();
             });
 
-            it('a scheduling modal if a user has a phone number', async (done) => {
-                await applicationState.setUserState({ shouldHavePhoneNumber: true });
-                await runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSignin: true, hasToEnterPhoneNumber: false });
+            it("a scheduling modal if a user has a phone number", async (done) => {
+                await applicationState.setUserState({
+                    shouldHavePhoneNumber: true,
+                });
+                await runThroughGuaranteedCourseAppointmentSchedulingProcess({
+                    hasToSignin: true,
+                    hasToEnterPhoneNumber: false,
+                });
                 done();
             });
         });
     });
 
-    describe('for signed in user', () => {
+    describe("for signed in user", () => {
         beforeEach(async (done) => {
-            await ensureUserAuthStateAndNavigateToHomePage(applicationState.data.USER, { hasToBeSignedIn: true });
+            await ensureUserAuthStateAndNavigateToHomePage(
+                applicationState.data.USER,
+                { hasToBeSignedIn: true },
+            );
             await applicationState.setUserState({ ensureNoAppointments: true });
             done();
         });
 
         afterAll(async (done) => {
-            await applicationState.setUserState({ ensureNoAppointments: true, shouldHavePhoneNumber: false });
+            await applicationState.setUserState({
+                ensureNoAppointments: true,
+                shouldHavePhoneNumber: false,
+            });
             done();
         });
 
-        describe('selection of an open spot and following sign in followed by', () => {
-            it('a phone number request modal for a user with no phone number listed following a scheduling modal for user without phone number', async (done) => {
-                await applicationState.setUserState({ shouldHavePhoneNumber: false });
-                await runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSignin: false, hasToEnterPhoneNumber: true });
+        describe("selection of an open spot and following sign in followed by", () => {
+            it("a phone number request modal for a user with no phone number listed following a scheduling modal for user without phone number", async (done) => {
+                await applicationState.setUserState({
+                    shouldHavePhoneNumber: false,
+                });
+                await runThroughGuaranteedCourseAppointmentSchedulingProcess({
+                    hasToSignin: false,
+                    hasToEnterPhoneNumber: true,
+                });
                 done();
             });
 
-            it('a scheduling modal if a user has a phone number', async (done) => {
-                await applicationState.setUserState({ shouldHavePhoneNumber: true });
-                await runThroughGuaranteedCourseAppointmentSchedulingProcess({ hasToSignin: false, hasToEnterPhoneNumber: false });
+            it("a scheduling modal if a user has a phone number", async (done) => {
+                await applicationState.setUserState({
+                    shouldHavePhoneNumber: true,
+                });
+                await runThroughGuaranteedCourseAppointmentSchedulingProcess({
+                    hasToSignin: false,
+                    hasToEnterPhoneNumber: false,
+                });
                 done();
             });
         });

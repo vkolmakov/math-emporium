@@ -1,4 +1,4 @@
-import _R from 'ramda';
+import _R from "ramda";
 
 const runInOrder = (action) => (xs) => {
     return xs.reduce((acc, x) => {
@@ -20,7 +20,6 @@ export const teardownInOrder = runInOrder((item) => {
 
 export const randomInRange = (low, high) =>
     Math.round(low + Math.random() * (high - low));
-
 
 export const R = {
     reverse: _R.reverse,

@@ -1,49 +1,59 @@
-import { getOpenSpots,
-         getAvailableTutors,
-         canTutorCourse,
-         buildScheduleMap,
-         convertScheduleMapToList,
-         predictTutorName } from '../../../../server/services/openSpots/openSpots.service.js';
+import {
+    getOpenSpots,
+    getAvailableTutors,
+    canTutorCourse,
+    buildScheduleMap,
+    convertScheduleMapToList,
+    predictTutorName,
+} from "../../../../server/services/openSpots/openSpots.service.js";
 
-import { Either } from '../../../../server/aux';
+import { Either } from "../../../../server/aux";
 
-const expectIn = container => element => expect(container).toContainEqual(element);
+const expectIn = (container) => (element) =>
+    expect(container).toContainEqual(element);
 
-describe('openSpots.service', () => {
-    const specialInstructions = [{
-        overwriteTutors: [{ name: 'AmyW' }, { name: 'HubertF' }],
-        startDateTime: '2017-05-30-11-00',
-        weekday: 2,
-        time: 660,
-    }, {
-        overwriteTutors: [{ name: 'AmyW' }],
-        startDateTime: '2017-05-29-10-00',
-        weekday: 1,
-        time: 600,
-    }];
+describe("openSpots.service", () => {
+    const specialInstructions = [
+        {
+            overwriteTutors: [{ name: "AmyW" }, { name: "HubertF" }],
+            startDateTime: "2017-05-30-11-00",
+            weekday: 2,
+            time: 660,
+        },
+        {
+            overwriteTutors: [{ name: "AmyW" }],
+            startDateTime: "2017-05-29-10-00",
+            weekday: 1,
+            time: 600,
+        },
+    ];
 
-    const appointments = [{
-        tutor: 'PhillipF',
-        student: 'Zoidberg',
-        course: 'MATH101',
-        startDateTime: '2017-05-29-09-00',
-        weekday: 1,
-        time: 540,
-    }, {
-        tutor: 'HubertF',
-        student: 'Calculon',
-        course: 'MATH101',
-        startDateTime: '2017-05-29-09-00',
-        weekday: 1,
-        time: 540,
-    }, {
-        tutor: 'AmyW',
-        student: 'Blob',
-        course: 'MATH201',
-        startDateTime: '2017-05-29-10-00',
-        weekday: 1,
-        time: 600,
-    }];
+    const appointments = [
+        {
+            tutor: "PhillipF",
+            student: "Zoidberg",
+            course: "MATH101",
+            startDateTime: "2017-05-29-09-00",
+            weekday: 1,
+            time: 540,
+        },
+        {
+            tutor: "HubertF",
+            student: "Calculon",
+            course: "MATH101",
+            startDateTime: "2017-05-29-09-00",
+            weekday: 1,
+            time: 540,
+        },
+        {
+            tutor: "AmyW",
+            student: "Blob",
+            course: "MATH201",
+            startDateTime: "2017-05-29-10-00",
+            weekday: 1,
+            time: 600,
+        },
+    ];
 
     const locationData = {
         location: { id: 1 },
@@ -51,17 +61,17 @@ describe('openSpots.service', () => {
         tutors: [
             {
                 id: 1,
-                name: 'AmyW',
+                name: "AmyW",
                 courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
             },
-            { id: 2, name: 'PhillipF', courses: [{ id: 2 }] },
+            { id: 2, name: "PhillipF", courses: [{ id: 2 }] },
             {
                 id: 3,
-                name: 'HubertF',
+                name: "HubertF",
                 courses: [{ id: 4 }, { id: 3 }, { id: 2 }],
             },
-            { id: 4, name: 'HermesC', courses: [{ id: 4 }] },
-            { id: 5, name: 'PhillipJ', courses: [{ id: 3 }] },
+            { id: 4, name: "HermesC", courses: [{ id: 4 }] },
+            { id: 5, name: "PhillipJ", courses: [{ id: 3 }] },
         ],
         schedules: [
             {
@@ -69,8 +79,8 @@ describe('openSpots.service', () => {
                 weekday: 1,
                 time: 540,
                 tutors: [
-                    { id: 2, name: 'PhillipF' },
-                    { id: 3, name: 'HubertF' },
+                    { id: 2, name: "PhillipF" },
+                    { id: 3, name: "HubertF" },
                 ],
             },
             {
@@ -78,60 +88,69 @@ describe('openSpots.service', () => {
                 weekday: 1,
                 time: 600,
                 tutors: [
-                    { id: 2, name: 'PhillipF' },
-                    { id: 3, name: 'HubertF' },
+                    { id: 2, name: "PhillipF" },
+                    { id: 3, name: "HubertF" },
                 ],
             },
             {
                 id: 3,
                 weekday: 1,
                 time: 660,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 4, name: 'HermesC' }],
+                tutors: [{ id: 1, name: "AmyW" }, { id: 4, name: "HermesC" }],
             },
             {
                 id: 6,
                 weekday: 2,
                 time: 540,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+                tutors: [{ id: 1, name: "AmyW" }, { id: 2, name: "PhillipF" }],
             },
             {
                 id: 7,
                 weekday: 2,
                 time: 600,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
+                tutors: [{ id: 1, name: "AmyW" }, { id: 2, name: "PhillipF" }],
             },
             {
                 id: 8,
                 weekday: 3,
                 time: 600,
-                tutors: [{ id: 5, name: 'PhillipJ' }, { id: 2, name: 'PhillipF' }],
+                tutors: [
+                    { id: 5, name: "PhillipJ" },
+                    { id: 2, name: "PhillipF" },
+                ],
             },
         ],
     };
 
-    describe('buildScheduleMap', () => {
-        it('builds a correct simple schedule map', () => {
-            const source = [{
-                weekday: 1,
-                time: 540,
-                tutors: [{ id: 1 }, { id: 2 }],
-            }, {
-                weekday: 1,
-                time: 600,
-                tutors: [{ id: 2 }],
-            }, {
-                weekday: 1,
-                time: 660,
-                tutors: [],
-            }, {
-                weekday: 2,
-                time: 600,
-                tutors: [{ id: 2 }],
-            }, {
-                weekday: 6,
-                time: 800,
-                tutors: [{ id: 1 }, { id: 2 }, { id: 3 }],
-            }];
+    describe("buildScheduleMap", () => {
+        it("builds a correct simple schedule map", () => {
+            const source = [
+                {
+                    weekday: 1,
+                    time: 540,
+                    tutors: [{ id: 1 }, { id: 2 }],
+                },
+                {
+                    weekday: 1,
+                    time: 600,
+                    tutors: [{ id: 2 }],
+                },
+                {
+                    weekday: 1,
+                    time: 660,
+                    tutors: [],
+                },
+                {
+                    weekday: 2,
+                    time: 600,
+                    tutors: [{ id: 2 }],
+                },
+                {
+                    weekday: 6,
+                    time: 800,
+                    tutors: [{ id: 1 }, { id: 2 }, { id: 3 }],
+                },
+            ];
 
             const expected = new Map([
                 [
@@ -141,23 +160,15 @@ describe('openSpots.service', () => {
                         [600, [{ id: 2 }]],
                         [660, []],
                     ]),
-                ], [
-                    2,
-                    new Map([
-                        [600, [{ id: 2 }]],
-                    ]),
-                ], [
-                    6,
-                    new Map([
-                        [800, [{ id: 1 }, { id: 2 }, { id: 3 }]],
-                    ]),
                 ],
+                [2, new Map([[600, [{ id: 2 }]]])],
+                [6, new Map([[800, [{ id: 1 }, { id: 2 }, { id: 3 }]]])],
             ]);
 
-            expect(buildScheduleMap(x => x, source)).toEqual(expected);
+            expect(buildScheduleMap((x) => x, source)).toEqual(expected);
         });
 
-        it('builds a correct schedule map given schedule from locationData', () => {
+        it("builds a correct schedule map given schedule from locationData", () => {
             const expected = new Map([
                 [
                     1,
@@ -166,118 +177,146 @@ describe('openSpots.service', () => {
                         [600, locationData.schedules[1].tutors],
                         [660, locationData.schedules[2].tutors],
                     ]),
-                ], [
+                ],
+                [
                     2,
                     new Map([
                         [540, locationData.schedules[3].tutors],
                         [600, locationData.schedules[4].tutors],
                     ]),
-                ], [
-                    3,
-                    new Map([
-                        [600, locationData.schedules[5].tutors],
-                    ]),
                 ],
+                [3, new Map([[600, locationData.schedules[5].tutors]])],
             ]);
 
-            expect(buildScheduleMap(x => x, locationData.schedules)).toEqual(expected);
+            expect(buildScheduleMap((x) => x, locationData.schedules)).toEqual(
+                expected,
+            );
         });
     });
 
-    describe('convertScheduleMapToList', () => {
-        it('properly converts a schedule map to a list', () => {
-            const expected = [{
-                weekday: 1,
-                time: 540,
-                tutors: [{ id: 2, name: 'PhillipF' }, { id: 3, name: 'HubertF' }],
-            }, {
-                weekday: 1,
-                time: 600,
-                tutors: [{ id: 2, name: 'PhillipF' }, { id: 3, name: 'HubertF' }],
-            }, {
-                weekday: 1,
-                time: 660,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 4, name: 'HermesC' }],
-            }, {
-                weekday: 2,
-                time: 540,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
-            }, {
-                weekday: 2,
-                time: 600,
-                tutors: [{ id: 1, name: 'AmyW' }, { id: 2, name: 'PhillipF' }],
-            }, {
-                weekday: 3,
-                time: 600,
-                tutors: [{ id: 5, name: 'PhillipJ' }, { id: 2, name: 'PhillipF' }],
-            }];
+    describe("convertScheduleMapToList", () => {
+        it("properly converts a schedule map to a list", () => {
+            const expected = [
+                {
+                    weekday: 1,
+                    time: 540,
+                    tutors: [
+                        { id: 2, name: "PhillipF" },
+                        { id: 3, name: "HubertF" },
+                    ],
+                },
+                {
+                    weekday: 1,
+                    time: 600,
+                    tutors: [
+                        { id: 2, name: "PhillipF" },
+                        { id: 3, name: "HubertF" },
+                    ],
+                },
+                {
+                    weekday: 1,
+                    time: 660,
+                    tutors: [
+                        { id: 1, name: "AmyW" },
+                        { id: 4, name: "HermesC" },
+                    ],
+                },
+                {
+                    weekday: 2,
+                    time: 540,
+                    tutors: [
+                        { id: 1, name: "AmyW" },
+                        { id: 2, name: "PhillipF" },
+                    ],
+                },
+                {
+                    weekday: 2,
+                    time: 600,
+                    tutors: [
+                        { id: 1, name: "AmyW" },
+                        { id: 2, name: "PhillipF" },
+                    ],
+                },
+                {
+                    weekday: 3,
+                    time: 600,
+                    tutors: [
+                        { id: 5, name: "PhillipJ" },
+                        { id: 2, name: "PhillipF" },
+                    ],
+                },
+            ];
 
             const result = convertScheduleMapToList(
-                buildScheduleMap(x => x, locationData.schedules));
+                buildScheduleMap((x) => x, locationData.schedules),
+            );
 
             expect(result).toHaveLength(expected.length);
-            expected.forEach(
-                expectIn(result));
+            expected.forEach(expectIn(result));
         });
     });
 
-    describe('canTutorCourse', () => {
+    describe("canTutorCourse", () => {
         const tutors = locationData.tutors;
         const course1 = { id: 2 };
         const course2 = { id: 3 };
 
-        it('accepts tutor objects that have ids and produces correct result', () => {
+        it("accepts tutor objects that have ids and produces correct result", () => {
             expect(
-                tutors.map(t => canTutorCourse(tutors, course1, t))
+                tutors.map((t) => canTutorCourse(tutors, course1, t)),
             ).toEqual([true, true, true, false, false]);
 
             expect(
-                tutors.map(t => canTutorCourse(tutors, course2, t))
+                tutors.map((t) => canTutorCourse(tutors, course2, t)),
             ).toEqual([true, false, true, false, true]);
         });
 
-        it('accepts tutor objects that have names and produces correct result', () => {
+        it("accepts tutor objects that have names and produces correct result", () => {
             expect(
-                tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course1, t))
+                tutors
+                    .map((t) => ({ name: t.name }))
+                    .map((t) => canTutorCourse(tutors, course1, t)),
             ).toEqual([true, true, true, false, false]);
 
             expect(
-                tutors.map(t => ({ name: t.name })).map(t => canTutorCourse(tutors, course2, t))
+                tutors
+                    .map((t) => ({ name: t.name }))
+                    .map((t) => canTutorCourse(tutors, course2, t)),
             ).toEqual([true, false, true, false, true]);
         });
 
-        it('accepts tutor objects with misspelled names and produces correct result', () => {
+        it("accepts tutor objects with misspelled names and produces correct result", () => {
             expect([
-                canTutorCourse(tutors, course1, { name: 'amy' }),
-                canTutorCourse(tutors, course1, { name: 'philllippf' }),
-                canTutorCourse(tutors, course1, { name: 'hubirTf' }),
-                canTutorCourse(tutors, course1, { name: 'hermZ' }),
-                canTutorCourse(tutors, course2, { name: 'philipj' }),
+                canTutorCourse(tutors, course1, { name: "amy" }),
+                canTutorCourse(tutors, course1, { name: "philllippf" }),
+                canTutorCourse(tutors, course1, { name: "hubirTf" }),
+                canTutorCourse(tutors, course1, { name: "hermZ" }),
+                canTutorCourse(tutors, course2, { name: "philipj" }),
             ]).toEqual([true, true, true, false, true]);
 
             expect([
-                canTutorCourse(tutors, course2, { name: 'amy' }),
-                canTutorCourse(tutors, course2, { name: 'philllippf' }),
-                canTutorCourse(tutors, course2, { name: 'hubirTf' }),
-                canTutorCourse(tutors, course2, { name: 'hermZ' }),
-                canTutorCourse(tutors, course2, { name: 'philipj' }),
+                canTutorCourse(tutors, course2, { name: "amy" }),
+                canTutorCourse(tutors, course2, { name: "philllippf" }),
+                canTutorCourse(tutors, course2, { name: "hubirTf" }),
+                canTutorCourse(tutors, course2, { name: "hermZ" }),
+                canTutorCourse(tutors, course2, { name: "philipj" }),
             ]).toEqual([true, false, true, false, true]);
         });
 
-        it('returns false when input is ambiguous', () => {
+        it("returns false when input is ambiguous", () => {
             expect([
-                canTutorCourse(tutors, course1, { name: 'phil' }),
-                canTutorCourse(tutors, course1, { name: 'phill' }),
-                canTutorCourse(tutors, course1, { name: 'phillipp' }),
-                canTutorCourse(tutors, course2, { name: 'phil' }),
-                canTutorCourse(tutors, course2, { name: 'phill' }),
-                canTutorCourse(tutors, course2, { name: 'phillipp' }),
+                canTutorCourse(tutors, course1, { name: "phil" }),
+                canTutorCourse(tutors, course1, { name: "phill" }),
+                canTutorCourse(tutors, course1, { name: "phillipp" }),
+                canTutorCourse(tutors, course2, { name: "phil" }),
+                canTutorCourse(tutors, course2, { name: "phill" }),
+                canTutorCourse(tutors, course2, { name: "phillipp" }),
             ]).toEqual([false, false, false, false, false, false]);
         });
     });
 
-    describe('getOpenSpots', () => {
-        it('should return correct schedule given no appointments or special instructions', () => {
+    describe("getOpenSpots", () => {
+        it("should return correct schedule given no appointments or special instructions", () => {
             const parameters = {
                 course: { id: 2 },
             };
@@ -296,13 +335,14 @@ describe('openSpots.service', () => {
                 locationData.tutors,
                 [],
                 [],
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should draw schedule from locationData only if no special instructions are provided', () => {
+        it("should draw schedule from locationData only if no special instructions are provided", () => {
             const parameters = {
                 course: { id: 2 },
             };
@@ -321,13 +361,14 @@ describe('openSpots.service', () => {
                 locationData.tutors,
                 appointments,
                 [],
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should return correct open spots using default schedule and calendar overrides', () => {
+        it("should return correct open spots using default schedule and calendar overrides", () => {
             const parameters = {
                 course: { id: 3 },
             };
@@ -347,13 +388,14 @@ describe('openSpots.service', () => {
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should return correct open spots using default schedule and calendar overrides for a different course', () => {
+        it("should return correct open spots using default schedule and calendar overrides for a different course", () => {
             const parameters = {
                 course: { id: 2 },
             };
@@ -373,15 +415,16 @@ describe('openSpots.service', () => {
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
     });
 
-    describe('getAvailableTutors', () => {
-        it('should return the correct number when there are no appointments or special instructions', () => {
+    describe("getAvailableTutors", () => {
+        it("should return the correct number when there are no appointments or special instructions", () => {
             const parameters = {
                 course: { id: 2 },
                 weekday: 1,
@@ -390,198 +433,249 @@ describe('openSpots.service', () => {
             const appointments = [];
             const specialInstructions = [];
 
-            const expected = [{ id: 1, name: 'AmyW' }];
+            const expected = [{ id: 1, name: "AmyW" }];
 
             const result = getAvailableTutors(
                 locationData.schedules,
                 locationData.tutors,
                 [],
                 [],
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should return the correct number of tutors with just appointments', () => {
+        it("should return the correct number of tutors with just appointments", () => {
             const parameters = {
                 course: { id: 2 },
                 weekday: 1,
                 time: 540,
             };
-            const appointments = [{
-                tutor: 'PhillipF',
-                student: 'Zoidberg',
-                course: 'MATH101',
-                startDateTime: '2017-05-29-09-00',
-                weekday: 1,
-                time: 540,
-            }];
+            const appointments = [
+                {
+                    tutor: "PhillipF",
+                    student: "Zoidberg",
+                    course: "MATH101",
+                    startDateTime: "2017-05-29-09-00",
+                    weekday: 1,
+                    time: 540,
+                },
+            ];
             const specialInstructions = [];
 
-            const expected = [{ id: 3, name: 'HubertF' }];
+            const expected = [{ id: 3, name: "HubertF" }];
 
             const result = getAvailableTutors(
                 locationData.schedules,
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should return the correct number of tutors with just special instructions', () => {
+        it("should return the correct number of tutors with just special instructions", () => {
             const parameters = {
                 course: { id: 2 },
                 weekday: 2,
                 time: 600,
             };
             const appointments = [];
-            const specialInstructions = [{
-                overwriteTutors: [{ name: 'AmyW' }, { name: 'HubertF' }],
-                startDateTime: '2017-05-30-11-00',
-                weekday: 2,
-                time: 600,
-            }];
+            const specialInstructions = [
+                {
+                    overwriteTutors: [{ name: "AmyW" }, { name: "HubertF" }],
+                    startDateTime: "2017-05-30-11-00",
+                    weekday: 2,
+                    time: 600,
+                },
+            ];
 
-            const expected = [{ id: 1, name: 'AmyW' },
-                              { id: 3, name: 'HubertF' }];
+            const expected = [
+                { id: 1, name: "AmyW" },
+                { id: 3, name: "HubertF" },
+            ];
 
             const result = getAvailableTutors(
                 locationData.schedules,
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should return the correct number of tutors with both appointments and special instructions', () => {
+        it("should return the correct number of tutors with both appointments and special instructions", () => {
             const parameters = {
                 course: { id: 2 },
                 weekday: 2,
                 time: 600,
             };
-            const appointments = [{
-                tutor: 'AmyW',
-                student: 'Zoidberg',
-                course: 'MATH101',
-                startDateTime: '2017-05-29-09-00',
-                weekday: 2,
-                time: 600,
-            }];
-            const specialInstructions = [{
-                overwriteTutors: [{ name: 'AmyW' }, { name: 'HubertF' }],
-                startDateTime: '2017-05-30-11-00',
-                weekday: 2,
-                time: 600,
-            }];
+            const appointments = [
+                {
+                    tutor: "AmyW",
+                    student: "Zoidberg",
+                    course: "MATH101",
+                    startDateTime: "2017-05-29-09-00",
+                    weekday: 2,
+                    time: 600,
+                },
+            ];
+            const specialInstructions = [
+                {
+                    overwriteTutors: [{ name: "AmyW" }, { name: "HubertF" }],
+                    startDateTime: "2017-05-30-11-00",
+                    weekday: 2,
+                    time: 600,
+                },
+            ];
 
-            const expected = [{ id: 3, name: 'HubertF' }];
+            const expected = [{ id: 3, name: "HubertF" }];
 
             const result = getAvailableTutors(
                 locationData.schedules,
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
 
-        it('should handle a case when two candidate tutors have the same first name and do not share the same course', () => {
+        it("should handle a case when two candidate tutors have the same first name and do not share the same course", () => {
             const parameters = {
                 course: { id: 2 },
                 weekday: 2,
                 time: 600,
             };
-            const appointments = [{
-                tutor: 'PhillipJ',
-                student: 'Zoidberg',
-                course: 'MATH101',
-                startDateTime: '2017-05-29-09-00',
-                weekday: 2,
-                time: 600,
-            }];
-            const specialInstructions = [{
-                overwriteTutors: [{ name: 'PhillipF' }, { name: 'PhillipJ' }],
-                startDateTime: '2017-05-30-11-00',
-                weekday: 2,
-                time: 600,
-            }];
+            const appointments = [
+                {
+                    tutor: "PhillipJ",
+                    student: "Zoidberg",
+                    course: "MATH101",
+                    startDateTime: "2017-05-29-09-00",
+                    weekday: 2,
+                    time: 600,
+                },
+            ];
+            const specialInstructions = [
+                {
+                    overwriteTutors: [
+                        { name: "PhillipF" },
+                        { name: "PhillipJ" },
+                    ],
+                    startDateTime: "2017-05-30-11-00",
+                    weekday: 2,
+                    time: 600,
+                },
+            ];
 
-            const expected = [{ id: 2, name: 'PhillipF' }];
+            const expected = [{ id: 2, name: "PhillipF" }];
 
             const result = getAvailableTutors(
                 locationData.schedules,
                 locationData.tutors,
                 appointments,
                 specialInstructions,
-                parameters);
+                parameters,
+            );
 
             expect(result).toHaveLength(expected.length);
             expected.forEach(expectIn(result));
         });
     });
 
-    describe('predictTutorName', () => {
-        const options = ['PhillipF', 'HubertF', 'HermesC',
-                         'AmyW', 'AmyZ',
-                         'JohnD', 'JohnT', 'JohnZ'];
-        const toLower = s => s.toLowerCase();
-        const unpackFromEither = x => Either.either(x => x, x => x, x);
-        const predictFromOptions = n => predictTutorName(options, n);
-        const isLeft = x => Either.isLeft(x);
-        const isRight = x => Either.isRight(x);
+    describe("predictTutorName", () => {
+        const options = [
+            "PhillipF",
+            "HubertF",
+            "HermesC",
+            "AmyW",
+            "AmyZ",
+            "JohnD",
+            "JohnT",
+            "JohnZ",
+        ];
+        const toLower = (s) => s.toLowerCase();
+        const unpackFromEither = (x) => Either.either((x) => x, (x) => x, x);
+        const predictFromOptions = (n) => predictTutorName(options, n);
+        const isLeft = (x) => Either.isLeft(x);
+        const isRight = (x) => Either.isRight(x);
 
-        it('should predict a simple slightly misspelled tutor name using first letters', () => {
-            const toPredict = ['Philip', 'Phil', 'HubirtF', 'HermC'];
-            const results = toPredict
-                  .map(predictFromOptions);
-
-            expect(results.every(isRight)).toBe(true);
-
-            const resultValues = results
-                  .map(unpackFromEither);
-
-            expect(resultValues).toEqual([
-                'PhillipF', 'PhillipF', 'HubertF', 'HermesC']);
-        });
-
-        it('should predict a name based on first and then last letters', () => {
-            const toPredict = ['AmyW', 'AmyZ', 'Amyyw', 'Amyyyyyyyyyyz', 'AnyW', 'AnyZ',
-                               'JohnZ', 'JohnD', 'JohnT', 'Johz', 'JahnnD', 'JonhT'];
-            const results = toPredict
-                  .map(predictFromOptions);
+        it("should predict a simple slightly misspelled tutor name using first letters", () => {
+            const toPredict = ["Philip", "Phil", "HubirtF", "HermC"];
+            const results = toPredict.map(predictFromOptions);
 
             expect(results.every(isRight)).toBe(true);
 
-            const resultValues = results
-                  .map(unpackFromEither);
+            const resultValues = results.map(unpackFromEither);
 
             expect(resultValues).toEqual([
-                'AmyW', 'AmyZ', 'AmyW', 'AmyZ', 'AmyW', 'AmyZ',
-                'JohnZ', 'JohnD', 'JohnT', 'JohnZ', 'JohnD', 'JohnT']);
+                "PhillipF",
+                "PhillipF",
+                "HubertF",
+                "HermesC",
+            ]);
         });
 
-        it('should return Left if name cannot be recognized using first and last letters', () => {
-            const toPredict = ['Amy', 'Ame', 'Anaconda', 'Duck', 'bluefish'];
+        it("should predict a name based on first and then last letters", () => {
+            const toPredict = [
+                "AmyW",
+                "AmyZ",
+                "Amyyw",
+                "Amyyyyyyyyyyz",
+                "AnyW",
+                "AnyZ",
+                "JohnZ",
+                "JohnD",
+                "JohnT",
+                "Johz",
+                "JahnnD",
+                "JonhT",
+            ];
+            const results = toPredict.map(predictFromOptions);
 
-            const results = toPredict
-                  .map(predictFromOptions);
+            expect(results.every(isRight)).toBe(true);
+
+            const resultValues = results.map(unpackFromEither);
+
+            expect(resultValues).toEqual([
+                "AmyW",
+                "AmyZ",
+                "AmyW",
+                "AmyZ",
+                "AmyW",
+                "AmyZ",
+                "JohnZ",
+                "JohnD",
+                "JohnT",
+                "JohnZ",
+                "JohnD",
+                "JohnT",
+            ]);
+        });
+
+        it("should return Left if name cannot be recognized using first and last letters", () => {
+            const toPredict = ["Amy", "Ame", "Anaconda", "Duck", "bluefish"];
+
+            const results = toPredict.map(predictFromOptions);
 
             expect(results.every(isLeft)).toBe(true);
         });
 
-        it('should be able to handle case where the only available options have same first letters', () => {
-            const predict = n => predictTutorName(['JohnT', 'JohnD'], n);
-            const toPredictSuccess = ['JohnT', 'JohnD', 'JonhT', 'JohD'];
-            const toPredictFailure = ['John', 'Jonh', 'Joh'];
+        it("should be able to handle case where the only available options have same first letters", () => {
+            const predict = (n) => predictTutorName(["JohnT", "JohnD"], n);
+            const toPredictSuccess = ["JohnT", "JohnD", "JonhT", "JohD"];
+            const toPredictFailure = ["John", "Jonh", "Joh"];
 
             const successes = toPredictSuccess.map(predict);
             const failures = toPredictFailure.map(predict);
@@ -590,7 +684,7 @@ describe('openSpots.service', () => {
             expect(failures.every(isLeft)).toBe(true);
 
             const successValues = successes.map(unpackFromEither);
-            expect(successValues).toEqual(['JohnT', 'JohnD', 'JohnT', 'JohnD']);
+            expect(successValues).toEqual(["JohnT", "JohnD", "JohnT", "JohnD"]);
         });
     });
 });

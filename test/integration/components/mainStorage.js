@@ -1,7 +1,7 @@
-import pg from 'pg';
+import pg from "pg";
 
-import config from '../../../server/config.js';
-import _mainStorage from '../../../server/services/mainStorage';
+import config from "../../../server/config.js";
+import _mainStorage from "../../../server/services/mainStorage";
 
 function getClient(dbConfig) {
     function runRawQuery(client, queryText) {
@@ -17,7 +17,7 @@ function getClient(dbConfig) {
     }
 
     const createConnectionString = ({ user, defaultDatabase }) =>
-          `postgres://${user}@localhost/${defaultDatabase}`;
+        `postgres://${user}@localhost/${defaultDatabase}`;
 
     const client = new pg.Client(createConnectionString(dbConfig));
 
@@ -43,11 +43,11 @@ function dropDatabaseQuery(dbConfig) {
 }
 
 const mainStorage = {
-    name: 'main-storage',
+    name: "main-storage",
 
     dbConfig: {
         user: config.db.USER,
-        defaultDatabase: 'postgres',
+        defaultDatabase: "postgres",
 
         database: config.db.NAME,
     },

@@ -1,8 +1,8 @@
-const puppeteer = require('puppeteer');
-const { TEST_ID } = require('../../../client/constants');
+const puppeteer = require("puppeteer");
+const { TEST_ID } = require("../../../client/constants");
 
 const browser = {
-    name: 'browser',
+    name: "browser",
     TEST_ID,
 
     async setup() {
@@ -12,7 +12,10 @@ const browser = {
             args: [`--window-size=${browser.width},${browser.height}`],
         });
         browser.page = await browser.driver.newPage();
-        await browser.page.setViewport({ width: browser.width, height: browser.height });
+        await browser.page.setViewport({
+            width: browser.width,
+            height: browser.height,
+        });
 
         return Promise.resolve(browser);
     },
