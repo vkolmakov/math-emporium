@@ -1,4 +1,4 @@
-import * as constants from '../constants';
+import * as constants from "../constants";
 
 export const BASE_PATH = constants.ROUTE_BASE_PATHS.MANAGE;
 export const AUTH_GROUPS = constants.AUTH_GROUPS;
@@ -10,12 +10,12 @@ export const TIMESTAMP_DISPLAY_FORMAT = constants.TIMESTAMP_DISPLAY_FORMAT;
 export const LATEST_EVENT_LIMIT_DEFAULT = 150;
 
 const EVENT_TYPES_DISPLAY_VALUES = {
-    CREATE_APPOINTMENT: 'Create Appointment',
-    REMOVE_APPOINTMENT: 'Remove Appointment',
-    SIGN_IN: 'Sign In',
+    CREATE_APPOINTMENT: "Create Appointment",
+    REMOVE_APPOINTMENT: "Remove Appointment",
+    SIGN_IN: "Sign In",
 };
 
-export const EVENT_TYPES_OPTIONS =
-      Object.keys(EVENT_TYPES).map(
-          key => ({ value: EVENT_TYPES[key],
-                    display: EVENT_TYPES_DISPLAY_VALUES[key] }));
+export const EVENT_TYPES_OPTIONS = Object.keys(EVENT_TYPES).map((key) => ({
+    value: EVENT_TYPES[key],
+    display: EVENT_TYPES_DISPLAY_VALUES[key],
+}));

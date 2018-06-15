@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const GET_SCHEDULES = 'GET_SCHEDULES';
-export const CREATE_SCHEDULE = 'CREATE_SCHEDULE';
-export const DELETE_SCHEDULE = 'DELETE_SCHEDULE';
-export const UPDATE_SCHEDULE = 'UPDATE_SCHEDULE';
-export const SET_CURRENT_WEEKDAY = 'SET_CURRENT_WEEKDAY';
+export const GET_SCHEDULES = "GET_SCHEDULES";
+export const CREATE_SCHEDULE = "CREATE_SCHEDULE";
+export const DELETE_SCHEDULE = "DELETE_SCHEDULE";
+export const UPDATE_SCHEDULE = "UPDATE_SCHEDULE";
+export const SET_CURRENT_WEEKDAY = "SET_CURRENT_WEEKDAY";
 
-const BASE_URL = '/api/schedules';
+const BASE_URL = "/api/schedules";
 
 export function getSchedules() {
     const request = axios.get(BASE_URL);
@@ -18,23 +18,23 @@ export function getSchedules() {
 }
 
 export function updateSchedule(id, data) {
-    return dispatch => {
+    return (dispatch) => {
         const requestData = {
             time: data.time,
             weekday: data.weekday,
             location: { id: data.location },
-            tutors: data.tutors.map(tutor => ({ id: tutor.value })),
+            tutors: data.tutors.map((tutor) => ({ id: tutor.value })),
         };
 
         return axios.put(`${BASE_URL}/${id}`, requestData).then(
-            res => {
+            (res) => {
                 dispatch({ type: UPDATE_SCHEDULE, payload: res });
                 return Promise.resolve();
             },
-            err => {
+            (err) => {
                 dispatch({ type: UPDATE_SCHEDULE, payload: err });
                 return Promise.reject();
-            }
+            },
         );
     };
 }
@@ -49,11 +49,11 @@ export function deleteSchedule(id) {
 }
 
 export function createSchedule(data) {
-    const requestData = data.time.map(time => ({
+    const requestData = data.time.map((time) => ({
         time: time.value,
         weekday: data.weekday,
         location: { id: data.location },
-        tutors: data.tutors.map(tutor => ({ id: tutor.value })),
+        tutors: data.tutors.map((tutor) => ({ id: tutor.value })),
     }));
 
     const request = axios.post(BASE_URL, requestData);

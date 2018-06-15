@@ -1,26 +1,27 @@
-import axios from 'axios';
-import moment from 'moment';
+import axios from "axios";
+import moment from "moment";
 
-import { storage } from '../../utils';
-import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from '../constants';
+import { storage } from "../../utils";
+import { TIMESTAMP_FORMAT, RANDOM_TUTOR } from "../constants";
 
-export const SA_GET_OPEN_SPOTS = 'SA_GET_OPEN_SPOTS';
-export const SA_SET_START_DATE = 'SA_SET_START_DATE';
-export const SA_RESET_OPEN_SPOTS = 'SA_RESET_OPEN_SPOTS';
-export const SA_SCHEDULE_APPOINTMENT = 'SA_SCHEDULE_APPOINTMENT';
-export const SA_SCHEDULING_MESSAGE = 'SA_SCHEDULING_MESSAGE';
-export const SA_CLEAR_SCHEDULING_MESSAGE = 'SA_CLEAR_SCHEDULING_MESSAGE';
-export const SA_SELECT_OPEN_SPOT = 'SA_SELECT_OPEN_SPOT';
-export const SA_CLEAR_OPEN_SPOT_SELECTION = 'SA_CLEAR_OPEN_SPOT_SELECTION';
-export const SA_DISPLAY_TUTOR_SELECTION_MODAL = 'SA_DISPLAY_TUTOR_SELECTION_MODAL';
-export const SA_DISPLAY_LOADING_MODAL = 'SA_DISPLAY_LOADING_MODAL';
-export const SA_DISPLAY_MESSAGE_MODAL = 'SA_DISPLAY_MESSAGE_MODAL';
-export const SA_DISPLAY_PROFILE_MODAL = 'SA_DISPLAY_PROFILE_MODAL';
-export const SA_SAVE_SELECTED_OPEN_SPOT = 'SA_SAVE_SELECTED_OPEN_SPOT';
+export const SA_GET_OPEN_SPOTS = "SA_GET_OPEN_SPOTS";
+export const SA_SET_START_DATE = "SA_SET_START_DATE";
+export const SA_RESET_OPEN_SPOTS = "SA_RESET_OPEN_SPOTS";
+export const SA_SCHEDULE_APPOINTMENT = "SA_SCHEDULE_APPOINTMENT";
+export const SA_SCHEDULING_MESSAGE = "SA_SCHEDULING_MESSAGE";
+export const SA_CLEAR_SCHEDULING_MESSAGE = "SA_CLEAR_SCHEDULING_MESSAGE";
+export const SA_SELECT_OPEN_SPOT = "SA_SELECT_OPEN_SPOT";
+export const SA_CLEAR_OPEN_SPOT_SELECTION = "SA_CLEAR_OPEN_SPOT_SELECTION";
+export const SA_DISPLAY_TUTOR_SELECTION_MODAL =
+    "SA_DISPLAY_TUTOR_SELECTION_MODAL";
+export const SA_DISPLAY_LOADING_MODAL = "SA_DISPLAY_LOADING_MODAL";
+export const SA_DISPLAY_MESSAGE_MODAL = "SA_DISPLAY_MESSAGE_MODAL";
+export const SA_DISPLAY_PROFILE_MODAL = "SA_DISPLAY_PROFILE_MODAL";
+export const SA_SAVE_SELECTED_OPEN_SPOT = "SA_SAVE_SELECTED_OPEN_SPOT";
 
-const BASE_URL = '/api/open-spots';
-const BASE_URL_APPOINTMENTS = '/api/scheduled-appointments';
-const BASE_URL_TUTORS = '/api/available-tutors';
+const BASE_URL = "/api/open-spots";
+const BASE_URL_APPOINTMENTS = "/api/scheduled-appointments";
+const BASE_URL_TUTORS = "/api/available-tutors";
 
 export function getOpenSpots({ location, course, startDate, subject }) {
     const requestParams = {
@@ -114,7 +115,14 @@ export function displayProfileModal({ lastActiveElement }) {
     };
 }
 
-export function scheduleAppointment({ location, subject, course, time, requestedTutor, additionalComments }) {
+export function scheduleAppointment({
+    location,
+    subject,
+    course,
+    time,
+    requestedTutor,
+    additionalComments,
+}) {
     return (dispatch) => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
         const tutor = isRandomTutor ? null : requestedTutor;
@@ -148,7 +156,12 @@ export function getAvailableTutors({ time, course, location, subject }) {
     };
 }
 
-export function persistPreselectedOpenSpot({ course, location, time, subject }) {
+export function persistPreselectedOpenSpot({
+    course,
+    location,
+    time,
+    subject,
+}) {
     const serialized = JSON.stringify({
         subject,
         course,
@@ -168,8 +181,9 @@ export function didUserPreselectAnOpenSpotBeforeSignIn() {
 }
 
 export function retrievePreselectedOpenSpot() {
-    const { course, location, time, subject } =
-          JSON.parse(storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT));
+    const { course, location, time, subject } = JSON.parse(
+        storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT),
+    );
 
     return {
         course,

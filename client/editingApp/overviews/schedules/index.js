@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { getSchedules } from '../../schedules/actions';
-import { getLocations, setCurrentLocation } from '../../locations/actions';
+import { getSchedules } from "../../schedules/actions";
+import { getLocations, setCurrentLocation } from "../../locations/actions";
 
-import LoadingSpinner from '../../../components/loadingSpinner';
-import FilterControls from '../../../components/filterControls';
+import LoadingSpinner from "../../../components/loadingSpinner";
+import FilterControls from "../../../components/filterControls";
 
-import Weekday from './components/weekday';
+import Weekday from "./components/weekday";
 
-import { selectTransformOptions } from '../../utils';
-import { DERIVE_SCHEDULES_FROM_CALENDAR } from '../../../constants';
+import { selectTransformOptions } from "../../utils";
+import { DERIVE_SCHEDULES_FROM_CALENDAR } from "../../../constants";
 
 class SchedulesOverview extends Component {
     componentWillMount() {
@@ -23,7 +23,10 @@ class SchedulesOverview extends Component {
             return (
                 <div className="content">
                     <div className="middle-help-message-wrap">
-                        <h1>Schedules are derived directly from Google Calendar on this instance.</h1>
+                        <h1>
+                            Schedules are derived directly from Google Calendar
+                            on this instance.
+                        </h1>
                     </div>
                 </div>
             );
@@ -35,7 +38,7 @@ class SchedulesOverview extends Component {
         if (!schedules || !locations) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
@@ -45,49 +48,60 @@ class SchedulesOverview extends Component {
         if (!locations.selected) {
             return (
                 <div className="content">
-                  <FilterControls options={locationsOptions}
-                                  currentValue={locations.selected ? locations.selected.id : null}
-                                  onChange={setCurrentLocation}
-                                  label="Select a location"
-                                  placeholder="Select..." />
-                  <div className="middle-help-message-wrap">
-                    <h1>Select a location...</h1>
-                  </div>
+                    <FilterControls
+                        options={locationsOptions}
+                        currentValue={
+                            locations.selected ? locations.selected.id : null
+                        }
+                        onChange={setCurrentLocation}
+                        label="Select a location"
+                        placeholder="Select..."
+                    />
+                    <div className="middle-help-message-wrap">
+                        <h1>Select a location...</h1>
+                    </div>
                 </div>
             );
         }
 
         const filteredSchedules = schedules.all.filter(
-            schedule => schedule.location.id == locations.selected.id
+            (schedule) => schedule.location.id == locations.selected.id,
         );
 
         const groupedSchedules = filteredSchedules.reduce(
             (groups, schedule) => {
                 let weekday = schedule.weekday;
-                groups[weekday] = groups[weekday] ? [...groups[weekday], schedule] : [schedule];
+                groups[weekday] = groups[weekday]
+                    ? [...groups[weekday], schedule]
+                    : [schedule];
                 return groups;
-            }, {});
-
+            },
+            {},
+        );
 
         return (
             <div className="content">
-              <div className="content-nav">
-                <FilterControls options={locationsOptions}
-                                currentValue={locations.selected ? locations.selected.id : null}
-                                onChange={setCurrentLocation}
-                                placeholder={'Select a location...'} />
-                <h2>Schedule for {locations.selected.name}</h2>
-              </div>
-              <div className="row">
-                {Object.keys(groupedSchedules).map(
-                  weekday => (
-                      <div className="weekday-wrap" key={weekday}>
-                        <Weekday weekday={weekday}
-                                 schedule={groupedSchedules[weekday]} />
-                      </div>
-                  )
-              )}
-              </div>
+                <div className="content-nav">
+                    <FilterControls
+                        options={locationsOptions}
+                        currentValue={
+                            locations.selected ? locations.selected.id : null
+                        }
+                        onChange={setCurrentLocation}
+                        placeholder={"Select a location..."}
+                    />
+                    <h2>Schedule for {locations.selected.name}</h2>
+                </div>
+                <div className="row">
+                    {Object.keys(groupedSchedules).map((weekday) => (
+                        <div className="weekday-wrap" key={weekday}>
+                            <Weekday
+                                weekday={weekday}
+                                schedule={groupedSchedules[weekday]}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }

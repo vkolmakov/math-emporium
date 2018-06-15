@@ -1,14 +1,12 @@
-import { create, env } from 'sanctuary';
+import { create, env } from "sanctuary";
 
 const _S = create({ checkTypes: false, env });
 
 export const courseComparator = (course1, course2) => {
-    const getCourseCodeNameAndNumber = code => {
+    const getCourseCodeNameAndNumber = (code) => {
         const courseCodeRegexp = /([a-z]+)([0-9]+)/;
         const mo = code.toLowerCase().match(courseCodeRegexp);
-        const [_, name, number] = mo
-            ? mo
-            : [null, code.toLowerCase(), null];
+        const [_, name, number] = mo ? mo : [null, code.toLowerCase(), null];
 
         return {
             name,
@@ -38,9 +36,13 @@ export const courseComparator = (course1, course2) => {
 export const subjectComparator = (x, y) =>
     x.name.toLowerCase() > y.name.toLowerCase() ? 1 : -1;
 
-export const selectTransformOptions = (valueKey = 'id', labelKey = 'name', colorKey = null) => options =>
-    options.map(
-        option => Object.keys(option).reduce((result, key) => {
+export const selectTransformOptions = (
+    valueKey = "id",
+    labelKey = "name",
+    colorKey = null,
+) => (options) =>
+    options.map((option) =>
+        Object.keys(option).reduce((result, key) => {
             if (key === valueKey) {
                 result.value = option[key];
             } else if (key === labelKey) {
@@ -49,7 +51,7 @@ export const selectTransformOptions = (valueKey = 'id', labelKey = 'name', color
                 result.color = option[key];
             }
             return result;
-        }, {})
+        }, {}),
     );
 
 export function inRangeInclusive(l, h, x) {
@@ -60,9 +62,13 @@ export function isPotentialPhoneNumber(rawNumber) {
     const LOWER_BOUND_NUM_DIGITS = 10;
     const UPPER_BOUND_NUM_DIGITS = 11;
 
-    const numDigits = rawNumber.replace(/\D/g, '').length;
+    const numDigits = rawNumber.replace(/\D/g, "").length;
 
-    return inRangeInclusive(LOWER_BOUND_NUM_DIGITS, UPPER_BOUND_NUM_DIGITS, numDigits);
+    return inRangeInclusive(
+        LOWER_BOUND_NUM_DIGITS,
+        UPPER_BOUND_NUM_DIGITS,
+        numDigits,
+    );
 }
 
 export const locationComparator = (location1, location2) =>
@@ -80,23 +86,28 @@ export function setKey(obj, key, val) {
 }
 
 export function createClassName(classList) {
-    return classList.filter((className) => !!className).join(' ');
+    return classList.filter((className) => !!className).join(" ");
 }
 
-export const id = x => x;
+export const id = (x) => x;
 
 export function parseCookies(onlyKeys, cookies) {
-    return cookies.split('; ')
-        .map(s => s.split('='))
-        .reduce((acc, [k, v]) => onlyKeys.includes(k) ? setKey(acc, k, v) : acc, {});
+    return cookies
+        .split("; ")
+        .map((s) => s.split("="))
+        .reduce(
+            (acc, [k, v]) => (onlyKeys.includes(k) ? setKey(acc, k, v) : acc),
+            {},
+        );
 }
 
 export function cleanCookies(onlyKeys, cookies) {
-    const expiration = (new Date(0)).toUTCString();
-    const createExpiredCookie = key => `${key}=;expires=${expiration}`;
+    const expiration = new Date(0).toUTCString();
+    const createExpiredCookie = (key) => `${key}=;expires=${expiration}`;
 
-    return Object.keys(parseCookies(onlyKeys, cookies))
-        .map(createExpiredCookie);
+    return Object.keys(parseCookies(onlyKeys, cookies)).map(
+        createExpiredCookie,
+    );
 }
 
 export function getOrigin() {
@@ -106,14 +117,14 @@ export function getOrigin() {
 export function backgroundPictureStyle(link) {
     return {
         backgroundImage: `url(${link})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
     };
 }
 
 export function backgroundPictureOverlayStyle() {
     return {
-        background: 'rgba(0, 0, 0, 0.5)',
+        background: "rgba(0, 0, 0, 0.5)",
     };
 }
 
@@ -128,10 +139,11 @@ export const storage = {
     _provider: window.localStorage,
 
     KEYS: {
-        ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN: 'ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN',
-        USER_EMAIL: 'USER_EMAIL',
-        USER_AUTH_GROUP: 'USER_AUTH_GROUP',
-        PRESELECTED_OPEN_SPOT: 'PRESELECTED_OPEN_SPOT',
+        ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN:
+            "ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN",
+        USER_EMAIL: "USER_EMAIL",
+        USER_AUTH_GROUP: "USER_AUTH_GROUP",
+        PRESELECTED_OPEN_SPOT: "PRESELECTED_OPEN_SPOT",
     },
 
     clear: () => storage._provider.clear(),

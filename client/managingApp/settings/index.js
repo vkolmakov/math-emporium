@@ -1,47 +1,55 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import Form from '../../components/form/index';
-import { updateSettings } from './actions';
+import Form from "../../components/form/index";
+import { updateSettings } from "./actions";
 
 const VISIBLE_SETTINGS_INPUT_TYPE = {
-    applicationTitle: 'text',
-    duplicateAllEmailsTo: 'text',
-    applicationMainHomePictureLink: 'text',
-    faqText: 'textarea',
-    announcementText: 'textarea',
-    announcementBackgroundColor: 'select',
-    announcementTextColor: 'select',
-    maximumAppointmentsPerUser: 'number',
+    applicationTitle: "text",
+    duplicateAllEmailsTo: "text",
+    applicationMainHomePictureLink: "text",
+    faqText: "textarea",
+    announcementText: "textarea",
+    announcementBackgroundColor: "select",
+    announcementTextColor: "select",
+    maximumAppointmentsPerUser: "number",
 };
 
 const VISIBLE_SETTINGS_OPTIONS = {
-    announcementBackgroundColor: [{
-        value: '#ADD3E9',
-        label: 'blue',
-        color: '#ADD3E9',
-    }, {
-        value: '#FF5C5C',
-        label: 'red',
-        color: '#FF5C5C',
-    }, {
-        value: '#111111',
-        label: 'black',
-        color: '#111111',
-    }, {
-        value: '#FFD097',
-        label: 'yellow',
-        color: '#FFD097',
-    }],
-    announcementTextColor: [{
-        value: '#111111',
-        label: 'black',
-        color: '#111111',
-    }, {
-        value: '#FFFFFF',
-        label: 'white',
-        color: '#FFFFFF',
-    }],
+    announcementBackgroundColor: [
+        {
+            value: "#ADD3E9",
+            label: "blue",
+            color: "#ADD3E9",
+        },
+        {
+            value: "#FF5C5C",
+            label: "red",
+            color: "#FF5C5C",
+        },
+        {
+            value: "#111111",
+            label: "black",
+            color: "#111111",
+        },
+        {
+            value: "#FFD097",
+            label: "yellow",
+            color: "#FFD097",
+        },
+    ],
+    announcementTextColor: [
+        {
+            value: "#111111",
+            label: "black",
+            color: "#111111",
+        },
+        {
+            value: "#FFFFFF",
+            label: "white",
+            color: "#FFFFFF",
+        },
+    ],
 };
 
 class ManageSettings extends Component {
@@ -63,18 +71,23 @@ class ManageSettings extends Component {
             event.preventDefault();
             const settings = this.state.settings;
 
-            this.props.updateSettings(settings)
-                .then(() => {
+            this.props.updateSettings(settings).then(
+                () => {
                     this.setState((state) => ({
                         ...state,
                         form: { success: true, error: null },
                     }));
-                }, (err) => {
+                },
+                (err) => {
                     this.setState((state) => ({
                         ...state,
-                        form: { success: false, error: 'Failed to submit settings' },
+                        form: {
+                            success: false,
+                            error: "Failed to submit settings",
+                        },
                     }));
-                });
+                },
+            );
         };
 
         const toFormField = (settingKey) => {
@@ -91,7 +104,8 @@ class ManageSettings extends Component {
                             if (!!event) {
                                 if (!!event.target) {
                                     // regular event from text input
-                                    state.settings[settingKey] = event.target.value;
+                                    state.settings[settingKey] =
+                                        event.target.value;
                                 } else if (!!event.value || !!event.label) {
                                     // change event from a dropdown
                                     state.settings[settingKey] = event.value;
@@ -110,9 +124,11 @@ class ManageSettings extends Component {
 
         const config = {
             handleSubmit: onSubmit.bind(this),
-            title: 'Update application settings',
+            title: "Update application settings",
             fields: Object.keys(this.props.settings)
-                .filter((key) => Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key))
+                .filter((key) =>
+                    Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key),
+                )
                 .map(toFormField),
             error: this.state.form.error,
             success: this.state.form.success,
@@ -120,7 +136,7 @@ class ManageSettings extends Component {
 
         return (
             <div className="list-wrap">
-              <Form {...config}></Form>
+                <Form {...config} />
             </div>
         );
     }
@@ -132,6 +148,9 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, {
-    updateSettings,
-})(ManageSettings);
+export default connect(
+    mapStateToProps,
+    {
+        updateSettings,
+    },
+)(ManageSettings);

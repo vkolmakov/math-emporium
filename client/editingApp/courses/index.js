@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { BASE_PATH } from '../constants';
+import { BASE_PATH } from "../constants";
 
-import { getCourses, deleteCourse } from './actions';
-import { getLocations, setCurrentLocation } from '../locations/actions';
-import { getSubjects } from '../subjects/actions';
+import { getCourses, deleteCourse } from "./actions";
+import { getLocations, setCurrentLocation } from "../locations/actions";
+import { getSubjects } from "../subjects/actions";
 
-import LoadingSpinner from '../../components/loadingSpinner';
-import Table from '../../components/table/index';
-import CreateCourseForm from './components/createCourseForm';
-import FilterControls from '../../components/filterControls';
+import LoadingSpinner from "../../components/loadingSpinner";
+import Table from "../../components/table/index";
+import CreateCourseForm from "./components/createCourseForm";
+import FilterControls from "../../components/filterControls";
 
-import { selectTransformOptions } from '../utils';
+import { selectTransformOptions } from "../utils";
 
 class EditCourses extends Component {
     componentWillMount() {
@@ -29,7 +29,7 @@ class EditCourses extends Component {
         if (!courses.all) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
@@ -37,7 +37,9 @@ class EditCourses extends Component {
         if (locations.selected) {
             const selectedLocation = locations.selected;
             const filteredCourses = courses.all.filter(
-                course => course.location && course.location.id === selectedLocation.id
+                (course) =>
+                    course.location &&
+                    course.location.id === selectedLocation.id,
             );
             courses = {
                 ...courses,
@@ -49,54 +51,66 @@ class EditCourses extends Component {
 
         const tableHeaders = [
             {
-                dataKey: 'code',
-                label: 'Code',
-            }, {
-                dataKey: 'subject->name',
-                label: 'Subject',
-            }, {
-                dataKey: 'name',
-                label: 'Name',
-            }, {
-                dataKey: 'hexColor',
-                label: 'Color',
-            }, {
-                dataKey: 'location->name',
-                label: 'Location',
+                dataKey: "code",
+                label: "Code",
+            },
+            {
+                dataKey: "subject->name",
+                label: "Subject",
+            },
+            {
+                dataKey: "name",
+                label: "Name",
+            },
+            {
+                dataKey: "hexColor",
+                label: "Color",
+            },
+            {
+                dataKey: "location->name",
+                label: "Location",
             },
         ];
 
         const tableActions = [
             {
-                label: 'Remove',
+                label: "Remove",
                 action: deleteCourse,
                 requestConfirmation: true,
-            }, {
-                label: 'Edit',
+            },
+            {
+                label: "Edit",
                 action: `/${BASE_PATH}/courses`,
             },
         ];
 
         return (
             <div className="content">
-              <div className="content-nav">
-                <h2>Courses</h2>
-                <FilterControls options={locationsOptions}
-                                currentValue={locations.selected ? locations.selected.id : null}
-                                onChange={setCurrentLocation.bind(this)}
-                                label="Filter by location"
-                                placeholder="Select..." />
-              </div>
-              <CreateCourseForm locations={locations}
-                                subjects={subjects}
-                                courses={courses} />
+                <div className="content-nav">
+                    <h2>Courses</h2>
+                    <FilterControls
+                        options={locationsOptions}
+                        currentValue={
+                            locations.selected ? locations.selected.id : null
+                        }
+                        onChange={setCurrentLocation.bind(this)}
+                        label="Filter by location"
+                        placeholder="Select..."
+                    />
+                </div>
+                <CreateCourseForm
+                    locations={locations}
+                    subjects={subjects}
+                    courses={courses}
+                />
 
-              <div className="list-wrap right-col">
-                <Table headers={tableHeaders}
-                     data={courses.all}
-                     actions={tableActions} />
-              </div>
-
+                <div className="list-wrap right-col">
+                    <Table
+                        headers={tableHeaders}
+                        data={courses.all}
+                        actions={tableActions}
+                    />
+                </div>
             </div>
         );
     }
@@ -119,10 +133,13 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, {
-    getCourses,
-    getLocations,
-    deleteCourse,
-    setCurrentLocation,
-    getSubjects,
-})(EditCourses);
+export default connect(
+    mapStateToProps,
+    {
+        getCourses,
+        getLocations,
+        deleteCourse,
+        setCurrentLocation,
+        getSubjects,
+    },
+)(EditCourses);

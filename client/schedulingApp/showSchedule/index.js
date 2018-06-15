@@ -1,35 +1,35 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import moment from 'moment';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import moment from "moment";
 
-import DatePicker from 'react-datepicker';
+import DatePicker from "react-datepicker";
 
-import FilterControls from '@client/components/filterControls';
-import LoadingModal from '@client/components/loadingModal';
-import MessageModal from '@client/components/messageModal';
-import withRouterContext from '@client/routing/withRouterContext';
+import FilterControls from "@client/components/filterControls";
+import LoadingModal from "@client/components/loadingModal";
+import MessageModal from "@client/components/messageModal";
+import withRouterContext from "@client/routing/withRouterContext";
 
-import OpenSpots from './components/openSpots';
-import ProfileModal from './components/profileModal';
-import TutorSelectionModal from './components/tutorSelectionModal';
+import OpenSpots from "./components/openSpots";
+import ProfileModal from "./components/profileModal";
+import TutorSelectionModal from "./components/tutorSelectionModal";
 
-import { selectTransformOptions } from '@client/editingApp/utils';
-import { redirectTo } from '@client/utils';
+import { selectTransformOptions } from "@client/editingApp/utils";
+import { redirectTo } from "@client/utils";
 
-import { MODAL_LIFECYCLE, getOpenSpotElementId } from './constants';
+import { MODAL_LIFECYCLE, getOpenSpotElementId } from "./constants";
 
-import { setLocation,
-         setSubject,
-         setCourse } from '../actions';
+import { setLocation, setSubject, setCourse } from "../actions";
 
-import { setStartDate,
-         getOpenSpots,
-         selectOpenSpot,
-         clearOpenSpotSelection,
-         getAvailableTutors,
-         displayTutorSelectionModal,
-         displayProfileModal,
-         displayMessageModal } from './actions';
+import {
+    setStartDate,
+    getOpenSpots,
+    selectOpenSpot,
+    clearOpenSpotSelection,
+    getAvailableTutors,
+    displayTutorSelectionModal,
+    displayProfileModal,
+    displayMessageModal,
+} from "./actions";
 
 function getLastActiveElementInfo(event) {
     return {
@@ -42,12 +42,19 @@ function getLastActiveElementInfo(event) {
 
 class ShowSchedule extends Component {
     componentDidMount() {
-        const { selectedOpenSpotInfo, courses, locations, subjects, startDate } = this.props;
+        const {
+            selectedOpenSpotInfo,
+            courses,
+            locations,
+            subjects,
+            startDate,
+        } = this.props;
 
-        const hasPreSelectedOpenSpot = selectedOpenSpotInfo.time
-              && selectedOpenSpotInfo.course
-              && selectedOpenSpotInfo.location
-              && selectedOpenSpotInfo.subject;
+        const hasPreSelectedOpenSpot =
+            selectedOpenSpotInfo.time &&
+            selectedOpenSpotInfo.course &&
+            selectedOpenSpotInfo.location &&
+            selectedOpenSpotInfo.subject;
 
         if (hasPreSelectedOpenSpot) {
             const { time, course, location, subject } = selectedOpenSpotInfo;
@@ -63,10 +70,19 @@ class ShowSchedule extends Component {
             });
 
             const potentialOpenSpotElementId = getOpenSpotElementId(time);
-            const openSpotHandler = this.createAvailableOpenSpotHandler(time, course, location, subject);
+            const openSpotHandler = this.createAvailableOpenSpotHandler(
+                time,
+                course,
+                location,
+                subject,
+            );
 
             openSpotHandler({ target: { id: potentialOpenSpotElementId } });
-        } else if (courses.selected && locations.selected && subjects.selected) {
+        } else if (
+            courses.selected &&
+            locations.selected &&
+            subjects.selected
+        ) {
             this.props.getOpenSpots({
                 location: locations.selected,
                 course: courses.selected,
@@ -78,13 +94,14 @@ class ShowSchedule extends Component {
         }
     }
 
-    onSelectChange(prevVal, handler, key = 'id') {
+    onSelectChange(prevVal, handler, key = "id") {
         return (nextVal) => {
             let isValChange;
             if (key) {
-                isValChange = !(prevVal && nextVal) || prevVal[key] !== nextVal[key];
+                isValChange =
+                    !(prevVal && nextVal) || prevVal[key] !== nextVal[key];
             } else {
-                isValChange = !(prevVal && nextVal) || (prevVal !== nextVal);
+                isValChange = !(prevVal && nextVal) || prevVal !== nextVal;
             }
 
             if (isValChange) {
@@ -97,7 +114,9 @@ class ShowSchedule extends Component {
         const { courses } = this.props;
 
         const prevCourse = courses.selected;
-        const nextCourse = courseOption ? courses.all.find(c => courseOption.value === c.id) : null;
+        const nextCourse = courseOption
+            ? courses.all.find((c) => courseOption.value === c.id)
+            : null;
 
         this.onSelectChange(prevCourse, this.props.setCourse)(nextCourse);
     }
@@ -106,7 +125,9 @@ class ShowSchedule extends Component {
         const { subjects } = this.props;
 
         const prevSubject = subjects.selected;
-        const nextSubject = subjectOption ? subjects.all.find(l => subjectOption.value === l.id) : null;
+        const nextSubject = subjectOption
+            ? subjects.all.find((l) => subjectOption.value === l.id)
+            : null;
 
         this.onSelectChange(prevSubject, this.props.setSubject)(nextSubject);
         this.focusOnNextInput();
@@ -116,7 +137,9 @@ class ShowSchedule extends Component {
         const { locations } = this.props;
 
         const prevLocation = locations.selected;
-        const nextLocation = locationOption ? locations.all.find(l => locationOption.value === l.id) : null;
+        const nextLocation = locationOption
+            ? locations.all.find((l) => locationOption.value === l.id)
+            : null;
         this.onSelectChange(prevLocation, this.props.setLocation)(nextLocation);
         this.focusOnNextInput();
     }
@@ -125,7 +148,7 @@ class ShowSchedule extends Component {
         const { startDate } = this.props;
 
         const prevStartDate = startDate;
-        const nextStartDate = moment(startDateOption.startOf('isoWeek'));
+        const nextStartDate = moment(startDateOption.startOf("isoWeek"));
 
         if (prevStartDate && !prevStartDate.isSame(nextStartDate)) {
             this.props.setStartDate(nextStartDate);
@@ -162,17 +185,41 @@ class ShowSchedule extends Component {
 
     componentDidUpdate(prevProps) {
         const location = this.props.locations.selected;
-        const [prevCourse, course] = [prevProps.courses.selected, this.props.courses.selected];
-        const [prevSubject, subject] = [prevProps.subjects.selected, this.props.subjects.selected];
-        const [prevStartDate, startDate] = [prevProps.startDate, this.props.startDate];
+        const [prevCourse, course] = [
+            prevProps.courses.selected,
+            this.props.courses.selected,
+        ];
+        const [prevSubject, subject] = [
+            prevProps.subjects.selected,
+            this.props.subjects.selected,
+        ];
+        const [prevStartDate, startDate] = [
+            prevProps.startDate,
+            this.props.startDate,
+        ];
 
-        const isEverythingSelected = [location, course, startDate, subject].every(e => !!e);
+        const isEverythingSelected = [
+            location,
+            course,
+            startDate,
+            subject,
+        ].every((e) => !!e);
 
-        const isRerenderWithNewCourse = prevCourse && course && prevCourse.id !== course.id || !prevCourse;
-        const isRerenderWithNewSubject = prevSubject && subject && prevSubject.id !== subject.id || !prevSubject;
-        const isRerenderWithNewDate = prevStartDate && startDate && prevStartDate !== startDate;
+        const isRerenderWithNewCourse =
+            (prevCourse && course && prevCourse.id !== course.id) ||
+            !prevCourse;
+        const isRerenderWithNewSubject =
+            (prevSubject && subject && prevSubject.id !== subject.id) ||
+            !prevSubject;
+        const isRerenderWithNewDate =
+            prevStartDate && startDate && prevStartDate !== startDate;
 
-        if (isEverythingSelected && (isRerenderWithNewCourse || isRerenderWithNewDate || isRerenderWithNewSubject)) {
+        if (
+            isEverythingSelected &&
+            (isRerenderWithNewCourse ||
+                isRerenderWithNewDate ||
+                isRerenderWithNewSubject)
+        ) {
             this.props.getOpenSpots({ location, course, startDate, subject });
         } else {
             this.focusOnNextInput();
@@ -186,12 +233,17 @@ class ShowSchedule extends Component {
             const { modalInfo } = this.props;
 
             if (!!modalInfo.redirectToAfterClosing) {
-                const redirectPath = this.props.modalInfo.redirectToAfterClosing;
+                const redirectPath = this.props.modalInfo
+                    .redirectToAfterClosing;
                 redirectTo(this.props.history, redirectPath);
-            } else if (!!modalInfo.lastActiveElement
-                       && modalInfo.lastActiveElement.shouldFocus
-                       && !!modalInfo.lastActiveElement.nodeId) {
-                const lastActiveElementRef = document.getElementById(modalInfo.lastActiveElement.nodeId);
+            } else if (
+                !!modalInfo.lastActiveElement &&
+                modalInfo.lastActiveElement.shouldFocus &&
+                !!modalInfo.lastActiveElement.nodeId
+            ) {
+                const lastActiveElementRef = document.getElementById(
+                    modalInfo.lastActiveElement.nodeId,
+                );
                 if (!!lastActiveElementRef) {
                     lastActiveElementRef.focus();
                 }
@@ -200,23 +252,32 @@ class ShowSchedule extends Component {
 
         return () => {
             switch (currentModalStatus) {
-            case MODAL_LIFECYCLE.SELECTING_TUTOR:
-                return (<TutorSelectionModal onRequestClose={onRequestClose} />);
+                case MODAL_LIFECYCLE.SELECTING_TUTOR:
+                    return (
+                        <TutorSelectionModal onRequestClose={onRequestClose} />
+                    );
 
-            case MODAL_LIFECYCLE.LOADING:
-                return (<LoadingModal height="6.5em" onRequestClose={onRequestClose} />);
+                case MODAL_LIFECYCLE.LOADING:
+                    return (
+                        <LoadingModal
+                            height="6.5em"
+                            onRequestClose={onRequestClose}
+                        />
+                    );
 
-            case MODAL_LIFECYCLE.MISSING_PROFILE:
-                return (<ProfileModal onRequestClose={onRequestClose} />);
+                case MODAL_LIFECYCLE.MISSING_PROFILE:
+                    return <ProfileModal onRequestClose={onRequestClose} />;
 
-            case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
-                return (
-                    <MessageModal onRequestClose={onRequestClose}
-                                  message={this.props.modalMessage} />
-                );
+                case MODAL_LIFECYCLE.DISPLAYING_MESSAGE:
+                    return (
+                        <MessageModal
+                            onRequestClose={onRequestClose}
+                            message={this.props.modalMessage}
+                        />
+                    );
 
-            default:
-                return (<span />);
+                default:
+                    return <span />;
             }
         };
     }
@@ -226,9 +287,12 @@ class ShowSchedule extends Component {
         if (!subjects.selected) {
             coursesOptions = [];
         } else {
-            const transformCourseToOption = c => ({ value: c.id, label: `${c.code}: ${c.name}` });
+            const transformCourseToOption = (c) => ({
+                value: c.id,
+                label: `${c.code}: ${c.name}`,
+            });
             coursesOptions = courses.all
-                .filter(c => c.subject.id === subjects.selected.id)
+                .filter((c) => c.subject.id === subjects.selected.id)
                 .map(transformCourseToOption);
         }
 
@@ -238,9 +302,12 @@ class ShowSchedule extends Component {
     createSubjectsOptions(subjects, locations) {
         let subjectsOptions = [];
         if (locations.selected) {
-            const transformSubjectToOption = s => ({ value: s.id, label: s.name });
+            const transformSubjectToOption = (s) => ({
+                value: s.id,
+                label: s.name,
+            });
             subjectsOptions = subjects.all
-                .filter(s => s.location.id === locations.selected.id)
+                .filter((s) => s.location.id === locations.selected.id)
                 .map(transformSubjectToOption);
         }
 
@@ -254,35 +321,53 @@ class ShowSchedule extends Component {
     createAvailableOpenSpotHandler(time, course, location, subject) {
         const { authenticated, profile } = this.props;
 
-        return e => {
+        return (e) => {
             const lastActiveElementInfo = getLastActiveElementInfo(e);
 
             this.props.selectOpenSpot({ time, course, subject, location });
 
             if (!authenticated) {
-                return redirectTo(this.props.history, '/auth/signin');
+                return redirectTo(this.props.history, "/auth/signin");
             }
 
-            const isCompleteProfile = profile && profile.firstName && profile.lastName && profile.phoneNumber;
+            const isCompleteProfile =
+                profile &&
+                profile.firstName &&
+                profile.lastName &&
+                profile.phoneNumber;
 
             if (!isCompleteProfile) {
                 return this.props.displayProfileModal(lastActiveElementInfo);
             }
 
-            return this.props.getAvailableTutors({ time, course, location, subject })
+            return this.props
+                .getAvailableTutors({ time, course, location, subject })
                 .then((res) => res.data)
                 .then((tutors) => {
                     if (tutors.length > 0) {
-                        this.props.displayTutorSelectionModal({ tutors, ...lastActiveElementInfo });
+                        this.props.displayTutorSelectionModal({
+                            tutors,
+                            ...lastActiveElementInfo,
+                        });
                     } else {
-                        this.props.displayMessageModal({ message: 'There are no more tutors left for this time slot.' });
+                        this.props.displayMessageModal({
+                            message:
+                                "There are no more tutors left for this time slot.",
+                        });
                     }
                 });
         };
     }
 
     render() {
-        const { locations, courses, subjects, startDate, openSpots, modalInfo } = this.props;
+        const {
+            locations,
+            courses,
+            subjects,
+            startDate,
+            openSpots,
+            modalInfo,
+        } = this.props;
         const now = moment();
 
         const locationsOptions = this.createLocationsOptions(locations);
@@ -290,83 +375,129 @@ class ShowSchedule extends Component {
         const coursesOptions = this.createCoursesOptions(courses, subjects);
 
         const openSpotHandlers = {
-            available: time => this.createAvailableOpenSpotHandler(time, courses.selected, locations.selected, subjects.selected),
-            expired: time => e => this.props.clearOpenSpotSelection(),
-            closed: time => e => this.props.clearOpenSpotSelection(),
+            available: (time) =>
+                this.createAvailableOpenSpotHandler(
+                    time,
+                    courses.selected,
+                    locations.selected,
+                    subjects.selected,
+                ),
+            expired: (time) => (e) => this.props.clearOpenSpotSelection(),
+            closed: (time) => (e) => this.props.clearOpenSpotSelection(),
         };
 
         const MaybeModal = modalInfo.displayModal
             ? this.selectModal(modalInfo.status).bind(this)
-            : () => (<span />);
+            : () => <span />;
 
         return (
             <div className="content">
-
                 <div className="show-schedule-controls">
-
                     <div className="column">
                         <div className="input-group">
                             <label htmlFor="dual-datepicker">Week</label>
-                            <div ref={(datePickerWrapRef) => this.datePickerWrapRef = datePickerWrapRef} className="dual-datepicker-wrap">
-                                <DatePicker selected={startDate}
-                                            startDate={startDate}
-                                            endDate={moment(startDate).endOf('isoWeek')}
-                                            locale="en-gb"
-                                            dateFormat="MM/DD/YYYY"
-                                            readOnly={true}
-                                            onChange={this.onStartDateChange.bind(this)}
-                                            onFocus={() => this.datePickerWrapRef.classList.add('has-focus')}
-                                            onBlur={() => this.datePickerWrapRef.classList.remove('has-focus')}
-                                            id="dual-datepicker"/>
+                            <div
+                                ref={(datePickerWrapRef) =>
+                                    (this.datePickerWrapRef = datePickerWrapRef)
+                                }
+                                className="dual-datepicker-wrap">
+                                <DatePicker
+                                    selected={startDate}
+                                    startDate={startDate}
+                                    endDate={moment(startDate).endOf("isoWeek")}
+                                    locale="en-gb"
+                                    dateFormat="MM/DD/YYYY"
+                                    readOnly={true}
+                                    onChange={this.onStartDateChange.bind(this)}
+                                    onFocus={() =>
+                                        this.datePickerWrapRef.classList.add(
+                                            "has-focus",
+                                        )
+                                    }
+                                    onBlur={() =>
+                                        this.datePickerWrapRef.classList.remove(
+                                            "has-focus",
+                                        )
+                                    }
+                                    id="dual-datepicker"
+                                />
 
-                                <DatePicker selected={moment(startDate).endOf('isoWeek')}
-                                            locale="en-gb"
-                                            dateFormat="MM/DD/YYYY"
-                                            disabled={true} />
+                                <DatePicker
+                                    selected={moment(startDate).endOf(
+                                        "isoWeek",
+                                    )}
+                                    locale="en-gb"
+                                    dateFormat="MM/DD/YYYY"
+                                    disabled={true}
+                                />
                             </div>
                         </div>
 
-                        <FilterControls options={locationsOptions}
-                                        currentValue={locations.selected ? locations.selected.id : null}
-                                        placeholder="Select..."
-                                        label="Location"
-                                        error={!locations.selected}
-                                        selectRef={input => { this.locationSelect = input; } }
-                                        onChange={this.onLocationChange.bind(this)} />
-
+                        <FilterControls
+                            options={locationsOptions}
+                            currentValue={
+                                locations.selected
+                                    ? locations.selected.id
+                                    : null
+                            }
+                            placeholder="Select..."
+                            label="Location"
+                            error={!locations.selected}
+                            selectRef={(input) => {
+                                this.locationSelect = input;
+                            }}
+                            onChange={this.onLocationChange.bind(this)}
+                        />
                     </div>
 
                     <div className="column">
-                      <FilterControls options={subjectsOptions}
-                                      currentValue={subjects.selected ? subjects.selected.id : null}
-                                      disabled={!this.props.locations.selected}
-                                      placeholder="Select..."
-                                      label="Subject"
-                                      error={locations.selected && !subjects.selected}
-                                      selectRef={input => { this.subjectSelect = input; } }
-                                      onChange={this.onSubjectChange.bind(this)} />
+                        <FilterControls
+                            options={subjectsOptions}
+                            currentValue={
+                                subjects.selected ? subjects.selected.id : null
+                            }
+                            disabled={!this.props.locations.selected}
+                            placeholder="Select..."
+                            label="Subject"
+                            error={locations.selected && !subjects.selected}
+                            selectRef={(input) => {
+                                this.subjectSelect = input;
+                            }}
+                            onChange={this.onSubjectChange.bind(this)}
+                        />
 
-                        <FilterControls options={coursesOptions}
-                                        currentValue={courses.selected ? courses.selected.id : null}
-                                        disabled={!this.props.subjects.selected}
-                                        placeholder="Select..."
-                                        label="Course"
-                                        error={locations.selected && subjects.selected && !courses.selected}
-                                        selectRef={input => { this.courseSelect = input; } }
-                                        onChange={this.onCourseChange.bind(this)} />
+                        <FilterControls
+                            options={coursesOptions}
+                            currentValue={
+                                courses.selected ? courses.selected.id : null
+                            }
+                            disabled={!this.props.subjects.selected}
+                            placeholder="Select..."
+                            label="Course"
+                            error={
+                                locations.selected &&
+                                subjects.selected &&
+                                !courses.selected
+                            }
+                            selectRef={(input) => {
+                                this.courseSelect = input;
+                            }}
+                            onChange={this.onCourseChange.bind(this)}
+                        />
                     </div>
+                </div>
 
-              </div>
+                <OpenSpots
+                    isCourseSelected={!!courses.selected}
+                    isSubjectSelected={!!subjects.selected}
+                    isLocationSelected={!!locations.selected}
+                    startDate={startDate}
+                    now={now}
+                    openSpots={openSpots}
+                    handlers={openSpotHandlers}
+                />
 
-              <OpenSpots isCourseSelected={!!courses.selected}
-                         isSubjectSelected={!!subjects.selected}
-                         isLocationSelected={!!locations.selected}
-                         startDate={startDate}
-                         now={now}
-                         openSpots={openSpots}
-                         handlers={openSpotHandlers} />
-
-              <MaybeModal />
+                <MaybeModal />
             </div>
         );
     }
@@ -391,21 +522,25 @@ function mapStateToProps(state) {
         modalInfo: state.scheduling.showSchedule.modalInfo,
         modalMessage: state.scheduling.showSchedule.message,
         profile: state.scheduling.profile.user,
-        selectedOpenSpotInfo: state.scheduling.showSchedule.selectedOpenSpotInfo,
+        selectedOpenSpotInfo:
+            state.scheduling.showSchedule.selectedOpenSpotInfo,
         authenticated: state.auth.authenticated,
     };
 }
 
-export default connect(mapStateToProps, {
-    setLocation,
-    setSubject,
-    setCourse,
-    setStartDate,
-    getOpenSpots,
-    selectOpenSpot,
-    clearOpenSpotSelection,
-    getAvailableTutors,
-    displayTutorSelectionModal,
-    displayProfileModal,
-    displayMessageModal,
-})(withRouterContext(ShowSchedule));
+export default connect(
+    mapStateToProps,
+    {
+        setLocation,
+        setSubject,
+        setCourse,
+        setStartDate,
+        getOpenSpots,
+        selectOpenSpot,
+        clearOpenSpotSelection,
+        getAvailableTutors,
+        displayTutorSelectionModal,
+        displayProfileModal,
+        displayMessageModal,
+    },
+)(withRouterContext(ShowSchedule));

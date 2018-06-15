@@ -1,3 +1,3 @@
-import { withRouter } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
 
 export default withRouter;

@@ -1,5 +1,7 @@
-import React from 'react';
+import React from "react";
 
 export default ({ message }) => (
-    <h1 role="alert" className="open-spots-message-main">{message}</h1>
+    <h1 role="alert" className="open-spots-message-main">
+        {message}
+    </h1>
 );

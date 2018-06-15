@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { getLocations } from '../../locations/actions';
-import { getCourses } from '../../courses/actions';
-import { getTutors } from '../actions';
+import { getLocations } from "../../locations/actions";
+import { getCourses } from "../../courses/actions";
+import { getTutors } from "../actions";
 
-import LoadingSpinner from '../../../components/loadingSpinner';
-import UpdateTutorForm from './updateTutorForm';
+import LoadingSpinner from "../../../components/loadingSpinner";
+import UpdateTutorForm from "./updateTutorForm";
 
 class TutorDetail extends Component {
     componentWillMount() {
@@ -20,14 +20,12 @@ class TutorDetail extends Component {
 
         const { id } = this.props.match.params;
 
-        const selectedTutor = tutors.all.find(
-            tutor => tutor.id == id
-        );
+        const selectedTutor = tutors.all.find((tutor) => tutor.id == id);
 
         if (!selectedTutor) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
@@ -38,13 +36,11 @@ class TutorDetail extends Component {
             selectedLocation = locations.selected;
         } else {
             selectedLocation = locations.all.find(
-                location => location.id == selectedTutor.location.id
+                (location) => location.id == selectedTutor.location.id,
             );
         }
-        const [filteredCourses] = [courses.all].map(
-            list => list.filter(
-                elem => elem.location.id == selectedLocation.id
-            )
+        const [filteredCourses] = [courses.all].map((list) =>
+            list.filter((elem) => elem.location.id == selectedLocation.id),
         );
 
         courses = {
@@ -54,10 +50,12 @@ class TutorDetail extends Component {
 
         return (
             <div className="content">
-              <UpdateTutorForm locations={locations}
-                               courses={courses}
-                               selectedTutor={selectedTutor}
-                               tutors={tutors} />
+                <UpdateTutorForm
+                    locations={locations}
+                    courses={courses}
+                    selectedTutor={selectedTutor}
+                    tutors={tutors}
+                />
             </div>
         );
     }
@@ -81,5 +79,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getCourses, getTutors }
+    { getLocations, getCourses, getTutors },
 )(TutorDetail);

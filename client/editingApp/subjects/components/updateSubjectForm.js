@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import React, { Component } from "react";
+import { reduxForm, initialize } from "redux-form";
 
-import { updateSubject, getSubjects } from '../actions';
-import { setCurrentLocation } from '../../locations/actions';
-import { S, redirectTo, id } from '@client/utils';
-import withRouterContext from '@client/routing/withRouterContext';
+import { updateSubject, getSubjects } from "../actions";
+import { setCurrentLocation } from "../../locations/actions";
+import { S, redirectTo, id } from "@client/utils";
+import withRouterContext from "@client/routing/withRouterContext";
 
-import { ROUTES } from '../../constants';
+import { ROUTES } from "../../constants";
 
-import { selectTransformOptions } from '../../utils';
-import Form from '@client/components/form/index';
+import { selectTransformOptions } from "../../utils";
+import Form from "@client/components/form/index";
 
 class UpdateSubjectForm extends Component {
     constructor() {
@@ -22,10 +22,16 @@ class UpdateSubjectForm extends Component {
     componentWillMount() {
         const { name, location } = this.props.selectedSubject;
 
-        this.props.dispatch(initialize('UpdateSubjectForm', {
-            name,
-            location: location.id,
-        }, ['name', 'location']));
+        this.props.dispatch(
+            initialize(
+                "UpdateSubjectForm",
+                {
+                    name,
+                    location: location.id,
+                },
+                ["name", "location"],
+            ),
+        );
     }
 
     render() {
@@ -33,34 +39,42 @@ class UpdateSubjectForm extends Component {
 
         const { setCurrentLocation } = this.props;
 
-        const locationsOptions = selectTransformOptions()(this.props.locations.all);
+        const locationsOptions = selectTransformOptions()(
+            this.props.locations.all,
+        );
 
         const onSubmit = (data) => {
             this.setState({ success: false });
-            this.props.updateSubject(this.props.selectedSubject.id, data)
-                .then(result => redirectTo(this.props.history, ROUTES.SUBJECTS),
-                      id);
+            this.props
+                .updateSubject(this.props.selectedSubject.id, data)
+                .then(
+                    (result) => redirectTo(this.props.history, ROUTES.SUBJECTS),
+                    id,
+                );
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Update a Subject';
+        const title = "Update a Subject";
 
         const fields = [
             {
-                label: 'Name',
+                label: "Name",
                 input: {
-                    type: 'text',
+                    type: "text",
                     binding: name,
                 },
-            }, {
-                label: 'Location',
+            },
+            {
+                label: "Location",
                 input: {
-                    type: 'select',
+                    type: "select",
                     binding: location,
                     options: locationsOptions,
                     onSelect: setCurrentLocation,
-                    controlValue: this.props.locations.selected ? this.props.locations.selected.id : null,
+                    controlValue: this.props.locations.selected
+                        ? this.props.locations.selected.id
+                        : null,
                 },
             },
         ];
@@ -74,36 +88,37 @@ class UpdateSubjectForm extends Component {
 
         return (
             <div className="list-wrap">
-              <Form {...formConfig} />
+                <Form {...formConfig} />
             </div>
         );
     }
 }
 
-
 function validate(values) {
     const errors = {};
     const requiredFields = {
-        name: 'Enter a name',
-        location: 'Select location',
+        name: "Enter a name",
+        location: "Select location",
     };
 
-    Object.keys(requiredFields).forEach(
-        field => {
-            if (!values[field]) {
-                errors[field] = requiredFields[field];
-            }
+    Object.keys(requiredFields).forEach((field) => {
+        if (!values[field]) {
+            errors[field] = requiredFields[field];
         }
-    );
+    });
 
     return errors;
 }
 
 export default S.compose(
     withRouterContext,
-    reduxForm({
-        form: 'UpdateSubjectForm',
-        fields: ['name', 'location'],
-        validate,
-    }, null, { updateSubject, getSubjects, setCurrentLocation })
+    reduxForm(
+        {
+            form: "UpdateSubjectForm",
+            fields: ["name", "location"],
+            validate,
+        },
+        null,
+        { updateSubject, getSubjects, setCurrentLocation },
+    ),
 )(UpdateSubjectForm);

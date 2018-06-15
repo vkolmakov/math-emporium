@@ -1,14 +1,25 @@
-import React from 'react';
+import React from "react";
 
 const handleChange = (options, event) => (onChange) =>
-      onChange(options.find(o => o.value == event.target.value));
+    onChange(options.find((o) => o.value == event.target.value));
 
-export default ({ options, currentValue, onChange, placeholder, error, selectRef, label, disableNullOption, disabled, testId }) => {
+export default ({
+    options,
+    currentValue,
+    onChange,
+    placeholder,
+    error,
+    selectRef,
+    label,
+    disableNullOption,
+    disabled,
+    testId,
+}) => {
     const createClassName = (error, currentValue) => {
         const classNames = {
-            error: 'select-filter-error',
-            empty: 'select-filter-empty',
-            default: 'select-filter-wrap',
+            error: "select-filter-error",
+            empty: "select-filter-empty",
+            default: "select-filter-wrap",
         };
 
         let result = [classNames.default];
@@ -21,10 +32,13 @@ export default ({ options, currentValue, onChange, placeholder, error, selectRef
             result = result.concat([classNames.empty]);
         }
 
-        return result.join(' ');
+        return result.join(" ");
     };
 
-    const selectElementId = `select-${label.toLowerCase().split(/\s+/).join('-')}`;
+    const selectElementId = `select-${label
+        .toLowerCase()
+        .split(/\s+/)
+        .join("-")}`;
 
     return (
         <div className="input-group">
@@ -33,12 +47,19 @@ export default ({ options, currentValue, onChange, placeholder, error, selectRef
                 value={currentValue || 0}
                 id={selectElementId}
                 disabled={!!disabled}
-                ref={(select) => selectRef ? selectRef(select) : null}
+                ref={(select) => (selectRef ? selectRef(select) : null)}
                 className={createClassName(error, currentValue)}
                 onChange={(event) => handleChange(options, event)(onChange)}
                 data-test={testId}>
-              <option disabled={disableNullOption} value={0}>{placeholder}</option>
-              {options.map(({ value, label }) => (<option value={value} key={value}>{label}</option>))}
+                <option disabled={disableNullOption} value={0}>
+                    {placeholder}
+                </option>
+                {options.map(({ value, label }) => (
+                    <option value={value} key={value}>
+                        {label}
+                    </option>
+                ))}
             </select>
-        </div>);
+        </div>
+    );
 };

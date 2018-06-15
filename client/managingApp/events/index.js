@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { selectTransformOptions } from '../../editingApp/utils';
-import { EVENT_TYPES_OPTIONS } from '../constants';
+import { selectTransformOptions } from "../../editingApp/utils";
+import { EVENT_TYPES_OPTIONS } from "../constants";
 
-import LoadingSpinner from '../../components/loadingSpinner';
-import Table from '../../components/table/index';
-import FilterControls from '../../components/filterControls';
-
+import LoadingSpinner from "../../components/loadingSpinner";
+import Table from "../../components/table/index";
+import FilterControls from "../../components/filterControls";
 
 class ManageEvents extends Component {
     constructor() {
@@ -20,7 +19,8 @@ class ManageEvents extends Component {
     setSelectedEventType(eventTypeOption) {
         if (eventTypeOption) {
             const selectedEventType = EVENT_TYPES_OPTIONS.find(
-                (g) => g.value === eventTypeOption.value);
+                (g) => g.value === eventTypeOption.value,
+            );
             this.setState({ selectedEventType });
         } else {
             this.setState({ selectedEventType: null });
@@ -33,7 +33,7 @@ class ManageEvents extends Component {
         if (!events.all) {
             return (
                 <div className="content">
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             );
         }
@@ -41,7 +41,8 @@ class ManageEvents extends Component {
         if (this.state.selectedEventType) {
             const { selectedEventType } = this.state;
             const filteredEvents = events.all.filter(
-                e => e.type === selectedEventType.value);
+                (e) => e.type === selectedEventType.value,
+            );
 
             events = {
                 ...events,
@@ -49,22 +50,31 @@ class ManageEvents extends Component {
             };
         }
 
-        const eventTypeOptions = selectTransformOptions('value', 'display')(EVENT_TYPES_OPTIONS);
+        const eventTypeOptions = selectTransformOptions("value", "display")(
+            EVENT_TYPES_OPTIONS,
+        );
 
-        const tableHeaders = [{
-            dataKey: 'time',
-            label: 'time',
-        }, {
-            dataKey: 'type',
-            label: 'type',
-            mapValuesToLabels: (val) => EVENT_TYPES_OPTIONS.find(({ value }) => value === val).display,
-        }, {
-            dataKey: 'user',
-            label: 'user',
-        }, {
-            dataKey: 'data',
-            label: 'data',
-        }];
+        const tableHeaders = [
+            {
+                dataKey: "time",
+                label: "time",
+            },
+            {
+                dataKey: "type",
+                label: "type",
+                mapValuesToLabels: (val) =>
+                    EVENT_TYPES_OPTIONS.find(({ value }) => value === val)
+                        .display,
+            },
+            {
+                dataKey: "user",
+                label: "user",
+            },
+            {
+                dataKey: "data",
+                label: "data",
+            },
+        ];
 
         const tableActions = [];
 
@@ -72,17 +82,25 @@ class ManageEvents extends Component {
             <div className="content">
                 <div className="content-nav">
                     <h2>Events</h2>
-                    <FilterControls options={eventTypeOptions}
-                                    currentValue={this.state.selectedEventType ? this.state.selectedEventType.value : null}
-                                    onChange={this.setSelectedEventType.bind(this)}
-                                    label="Filter by event type"
-                                    placeholder="Select..." />
+                    <FilterControls
+                        options={eventTypeOptions}
+                        currentValue={
+                            this.state.selectedEventType
+                                ? this.state.selectedEventType.value
+                                : null
+                        }
+                        onChange={this.setSelectedEventType.bind(this)}
+                        label="Filter by event type"
+                        placeholder="Select..."
+                    />
                 </div>
 
                 <div className="list-wrap">
-                    <Table headers={tableHeaders}
-                           data={events.all}
-                           actions={tableActions} />
+                    <Table
+                        headers={tableHeaders}
+                        data={events.all}
+                        actions={tableActions}
+                    />
                 </div>
             </div>
         );

@@ -1,7 +1,5 @@
-import React from 'react';
+import React from "react";
 
 export default ({ color }) => (
-    <div className="color-icon"
-         style={{ backgroundColor: color }} >
-    </div>
+    <div className="color-icon" style={{ backgroundColor: color }} />
 );

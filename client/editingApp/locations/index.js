@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { BASE_PATH } from '../constants';
+import { BASE_PATH } from "../constants";
 
-import { getLocations, deleteLocation } from './actions';
+import { getLocations, deleteLocation } from "./actions";
 
-import LoadingSpinner from '../../components/loadingSpinner';
-import Table from '../../components/table/index';
-import CreateLocationForm from './components/createLocationForm';
+import LoadingSpinner from "../../components/loadingSpinner";
+import Table from "../../components/table/index";
+import CreateLocationForm from "./components/createLocationForm";
 
 class EditLocations extends Component {
     componentWillMount() {
@@ -22,72 +22,84 @@ class EditLocations extends Component {
         if (!locations.all) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
 
         const tableHeaders = [
             {
-                dataKey: 'name',
-                label: 'Name',
-            }, {
-                dataKey: 'isActive',
-                label: 'Active',
-            }, {
-                dataKey: 'calendarId',
-                label: 'Calendar ID',
-            }, {
-                dataKey: 'address',
-                label: 'Address',
-            }, {
-                dataKey: 'phone',
-                label: 'Phone',
-            }, {
-                dataKey: 'email',
-                label: 'Email',
-            }, {
-                dataKey: 'description',
-                label: 'Description',
-            }, {
-                dataKey: 'pictureLink',
-                label: 'Link to a picture',
-            }, {
-                dataKey: 'maximumAppointmentsPerLocation',
-                label: 'Maximum number of appointments per location',
-            }, {
-                dataKey: 'maximumAppointmentsPerSubject',
-                label: 'Maximum number of appointments per subject',
-            }, {
-                dataKey: 'maximumAppointmentsPerCourse',
-                label: 'Maximum number of appointments per course',
+                dataKey: "name",
+                label: "Name",
+            },
+            {
+                dataKey: "isActive",
+                label: "Active",
+            },
+            {
+                dataKey: "calendarId",
+                label: "Calendar ID",
+            },
+            {
+                dataKey: "address",
+                label: "Address",
+            },
+            {
+                dataKey: "phone",
+                label: "Phone",
+            },
+            {
+                dataKey: "email",
+                label: "Email",
+            },
+            {
+                dataKey: "description",
+                label: "Description",
+            },
+            {
+                dataKey: "pictureLink",
+                label: "Link to a picture",
+            },
+            {
+                dataKey: "maximumAppointmentsPerLocation",
+                label: "Maximum number of appointments per location",
+            },
+            {
+                dataKey: "maximumAppointmentsPerSubject",
+                label: "Maximum number of appointments per subject",
+            },
+            {
+                dataKey: "maximumAppointmentsPerCourse",
+                label: "Maximum number of appointments per course",
             },
         ];
 
         const tableActions = [
             {
-                label: 'Remove',
+                label: "Remove",
                 action: deleteLocation,
                 requestConfirmation: true,
-            }, {
-                label: 'Edit',
+            },
+            {
+                label: "Edit",
                 action: `/${BASE_PATH}/locations`,
             },
         ];
 
         return (
             <div className="content">
-              <div className="content-nav">
-                <h2>Locations</h2>
-              </div>
-              <CreateLocationForm locations={locations} />
+                <div className="content-nav">
+                    <h2>Locations</h2>
+                </div>
+                <CreateLocationForm locations={locations} />
 
-              <div className="list-wrap right-col">
-                <Table headers={tableHeaders}
-                     data={locations.all}
-                     actions={tableActions} />
-              </div>
-
+                <div className="list-wrap right-col">
+                    <Table
+                        headers={tableHeaders}
+                        data={locations.all}
+                        actions={tableActions}
+                    />
+                </div>
             </div>
         );
     }
@@ -102,7 +114,10 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, {
-    getLocations,
-    deleteLocation,
-})(EditLocations);
+export default connect(
+    mapStateToProps,
+    {
+        getLocations,
+        deleteLocation,
+    },
+)(EditLocations);

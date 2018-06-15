@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { getLocations } from '../../locations/actions';
+import { getLocations } from "../../locations/actions";
 
-import LoadingSpinner from '../../../components/loadingSpinner';
-import UpdateLocationForm from './updateLocationForm';
+import LoadingSpinner from "../../../components/loadingSpinner";
+import UpdateLocationForm from "./updateLocationForm";
 
 class LocationDetail extends Component {
     componentWillMount() {
@@ -17,21 +17,23 @@ class LocationDetail extends Component {
         const id = this.props.match.params.id;
 
         const selectedLocation = locations.all.find(
-            location => location.id == id
+            (location) => location.id == id,
         );
 
         if (!selectedLocation) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
 
         return (
             <div className="content">
-              <UpdateLocationForm selectedLocation={selectedLocation}
-                                  locations={locations} />
+                <UpdateLocationForm
+                    selectedLocation={selectedLocation}
+                    locations={locations}
+                />
             </div>
         );
     }

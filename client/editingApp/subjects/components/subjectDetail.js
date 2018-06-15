@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { getLocations } from '../../locations/actions';
-import { getSubjects } from '../actions';
+import { getLocations } from "../../locations/actions";
+import { getSubjects } from "../actions";
 
-import LoadingSpinner from '../../../components/loadingSpinner';
-import UpdateSubjectForm from './updateSubjectForm';
+import LoadingSpinner from "../../../components/loadingSpinner";
+import UpdateSubjectForm from "./updateSubjectForm";
 
 class SubjectDetail extends Component {
     componentWillMount() {
@@ -19,22 +19,24 @@ class SubjectDetail extends Component {
         const { id } = this.props.match.params;
 
         const selectedSubject = subjects.all.find(
-            subject => subject.id == id
+            (subject) => subject.id == id,
         );
 
         if (!selectedSubject) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
 
         return (
             <div className="content">
-              <UpdateSubjectForm locations={locations}
-                                selectedSubject={selectedSubject}
-                                subjects={subjects}/>
+                <UpdateSubjectForm
+                    locations={locations}
+                    selectedSubject={selectedSubject}
+                    subjects={subjects}
+                />
             </div>
         );
     }
@@ -54,5 +56,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getSubjects }
+    { getLocations, getSubjects },
 )(SubjectDetail);

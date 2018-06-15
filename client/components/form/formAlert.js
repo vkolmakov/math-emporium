@@ -1,15 +1,11 @@
-import React from 'react';
+import React from "react";
 
 export default ({ error }) => {
     let AlertComponent;
     if (error) {
-        AlertComponent = (
-            <span className="form-help">
-              {error}
-            </span>
-        );
+        AlertComponent = <span className="form-help">{error}</span>;
     } else {
-        AlertComponent = <span></span>;
+        AlertComponent = <span />;
     }
 
     return AlertComponent;

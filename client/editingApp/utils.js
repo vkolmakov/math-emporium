@@ -1,7 +1,11 @@
-export function selectTransformOptions(valueKey = 'id', labelKey = 'name', colorKey = null) {
+export function selectTransformOptions(
+    valueKey = "id",
+    labelKey = "name",
+    colorKey = null,
+) {
     return (options) => {
-        return options.map(
-            option => Object.keys(option).reduce((result, key) => {
+        return options.map((option) =>
+            Object.keys(option).reduce((result, key) => {
                 if (key === valueKey) {
                     result.value = option[key];
                 } else if (key === labelKey) {
@@ -10,7 +14,7 @@ export function selectTransformOptions(valueKey = 'id', labelKey = 'name', color
                     result.color = option[key];
                 }
                 return result;
-            }, {})
+            }, {}),
         );
     };
 }

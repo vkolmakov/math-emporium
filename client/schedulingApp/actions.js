@@ -1,19 +1,19 @@
-import axios from 'axios';
+import axios from "axios";
 
-import * as spd from '../sharedPublicData/actions';
+import * as spd from "../sharedPublicData/actions";
 
-export const SA_GET_SUBJECTS = 'SA_GET_SUBJECTS';
-export const SA_GET_COURSES = 'SA_GET_COURSES';
-export const SA_SET_SUBJECT = 'SA_SET_SUBJECT';
-export const SA_SET_LOCATION = 'SA_SET_LOCATION';
-export const SA_SET_COURSE = 'SA_SET_COURSE';
-export const SA_INITIALIZE = 'SA_INITIALIZE';
+export const SA_GET_SUBJECTS = "SA_GET_SUBJECTS";
+export const SA_GET_COURSES = "SA_GET_COURSES";
+export const SA_SET_SUBJECT = "SA_SET_SUBJECT";
+export const SA_SET_LOCATION = "SA_SET_LOCATION";
+export const SA_SET_COURSE = "SA_SET_COURSE";
+export const SA_INITIALIZE = "SA_INITIALIZE";
 export const SA_GET_LOCATIONS = spd.SA_GET_LOCATIONS;
 
-const BASE_URL_SUBJECTS = '/api/public/subjects';
-const BASE_URL_COURSES = '/api/public/courses';
+const BASE_URL_SUBJECTS = "/api/public/subjects";
+const BASE_URL_COURSES = "/api/public/courses";
 
-import { resetOpenSpots } from './showSchedule/actions';
+import { resetOpenSpots } from "./showSchedule/actions";
 
 export function markAsInitialized() {
     return { type: SA_INITIALIZE };
@@ -40,7 +40,7 @@ export function getCourses() {
 }
 
 export function setLocation(location) {
-    return dispatch => {
+    return (dispatch) => {
         // every time we change the location we have to reset the selected course and subject
         dispatch({
             type: SA_SET_COURSE,
@@ -62,7 +62,7 @@ export function setLocation(location) {
 }
 
 export function setSubject(subject) {
-    return dispatch => {
+    return (dispatch) => {
         // every time we change the subject we have to reset the selected course
         dispatch({
             type: SA_SET_COURSE,
@@ -80,7 +80,7 @@ export function setSubject(subject) {
 }
 
 export function setCourse(course) {
-    return dispatch => {
+    return (dispatch) => {
         // need to reset open spots every time we change a course
         dispatch(resetOpenSpots());
 

@@ -1,14 +1,14 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { storage } from '../utils';
+import { storage } from "../utils";
 
-const BASE_URL_SETTINGS = '/api/public/settings';
+const BASE_URL_SETTINGS = "/api/public/settings";
 
-export const UT_GET_PUBLIC_SETTINGS = 'UT_GET_PUBLIC_SETTINGS';
-export const UT_GET_PUBLIC_SETTINGS_DELTA = 'UT_GET_PUBLIC_SETTINGS_DELTA';
+export const UT_GET_PUBLIC_SETTINGS = "UT_GET_PUBLIC_SETTINGS";
+export const UT_GET_PUBLIC_SETTINGS_DELTA = "UT_GET_PUBLIC_SETTINGS_DELTA";
 
-export const UT_DISPLAY_ANNOUNCEMENT = 'UT_DISPLAY_ANNOUNCEMENT';
-export const UT_HIDE_ANNOUNCEMENT = 'UT_HIDE_ANNOUNCEMENT';
+export const UT_DISPLAY_ANNOUNCEMENT = "UT_DISPLAY_ANNOUNCEMENT";
+export const UT_HIDE_ANNOUNCEMENT = "UT_HIDE_ANNOUNCEMENT";
 
 export function setPageTitle(title) {
     document.title = title;
@@ -22,7 +22,10 @@ export function displayAnnouncement() {
 
 export function hideAnnouncement(announcementContent) {
     function persistHiddenAnnouncementForSession() {
-        storage.set(storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN, announcementContent);
+        storage.set(
+            storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN,
+            announcementContent,
+        );
     }
 
     persistHiddenAnnouncementForSession();
@@ -33,7 +36,7 @@ export function hideAnnouncement(announcementContent) {
 }
 
 function getSettings(keys) {
-    const REQUESTED_ITEMS_SEPARATOR = ',';
+    const REQUESTED_ITEMS_SEPARATOR = ",";
 
     return axios.get(BASE_URL_SETTINGS, {
         params: {
@@ -44,43 +47,57 @@ function getSettings(keys) {
 
 export function getAndApplyPublicApplicationStartupSettings() {
     const REQUIRED_STARTUP_SETTINGS_ITEMS = [
-        'applicationTitle',
-        'applicationMainHomePictureLink',
-        'announcementContent',
-        'announcementBackgroundColor',
-        'announcementTextColor',
+        "applicationTitle",
+        "applicationMainHomePictureLink",
+        "announcementContent",
+        "announcementBackgroundColor",
+        "announcementTextColor",
     ];
 
     function wasGivenAnnouncementRequestedToBeHidden(announcement) {
-        return storage.get(storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN) === announcement;
+        return (
+            storage.get(
+                storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN,
+            ) === announcement
+        );
     }
 
-    return (dispatch) => getSettings(REQUIRED_STARTUP_SETTINGS_ITEMS).then((response) => {
-        const settings = response.data;
-        const { applicationTitle, announcementContent } = settings;
+    return (dispatch) =>
+        getSettings(REQUIRED_STARTUP_SETTINGS_ITEMS).then(
+            (response) => {
+                const settings = response.data;
+                const { applicationTitle, announcementContent } = settings;
 
-        dispatch({
-            type: UT_GET_PUBLIC_SETTINGS,
-            payload: settings,
-        });
+                dispatch({
+                    type: UT_GET_PUBLIC_SETTINGS,
+                    payload: settings,
+                });
 
-        setPageTitle(applicationTitle);
+                setPageTitle(applicationTitle);
 
-        if (!!announcementContent && !wasGivenAnnouncementRequestedToBeHidden(announcementContent)) {
-            dispatch(displayAnnouncement());
-        }
+                if (
+                    !!announcementContent &&
+                    !wasGivenAnnouncementRequestedToBeHidden(
+                        announcementContent,
+                    )
+                ) {
+                    dispatch(displayAnnouncement());
+                }
 
-        return Promise.resolve();
-    }, () => {}); // proceed with default settings on error
+                return Promise.resolve();
+            },
+            () => {},
+        ); // proceed with default settings on error
 }
 
 export function getFaqContent() {
-    return (dispatch) => getSettings(['faqContent']).then((response) => {
-        dispatch({
-            type: UT_GET_PUBLIC_SETTINGS_DELTA,
-            payload: response.data,
-        });
+    return (dispatch) =>
+        getSettings(["faqContent"]).then((response) => {
+            dispatch({
+                type: UT_GET_PUBLIC_SETTINGS_DELTA,
+                payload: response.data,
+            });
 
-        return Promise.resolve();
-    });
+            return Promise.resolve();
+        });
 }

@@ -1,26 +1,25 @@
-import axios from 'axios';
-import { BASE_URL } from './constants';
-import { parseCookies, cleanCookies, storage } from '../utils';
+import axios from "axios";
+import { BASE_URL } from "./constants";
+import { parseCookies, cleanCookies, storage } from "../utils";
 
-export const AUTH_USER = 'AUTH_USER';
-export const UNAUTH_USER = 'UNAUTH_USER';
-export const AUTH_ERROR = 'AUTH_ERROR';
-export const CLEAR_AUTH_ERROR = 'CLEAR_AUTH_ERROR';
-export const SIGNUP_USER = 'SIGNUP_USER';
-export const RESEND_ACTIVATION_EMAIL = 'RESEND_ACTIVATION_EMAIL';
-export const SET_USER_GROUP = 'SET_USER_GROUP';
-export const SET_USER_EMAIL = 'SET_USER_EMAIL';
-export const RECORD_USER_SIGNIN = 'RECORD_USER_SIGNIN';
-
+export const AUTH_USER = "AUTH_USER";
+export const UNAUTH_USER = "UNAUTH_USER";
+export const AUTH_ERROR = "AUTH_ERROR";
+export const CLEAR_AUTH_ERROR = "CLEAR_AUTH_ERROR";
+export const SIGNUP_USER = "SIGNUP_USER";
+export const RESEND_ACTIVATION_EMAIL = "RESEND_ACTIVATION_EMAIL";
+export const SET_USER_GROUP = "SET_USER_GROUP";
+export const SET_USER_EMAIL = "SET_USER_EMAIL";
+export const RECORD_USER_SIGNIN = "RECORD_USER_SIGNIN";
 
 function persistUserSessionInformation({ group, email }) {
     storage.set(storage.KEYS.USER_AUTH_GROUP, group);
     // replace in case an encoded value comes from a cookie
-    storage.set(storage.KEYS.USER_EMAIL, email.replace('%40', '@'));
+    storage.set(storage.KEYS.USER_EMAIL, email.replace("%40", "@"));
 }
 
 function authCookieKeys() {
-    return ['group', 'email'];
+    return ["group", "email"];
 }
 
 export function authError(error) {
@@ -39,15 +38,16 @@ export function clearAuthError() {
 function removeLegacyJwtAuthData() {
     // TODO: this and its usages could be safely removed
     // in a couple of months from the moment it was added
-    axios.defaults.headers.common['Authorization'] = null;
-    window.localStorage.removeItem('token');
-    window.localStorage.removeItem('group');
-    window.localStorage.removeItem('email');
+    axios.defaults.headers.common["Authorization"] = null;
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("group");
+    window.localStorage.removeItem("email");
 }
 
 export function signoutUser() {
     return (dispatch) => {
-        return axios.post(`${BASE_URL}/signout`)
+        return axios
+            .post(`${BASE_URL}/signout`)
             .then(() => {
                 removeLegacyJwtAuthData();
                 cleanupAuthDataFromCookies();
@@ -80,14 +80,18 @@ export function signInUser(authGroup, email) {
 
     function recordUserSignin() {
         return (dispatch) => {
-            const dispatchSigninAction = (recordSigninResult) => ({ type: RECORD_USER_SIGNIN, payload: recordSigninResult });
+            const dispatchSigninAction = (recordSigninResult) => ({
+                type: RECORD_USER_SIGNIN,
+                payload: recordSigninResult,
+            });
 
             const dispatchSignoutAction = (error) => {
                 dispatch(signoutUser());
                 return { type: RECORD_USER_SIGNIN, payload: error };
             };
 
-            return axios.post(`${BASE_URL}/record-signin`)
+            return axios
+                .post(`${BASE_URL}/record-signin`)
                 .then(dispatchSigninAction, dispatchSignoutAction);
         };
     }
@@ -103,7 +107,7 @@ export function signInUser(authGroup, email) {
 export function hasNewUserJustSignedIn() {
     const cookieKeys = authCookieKeys();
     const cookies = parseCookies(cookieKeys, document.cookie);
-    return cookieKeys.every(k => k in cookies);
+    return cookieKeys.every((k) => k in cookies);
 }
 
 export function addAuthDataFromCookies() {
@@ -112,6 +116,8 @@ export function addAuthDataFromCookies() {
 }
 
 export function cleanupAuthDataFromCookies() {
-    const setCookie = (newCookie) => { document.cookie = newCookie; };
+    const setCookie = (newCookie) => {
+        document.cookie = newCookie;
+    };
     cleanCookies(authCookieKeys(), document.cookie).forEach(setCookie);
 }

@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { getLocations } from '../../locations/actions';
-import { getSubjects } from '../../subjects/actions';
-import { getCourses } from '../actions';
+import { getLocations } from "../../locations/actions";
+import { getSubjects } from "../../subjects/actions";
+import { getCourses } from "../actions";
 
-import LoadingSpinner from '../../../components/loadingSpinner';
-import UpdateCourseForm from './updateCourseForm';
+import LoadingSpinner from "../../../components/loadingSpinner";
+import UpdateCourseForm from "./updateCourseForm";
 
 class CourseDetail extends Component {
     componentWillMount() {
@@ -20,24 +20,24 @@ class CourseDetail extends Component {
 
         const { id } = this.props.match.params;
 
-        const selectedCourse = courses.all.find(
-            course => course.id == id
-        );
+        const selectedCourse = courses.all.find((course) => course.id == id);
 
         if (!selectedCourse) {
             return (
                 <div className="content">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
 
         return (
             <div className="content">
-              <UpdateCourseForm locations={locations}
-                                subjects={subjects}
-                                selectedCourse={selectedCourse}
-                                courses={courses}/>
+                <UpdateCourseForm
+                    locations={locations}
+                    subjects={subjects}
+                    selectedCourse={selectedCourse}
+                    courses={courses}
+                />
             </div>
         );
     }
@@ -61,5 +61,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getCourses, getSubjects }
+    { getLocations, getCourses, getSubjects },
 )(CourseDetail);

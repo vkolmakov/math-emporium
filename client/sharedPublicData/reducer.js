@@ -1,7 +1,6 @@
-import { SPD_GET_LOCATIONS } from './actions';
+import { SPD_GET_LOCATIONS } from "./actions";
 
-import { locationComparator } from '../utils';
-
+import { locationComparator } from "../utils";
 
 const INITIAL_STATE = {
     locations: { all: [] },
@@ -9,10 +8,14 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-    case SPD_GET_LOCATIONS:
-        return { ...state,
-                 locations: { all: action.payload.data.sort(locationComparator) } };
-    default:
-        return state;
+        case SPD_GET_LOCATIONS:
+            return {
+                ...state,
+                locations: {
+                    all: action.payload.data.sort(locationComparator),
+                },
+            };
+        default:
+            return state;
     }
 };

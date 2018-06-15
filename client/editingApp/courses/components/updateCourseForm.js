@@ -1,17 +1,16 @@
-import React, { Component } from 'react';
-import { reduxForm, initialize } from 'redux-form';
+import React, { Component } from "react";
+import { reduxForm, initialize } from "redux-form";
 
-import withRouterContext from '@client/routing/withRouterContext';
-import { redirectTo, id } from '@client/utils';
-import Form from '@client/components/form/index';
+import withRouterContext from "@client/routing/withRouterContext";
+import { redirectTo, id } from "@client/utils";
+import Form from "@client/components/form/index";
 
-import { updateCourse, getCourses } from '../actions';
-import { setCurrentLocation } from '../../locations/actions';
-import { GOOGLE_CALENDAR_COLORS, ROUTES } from '../../constants';
-import { selectTransformOptions } from '../../utils';
+import { updateCourse, getCourses } from "../actions";
+import { setCurrentLocation } from "../../locations/actions";
+import { GOOGLE_CALENDAR_COLORS, ROUTES } from "../../constants";
+import { selectTransformOptions } from "../../utils";
 
-
-const FORM_FIELDS = ['code', 'subject', 'name', 'color', 'location'];
+const FORM_FIELDS = ["code", "subject", "name", "color", "location"];
 
 class UpdateCourseForm extends Component {
     constructor() {
@@ -22,15 +21,27 @@ class UpdateCourseForm extends Component {
     }
 
     componentWillMount() {
-        const { code, name, color, location, subject } = this.props.selectedCourse;
-
-        this.props.dispatch(initialize('UpdateCourseForm', {
+        const {
             code,
             name,
             color,
-            location: location.id,
-            subject: subject.id,
-        }, FORM_FIELDS));
+            location,
+            subject,
+        } = this.props.selectedCourse;
+
+        this.props.dispatch(
+            initialize(
+                "UpdateCourseForm",
+                {
+                    code,
+                    name,
+                    color,
+                    location: location.id,
+                    subject: subject.id,
+                },
+                FORM_FIELDS,
+            ),
+        );
     }
 
     render() {
@@ -38,56 +49,71 @@ class UpdateCourseForm extends Component {
 
         const { setCurrentLocation } = this.props;
 
-        const locationsOptions = selectTransformOptions()(this.props.locations.all);
-        const colorsOptions = selectTransformOptions('value', 'name', 'color')(GOOGLE_CALENDAR_COLORS);
-        const subjectOptions = selectTransformOptions()(this.props.subjects.all);
+        const locationsOptions = selectTransformOptions()(
+            this.props.locations.all,
+        );
+        const colorsOptions = selectTransformOptions("value", "name", "color")(
+            GOOGLE_CALENDAR_COLORS,
+        );
+        const subjectOptions = selectTransformOptions()(
+            this.props.subjects.all,
+        );
 
         const onSubmit = (data) => {
             this.setState({ success: false });
-            this.props.updateCourse(this.props.selectedCourse.id, data)
-                .then(result => redirectTo(this.props.history, ROUTES.COURSES),
-                      id);
+            this.props
+                .updateCourse(this.props.selectedCourse.id, data)
+                .then(
+                    (result) => redirectTo(this.props.history, ROUTES.COURSES),
+                    id,
+                );
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
 
-        const title = 'Update a Course';
+        const title = "Update a Course";
 
         const fields = [
             {
-                label: 'Code',
+                label: "Code",
                 input: {
-                    type: 'text',
+                    type: "text",
                     binding: code,
                 },
-            }, {
-                label: 'Subject',
+            },
+            {
+                label: "Subject",
                 input: {
-                    type: 'select',
+                    type: "select",
                     binding: subject,
                     options: subjectOptions,
                 },
-            }, {
-                label: 'Name',
+            },
+            {
+                label: "Name",
                 input: {
-                    type: 'text',
+                    type: "text",
                     binding: name,
                 },
-            }, {
-                label: 'Color',
+            },
+            {
+                label: "Color",
                 input: {
-                    type: 'select',
+                    type: "select",
                     binding: color,
                     options: colorsOptions,
                 },
-            }, {
-                label: 'Location',
+            },
+            {
+                label: "Location",
                 input: {
-                    type: 'select',
+                    type: "select",
                     binding: location,
                     options: locationsOptions,
                     onSelect: setCurrentLocation,
-                    controlValue: this.props.locations.selected ? this.props.locations.selected.id : null,
+                    controlValue: this.props.locations.selected
+                        ? this.props.locations.selected.id
+                        : null,
                 },
             },
         ];
@@ -101,36 +127,37 @@ class UpdateCourseForm extends Component {
 
         return (
             <div className="list-wrap">
-              <Form {...formConfig} />
+                <Form {...formConfig} />
             </div>
         );
     }
 }
 
-
 function validate(values) {
     const errors = {};
     const requiredFields = {
-        code: 'Enter a code',
-        name: 'Enter a name',
-        color: 'Select a color',
-        location: 'Select location',
-        subject: 'Select a subject',
+        code: "Enter a code",
+        name: "Enter a name",
+        color: "Select a color",
+        location: "Select location",
+        subject: "Select a subject",
     };
 
-    Object.keys(requiredFields).forEach(
-        field => {
-            if (!values[field]) {
-                errors[field] = requiredFields[field];
-            }
+    Object.keys(requiredFields).forEach((field) => {
+        if (!values[field]) {
+            errors[field] = requiredFields[field];
         }
-    );
+    });
 
     return errors;
 }
 
-export default reduxForm({
-    form: 'UpdateCourseForm',
-    fields: FORM_FIELDS,
-    validate,
-}, null, { updateCourse, getCourses, setCurrentLocation })(withRouterContext(UpdateCourseForm));
+export default reduxForm(
+    {
+        form: "UpdateCourseForm",
+        fields: FORM_FIELDS,
+        validate,
+    },
+    null,
+    { updateCourse, getCourses, setCurrentLocation },
+)(withRouterContext(UpdateCourseForm));

@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import LoadingSpinner from '../../components/loadingSpinner';
-import Table from '../../components/table/index';
-
+import LoadingSpinner from "../../components/loadingSpinner";
+import Table from "../../components/table/index";
 
 class ManageErrorEvents extends Component {
     constructor() {
@@ -19,40 +18,48 @@ class ManageErrorEvents extends Component {
         if (!errorEvents.all) {
             return (
                 <div className="content">
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             );
         }
 
-        const tableHeaders = [{
-            dataKey: 'time',
-            label: 'time',
-        }, {
-            dataKey: 'type',
-            label: 'type',
-        }, {
-            dataKey: 'user',
-            label: 'user',
-        }, {
-            dataKey: 'data',
-            label: 'data',
-        }, {
-            dataKey: 'stacktrace',
-            label: 'stacktrace',
-        }];
+        const tableHeaders = [
+            {
+                dataKey: "time",
+                label: "time",
+            },
+            {
+                dataKey: "type",
+                label: "type",
+            },
+            {
+                dataKey: "user",
+                label: "user",
+            },
+            {
+                dataKey: "data",
+                label: "data",
+            },
+            {
+                dataKey: "stacktrace",
+                label: "stacktrace",
+            },
+        ];
 
         const tableActions = [];
 
         return (
             <div className="content">
                 <div className="content-nav">
-                  <h2>Error Events</h2>
+                    <h2>Error Events</h2>
                 </div>
 
                 <div className="list-wrap">
-                    <Table headers={tableHeaders}
-                           data={errorEvents.all}
-                           actions={tableActions} />
+                    <Table
+                        headers={tableHeaders}
+                        data={errorEvents.all}
+                        actions={tableActions}
+                    />
                 </div>
             </div>
         );

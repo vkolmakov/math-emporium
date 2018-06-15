@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import Appointments from './components/appointments';
-import UpdateProfileForm from './components/updateProfileForm';
-import Faq from './components/faq';
-import LoadingSpinner from '../../components/loadingSpinner';
+import Appointments from "./components/appointments";
+import UpdateProfileForm from "./components/updateProfileForm";
+import Faq from "./components/faq";
+import LoadingSpinner from "../../components/loadingSpinner";
 
-import { getUserProfile, getActiveUserAppointments } from './actions';
-import { getFaqContent } from '../../util/actions';
+import { getUserProfile, getActiveUserAppointments } from "./actions";
+import { getFaqContent } from "../../util/actions";
 
 class Profile extends Component {
     componentDidMount() {
@@ -20,30 +20,49 @@ class Profile extends Component {
     }
 
     render() {
-        const { profile, courses, locations, subjects, faqContent, appointments } = this.props;
-        const isInitialized = [profile, courses.all, locations.all, faqContent, appointments].every(Boolean);
+        const {
+            profile,
+            courses,
+            locations,
+            subjects,
+            faqContent,
+            appointments,
+        } = this.props;
+        const isInitialized = [
+            profile,
+            courses.all,
+            locations.all,
+            faqContent,
+            appointments,
+        ].every(Boolean);
 
         if (!isInitialized) {
             return (
                 <div className="profile-and-appointments-loading">
-                  <LoadingSpinner />
+                    <LoadingSpinner />
                 </div>
             );
         }
 
         return (
             <div className="profile-and-appointments">
-              <div className="appointments-faq">
-                <Appointments courses={courses.all} locations={locations.all} appointments={appointments} />
-                <Faq content={faqContent}></Faq>
-              </div>
+                <div className="appointments-faq">
+                    <Appointments
+                        courses={courses.all}
+                        locations={locations.all}
+                        appointments={appointments}
+                    />
+                    <Faq content={faqContent} />
+                </div>
 
-              <div className="profile">
-                <UpdateProfileForm profile={profile}
-                                   locations={locations}
-                                   courses={courses}
-                                   subjects={subjects} />
-              </div>
+                <div className="profile">
+                    <UpdateProfileForm
+                        profile={profile}
+                        locations={locations}
+                        courses={courses}
+                        subjects={subjects}
+                    />
+                </div>
             </div>
         );
     }
@@ -69,8 +88,11 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, {
-    getUserProfile,
-    getActiveUserAppointments,
-    getFaqContent,
-})(Profile);
+export default connect(
+    mapStateToProps,
+    {
+        getUserProfile,
+        getActiveUserAppointments,
+        getFaqContent,
+    },
+)(Profile);

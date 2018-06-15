@@ -1,7 +1,9 @@
-import { GET_TUTORS,
-         DELETE_TUTOR,
-         CREATE_TUTOR,
-         UPDATE_TUTOR } from './actions';
+import {
+    GET_TUTORS,
+    DELETE_TUTOR,
+    CREATE_TUTOR,
+    UPDATE_TUTOR,
+} from "./actions";
 
 const INITIAL_STATE = {
     all: [],
@@ -10,26 +12,28 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-    case GET_TUTORS:
-        return { ...state, all: action.payload.data };
+        case GET_TUTORS:
+            return { ...state, all: action.payload.data };
 
-    case CREATE_TUTOR:
-    case UPDATE_TUTOR:
-        const error = action.payload.data.error;
-        if (error) {
-            return { ...state, error };
-        }
-        return { ...state, error: null };
+        case CREATE_TUTOR:
+        case UPDATE_TUTOR:
+            const error = action.payload.data.error;
+            if (error) {
+                return { ...state, error };
+            }
+            return { ...state, error: null };
 
-    case DELETE_TUTOR:
-        if (action.payload.status == 200) {
-            return {
-                ...state,
-                all: state.all.filter((tutor) => tutor.id != action.payload.data.id),
-            };
-        }
-        return { ...state };
-    default:
-        return state;
+        case DELETE_TUTOR:
+            if (action.payload.status == 200) {
+                return {
+                    ...state,
+                    all: state.all.filter(
+                        (tutor) => tutor.id != action.payload.data.id,
+                    ),
+                };
+            }
+            return { ...state };
+        default:
+            return state;
     }
 };

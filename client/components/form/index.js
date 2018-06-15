@@ -1,7 +1,7 @@
-import React from 'react';
-import FormField from './formField';
-import Alert from './formAlert';
-import Success from './formSuccess';
+import React from "react";
+import FormField from "./formField";
+import Alert from "./formAlert";
+import Success from "./formSuccess";
 
 export default function Form({
     handleSubmit,
@@ -12,28 +12,31 @@ export default function Form({
     error,
     success,
 }) {
-    const MaybeSubmitButton = () => !!hideSubmitButton
-          ? (<span></span>)
-          : (<button className="button" type="submit">Submit</button>);
+    const MaybeSubmitButton = () =>
+        !!hideSubmitButton ? (
+            <span />
+        ) : (
+            <button className="button" type="submit">
+                Submit
+            </button>
+        );
 
-    const MaybeDescription = () => !!description
-          ? (<p>{description}</p>)
-          : (<span></span>);
+    const MaybeDescription = () =>
+        !!description ? <p>{description}</p> : <span />;
 
     return (
         <form onSubmit={handleSubmit}>
-          <h2>{title}</h2>
-          <MaybeDescription></MaybeDescription>
-          {fields.map(field => (
-              <FormField field={field}
-                         key={field.label} />
-          ))}
+            <h2>{title}</h2>
+            <MaybeDescription />
+            {fields.map((field) => (
+                <FormField field={field} key={field.label} />
+            ))}
 
-          <div className="form-field submit-field">
-            <MaybeSubmitButton></MaybeSubmitButton>
-            <Alert error={error}/>
-            <Success success={success} />
-         </div>
+            <div className="form-field submit-field">
+                <MaybeSubmitButton />
+                <Alert error={error} />
+                <Success success={success} />
+            </div>
         </form>
     );
 }

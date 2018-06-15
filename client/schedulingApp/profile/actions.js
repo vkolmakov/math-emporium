@@ -1,13 +1,14 @@
-import axios from 'axios';
-import { setCourse, setLocation, setSubject } from '../actions';
+import axios from "axios";
+import { setCourse, setLocation, setSubject } from "../actions";
 
-export const SA_GET_USER_PROFILE = 'SA_GET_USER_PROFILE';
-export const SA_UPDATE_USER_PROFILE = 'SA_UPDATE_USER_PROFILE';
-export const SA_SET_USER_PROFILE = 'SA_SET_USER_PROFILE';
-export const SA_SET_ACTIVE_USER_APPOINTMENTS = 'SA_SET_ACTIVE_USER_APPOINTMENTS';
+export const SA_GET_USER_PROFILE = "SA_GET_USER_PROFILE";
+export const SA_UPDATE_USER_PROFILE = "SA_UPDATE_USER_PROFILE";
+export const SA_SET_USER_PROFILE = "SA_SET_USER_PROFILE";
+export const SA_SET_ACTIVE_USER_APPOINTMENTS =
+    "SA_SET_ACTIVE_USER_APPOINTMENTS";
 
-const BASE_URL = '/api/user';
-const BASE_URL_APPOINTMENTS = '/api/scheduled-appointments';
+const BASE_URL = "/api/user";
+const BASE_URL_APPOINTMENTS = "/api/scheduled-appointments";
 
 export function getUserProfile() {
     const request = axios.get(`${BASE_URL}/profile`);
@@ -53,7 +54,7 @@ export function deleteAppointment(appointment) {
 }
 
 export function updateUserProfile(values) {
-    return dispatch => {
+    return (dispatch) => {
         const {
             location: locationId,
             course: courseId,
@@ -81,8 +82,9 @@ export function updateUserProfile(values) {
             ...defaultOptions,
         };
 
-        return axios.put(`${BASE_URL}/profile`, requestBody)
-            .then(response => {
+        return axios
+            .put(`${BASE_URL}/profile`, requestBody)
+            .then((response) => {
                 dispatch({
                     type: SA_SET_USER_PROFILE,
                     payload: response,

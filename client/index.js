@@ -1,33 +1,39 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import promise from 'redux-promise';
-import reduxThunk from 'redux-thunk';
-import attachUtilEventListeners from './util/attachUtilEventListeners';
-import { getAndApplyPublicApplicationStartupSettings } from './util/actions';
-import reducers from './reducers';
-import { signInUser, hasNewUserJustSignedIn,
-         addAuthDataFromCookies, cleanupAuthDataFromCookies } from './auth/actions';
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import promise from "redux-promise";
+import reduxThunk from "redux-thunk";
+import attachUtilEventListeners from "./util/attachUtilEventListeners";
+import { getAndApplyPublicApplicationStartupSettings } from "./util/actions";
+import reducers from "./reducers";
+import {
+    signInUser,
+    hasNewUserJustSignedIn,
+    addAuthDataFromCookies,
+    cleanupAuthDataFromCookies,
+} from "./auth/actions";
 
-import { selectOpenSpot, didUserPreselectAnOpenSpotBeforeSignIn,
-         cleanupPreselectedOpenSpot,
-         retrievePreselectedOpenSpot } from './schedulingApp/showSchedule/actions';
+import {
+    selectOpenSpot,
+    didUserPreselectAnOpenSpotBeforeSignIn,
+    cleanupPreselectedOpenSpot,
+    retrievePreselectedOpenSpot,
+} from "./schedulingApp/showSchedule/actions";
 
-import Router from './routing/Router';
-import { storage } from './utils';
+import Router from "./routing/Router";
+import { storage } from "./utils";
 
-import 'react-select/dist/react-select.css';
-import 'react-datepicker/dist/react-datepicker.css';
-import './style/style.scss';
-import './assets/favicon.ico';
-
+import "react-select/dist/react-select.css";
+import "react-datepicker/dist/react-datepicker.css";
+import "./style/style.scss";
+import "./assets/favicon.ico";
 
 let middlewares = [promise, reduxThunk];
 
-if (process.env.NODE_ENV !== 'production') {
-    const createLogger = require('redux-logger');
+if (process.env.NODE_ENV !== "production") {
+    const createLogger = require("redux-logger");
     const logger = createLogger({
         diff: true,
         collapsed: true,
@@ -44,7 +50,7 @@ attachUtilEventListeners(window, store);
 let immediateRedirect = null;
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
-    immediateRedirect = '/schedule/show';
+    immediateRedirect = "/schedule/show";
     if (didUserPreselectAnOpenSpotBeforeSignIn()) {
         const preselectedOpenSpot = retrievePreselectedOpenSpot();
         store.dispatch(selectOpenSpot(preselectedOpenSpot));
@@ -60,16 +66,19 @@ const email = storage.get(storage.KEYS.USER_EMAIL);
 const isPotentiallySignedIn = !!authGroup && !!email;
 
 Promise.all([
-    isPotentiallySignedIn ? store.dispatch(signInUser(authGroup, email)) : Promise.resolve(),
-    store.dispatch(getAndApplyPublicApplicationStartupSettings())
+    isPotentiallySignedIn
+        ? store.dispatch(signInUser(authGroup, email))
+        : Promise.resolve(),
+    store.dispatch(getAndApplyPublicApplicationStartupSettings()),
 ]).then(([authActionResult, _settings]) => {
     if (isPotentiallySignedIn && authActionResult.payload.status !== 200) {
-        immediateRedirect = '/auth/signin';
+        immediateRedirect = "/auth/signin";
     }
 
-    ReactDOM.render((
+    ReactDOM.render(
         <Provider store={store}>
-          <Router immediatelyRedirectTo={immediateRedirect}></Router>
-        </Provider>
-    ), document.querySelector('.root'));
+            <Router immediatelyRedirectTo={immediateRedirect} />
+        </Provider>,
+        document.querySelector(".root"),
+    );
 });

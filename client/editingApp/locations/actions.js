@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const GET_LOCATIONS = 'GET_LOCATIONS';
-export const CREATE_LOCATION = 'CREATE_LOCATION';
-export const SET_CURRENT_LOCATION = 'SET_CURRENT_LOCATION';
-export const DELETE_LOCATION = 'DELETE_LOCATION';
-export const UPDATE_LOCATION = 'UPDATE_LOCATION';
+export const GET_LOCATIONS = "GET_LOCATIONS";
+export const CREATE_LOCATION = "CREATE_LOCATION";
+export const SET_CURRENT_LOCATION = "SET_CURRENT_LOCATION";
+export const DELETE_LOCATION = "DELETE_LOCATION";
+export const UPDATE_LOCATION = "UPDATE_LOCATION";
 
-const BASE_URL = '/api/locations';
+const BASE_URL = "/api/locations";
 
 export function getLocations() {
     const request = axios.get(BASE_URL);
@@ -43,14 +43,15 @@ export function deleteLocation(id) {
 }
 
 export function updateLocation(id, data) {
-    return dispatch => axios.put(`${BASE_URL}/${id}`, data).then(
-        res => {
-            dispatch({ type: UPDATE_LOCATION, payload: res });
-            return Promise.resolve();
-        },
-        err => {
-            dispatch({ type: UPDATE_LOCATION, payload: err });
-            return Promise.reject();
-        }
-    );
+    return (dispatch) =>
+        axios.put(`${BASE_URL}/${id}`, data).then(
+            (res) => {
+                dispatch({ type: UPDATE_LOCATION, payload: res });
+                return Promise.resolve();
+            },
+            (err) => {
+                dispatch({ type: UPDATE_LOCATION, payload: err });
+                return Promise.reject();
+            },
+        );
 }

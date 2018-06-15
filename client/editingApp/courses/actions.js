@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const GET_COURSES = 'GET_COURSES';
-export const CREATE_COURSE = 'CREATE_COURSE';
-export const DELETE_COURSE = 'DELETE_COURSE';
-export const UPDATE_COURSE = 'UPDATE_COURSE';
+export const GET_COURSES = "GET_COURSES";
+export const CREATE_COURSE = "CREATE_COURSE";
+export const DELETE_COURSE = "DELETE_COURSE";
+export const UPDATE_COURSE = "UPDATE_COURSE";
 
-const BASE_URL = '/api/courses';
+const BASE_URL = "/api/courses";
 
 export function getCourses() {
     const request = axios.get(BASE_URL);
@@ -47,7 +47,7 @@ export function deleteCourse(id) {
 }
 
 export function updateCourse(id, data) {
-    return dispatch => {
+    return (dispatch) => {
         const locationId = data.location;
         const subjectId = data.subject;
 
@@ -62,14 +62,14 @@ export function updateCourse(id, data) {
         };
 
         return axios.put(`${BASE_URL}/${id}`, requestData).then(
-            res => {
+            (res) => {
                 dispatch({ type: UPDATE_COURSE, payload: res });
                 return Promise.resolve();
             },
-            err => {
+            (err) => {
                 dispatch({ type: UPDATE_COURSE, payload: err });
                 return Promise.reject();
-            }
+            },
         );
     };
 }

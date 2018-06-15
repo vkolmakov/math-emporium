@@ -1,7 +1,7 @@
-import * as constants from '../constants';
+import * as constants from "../constants";
 
 export const BASE_PATH = constants.ROUTE_BASE_PATHS.SCHEDULE;
-export const RANDOM_TUTOR = { id: 'RANDOM', name: 'Any tutor' };
+export const RANDOM_TUTOR = { id: "RANDOM", name: "Any tutor" };
 
 export const TIME_OPTIONS = constants.TIME_OPTIONS;
 export const TIMESTAMP_FORMAT = constants.TIMESTAMP_FORMAT;

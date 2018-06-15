@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const GET_SUBJECTS = 'GET_SUBJECTS';
-export const CREATE_SUBJECT = 'CREATE_SUBJECT';
-export const DELETE_SUBJECT = 'DELETE_SUBJECT';
-export const UPDATE_SUBJECT = 'UPDATE_SUBJECT';
+export const GET_SUBJECTS = "GET_SUBJECTS";
+export const CREATE_SUBJECT = "CREATE_SUBJECT";
+export const DELETE_SUBJECT = "DELETE_SUBJECT";
+export const UPDATE_SUBJECT = "UPDATE_SUBJECT";
 
-const BASE_URL = '/api/subjects';
+const BASE_URL = "/api/subjects";
 
 export function getSubjects() {
     const request = axios.get(BASE_URL);
@@ -43,7 +43,7 @@ export function deleteSubject(id) {
 }
 
 export function updateSubject(id, data) {
-    return dispatch => {
+    return (dispatch) => {
         const locationId = data.location;
 
         const requestData = {
@@ -54,14 +54,14 @@ export function updateSubject(id, data) {
         };
 
         return axios.put(`${BASE_URL}/${id}`, requestData).then(
-            res => {
+            (res) => {
                 dispatch({ type: UPDATE_SUBJECT, payload: res });
                 return Promise.resolve();
             },
-            err => {
+            (err) => {
                 dispatch({ type: UPDATE_SUBJECT, payload: err });
                 return Promise.reject();
-            }
+            },
         );
     };
 }
