@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-require('babel-register');
-require('../server/scripts/seed.js');
+require("babel-register");
+require("../server/scripts/seed.js");

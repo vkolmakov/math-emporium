@@ -1,53 +1,56 @@
-const path = require('path');
+const path = require("path");
 
-const webpack = require('webpack');
-const CompressionPlugin = require('compression-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const webpack = require("webpack");
+const CompressionPlugin = require("compression-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
-    mode: 'production',
-    target: 'web',
+    mode: "production",
+    target: "web",
 
     entry: {
-        bundle: path.resolve('client', 'index.js')
+        bundle: path.resolve("client", "index.js"),
     },
 
     output: {
-        path: path.resolve('dist'),
-        filename: '[name].[chunkhash].min.js',
-        publicPath: '/',
+        path: path.resolve("dist"),
+        filename: "[name].[chunkhash].min.js",
+        publicPath: "/",
     },
 
     resolve: {
         alias: {
-            ['@client']: path.resolve('client'),
+            ["@client"]: path.resolve("client"),
         },
     },
 
     plugins: [
         new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production'),
+            "process.env": {
+                NODE_ENV: JSON.stringify("production"),
             },
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].[hash].css',
-            chunkFilename: '[id].[hash].css',
+            filename: "[name].[hash].css",
+            chunkFilename: "[id].[hash].css",
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve('client', 'index.template.html'),
-            inject: 'body',
+            template: path.resolve("client", "index.template.html"),
+            inject: "body",
         }),
         new CompressionPlugin({
-            asset: '[path].gz[query]',
-            algorithm: 'gzip',
+            asset: "[path].gz[query]",
+            algorithm: "gzip",
             test: /\.(js|css)$/,
             minRatio: 0.8,
             deleteOriginalAssets: true,
         }),
-        new webpack.ContextReplacementPlugin(/moment[\\\/]locale$/, /^\.\/(en-gb)$/),
+        new webpack.ContextReplacementPlugin(
+            /moment[\\\/]locale$/,
+            /^\.\/(en-gb)$/,
+        ),
     ],
 
     optimization: {
@@ -64,36 +67,40 @@ module.exports = {
             cacheGroups: {
                 commons: {
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor',
-                    chunks: 'all'
-                }
-            }
-        }
+                    name: "vendor",
+                    chunks: "all",
+                },
+            },
+        },
     },
 
     module: {
-        rules: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
-            options: {
-                presets: ['react', 'es2015'],
-                plugins: ['syntax-dynamic-import'],
+        rules: [
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                options: {
+                    presets: ["react", "es2015"],
+                    plugins: ["syntax-dynamic-import"],
+                },
             },
-        }, {
-            test: /\.s?[ac]ss$/,
-            use: [
-                MiniCssExtractPlugin.loader,
-                { loader: 'css-loader', options: { minimize: true }},
-                'postcss-loader',
-                'sass-loader',
-            ],
-        }, {
-            test: /\.(png|jpg|gif|svg|ico)$/,
-            loader: 'file-loader',
-            options: {
-                name: '[name].[ext]',
+            {
+                test: /\.s?[ac]ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    { loader: "css-loader", options: { minimize: true } },
+                    "postcss-loader",
+                    "sass-loader",
+                ],
             },
-        }],
+            {
+                test: /\.(png|jpg|gif|svg|ico)$/,
+                loader: "file-loader",
+                options: {
+                    name: "[name].[ext]",
+                },
+            },
+        ],
     },
 };
