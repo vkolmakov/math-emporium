@@ -1,5 +1,6 @@
 import React from 'react';
-import Modal from 'react-modal';
+
+import Modal from './Modal';
 
 import LoadingSpinner from './loadingSpinner';
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router';
+import Link from '@client/components/Link';
 
 export default class TableAction extends Component {
     constructor() {

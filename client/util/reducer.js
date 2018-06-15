@@ -1,11 +1,9 @@
-import { UT_ROUTE_CHANGE,
-         UT_GET_PUBLIC_SETTINGS,
+import { UT_GET_PUBLIC_SETTINGS,
          UT_GET_PUBLIC_SETTINGS_DELTA,
          UT_DISPLAY_ANNOUNCEMENT,
          UT_HIDE_ANNOUNCEMENT } from './actions';
 
 const INITIAL_UTIL_STATE = {
-    currentRouterPath: '',
     isAnnouncementDisplayed: false,
     settings: {
         applicationMainHomePictureLink: '',
@@ -19,8 +17,6 @@ const INITIAL_UTIL_STATE = {
 
 export default function utilReducer(state = INITIAL_UTIL_STATE, action) {
     switch (action.type) {
-    case UT_ROUTE_CHANGE:
-        return { ...state, currentRouterPath: action.payload.path };
     case UT_GET_PUBLIC_SETTINGS:
         if (action.payload instanceof Object) {
             return { ...state, settings: action.payload };

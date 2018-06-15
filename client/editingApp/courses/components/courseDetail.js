@@ -18,7 +18,7 @@ class CourseDetail extends Component {
     render() {
         let { locations, courses, subjects } = this.props;
 
-        const { id } = this.props.params;
+        const { id } = this.props.match.params;
 
         const selectedCourse = courses.all.find(
             course => course.id == id

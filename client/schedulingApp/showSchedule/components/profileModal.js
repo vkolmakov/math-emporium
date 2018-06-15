@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Modal from 'react-modal';
 
-import Form from '../../../components/form/index';
+import Modal from '@client/components/Modal';
+import Form from '@client/components/form/index';
+
+import { isPotentialPhoneNumber } from '@client/utils';
+import { TEST_ID } from '@client/constants';
+
 import { updateUserProfile } from '../../profile/actions';
 import { displayLoadingModal,
          displayMessageModal,
          displayTutorSelectionModal,
          getAvailableTutors } from '../actions';
-
-import { isPotentialPhoneNumber } from '../../../utils';
-import { TEST_ID } from '../../../constants';
 
 class MiniProfileForm extends Component {
     constructor() {

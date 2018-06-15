@@ -65,7 +65,7 @@ class TutorSelectionModal extends Component {
             if (err.data && err.data.error) {
                 switch (err.data.status) {
                 case 401: {
-                    this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/signin' });
+                    this.props.displayMessageModal({ message: `${err.data.error}`, redirectToAfterClosing: '/auth/signin' });
                     this.props.signoutUser();
                     break;
                 }

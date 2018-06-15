@@ -4,20 +4,11 @@ import { storage } from '../utils';
 
 const BASE_URL_SETTINGS = '/api/public/settings';
 
-export const UT_ROUTE_CHANGE = 'UT_ROUTE_CHANGE';
-
 export const UT_GET_PUBLIC_SETTINGS = 'UT_GET_PUBLIC_SETTINGS';
 export const UT_GET_PUBLIC_SETTINGS_DELTA = 'UT_GET_PUBLIC_SETTINGS_DELTA';
 
 export const UT_DISPLAY_ANNOUNCEMENT = 'UT_DISPLAY_ANNOUNCEMENT';
 export const UT_HIDE_ANNOUNCEMENT = 'UT_HIDE_ANNOUNCEMENT';
-
-export function routeChange(routeData) {
-    return {
-        type: UT_ROUTE_CHANGE,
-        payload: routeData,
-    };
-}
 
 export function setPageTitle(title) {
     document.title = title;

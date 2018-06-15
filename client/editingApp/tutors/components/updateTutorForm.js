@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { reduxForm, initialize } from 'redux-form';
 
+import withRouterContext from '@client/routing/withRouterContext';
+import { selectTransformOptions, redirectTo, id } from '@client/utils';
+import Form from '@client/components/form/index';
+
 import { updateTutor, getTutors } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
 import { ROUTES } from '../../constants';
-import { selectTransformOptions, redirectTo, id } from '../../../utils';
-
-import Form from '../../../components/form/index';
 
 class UpdateTutorForm extends Component {
     constructor() {
@@ -36,7 +37,7 @@ class UpdateTutorForm extends Component {
 
         const onSubmit = (data) => {
             this.props.updateTutor(this.props.selectedTutor.id, data)
-                .then(result => redirectTo(ROUTES.TUTORS),
+                .then(result => redirectTo(this.props.history, ROUTES.TUTORS),
                       id);
         };
 
@@ -107,4 +108,4 @@ export default reduxForm({
     fields: ['name', 'location', 'courses'],
     // setting initial values
     validate,
-}, null, { updateTutor, setCurrentLocation, getTutors })(UpdateTutorForm);
+}, null, { updateTutor, setCurrentLocation, getTutors })(withRouterContext(UpdateTutorForm));

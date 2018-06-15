@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import { create, env } from 'sanctuary';
 
 const _S = create({ checkTypes: false, env });
@@ -69,7 +68,7 @@ export function isPotentialPhoneNumber(rawNumber) {
 export const locationComparator = (location1, location2) =>
     location1.name.toLowerCase() > location2.name.toLowerCase() ? 1 : -1;
 
-export const redirectTo = page => browserHistory.push(page);
+export const redirectTo = (history, page) => history.push(page);
 
 export function redirectOutside(url) {
     window.location.href = url;

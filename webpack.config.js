@@ -18,6 +18,12 @@ module.exports = {
         filename: 'bundle.js',
     },
 
+    resolve: {
+        alias: {
+            ['@client']: path.resolve('client'),
+        },
+    },
+
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve('client', 'index.template.html'),
@@ -32,6 +38,7 @@ module.exports = {
             exclude: /node_modules/,
             options: {
                 presets: ['react', 'es2015'],
+                plugins: ['syntax-dynamic-import'],
             },
 
         }, {

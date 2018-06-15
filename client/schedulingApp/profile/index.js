@@ -11,15 +11,19 @@ import { getFaqContent } from '../../util/actions';
 
 class Profile extends Component {
     componentDidMount() {
-        this.props.getUserProfile();
+        // always fetch new active appointments
         this.props.getActiveUserAppointments();
-        this.props.getFaqContent();
+
+        if (!this.props.faqContent) {
+            this.props.getFaqContent();
+        }
     }
 
     render() {
         const { profile, courses, locations, subjects, faqContent, appointments } = this.props;
+        const isInitialized = [profile, courses.all, locations.all, faqContent, appointments].every(Boolean);
 
-        if (!(profile && courses.all && locations.all && faqContent && appointments)) {
+        if (!isInitialized) {
             return (
                 <div className="profile-and-appointments-loading">
                   <LoadingSpinner />

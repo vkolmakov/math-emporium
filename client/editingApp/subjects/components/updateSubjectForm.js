@@ -3,12 +3,13 @@ import { reduxForm, initialize } from 'redux-form';
 
 import { updateSubject, getSubjects } from '../actions';
 import { setCurrentLocation } from '../../locations/actions';
-import { redirectTo, id } from '../../../utils';
+import { S, redirectTo, id } from '@client/utils';
+import withRouterContext from '@client/routing/withRouterContext';
 
 import { ROUTES } from '../../constants';
 
 import { selectTransformOptions } from '../../utils';
-import Form from '../../../components/form/index';
+import Form from '@client/components/form/index';
 
 class UpdateSubjectForm extends Component {
     constructor() {
@@ -37,7 +38,7 @@ class UpdateSubjectForm extends Component {
         const onSubmit = (data) => {
             this.setState({ success: false });
             this.props.updateSubject(this.props.selectedSubject.id, data)
-                .then(result => redirectTo(ROUTES.SUBJECTS),
+                .then(result => redirectTo(this.props.history, ROUTES.SUBJECTS),
                       id);
         };
 
@@ -98,8 +99,11 @@ function validate(values) {
     return errors;
 }
 
-export default reduxForm({
-    form: 'UpdateSubjectForm',
-    fields: ['name', 'location'],
-    validate,
-}, null, { updateSubject, getSubjects, setCurrentLocation })(UpdateSubjectForm);
+export default S.compose(
+    withRouterContext,
+    reduxForm({
+        form: 'UpdateSubjectForm',
+        fields: ['name', 'location'],
+        validate,
+    }, null, { updateSubject, getSubjects, setCurrentLocation })
+)(UpdateSubjectForm);

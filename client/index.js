@@ -15,9 +15,8 @@ import { selectOpenSpot, didUserPreselectAnOpenSpotBeforeSignIn,
          cleanupPreselectedOpenSpot,
          retrievePreselectedOpenSpot } from './schedulingApp/showSchedule/actions';
 
-import { Router, browserHistory } from 'react-router';
-import routes from './routes';
-import { redirectTo, storage } from './utils';
+import Router from './routing/Router';
+import { storage } from './utils';
 
 import 'react-select/dist/react-select.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -42,9 +41,10 @@ const store = createStoreWithMiddleware(reducers);
 
 attachUtilEventListeners(window, store);
 
+let immediateRedirect = null;
 if (hasNewUserJustSignedIn()) {
     addAuthDataFromCookies();
-    redirectTo('/schedule/show');
+    immediateRedirect = '/schedule/show';
     if (didUserPreselectAnOpenSpotBeforeSignIn()) {
         const preselectedOpenSpot = retrievePreselectedOpenSpot();
         store.dispatch(selectOpenSpot(preselectedOpenSpot));
@@ -57,16 +57,19 @@ cleanupPreselectedOpenSpot();
 const authGroup = storage.get(storage.KEYS.USER_AUTH_GROUP);
 const email = storage.get(storage.KEYS.USER_EMAIL);
 
-if (authGroup && email) {
-    store.dispatch(signInUser(authGroup, email));
-} else {
-    storage.clear();
-}
+const isPotentiallySignedIn = !!authGroup && !!email;
 
-store.dispatch(getAndApplyPublicApplicationStartupSettings()).then(() => {
-    ReactDOM.render(
+Promise.all([
+    isPotentiallySignedIn ? store.dispatch(signInUser(authGroup, email)) : Promise.resolve(),
+    store.dispatch(getAndApplyPublicApplicationStartupSettings())
+]).then(([authActionResult, _settings]) => {
+    if (isPotentiallySignedIn && authActionResult.payload.status !== 200) {
+        immediateRedirect = '/auth/signin';
+    }
+
+    ReactDOM.render((
         <Provider store={store}>
-          <Router history={browserHistory} routes={routes} />
-        </Provider>,
-        document.querySelector('.root'));
+          <Router immediatelyRedirectTo={immediateRedirect}></Router>
+        </Provider>
+    ), document.querySelector('.root'));
 });

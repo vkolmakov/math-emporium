@@ -42,6 +42,8 @@ $gutter-size: 0.75em;
         }
 
         > .dual-datepicker-wrap {
+            display: flex;
+
             $datepicker-height: 34px;
 
             &.has-focus {
@@ -49,12 +51,21 @@ $gutter-size: 0.75em;
                 outline: 5px auto -webkit-focus-ring-color;
             }
 
+            > div {
+                // ugh
+                flex: 1
+            }
+
+            .react-datepicker-wrapper {
+                width: 100%;
+            }
+
             .react-datepicker__input-container {
                 > input {
                     @include input;
                 }
 
-                width: 50%;
+                width: 100%;
                 height: $datepicker-height;
             }
         }

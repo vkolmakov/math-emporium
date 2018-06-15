@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Modal from 'react-modal';
 import moment from 'moment';
 
-import MessageModal from '../../../components/messageModal';
-import LoadingModal from '../../../components/loadingModal';
+import Modal from '@client/components/Modal';
+import MessageModal from '@client/components/messageModal';
+import LoadingModal from '@client/components/loadingModal';
+
+import { TIMESTAMP_DISPLAY_FORMAT } from '@client/constants';
 
 import { deleteAppointment } from '../actions';
-import { TIMESTAMP_DISPLAY_FORMAT } from '../../../constants';
 
 const MODAL_STATE = {
     NONE: 0,

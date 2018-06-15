@@ -5,13 +5,13 @@ export default (requiredGroup) => (ComposedComponent) => {
     class Authentication extends Component {
         componentWillMount() {
             if (!this.props.authenticated || this.props.group < requiredGroup) {
-                this.context.router.push('/signin');
+                this.props.history.push('/auth/signin');
             }
         }
 
         componentWillUpdate() {
             if (!this.props.authenticated || this.props.group < requiredGroup) {
-                this.context.router.push('/signin');
+                this.props.history.push('/auth/signin');
             }
         }
 
@@ -26,10 +26,6 @@ export default (requiredGroup) => (ComposedComponent) => {
             group: state.auth.group,
         };
     }
-
-    Authentication.contextTypes = {
-        router: React.PropTypes.object,
-    };
 
     return connect(mapStateToProps)(Authentication);
 };

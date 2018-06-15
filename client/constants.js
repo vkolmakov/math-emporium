@@ -64,4 +64,5 @@ export const ROUTE_BASE_PATHS = {
     EDIT: 'edit-schedule',
     SCHEDULE: 'schedule',
     MANAGE: 'manage-portal',
+    AUTH: 'auth',
 };

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import MainContentWrap from '../../../components/mainContentWrap';
-import LocationsInfo from '../../../components/locationsInfo';
+import MainContentWrap from '@client/components/mainContentWrap';
+import LocationsInfo from '@client/components/locationsInfo';
+import withRouterContext from '@client/routing/withRouterContext';
 
-import { getLocations } from '../../../sharedPublicData/actions';
-import { setLocation } from '../../../schedulingApp/actions';
-import { redirectTo, backgroundPictureStyle, backgroundPictureOverlayStyle } from '../../../utils';
+import { getLocations } from '@client/sharedPublicData/actions';
+import { setLocation } from '@client/schedulingApp/actions';
+import { redirectTo, backgroundPictureStyle, backgroundPictureOverlayStyle } from '@client/utils';
 
 class Home extends Component {
     componentDidMount() {
@@ -16,7 +17,7 @@ class Home extends Component {
     }
 
     redirectToSchedule() {
-        redirectTo('/schedule');
+        redirectTo(this.props.history, '/schedule');
     }
 
     render() {
@@ -31,7 +32,7 @@ class Home extends Component {
         );
 
         const ScheduleButton = () => (
-            <button onClick={this.redirectToSchedule} className="schedule-appointment-button">
+            <button onClick={this.redirectToSchedule.bind(this)} className="schedule-appointment-button">
               Schedule an appointment
             </button>
         );
@@ -70,4 +71,4 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     getLocations,
     setLocation,
-})(Home);
+})(withRouterContext(Home));

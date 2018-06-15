@@ -14,7 +14,7 @@ class LocationDetail extends Component {
     render() {
         const { locations } = this.props;
 
-        const id = this.props.params.id;
+        const id = this.props.match.params.id;
 
         const selectedLocation = locations.all.find(
             location => location.id == id
