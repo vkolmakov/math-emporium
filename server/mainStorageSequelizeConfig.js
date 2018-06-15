@@ -2,7 +2,7 @@
 // which is the main reason why this file exists
 // the actual values are already configured in config.js
 
-const config = require('./config');
+const config = require("./config");
 
 const mainStorageSequelizeConfig = {
     username: config.db.USER,
@@ -10,8 +10,8 @@ const mainStorageSequelizeConfig = {
     database: config.db.NAME,
     host: config.db.HOST,
     port: config.db.PORT,
-    dialect: 'postgres',
-    protocol: 'postgres',
+    dialect: "postgres",
+    protocol: "postgres",
     logging: false,
     dialectOptions: {
         ssl: config.IS_PRODUCTION,

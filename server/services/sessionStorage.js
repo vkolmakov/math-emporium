@@ -1,6 +1,6 @@
-import createRedisStore from 'connect-redis';
+import createRedisStore from "connect-redis";
 
-import config from '../config';
+import config from "../config";
 
 export default {
     create(sessionMiddleware) {

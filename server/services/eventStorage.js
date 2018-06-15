@@ -1,13 +1,18 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-
-const Event = mongoose.model('Event', mongoose.Schema({
-    type: Number,
-    user: { id: Number, email: String },
-    data: mongoose.Schema.Types.Mixed,
-}, {
-    timestamps: true,
-}));
+const Event = mongoose.model(
+    "Event",
+    mongoose.Schema(
+        {
+            type: Number,
+            user: { id: Number, email: String },
+            data: mongoose.Schema.Types.Mixed,
+        },
+        {
+            timestamps: true,
+        },
+    ),
+);
 
 function saveEvent(event) {
     const e = new Event(event);
@@ -18,10 +23,13 @@ export function connectToEventStorage(url, options) {
     const { user, password } = options;
 
     mongoose.Promise = global.Promise;
-    return mongoose.connect(url, {
-        user,
-        pass: password,
-    });
+    return mongoose.connect(
+        url,
+        {
+            user,
+            pass: password,
+        },
+    );
 }
 
 export default {

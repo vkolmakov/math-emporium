@@ -7,7 +7,7 @@ export function notFound(item) {
 
 export function unathorized() {
     return {
-        error: 'Unathorized request. Please sign in.',
+        error: "Unathorized request. Please sign in.",
         status: 401,
     };
 }
@@ -19,9 +19,11 @@ export function isRequired(item) {
     };
 }
 
-export function actionFailed(action, item = '', explanation = '') {
+export function actionFailed(action, item = "", explanation = "") {
     return {
-        error: `Could not ${action} ${item}${!!explanation ? ': ' + explanation : ''}`,
+        error: `Could not ${action} ${item}${
+            !!explanation ? ": " + explanation : ""
+        }`,
         status: 422,
     };
 }
@@ -34,27 +36,27 @@ export function errorMessage(message, status) {
 }
 
 export function isCustomError(obj) {
-    return typeof obj.error === 'string' && typeof obj.status === 'number';
+    return typeof obj.error === "string" && typeof obj.status === "number";
 }
 
 export function getValidationErrorText(err) {
     const ERROR_TEXT = {
-        UNKNOWN: 'An unknown error occurred',
-        TOO_LONG: 'The value of a field is too long',
-        INVALID_PHONE_NUMBER: 'Invalid phone number',
+        UNKNOWN: "An unknown error occurred",
+        TOO_LONG: "The value of a field is too long",
+        INVALID_PHONE_NUMBER: "Invalid phone number",
     };
 
     const SEQUELIZE_ERROR_NAME = {
-        DATABASE: 'SequelizeDatabaseError',
+        DATABASE: "SequelizeDatabaseError",
     };
 
     const ERROR_MESSAGE_TOKENS = {
-        TOO_LONG: 'too long',
-        PHONE_NUMBER: 'phone',
+        TOO_LONG: "too long",
+        PHONE_NUMBER: "phone",
     };
 
     function hasToken(token, err) {
-        const message = !!err.message ? err.message.toLowerCase() : '';
+        const message = !!err.message ? err.message.toLowerCase() : "";
         return message.includes(token);
     }
 
@@ -73,7 +75,6 @@ export function getValidationErrorText(err) {
 
         return ERROR_TEXT.UNKNOWN;
     }
-
 
     if (err.name === SEQUELIZE_ERROR_NAME.DATABASE) {
         return convertSequelizeDatabaseErrorMessage(err);

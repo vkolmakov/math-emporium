@@ -1,7 +1,7 @@
-import session from 'express-session';
+import session from "express-session";
 
-import sessionStorage from '../services/sessionStorage';
-import config from '../config';
+import sessionStorage from "../services/sessionStorage";
+import config from "../config";
 
 export default () => {
     const store = sessionStorage.create(session);
@@ -14,10 +14,10 @@ export default () => {
         saveUninitialized: false,
         rolling: true,
 
-        name: 'SID',
+        name: "SID",
         cookie: {
             httpOnly: true,
             maxAge: config.SESSION_LENGTH,
         },
     });
-}
+};

@@ -1,5 +1,4 @@
-import errorEventStorage from './errorEventStorage';
-
+import errorEventStorage from "./errorEventStorage";
 
 export function getAllErrorEvents() {
     return errorEventStorage.getAll();

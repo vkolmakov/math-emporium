@@ -1,15 +1,27 @@
-import db from 'sequelize-connect';
-import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
-import { notFound, isRequired, actionFailed, errorMessage } from '../services/errorMessages';
+import db from "sequelize-connect";
+import {
+    createExtractDataValuesFunction,
+    isObject,
+    hasOneOf,
+    transformRequestToQuery,
+} from "../aux";
+import {
+    notFound,
+    isRequired,
+    actionFailed,
+    errorMessage,
+} from "../services/errorMessages";
 
 const Schedule = db.models.schedule;
 const Location = db.models.location;
 const Tutor = db.models.tutor;
 
-const allowedToRead = ['id', 'weekday', 'time', 'location', 'tutors'];
-const allowedToWrite = ['weekday', 'time'];
-const relatedModels = [{ model: Location, as: 'location' },
-                       { model: Tutor, as: 'tutors' }];
+const allowedToRead = ["id", "weekday", "time", "location", "tutors"];
+const allowedToWrite = ["weekday", "time"];
+const relatedModels = [
+    { model: Location, as: "location" },
+    { model: Tutor, as: "tutors" },
+];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
@@ -19,7 +31,9 @@ export const handleGet = async (req, res, next) => {
             where: transformRequestToQuery(req.body),
             include: relatedModels,
         });
-        const schedules = schedulesRes.map((schedule) => extractDataValues(schedule));
+        const schedules = schedulesRes.map((schedule) =>
+            extractDataValues(schedule),
+        );
 
         res.status(200).json(schedules);
     } catch (err) {
@@ -36,7 +50,7 @@ export const handleGetId = async (req, res, next) => {
         if (scheduleRes) {
             res.status(200).json(extractDataValues(scheduleRes));
         } else {
-            res.status(404).json(notFound('schedule'));
+            res.status(404).json(notFound("schedule"));
         }
     } catch (err) {
         next(err);
@@ -49,19 +63,22 @@ export const handlePost = async (req, res, next) => {
         const firstSchedule = schedules[0];
 
         if (!isObject(firstSchedule.location)) {
-            throw Error('"location" object (with "name" or "id" field) is required');
+            throw Error(
+                '"location" object (with "name" or "id" field) is required',
+            );
         }
 
         const location = await Location.findIfExists(firstSchedule.location);
-        const hasTutors = hasOneOf(firstSchedule, 'tutors')
-                       && isObject(firstSchedule.tutors)
-                       && (hasOneOf(firstSchedule.tutors[0], 'id'));
+        const hasTutors =
+            hasOneOf(firstSchedule, "tutors") &&
+            isObject(firstSchedule.tutors) &&
+            hasOneOf(firstSchedule.tutors[0], "id");
 
         if (!location) {
-            res.status(422).json(notFound('location'));
+            res.status(422).json(notFound("location"));
         }
 
-        const createdSchedulesPromise = schedules.map(schedule => {
+        const createdSchedulesPromise = schedules.map((schedule) => {
             return new Promise(async (resolve, reject) => {
                 const createdSchedule = Schedule.build(schedule, {
                     fields: allowedToWrite,
@@ -71,7 +88,9 @@ export const handlePost = async (req, res, next) => {
                 await createdSchedule.save();
 
                 if (hasTutors) {
-                    await createdSchedule.setTutors(schedule.tutors.map((tutor) => tutor.id));
+                    await createdSchedule.setTutors(
+                        schedule.tutors.map((tutor) => tutor.id),
+                    );
                 }
 
                 resolve(createdSchedule);
@@ -97,7 +116,7 @@ export const handleDelete = async (req, res, next) => {
         if (removedSchedule) {
             res.status(200).json({ id: req.params.id });
         } else {
-            res.status(400).json(actionFailed('remove', 'schedule'));
+            res.status(400).json(actionFailed("remove", "schedule"));
         }
     } catch (err) {
         next(err);
@@ -112,29 +131,38 @@ export const handleUpdate = async (req, res, next) => {
         });
 
         if (!updatedSchedule) {
-            res.status(422).json(notFound('schedule'));
+            res.status(422).json(notFound("schedule"));
         }
 
         // updating location
-        if (hasOneOf(req.body, 'location')) {
+        if (hasOneOf(req.body, "location")) {
             let location;
-            if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
+            if (
+                isObject(req.body.location) &&
+                hasOneOf(req.body.location, "id", "name")
+            ) {
                 location = await Location.findIfExists(req.body.location);
                 if (!location) {
-                    res.status(422).json(notFound('location'));
+                    res.status(422).json(notFound("location"));
                 }
             } else {
-                res.status(422).json(notFound('location'));
+                res.status(422).json(notFound("location"));
             }
             await updatedSchedule.setLocation(location);
         }
         // updating tutors
-        if (hasOneOf(req.body, 'tutors')) {
-            if (isObject(req.body.tutors) && (hasOneOf(req.body.tutors[0], 'id') || req.body.courses.tutors === 0)) {
+        if (hasOneOf(req.body, "tutors")) {
+            if (
+                isObject(req.body.tutors) &&
+                (hasOneOf(req.body.tutors[0], "id") ||
+                    req.body.courses.tutors === 0)
+            ) {
                 // check if first element of the array is a valid tutor object
-                await updatedSchedule.setTutors(req.body.tutors.map((tutor) => tutor.id));
+                await updatedSchedule.setTutors(
+                    req.body.tutors.map((tutor) => tutor.id),
+                );
             } else {
-                res.status(422).json(actionFailed('process', 'tutors'));
+                res.status(422).json(actionFailed("process", "tutors"));
             }
         }
         const result = await updatedSchedule.update(req.body, {

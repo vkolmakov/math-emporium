@@ -1,13 +1,23 @@
-import { getAppData } from '../appData';
-import { set } from '../../aux';
+import { getAppData } from "../appData";
+import { set } from "../../aux";
 
 export const packChromeExtensionData = async () => {
     const data = await getAppData();
 
-    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        .reduce((result, weekdayName, idx) => set(result, idx + 1, weekdayName), {});
+    const weekdays = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ].reduce(
+        (result, weekdayName, idx) => set(result, idx + 1, weekdayName),
+        {},
+    );
 
-    const packedChromeExtensionData = data.map(locationData => ({
+    const packedChromeExtensionData = data.map((locationData) => ({
         location: locationData.location,
 
         courses: locationData.courses.reduce((result, course) => {
@@ -26,7 +36,7 @@ export const packChromeExtensionData = async () => {
         schedule: locationData.schedules.reduce((result, schedule) => {
             const weekday = weekdays[schedule.weekday];
             const hour = `${Math.floor(schedule.time / 60)}`;
-            const tutors = schedule.tutors.map(tutor => tutor.name);
+            const tutors = schedule.tutors.map((tutor) => tutor.name);
 
             if (!result[weekday]) {
                 result[weekday] = {};
@@ -39,9 +49,15 @@ export const packChromeExtensionData = async () => {
             return result;
         }, {}),
 
-        tutors: locationData.tutors.reduce((result, tutor) =>
-            set(result, tutor.name, tutor.courses.map(course => course.code)),
-        {}),
+        tutors: locationData.tutors.reduce(
+            (result, tutor) =>
+                set(
+                    result,
+                    tutor.name,
+                    tutor.courses.map((course) => course.code),
+                ),
+            {},
+        ),
     }));
 
     return packedChromeExtensionData;

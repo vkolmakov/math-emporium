@@ -1,6 +1,6 @@
-import moment from 'moment';
+import moment from "moment";
 
-import { TIMESTAMP_FORMAT, sanitizeCalendarInput } from '../../aux';
+import { TIMESTAMP_FORMAT, sanitizeCalendarInput } from "../../aux";
 
 function extractInfoFromSummary(summary) {
     if (!summary) {
@@ -32,7 +32,7 @@ export function getAppointments(calendarEvents) {
         const appointment = {
             ...appointmentInfo,
             startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format('E'), 10),
+            weekday: parseInt(startDateTime.format("E"), 10),
             time: startDateTime.hours() * 60 + startDateTime.minutes(),
         };
 
@@ -55,8 +55,9 @@ function extractSpecialInstructions(summary) {
     }
 
     return {
-        overwriteTutors: match[1].split('_').map(tutorName => ({
-            name: sanitizeCalendarInput(tutorName) })),
+        overwriteTutors: match[1].split("_").map((tutorName) => ({
+            name: sanitizeCalendarInput(tutorName),
+        })),
     };
 }
 
@@ -71,7 +72,7 @@ export function getSpecialInstructions(calendarEvents) {
         const instructions = {
             ...instructionsInfo,
             startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format('E'), 10),
+            weekday: parseInt(startDateTime.format("E"), 10),
             time: startDateTime.hours() * 60 + startDateTime.minutes(),
         };
 

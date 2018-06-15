@@ -1,13 +1,23 @@
-import db from 'sequelize-connect';
-import { createExtractDataValuesFunction } from '../aux';
-import { notFound } from '../services/errorMessages';
+import db from "sequelize-connect";
+import { createExtractDataValuesFunction } from "../aux";
+import { notFound } from "../services/errorMessages";
 
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
 
-const allowedToRead = ['id', 'email', 'firstName', 'lastName', 'group', 'location', 'course', 'lastSigninAt', 'phoneNumber'];
-const allowedToWrite = ['group'];
+const allowedToRead = [
+    "id",
+    "email",
+    "firstName",
+    "lastName",
+    "group",
+    "location",
+    "course",
+    "lastSigninAt",
+    "phoneNumber",
+];
+const allowedToWrite = ["group"];
 const relatedModels = [Location, Course];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
@@ -17,7 +27,7 @@ export const handleGet = async (req, res, next) => {
         const usersRes = await User.findAll({
             include: relatedModels,
         });
-        const users = usersRes.map(userRes => extractDataValues(userRes));
+        const users = usersRes.map((userRes) => extractDataValues(userRes));
 
         res.status(200).json(users);
     } catch (err) {
@@ -35,7 +45,7 @@ export const handleGetId = async (req, res, next) => {
         if (user) {
             res.status(200).json(extractDataValues(user));
         } else {
-            res.status(404).json(notFound('User'));
+            res.status(404).json(notFound("User"));
         }
     } catch (err) {
         next(err);
@@ -52,7 +62,7 @@ export const handleUpdate = async (req, res, next) => {
         if (updatedUser[0]) {
             res.status(200).json({ id: req.params.id });
         } else {
-            res.status(404).json(notFound('user'));
+            res.status(404).json(notFound("user"));
         }
     } catch (err) {
         next(err);

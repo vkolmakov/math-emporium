@@ -1,14 +1,19 @@
-import mainStorage from '../services/mainStorage';
+import mainStorage from "../services/mainStorage";
 
-import { createExtractDataValuesFunction, isObject, hasOneOf, transformRequestToQuery } from '../aux';
-import { notFound, isRequired, actionFailed } from '../services/errorMessages';
-import { pluckPublicFields, isActive } from './subjects.model';
+import {
+    createExtractDataValuesFunction,
+    isObject,
+    hasOneOf,
+    transformRequestToQuery,
+} from "../aux";
+import { notFound, isRequired, actionFailed } from "../services/errorMessages";
+import { pluckPublicFields, isActive } from "./subjects.model";
 
 const Location = mainStorage.db.models.location;
 const Subject = mainStorage.db.models.subject;
 
-const allowedToRead = ['id', 'name', 'location'];
-const allowedToWrite = ['name'];
+const allowedToRead = ["id", "name", "location"];
+const allowedToWrite = ["name"];
 const relatedModels = [Location];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
@@ -19,7 +24,7 @@ function getSubjects(body) {
             where: transformRequestToQuery(body),
             include: relatedModels,
         });
-        resolve(subjectsRes.map(subjectRes => extractDataValues(subjectRes)));
+        resolve(subjectsRes.map((subjectRes) => extractDataValues(subjectRes)));
     });
 }
 
@@ -33,21 +38,24 @@ function getSubject(id) {
         if (subject) {
             resolve(extractDataValues(subject));
         } else {
-            reject(notFound('Subject'));
+            reject(notFound("Subject"));
         }
     });
 }
 
 function createSubject(body) {
     return new Promise(async (resolve, reject) => {
-        if (!isObject(body.location) || !hasOneOf(body.location, 'name', 'id')) {
-            reject(isRequired('Location'));
+        if (
+            !isObject(body.location) ||
+            !hasOneOf(body.location, "name", "id")
+        ) {
+            reject(isRequired("Location"));
         }
 
         const location = await Location.findIfExists(body.location);
 
         if (!location) {
-            reject(notFound('Location'));
+            reject(notFound("Location"));
         }
 
         const createdSubject = Subject.build(body, {
@@ -61,7 +69,7 @@ function createSubject(body) {
             resolve(extractDataValues(createdSubject));
         } catch (err) {
             // caught a validation error
-            reject(actionFailed('create', 'subject', err.message));
+            reject(actionFailed("create", "subject", err.message));
         }
     });
 }
@@ -75,7 +83,7 @@ function deleteSubject(id) {
         if (removedSubject) {
             resolve({ id });
         } else {
-            reject(actionFailed('remove', 'subject'));
+            reject(actionFailed("remove", "subject"));
         }
     });
 }
@@ -88,19 +96,22 @@ function updateSubject(id, body) {
         });
 
         if (!updatedSubject) {
-            reject(notFound('Subject'));
+            reject(notFound("Subject"));
         }
 
         let location;
-        if (hasOneOf(body, 'location')) {
-            if (isObject(body.location) && hasOneOf(body.location, 'id', 'name')) {
+        if (hasOneOf(body, "location")) {
+            if (
+                isObject(body.location) &&
+                hasOneOf(body.location, "id", "name")
+            ) {
                 location = await Location.findIfExists(body.location);
 
                 if (!location) {
-                    reject(notFound('location'));
+                    reject(notFound("location"));
                 }
             } else {
-                reject(notFound('location'));
+                reject(notFound("location"));
             }
             await updatedSubject.setLocation(location);
         }
@@ -114,7 +125,7 @@ function updateSubject(id, body) {
             resolve(extractDataValues(result));
         } catch (err) {
             // caught a validation error
-            reject(actionFailed('update', 'subject', err.message));
+            reject(actionFailed("update", "subject", err.message));
         }
     });
 }
@@ -146,7 +157,6 @@ export const handleGetId = async (req, res, next) => {
     }
 };
 
-
 export const handlePost = async (req, res, next) => {
     try {
         const createdSubject = await createSubject(req.body);
@@ -156,7 +166,6 @@ export const handlePost = async (req, res, next) => {
     }
 };
 
-
 export const handleDelete = async (req, res, next) => {
     try {
         const deletedSubject = await deleteSubject(req.params.id);
@@ -165,7 +174,6 @@ export const handleDelete = async (req, res, next) => {
         next(err);
     }
 };
-
 
 export const handleUpdate = async (req, res, next) => {
     try {

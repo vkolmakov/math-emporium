@@ -1,4 +1,4 @@
-import { getAllErrorEvents } from './errorEvent.service';
+import { getAllErrorEvents } from "./errorEvent.service";
 
 export async function handleGetAllErrorEvents(req, res, next) {
     try {

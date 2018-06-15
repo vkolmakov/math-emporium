@@ -1,15 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-
-const ErrorEvent = mongoose.model('ErrorEvent', mongoose.Schema({
-    type: Number,
-    user: { id: Number, email: String },
-    stacktrace: String,
-    data: mongoose.Schema.Types.Mixed,
-}, {
-    capped: { size: 131072, max: 100 },
-    timestamps: true,
-}));
+const ErrorEvent = mongoose.model(
+    "ErrorEvent",
+    mongoose.Schema(
+        {
+            type: Number,
+            user: { id: Number, email: String },
+            stacktrace: String,
+            data: mongoose.Schema.Types.Mixed,
+        },
+        {
+            capped: { size: 131072, max: 100 },
+            timestamps: true,
+        },
+    ),
+);
 
 function saveErrorEvent(errorEvent) {
     const e = new ErrorEvent(errorEvent);
@@ -27,10 +32,13 @@ export default {
                 return Promise.resolve();
             }
 
-            return mongoose.connect(url, {
-                user,
-                pass: password,
-            });
+            return mongoose.connect(
+                url,
+                {
+                    user,
+                    pass: password,
+                },
+            );
         };
 
         return connectToStorage();

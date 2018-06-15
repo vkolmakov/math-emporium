@@ -1,9 +1,9 @@
-import fs from 'fs';
-import mainStorage from '../services/mainStorage';
+import fs from "fs";
+import mainStorage from "../services/mainStorage";
 
 function readJson(fileName) {
     return new Promise((resolve, reject) => {
-        fs.readFile(fileName, 'utf8', (err, data) => {
+        fs.readFile(fileName, "utf8", (err, data) => {
             if (err) {
                 reject(err);
             }
@@ -26,7 +26,7 @@ function zipObj(keys, vals) {
 }
 
 function createObject(fieldNames) {
-    return values => zipObj(fieldNames, values);
+    return (values) => zipObj(fieldNames, values);
 }
 
 function processData(data) {
@@ -34,7 +34,7 @@ function processData(data) {
 }
 
 function insertDataIn(model) {
-    return records => model.bulkCreate(records);
+    return (records) => model.bulkCreate(records);
 }
 
 function zip(xs, ys) {
@@ -57,19 +57,20 @@ function groupBy(keyFn, vals) {
 }
 
 function entries(obj) {
-    return Object.keys(obj).reduce(
-        (acc, k) => acc.concat([[k, obj[k]]]), []);
+    return Object.keys(obj).reduce((acc, k) => acc.concat([[k, obj[k]]]), []);
 }
 
 function addTutorCourses(Tutor) {
-    return values => {
-        const groupedByTutor = groupBy(x => x.tutorId, values);
-        const getCourseId = x => x.courseId;
+    return (values) => {
+        const groupedByTutor = groupBy((x) => x.tutorId, values);
+        const getCourseId = (x) => x.courseId;
         return Promise.all(
-            entries(groupedByTutor).map(
-                ([tutorId, records]) =>
-                    Tutor.findOne({ where: { id: tutorId } })
-                    .then(tutor => tutor.setCourses(records.map(getCourseId)))));
+            entries(groupedByTutor).map(([tutorId, records]) =>
+                Tutor.findOne({ where: { id: tutorId } }).then((tutor) =>
+                    tutor.setCourses(records.map(getCourseId)),
+                ),
+            ),
+        );
     };
 }
 
@@ -78,20 +79,25 @@ function seed() {
     const Location = mainStorage.db.models.location;
     const Tutor = mainStorage.db.models.tutor;
 
-    const makeFileName = body => `./server/scripts/data/${body}.json`;
-    const fileNamesPrimitives = ['locations', 'courses', 'tutors'].map(makeFileName);
+    const makeFileName = (body) => `./server/scripts/data/${body}.json`;
+    const fileNamesPrimitives = ["locations", "courses", "tutors"].map(
+        makeFileName,
+    );
     const modelsPrimitives = [Location, Course, Tutor];
 
-    const processPair = (([fileName, model]) =>
-                         readJson(fileName)
-                         .then(processData)
-                         .then(insertDataIn(model)));
+    const processPair = ([fileName, model]) =>
+        readJson(fileName)
+            .then(processData)
+            .then(insertDataIn(model));
 
     const insertPrimitives = () =>
-          mapPromisesInOrder(processPair, zip(fileNamesPrimitives, modelsPrimitives));
+        mapPromisesInOrder(
+            processPair,
+            zip(fileNamesPrimitives, modelsPrimitives),
+        );
 
     const insertRelations = () => {
-        const fileName = './server/scripts/data/tutor_course.json';
+        const fileName = "./server/scripts/data/tutor_course.json";
 
         readJson(fileName)
             .then(processData)

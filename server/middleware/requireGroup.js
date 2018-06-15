@@ -1,4 +1,4 @@
-import { unathorized } from '../services/errorMessages';
+import { unathorized } from "../services/errorMessages";
 
 const unathorizedRequest = (req, res) => res.status(401).send(unathorized());
 
@@ -20,8 +20,5 @@ export default function requireGroup(groupId) {
         return unathorizedRequest(req, res);
     };
 
-    return [
-        ensureUser,
-        ensureRequiredGroup,
-    ];
+    return [ensureUser, ensureRequiredGroup];
 }

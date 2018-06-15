@@ -1,5 +1,5 @@
-import errorEventStorage from '../services/errorEvent/errorEventStorage';
-import { errorMessage } from '../services/errorMessages';
+import errorEventStorage from "../services/errorEvent/errorEventStorage";
+import { errorMessage } from "../services/errorMessages";
 
 export default (err, req, res, next) => {
     if (res.headersSent) {
@@ -7,15 +7,23 @@ export default (err, req, res, next) => {
     }
 
     switch (err.status) {
-    case 404: res.status(err.status).json(err); break;
-    case 422: res.status(err.status).json(err); break;
-    default:
-        errorEventStorage.save({
-            type: 500,
-            user: !!req.user ? { id: req.user.id, email: req.user.email } : { id: -1, email: '' },
-            data: err,
-            stacktrace: !!err.stack ? err.stack : '',
-        });
-        res.status(500).json(errorMessage('An internal server error occurred', 500));
+        case 404:
+            res.status(err.status).json(err);
+            break;
+        case 422:
+            res.status(err.status).json(err);
+            break;
+        default:
+            errorEventStorage.save({
+                type: 500,
+                user: !!req.user
+                    ? { id: req.user.id, email: req.user.email }
+                    : { id: -1, email: "" },
+                data: err,
+                stacktrace: !!err.stack ? err.stack : "",
+            });
+            res.status(500).json(
+                errorMessage("An internal server error occurred", 500),
+            );
     }
 };

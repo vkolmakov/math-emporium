@@ -1,23 +1,42 @@
-import db from 'sequelize-connect';
-import moment from 'moment';
+import db from "sequelize-connect";
+import moment from "moment";
 
-import { createExtractDataValuesFunction, isObject,
-         hasOneOf, pickOneFrom, TIMESTAMP_FORMAT, TIMEZONE,
-         APPOINTMENT_LENGTH } from '../aux';
-import { notFound, actionFailed, getValidationErrorText, isCustomError } from '../services/errorMessages';
-import { successMessage } from '../services/messages';
-import { availableTutors } from '../services/openSpots/openSpots.service';
+import {
+    createExtractDataValuesFunction,
+    isObject,
+    hasOneOf,
+    pickOneFrom,
+    TIMESTAMP_FORMAT,
+    TIMEZONE,
+    APPOINTMENT_LENGTH,
+} from "../aux";
+import {
+    notFound,
+    actionFailed,
+    getValidationErrorText,
+    isCustomError,
+} from "../services/errorMessages";
+import { successMessage } from "../services/messages";
+import { availableTutors } from "../services/openSpots/openSpots.service";
 
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
 const Subject = db.models.subject;
 
-const allowedToRead = ['id', 'firstName', 'lastName', 'courseId', 'locationId', 'subjectId', 'phoneNumber'];
+const allowedToRead = [
+    "id",
+    "firstName",
+    "lastName",
+    "courseId",
+    "locationId",
+    "subjectId",
+    "phoneNumber",
+];
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
 export const updateProfile = () => async (req, res, next) => {
-    const allowedToWrite = ['firstName', 'lastName', 'phoneNumber'];
+    const allowedToWrite = ["firstName", "lastName", "phoneNumber"];
     let user;
 
     try {
@@ -27,21 +46,25 @@ export const updateProfile = () => async (req, res, next) => {
         });
 
         if (!user) {
-            throw new Error('User not found');
+            throw new Error("User not found");
         }
 
-
-        if (hasOneOf(req.body, 'location')) {
+        if (hasOneOf(req.body, "location")) {
             let location;
-            if (isObject(req.body.location) && hasOneOf(req.body.location, 'id', 'name')) {
+            if (
+                isObject(req.body.location) &&
+                hasOneOf(req.body.location, "id", "name")
+            ) {
                 location = await Location.findIfExists(req.body.location);
 
                 if (!location) {
-                    res.status(404).json(notFound('location'));
+                    res.status(404).json(notFound("location"));
                 }
 
                 if (!location.isActive) {
-                    res.status(422).json(actionFailed('add', 'location', 'location is inactive'));
+                    res.status(422).json(
+                        actionFailed("add", "location", "location is inactive"),
+                    );
                 }
 
                 await user.setLocation(location);
@@ -50,15 +73,18 @@ export const updateProfile = () => async (req, res, next) => {
             }
         }
 
-        if (hasOneOf(req.body, 'subject')) {
+        if (hasOneOf(req.body, "subject")) {
             let subject;
-            if (isObject(req.body.subject) && hasOneOf(req.body.subject, 'id', 'name')) {
+            if (
+                isObject(req.body.subject) &&
+                hasOneOf(req.body.subject, "id", "name")
+            ) {
                 subject = await Subject.findOne({
                     where: { id: req.body.subject.id },
                 });
 
                 if (!subject) {
-                    res.status(400).json(notFound('subject'));
+                    res.status(400).json(notFound("subject"));
                 }
                 await user.setSubject(subject);
             } else {
@@ -66,15 +92,18 @@ export const updateProfile = () => async (req, res, next) => {
             }
         }
 
-        if (hasOneOf(req.body, 'course')) {
+        if (hasOneOf(req.body, "course")) {
             let course;
-            if (isObject(req.body.course) && hasOneOf(req.body.course, 'id', 'name')) {
+            if (
+                isObject(req.body.course) &&
+                hasOneOf(req.body.course, "id", "name")
+            ) {
                 course = await Course.findOne({
                     where: { id: req.body.course.id },
                 });
 
                 if (!course) {
-                    res.status(400).json(notFound('course'));
+                    res.status(400).json(notFound("course"));
                 }
                 await user.setCourse(course);
             } else {
@@ -93,7 +122,7 @@ export const updateProfile = () => async (req, res, next) => {
         res.status(200).json(extractDataValues(result));
     } catch (err) {
         const validationErrorMessage = getValidationErrorText(err);
-        next(actionFailed('update', 'profile', validationErrorMessage));
+        next(actionFailed("update", "profile", validationErrorMessage));
     }
 };
 
@@ -105,7 +134,7 @@ export const getProfile = () => async (req, res, next) => {
         });
 
         if (!user) {
-            throw new Error('User not found');
+            throw new Error("User not found");
         }
 
         res.status(200).json(extractDataValues(user));

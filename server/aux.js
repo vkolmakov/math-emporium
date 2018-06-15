@@ -1,16 +1,16 @@
-import * as _R from 'ramda';
-import * as _dateFns from 'date-fns';
+import * as _R from "ramda";
+import * as _dateFns from "date-fns";
 
-import timezone from 'timezone-js';
-import tzdata from 'tzdata';
+import timezone from "timezone-js";
+import tzdata from "tzdata";
 
-import { create, env } from 'sanctuary';
+import { create, env } from "sanctuary";
 
 const _S = create({ checkTypes: false, env });
 
-export const TIMESTAMP_FORMAT = 'YYYY-MM-DD-HH-mm';
-export const TIMESTAMP_VISIBLE_FORMAT = 'MM/DD/YYYY [at] h:mma';
-export const TIMEZONE = 'America/Chicago';
+export const TIMESTAMP_FORMAT = "YYYY-MM-DD-HH-mm";
+export const TIMESTAMP_VISIBLE_FORMAT = "MM/DD/YYYY [at] h:mma";
+export const TIMEZONE = "America/Chicago";
 export const APPOINTMENT_LENGTH = 60; // in minutes
 
 const _tz = timezone.timezone;
@@ -33,7 +33,9 @@ export const events = {
 export const isObject = (obj) => obj === Object(obj);
 
 export function hasOneOf(obj, ...keys) {
-    return !!obj ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1) : false;
+    return !!obj
+        ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1)
+        : false;
 }
 
 export function createExtractDataValuesFunction(allowedFields) {
@@ -58,7 +60,7 @@ export function transformRequestToQuery(data) {
     let queryParams = { ...data };
 
     // case when request contains location
-    if (isObject(data.location) && hasOneOf(data.location, 'id')) {
+    if (isObject(data.location) && hasOneOf(data.location, "id")) {
         // removing original location key from request
         delete queryParams.location;
         // adding indendifier for the database query
@@ -75,7 +77,7 @@ export function set(obj, key, val) {
 }
 
 export function sanitizeCalendarInput(text) {
-    return text.replace(/[^a-zA-Z0-9\s]/gi, '').trim();
+    return text.replace(/[^a-zA-Z0-9\s]/gi, "").trim();
 }
 
 export function pickOneFrom(list) {
@@ -127,7 +129,10 @@ export const R = {
     innerJoin: _R.innerJoin,
 };
 
-export const trace = msg => x => { console.log(msg, x); return x; };
+export const trace = (msg) => (x) => {
+    console.log(msg, x);
+    return x;
+};
 
 export const dateTime = {
     now() {
@@ -143,11 +148,15 @@ export const dateTime = {
 
         const timezoneOffset = serverTimezoneOffset - targetTimezoneOffset;
 
-        const dateWithTimezoneOffset = timezoneOffset > 0
-              ? _dateFns.addMinutes(dt, timezoneOffset)
-              : _dateFns.subMinutes(dt, -timezoneOffset);
+        const dateWithTimezoneOffset =
+            timezoneOffset > 0
+                ? _dateFns.addMinutes(dt, timezoneOffset)
+                : _dateFns.subMinutes(dt, -timezoneOffset);
 
-        return _dateFns.format(dateWithTimezoneOffset, TIMESTAMP_VISIBLE_FORMAT);
+        return _dateFns.format(
+            dateWithTimezoneOffset,
+            TIMESTAMP_VISIBLE_FORMAT,
+        );
     },
 
     parse(other) {

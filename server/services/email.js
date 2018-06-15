@@ -1,7 +1,7 @@
-import SparkPost from 'sparkpost';
-import config from '../config';
-import { getSettingsValue, SETTINGS_KEYS } from './settings/settings.service';
-import { pickOneFrom } from '../aux';
+import SparkPost from "sparkpost";
+import config from "../config";
+import { getSettingsValue, SETTINGS_KEYS } from "./settings/settings.service";
+import { pickOneFrom } from "../aux";
 
 function createRecipient(email) {
     return { address: email };
@@ -9,22 +9,26 @@ function createRecipient(email) {
 
 function composeLetterContent(body, user) {
     function htmlify(sentence) {
-        const handleNewlines = s => s.replace(/\n/g, '<br />');
-        const handleLinks = s => {
-            const linkRegex = new RegExp(`.*?(${config.HOSTNAME}.*?)\\s`, 'gi');
+        const handleNewlines = (s) => s.replace(/\n/g, "<br />");
+        const handleLinks = (s) => {
+            const linkRegex = new RegExp(`.*?(${config.HOSTNAME}.*?)\\s`, "gi");
             return s.replace(linkRegex, '<a href="$1">$1</a> ');
         };
 
         const handlers = [handleLinks, handleNewlines];
-        return `<p>${handlers.reduce((result, handler) => handler(result), sentence)}</p>`;
+        return `<p>${handlers.reduce(
+            (result, handler) => handler(result),
+            sentence,
+        )}</p>`;
     }
 
     const { firstName, email } = user;
 
-    const openers = ['Hello']; // these used to be fun :(
-    const greeting = `${pickOneFrom(openers)} ${firstName || email.split('@')[0]},`;
+    const openers = ["Hello"]; // these used to be fun :(
+    const greeting = `${pickOneFrom(openers)} ${firstName ||
+        email.split("@")[0]},`;
 
-    const closers = ['Have a great day!'];
+    const closers = ["Have a great day!"];
     const valediction = `${pickOneFrom(closers)}`;
 
     const signature = `${config.email.NAME}\n${config.HOSTNAME}`;
@@ -32,8 +36,8 @@ function composeLetterContent(body, user) {
     const message = [greeting, body, valediction, signature];
 
     return {
-        text: message.join('\n\n'),
-        html: message.map(htmlify).join(''),
+        text: message.join("\n\n"),
+        html: message.map(htmlify).join(""),
     };
 }
 
@@ -41,8 +45,10 @@ function createLetter(user, letterConstructors, additionalRecipients = []) {
     const { subjectConstructor, emailBodyConstructor } = letterConstructors;
     const { email } = user;
 
-    const { text, html } = composeLetterContent(emailBodyConstructor(config.email.NAME, config.HOSTNAME),
-                                                user);
+    const { text, html } = composeLetterContent(
+        emailBodyConstructor(config.email.NAME, config.HOSTNAME),
+        user,
+    );
     const subject = subjectConstructor(config.email.NAME, config.HOSTNAME);
 
     return {
@@ -65,7 +71,11 @@ function productionSendEmail(letterStructure) {
 }
 
 function debugSendEmail(letterStructure) {
-    const emailMetadataRepresentation = JSON.stringify(letterStructure, null, 2);
+    const emailMetadataRepresentation = JSON.stringify(
+        letterStructure,
+        null,
+        2,
+    );
     console.log(`Sending an email:\n${emailMetadataRepresentation}`); // eslint-disable-line no-console
     return Promise.resolve();
 }
@@ -74,7 +84,9 @@ export default function sendEmail(user, letterConstructors) {
     return getSettingsValue(SETTINGS_KEYS.duplicateAllEmailsTo)
         .then((additionalRecipientAddress) => {
             return !!additionalRecipientAddress
-                ? createLetter(user, letterConstructors, [createRecipient(additionalRecipientAddress)])
+                ? createLetter(user, letterConstructors, [
+                      createRecipient(additionalRecipientAddress),
+                  ])
                 : createLetter(user, letterConstructors, []);
         })
         .then((letter) => {

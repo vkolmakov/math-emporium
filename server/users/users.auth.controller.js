@@ -1,4 +1,4 @@
-import { successMessage } from '../services/messages';
+import { successMessage } from "../services/messages";
 
 function updateLastSignInStatus(user) {
     const now = Date.now();
@@ -15,9 +15,11 @@ export function signin(logEvent) {
         };
 
         // sending public data
-        Object.keys(data).forEach(k => res.cookie(k, data[k], { httpOnly: false }));
+        Object.keys(data).forEach((k) =>
+            res.cookie(k, data[k], { httpOnly: false }),
+        );
 
-        const redirectToRoot = () => res.redirect('/');
+        const redirectToRoot = () => res.redirect("/");
 
         return logEvent(req)
             .then(() => updateLastSignInStatus(user))
@@ -32,7 +34,7 @@ export function recordSignin() {
 
         return updateLastSignInStatus(user).then(
             () => res.status(200).json(successMessage()),
-            next
+            next,
         );
     };
 }

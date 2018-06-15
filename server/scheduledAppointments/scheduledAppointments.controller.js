@@ -1,7 +1,7 @@
-import { events } from '../aux';
-import { actionFailed } from '../services/errorMessages';
-import { successMessage } from '../services/messages';
-import { pluckPublicFields } from './scheduledAppointments.model';
+import { events } from "../aux";
+import { actionFailed } from "../services/errorMessages";
+import { successMessage } from "../services/messages";
+import { pluckPublicFields } from "./scheduledAppointments.model";
 
 export default class ScheduledAppointmentsController {
     constructor(cacheService, dateTime, createEventLogger, helper) {
@@ -17,8 +17,15 @@ export default class ScheduledAppointmentsController {
     }
 
     create(req, res, next) {
-        const scheduleOrRejectAppointment = (activeAppointmentsForUser, completeAppointmentData, now) => {
-            const { reason, canCreateAppointment } = this.helper.canCreateAppointment(
+        const scheduleOrRejectAppointment = (
+            activeAppointmentsForUser,
+            completeAppointmentData,
+            now,
+        ) => {
+            const {
+                reason,
+                canCreateAppointment,
+            } = this.helper.canCreateAppointment(
                 completeAppointmentData,
                 activeAppointmentsForUser,
                 now,
@@ -26,7 +33,10 @@ export default class ScheduledAppointmentsController {
 
             let result;
             if (canCreateAppointment) {
-                result = this.helper.createAppointment(completeAppointmentData, now);
+                result = this.helper.createAppointment(
+                    completeAppointmentData,
+                    now,
+                );
             } else {
                 result = Promise.reject(reason);
             }
@@ -51,26 +61,50 @@ export default class ScheduledAppointmentsController {
         const appointmentDateTime = this.dateTime.parse(appointmentData.time);
 
         const completeAppointmentDataPromise = this.helper.gatherCompleteAppointmentData(
-            user, appointmentData, appointmentDateTime);
+            user,
+            appointmentData,
+            appointmentDateTime,
+        );
         const activeAppointmentsForUserPromise = this.helper.getActiveAppointmentsForUser(
-            user, appointmentData, now);
+            user,
+            appointmentData,
+            now,
+        );
 
         return Promise.all([
             completeAppointmentDataPromise,
             activeAppointmentsForUserPromise,
-        ]).then(([completeAppointmentData, activeAppointmentsForUser]) => {
-            const { location, subject, course } = completeAppointmentData;
+        ])
+            .then(([completeAppointmentData, activeAppointmentsForUser]) => {
+                const { location, subject, course } = completeAppointmentData;
 
-            return scheduleOrRejectAppointment(activeAppointmentsForUser, completeAppointmentData, now)
-                .then(() => Promise.all([
-                    this.cacheService.calendarEvents.invalidate(location.calendarId),
-                    this.helper.sendAppointmentCreationConfirmation(completeAppointmentData),
-                    this.logger.log.createEvent(req),
-                    user.setDefaultAppointmentPreferencesIfNoneSet(location, subject, course),
-                ]));
-        }).then(() => {
-            res.status(200).json(successMessage());
-        }).catch((reason) => next(actionFailed('schedule', 'appointment', reason)));
+                return scheduleOrRejectAppointment(
+                    activeAppointmentsForUser,
+                    completeAppointmentData,
+                    now,
+                ).then(() =>
+                    Promise.all([
+                        this.cacheService.calendarEvents.invalidate(
+                            location.calendarId,
+                        ),
+                        this.helper.sendAppointmentCreationConfirmation(
+                            completeAppointmentData,
+                        ),
+                        this.logger.log.createEvent(req),
+                        user.setDefaultAppointmentPreferencesIfNoneSet(
+                            location,
+                            subject,
+                            course,
+                        ),
+                    ]),
+                );
+            })
+            .then(() => {
+                res.status(200).json(successMessage());
+            })
+            .catch((reason) =>
+                next(actionFailed("schedule", "appointment", reason)),
+            );
     }
 
     delete(req, res, next) {
@@ -81,27 +115,48 @@ export default class ScheduledAppointmentsController {
 
         const now = this.dateTime.now();
 
-        const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(user, deletionRecord, now);
+        const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(
+            user,
+            deletionRecord,
+            now,
+        );
 
-        return appointmentWithLocationPromise.then(({ appointment, location }) => {
-            return this.helper.deleteAppointment(appointment)
-                .then(() => Promise.all([
-                    this.cacheService.calendarEvents.invalidate(location.calendarId),
-                    this.helper.sendAppointmentDeletionConfirmation(user, appointment, location),
-                    this.logger.log.deleteEvent(req),
-                ]));
-        }).then(() => {
-            res.status(200).json(successMessage());
-        }).catch((reason) => next(actionFailed('delete', 'appointment', reason)));
+        return appointmentWithLocationPromise
+            .then(({ appointment, location }) => {
+                return this.helper
+                    .deleteAppointment(appointment)
+                    .then(() =>
+                        Promise.all([
+                            this.cacheService.calendarEvents.invalidate(
+                                location.calendarId,
+                            ),
+                            this.helper.sendAppointmentDeletionConfirmation(
+                                user,
+                                appointment,
+                                location,
+                            ),
+                            this.logger.log.deleteEvent(req),
+                        ]),
+                    );
+            })
+            .then(() => {
+                res.status(200).json(successMessage());
+            })
+            .catch((reason) =>
+                next(actionFailed("delete", "appointment", reason)),
+            );
     }
 
     getForUser(req, res, next) {
         const { user } = req;
         const now = this.dateTime.now();
 
-        return this.helper.getActiveAppointmentsForUser(user, now).then((appointments) => {
-            res.status(200).json(appointments.map(pluckPublicFields));
-        }).catch(() => next(actionFailed('get', 'appointments')));
+        return this.helper
+            .getActiveAppointmentsForUser(user, now)
+            .then((appointments) => {
+                res.status(200).json(appointments.map(pluckPublicFields));
+            })
+            .catch(() => next(actionFailed("get", "appointments")));
     }
 
     getAllActiveAppointments(req, res, next) {
@@ -119,8 +174,11 @@ export default class ScheduledAppointmentsController {
             locationId,
         });
 
-        return this.helper.getAllActiveAppointments(now).then((appointments) => {
-            res.status(200).json(appointments.map(pluckRequiredFields));
-        }).catch(() => next(actionFailed('get', 'appointments')));
+        return this.helper
+            .getAllActiveAppointments(now)
+            .then((appointments) => {
+                res.status(200).json(appointments.map(pluckRequiredFields));
+            })
+            .catch(() => next(actionFailed("get", "appointments")));
     }
 }

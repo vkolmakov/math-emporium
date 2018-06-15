@@ -1,5 +1,5 @@
-import { getAllEvents, getLatestEvents } from './events.service';
-import { isRequired } from '../errorMessages';
+import { getAllEvents, getLatestEvents } from "./events.service";
+import { isRequired } from "../errorMessages";
 
 export async function handleGetAllEvents(req, res, next) {
     try {
@@ -15,7 +15,7 @@ export async function handleGetLatestEvents(req, res, next) {
         const count = parseInt(req.query.count, 10);
 
         if (!count || isNaN(count)) {
-            throw isRequired('count');
+            throw isRequired("count");
         }
 
         const result = await getLatestEvents(count);

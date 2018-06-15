@@ -1,6 +1,6 @@
-import memoryCache from 'memory-cache';
+import memoryCache from "memory-cache";
 
-import { Either, R, timeUnits } from '../aux';
+import { Either, R, timeUnits } from "../aux";
 
 const ITEM_TYPE = {
     APP_DATA: 1,
@@ -11,7 +11,7 @@ let caches = [];
 
 const _cache = {
     ERROR_MESSAGES: {
-        MISS: 'CACHE_MISS',
+        MISS: "CACHE_MISS",
     },
 
     DURATIONS: {
@@ -25,7 +25,7 @@ const _cache = {
     },
 
     keyNames: {
-        [ITEM_TYPE.APP_DATA]: () => 'APP_DATA',
+        [ITEM_TYPE.APP_DATA]: () => "APP_DATA",
         [ITEM_TYPE.CALENDAR_EVENTS]: (calendarId, startDateIsoString) =>
             `CALENDAR_EVENTS-${calendarId}-${startDateIsoString}`,
     },
@@ -39,8 +39,9 @@ const _cache = {
 
     get(key) {
         return R.map(
-            R.prop('value'),
-            Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key)));
+            R.prop("value"),
+            Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key)),
+        );
     },
 
     remove(key) {
@@ -63,8 +64,9 @@ const calendarEvents = {
     type: ITEM_TYPE.CALENDAR_EVENTS,
 
     invalidate(calendarId) {
-        return _cache.existingKeys(calendarEvents.type)
-            .filter((key) => !!calendarId ? key.includes(calendarId) : true)
+        return _cache
+            .existingKeys(calendarEvents.type)
+            .filter((key) => (!!calendarId ? key.includes(calendarId) : true))
             .forEach(_cache.remove);
     },
 
@@ -75,10 +77,16 @@ const calendarEvents = {
             type,
             _cache.keyNames[type](calendarId, weekStartIsoString),
             events,
-            _cache.DURATIONS[type]);
+            _cache.DURATIONS[type],
+        );
     },
     get(calendarId, weekStartIsoString) {
-        return _cache.get(_cache.keyNames[calendarEvents.type](calendarId, weekStartIsoString));
+        return _cache.get(
+            _cache.keyNames[calendarEvents.type](
+                calendarId,
+                weekStartIsoString,
+            ),
+        );
     },
 };
 
@@ -86,7 +94,8 @@ const appData = {
     type: ITEM_TYPE.APP_DATA,
 
     invalidate() {
-        return _cache.existingKeys(appData.type)
+        return _cache
+            .existingKeys(appData.type)
             .filter((key) => key === _cache.keyNames[appData.type]())
             .forEach(_cache.remove);
     },
@@ -96,7 +105,8 @@ const appData = {
             type,
             _cache.keyNames[type](),
             data,
-            _cache.DURATIONS[type]);
+            _cache.DURATIONS[type],
+        );
     },
 
     get() {

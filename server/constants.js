@@ -1,10 +1,10 @@
 const NODE_ENV_VALUE = {
-    PRODUCTION: 'production',
-    DEV: 'dev',
+    PRODUCTION: "production",
+    DEV: "dev",
 };
 
 const CLI_OPTIONS = {
-    DEV_CLIENT: '-dev-client',
+    DEV_CLIENT: "-dev-client",
 };
 
 module.exports = {
