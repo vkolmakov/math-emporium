@@ -69,12 +69,12 @@ class SchedulingApp extends Component {
         let links;
         if (authenticated) {
             links = [
-                ['show', 'Schedule'],
+                ['show', 'Show Schedule'],
                 ['profile', 'Profile and Appointments'],
             ];
         } else {
             links = [
-                ['show', 'Schedule'],
+                ['show', 'Show Schedule'],
             ];
         }
 
