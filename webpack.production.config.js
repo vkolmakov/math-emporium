@@ -6,6 +6,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
+const babelConfig = require("./babel.config");
+
 module.exports = {
     mode: "production",
     target: "web",
@@ -80,9 +82,7 @@ module.exports = {
                 test: /\.jsx?$/,
                 exclude: [/elm-stuff/, /node_modules/],
                 loader: "babel-loader",
-                options: {
-                    babelrc: path.resolve(".babelrc"),
-                },
+                options: babelConfig,
             },
             {
                 test: /\.elm$/,

@@ -2,6 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
+const babelConfig = require("./babel.config");
+
 module.exports = {
     mode: "development",
     target: "web",
@@ -37,9 +39,7 @@ module.exports = {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: [/elm-stuff/, /node_modules/],
-                options: {
-                    babelrc: path.resolve(".babelrc"),
-                },
+                options: babelConfig,
             },
             {
                 test: /\.elm$/,
