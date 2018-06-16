@@ -78,11 +78,16 @@ module.exports = {
         rules: [
             {
                 test: /\.jsx?$/,
-                exclude: /node_modules/,
+                exclude: [/elm-stuff/, /node_modules/],
                 loader: "babel-loader",
                 options: {
                     babelrc: path.resolve(".babelrc"),
                 },
+            },
+            {
+                test: /\.elm$/,
+                exclude: [/elm-stuff/, /node_modules/],
+                loader: "elm-webpack-loader",
             },
             {
                 test: /\.s?[ac]ss$/,

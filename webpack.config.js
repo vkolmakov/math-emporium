@@ -36,10 +36,15 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: "babel-loader",
-                exclude: /node_modules/,
+                exclude: [/elm-stuff/, /node_modules/],
                 options: {
                     babelrc: path.resolve(".babelrc"),
                 },
+            },
+            {
+                test: /\.elm$/,
+                exclude: [/elm-stuff/, /node_modules/],
+                loader: "elm-webpack-loader",
             },
             {
                 test: /\.s?[ac]ss$/,
