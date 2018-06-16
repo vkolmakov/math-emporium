@@ -69,7 +69,7 @@ class TutorSelectionModal extends Component {
         };
 
         const onTutorSelect = (tutorOption) =>
-            this.setState((state, _) => {
+            this.setState((state) => {
                 return {
                     ...state,
                     requestedTutor: state.tutors.find(
@@ -134,7 +134,7 @@ class TutorSelectionModal extends Component {
                     additionalComments,
                 })
                 .then(
-                    (res) =>
+                    () =>
                         this.props.getUserProfile().then(
                             // profile must be re-retreived after scheduling an
                             // appointment and before redirect because it will be

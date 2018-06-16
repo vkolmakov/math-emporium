@@ -14,7 +14,7 @@ function processErrorEvent(errorEvent) {
         user: errorEvent.user.email || "User was not signed in",
         time: moment(errorEvent.createdAt).format(TIMESTAMP_DISPLAY_FORMAT),
         stacktrace: errorEvent.stacktrace,
-        data: !!errorEvent.data ? JSON.stringify(errorEvent.data, null, 2) : "",
+        data: errorEvent.data ? JSON.stringify(errorEvent.data, null, 2) : "",
     };
 }
 

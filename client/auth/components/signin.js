@@ -36,7 +36,7 @@ class Signin extends Component {
 
     initiateSignin() {
         // button width has to be stashed to prevent jump in button width when transitioning to spinner
-        const buttonWidthBeforeInitialization = !!this.authButtonRef
+        const buttonWidthBeforeInitialization = this.authButtonRef
             ? `${this.authButtonRef.offsetWidth.toString()}px`
             : "auto";
 

@@ -17,7 +17,7 @@ export function getSettings() {
 
 export function updateSettings(settings) {
     return (dispatch) =>
-        axios.put(BASE_URL, settings).then((response) => {
+        axios.put(BASE_URL, settings).then(() => {
             dispatch({
                 type: UPDATE_SETTINGS,
             });

@@ -78,7 +78,7 @@ class ManageSettings extends Component {
                         form: { success: true, error: null },
                     }));
                 },
-                (err) => {
+                () => {
                     this.setState((state) => ({
                         ...state,
                         form: {
@@ -101,8 +101,8 @@ class ManageSettings extends Component {
                         onChange: (event) => {
                             const state = this.state;
 
-                            if (!!event) {
-                                if (!!event.target) {
+                            if (event) {
+                                if (event.target) {
                                     // regular event from text input
                                     state.settings[settingKey] =
                                         event.target.value;

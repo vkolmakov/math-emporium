@@ -44,7 +44,7 @@ class SchedulingApp extends Component {
         );
 
         if (!this.props.initialized) {
-            Promise.all([
+            const requiredData = Promise.all([
                 shouldInitializeLocations
                     ? this.props.getLocations()
                     : Promise.resolve(),
@@ -53,7 +53,9 @@ class SchedulingApp extends Component {
                     : Promise.resolve(),
                 this.props.getSubjects(),
                 this.props.getCourses(),
-            ])
+            ]);
+
+            requiredData
                 .then(() => {
                     const profile = this.props.profile;
                     if (

@@ -14,10 +14,10 @@ class LocationDetail extends Component {
     render() {
         const { locations } = this.props;
 
-        const id = this.props.match.params.id;
+        const id = parseInt(this.props.match.params.id, 10);
 
         const selectedLocation = locations.all.find(
-            (location) => location.id == id,
+            (location) => location.id === id,
         );
 
         if (!selectedLocation) {

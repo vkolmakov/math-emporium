@@ -99,7 +99,7 @@ class Appointments extends Component {
     }
 
     createAppointmentCancelClickHandler(id) {
-        return (event) => {
+        return () => {
             this.setState({
                 modalState: MODAL_STATE.CONFIRMATION,
                 appointmentToDelete: { id },

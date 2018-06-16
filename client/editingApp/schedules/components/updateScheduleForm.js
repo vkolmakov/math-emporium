@@ -26,7 +26,7 @@ class UpdateScheduleForm extends Component {
         const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const selectedLocation = locations.all.find(
-            (loc) => loc.id == location.id,
+            (loc) => loc.id === location.id,
         );
 
         setCurrentLocation(selectedLocation);
@@ -51,11 +51,7 @@ class UpdateScheduleForm extends Component {
 
     render() {
         const { weekday, time, location, tutors } = this.props.fields;
-        const {
-            setCurrentLocation,
-            getSchedules,
-            setCurrentWeekday,
-        } = this.props;
+        const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const locationsOptions = selectTransformOptions()(
             this.props.locations.all,
@@ -74,7 +70,7 @@ class UpdateScheduleForm extends Component {
             this.setState({ success: false });
             this.props
                 .updateSchedule(this.props.selectedSchedule.id, data)
-                .then((result) => redirectTo(ROUTES.SCHEDULES), id);
+                .then(() => redirectTo(ROUTES.SCHEDULES), id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

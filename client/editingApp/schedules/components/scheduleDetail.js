@@ -21,7 +21,7 @@ class ScheduleDetail extends Component {
         const { id } = this.props.params;
 
         const selectedSchedule = schedules.all.find(
-            (schedule) => schedule.id == id,
+            (schedule) => schedule.id === id,
         );
 
         if (!selectedSchedule) {
@@ -35,7 +35,7 @@ class ScheduleDetail extends Component {
         if (locations.selected) {
             const selectedLocation = locations.selected;
             const [filteredTutors] = [tutors.all].map((list) =>
-                list.filter((elem) => elem.location.id == selectedLocation.id),
+                list.filter((elem) => elem.location.id === selectedLocation.id),
             );
 
             tutors = {

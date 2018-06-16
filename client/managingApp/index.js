@@ -67,8 +67,6 @@ class ManagingApp extends Component {
             selected: selected !== BASE_PATH ? selected : null,
         };
 
-        let displayElems;
-
         if (!this.state.initialized) {
             return <LoadingSpinner />;
         }

@@ -42,16 +42,12 @@ class UpdateTutorForm extends Component {
             this.props.courses.all,
         );
 
-        const { selectedTutor } = this.props;
         const { setCurrentLocation } = this.props;
 
         const onSubmit = (data) => {
             this.props
                 .updateTutor(this.props.selectedTutor.id, data)
-                .then(
-                    (result) => redirectTo(this.props.history, ROUTES.TUTORS),
-                    id,
-                );
+                .then(() => redirectTo(this.props.history, ROUTES.TUTORS), id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));

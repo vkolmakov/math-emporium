@@ -16,10 +16,10 @@ class SubjectDetail extends Component {
     render() {
         let { locations, subjects } = this.props;
 
-        const { id } = this.props.match.params;
+        const id = parseInt(this.props.match.params.id, 10);
 
         const selectedSubject = subjects.all.find(
-            (subject) => subject.id == id,
+            (subject) => subject.id === id,
         );
 
         if (!selectedSubject) {

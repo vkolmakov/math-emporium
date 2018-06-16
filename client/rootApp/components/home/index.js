@@ -49,14 +49,14 @@ class Home extends Component {
             <div
                 className="home-header"
                 style={
-                    !!this.props.headerPictureLink
+                    this.props.headerPictureLink
                         ? backgroundPictureStyle(this.props.headerPictureLink)
                         : {}
                 }>
                 <div
                     className="home-header-overlay"
                     style={
-                        !!this.props.headerPictureLink
+                        this.props.headerPictureLink
                             ? backgroundPictureOverlayStyle()
                             : {}
                     }>

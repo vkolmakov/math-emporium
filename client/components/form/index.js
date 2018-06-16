@@ -13,7 +13,7 @@ export default function Form({
     success,
 }) {
     const MaybeSubmitButton = () =>
-        !!hideSubmitButton ? (
+        hideSubmitButton ? (
             <span />
         ) : (
             <button className="button" type="submit">
@@ -22,7 +22,7 @@ export default function Form({
         );
 
     const MaybeDescription = () =>
-        !!description ? <p>{description}</p> : <span />;
+        description ? <p>{description}</p> : <span />;
 
     return (
         <form onSubmit={handleSubmit}>

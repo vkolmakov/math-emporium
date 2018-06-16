@@ -16,11 +16,8 @@ export default ({ weekday, schedule }) => {
         },
     ];
 
-    const sortedSchedule = schedule.sort((s1, s2) => s1.time - s2.time);
-
-    const weekdayHeader = WEEKDAY_OPTIONS.find(
-        ({ value, display }) => value == weekday,
-    ).display;
+    const weekdayHeader = WEEKDAY_OPTIONS.find(({ value }) => value === weekday)
+        .display;
 
     return (
         <div className="list-wrap">

@@ -37,13 +37,13 @@ const INITIAL_STATE = {
 const sharedReducer = (state = INITIAL_STATE, action) => {
     const { payload, type } = action;
     switch (type) {
-        case SA_INITIALIZE:
+        case SA_INITIALIZE: {
             return {
                 ...state,
                 initialized: true,
             };
-
-        case SA_GET_LOCATIONS:
+        }
+        case SA_GET_LOCATIONS: {
             return {
                 ...state,
                 locations: {
@@ -51,8 +51,8 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     all: payload.data.sort(locationComparator),
                 },
             };
-
-        case SA_GET_SUBJECTS:
+        }
+        case SA_GET_SUBJECTS: {
             return {
                 ...state,
                 subjects: {
@@ -60,8 +60,8 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     all: payload.data.sort(subjectComparator),
                 },
             };
-
-        case SA_GET_COURSES:
+        }
+        case SA_GET_COURSES: {
             return {
                 ...state,
                 courses: {
@@ -69,8 +69,8 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     all: payload.data.sort(courseComparator),
                 },
             };
-
-        case SA_SET_LOCATION:
+        }
+        case SA_SET_LOCATION: {
             // could either come as an object with value from select or as an object with id
             let locationId;
             if (payload) {
@@ -89,8 +89,8 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     selected: selectedLocation,
                 },
             };
-
-        case SA_SET_SUBJECT:
+        }
+        case SA_SET_SUBJECT: {
             // could either come as an object with value from select or as an object with id
             let subjectId;
             if (payload) {
@@ -109,8 +109,8 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     selected: selectedSubject,
                 },
             };
-
-        case SA_SET_COURSE:
+        }
+        case SA_SET_COURSE: {
             let selectedCourse;
             if (!payload) {
                 selectedCourse = null;
@@ -128,8 +128,10 @@ const sharedReducer = (state = INITIAL_STATE, action) => {
                     selected: selectedCourse,
                 },
             };
-        default:
+        }
+        default: {
             return state;
+        }
     }
 };
 

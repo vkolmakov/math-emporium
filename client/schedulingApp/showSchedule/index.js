@@ -232,7 +232,7 @@ class ShowSchedule extends Component {
 
             const { modalInfo } = this.props;
 
-            if (!!modalInfo.redirectToAfterClosing) {
+            if (modalInfo.redirectToAfterClosing) {
                 const redirectPath = this.props.modalInfo
                     .redirectToAfterClosing;
                 redirectTo(this.props.history, redirectPath);
@@ -244,7 +244,7 @@ class ShowSchedule extends Component {
                 const lastActiveElementRef = document.getElementById(
                     modalInfo.lastActiveElement.nodeId,
                 );
-                if (!!lastActiveElementRef) {
+                if (lastActiveElementRef) {
                     lastActiveElementRef.focus();
                 }
             }
@@ -382,8 +382,8 @@ class ShowSchedule extends Component {
                     locations.selected,
                     subjects.selected,
                 ),
-            expired: (time) => (e) => this.props.clearOpenSpotSelection(),
-            closed: (time) => (e) => this.props.clearOpenSpotSelection(),
+            expired: () => () => this.props.clearOpenSpotSelection(),
+            closed: () => () => this.props.clearOpenSpotSelection(),
         };
 
         const MaybeModal = modalInfo.displayModal

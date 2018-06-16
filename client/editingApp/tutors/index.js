@@ -40,11 +40,12 @@ class EditTutors extends Component {
                 tutors.all,
                 courses.all,
             ].map((list) =>
-                list.filter(
-                    (elem) =>
+                list.filter((elem) => {
+                    return (
                         elem.location &&
-                        elem.location.id == selectedLocation.id,
-                ),
+                        elem.location.id === selectedLocation.id
+                    );
+                }),
             );
 
             tutors = {

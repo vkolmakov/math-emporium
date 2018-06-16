@@ -123,7 +123,7 @@ export function scheduleAppointment({
     requestedTutor,
     additionalComments,
 }) {
-    return (dispatch) => {
+    return () => {
         const isRandomTutor = requestedTutor.id === RANDOM_TUTOR.id;
         const tutor = isRandomTutor ? null : requestedTutor;
         const comments = additionalComments || null;
@@ -142,7 +142,7 @@ export function scheduleAppointment({
 }
 
 export function getAvailableTutors({ time, course, location, subject }) {
-    return (dispatch) => {
+    return () => {
         const requestParams = {
             time: time.format(TIMESTAMP_FORMAT),
             courseId: course.id,

@@ -178,7 +178,7 @@ export default class ProfileModal extends Component {
         const { onRequestClose } = this.props;
 
         const saveProfileFormRef = (profileFormRef) => {
-            this.profileFormRef = !!profileFormRef
+            this.profileFormRef = profileFormRef
                 ? profileFormRef.getWrappedInstance()
                 : null;
         };

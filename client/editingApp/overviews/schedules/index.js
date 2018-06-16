@@ -65,7 +65,7 @@ class SchedulesOverview extends Component {
         }
 
         const filteredSchedules = schedules.all.filter(
-            (schedule) => schedule.location.id == locations.selected.id,
+            (schedule) => schedule.location.id === locations.selected.id,
         );
 
         const groupedSchedules = filteredSchedules.reduce(

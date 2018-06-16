@@ -70,7 +70,7 @@ Promise.all([
         ? store.dispatch(signInUser(authGroup, email))
         : Promise.resolve(),
     store.dispatch(getAndApplyPublicApplicationStartupSettings()),
-]).then(([authActionResult, _settings]) => {
+]).then(([authActionResult]) => {
     if (isPotentiallySignedIn && authActionResult.payload.status !== 200) {
         immediateRedirect = "/auth/signin";
     }

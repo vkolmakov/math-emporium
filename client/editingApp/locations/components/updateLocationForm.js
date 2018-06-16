@@ -60,8 +60,7 @@ class UpdateLocationForm extends Component {
             this.props
                 .updateLocation(this.props.selectedLocation.id, data)
                 .then(
-                    (result) =>
-                        redirectTo(this.props.history, ROUTES.LOCATIONS),
+                    () => redirectTo(this.props.history, ROUTES.LOCATIONS),
                     id,
                 );
         };

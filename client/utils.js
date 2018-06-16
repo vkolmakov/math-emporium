@@ -6,8 +6,7 @@ export const courseComparator = (course1, course2) => {
     const getCourseCodeNameAndNumber = (code) => {
         const courseCodeRegexp = /([a-z]+)([0-9]+)/;
         const mo = code.toLowerCase().match(courseCodeRegexp);
-        const [_, name, number] = mo ? mo : [null, code.toLowerCase(), null];
-
+        const [_, name, number] = mo ? mo : [null, code.toLowerCase(), null]; // eslint-disable-line no-unused-vars
         return {
             name,
             number: parseInt(number, 10),

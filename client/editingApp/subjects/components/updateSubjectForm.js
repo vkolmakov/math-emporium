@@ -48,7 +48,7 @@ class UpdateSubjectForm extends Component {
             this.props
                 .updateSubject(this.props.selectedSubject.id, data)
                 .then(
-                    (result) => redirectTo(this.props.history, ROUTES.SUBJECTS),
+                    () => redirectTo(this.props.history, ROUTES.SUBJECTS),
                     id,
                 );
         };

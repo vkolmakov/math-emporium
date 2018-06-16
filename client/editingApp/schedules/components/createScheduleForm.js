@@ -36,7 +36,7 @@ class CreateScheduleForm extends Component {
             this.props.dispatch(change(FORM_NAME, "tutors", []));
         } else if (
             (currentLocation && !prevLocation) ||
-            (prevLocation && currentLocation.id != prevLocation.id)
+            (prevLocation && currentLocation.id !== prevLocation.id)
         ) {
             this.props.dispatch(
                 change(FORM_NAME, "location", currentLocation.id),
@@ -51,7 +51,7 @@ class CreateScheduleForm extends Component {
             this.props.dispatch(change(FORM_NAME, "weekday", null));
         } else if (
             (currentWeekday && !prevWeekday) ||
-            (prevWeekday && currentWeekday != prevWeekday)
+            (prevWeekday && currentWeekday !== prevWeekday)
         ) {
             this.props.dispatch(change(FORM_NAME, "weekday", currentWeekday));
         }

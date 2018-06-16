@@ -100,7 +100,7 @@ class UpdateProfileForm extends Component {
                 this.props.submitCallback();
             }
             this.props.updateUserProfile(data).then(
-                (result) => {
+                () => {
                     this.setState({ success: true, error: null });
                 },
                 (err) => {

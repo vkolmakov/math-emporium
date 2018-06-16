@@ -18,9 +18,9 @@ class TutorDetail extends Component {
     render() {
         let { locations, courses, tutors } = this.props;
 
-        const { id } = this.props.match.params;
+        const id = parseInt(this.props.match.params.id, 10);
 
-        const selectedTutor = tutors.all.find((tutor) => tutor.id == id);
+        const selectedTutor = tutors.all.find((tutor) => tutor.id === id);
 
         if (!selectedTutor) {
             return (
@@ -36,11 +36,11 @@ class TutorDetail extends Component {
             selectedLocation = locations.selected;
         } else {
             selectedLocation = locations.all.find(
-                (location) => location.id == selectedTutor.location.id,
+                (location) => location.id === selectedTutor.location.id,
             );
         }
         const [filteredCourses] = [courses.all].map((list) =>
-            list.filter((elem) => elem.location.id == selectedLocation.id),
+            list.filter((elem) => elem.location.id === selectedLocation.id),
         );
 
         courses = {

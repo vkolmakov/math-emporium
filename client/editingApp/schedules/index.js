@@ -66,23 +66,23 @@ class EditSchedules extends Component {
                         // this is a schedule, filter by both weekday and location
                         return (
                             elem.location &&
-                            elem.location.id == locations.selected.id &&
-                            elem.weekday == schedules.selectedWeekday
+                            elem.location.id === locations.selected.id &&
+                            elem.weekday === schedules.selectedWeekday
                         );
                     } else {
                         // this is a tutor, filter by just location
                         return (
                             elem.location &&
-                            elem.location.id == locations.selected.id
+                            elem.location.id === locations.selected.id
                         );
                     }
                 };
             } else if (schedules.selectedWeekday) {
                 filteringFn = (elem) =>
-                    elem.weekday == schedules.selectedWeekday;
+                    elem.weekday === schedules.selectedWeekday;
             } else if (locations.selected) {
                 filteringFn = (elem) =>
-                    elem.location && elem.location.id == locations.selected.id;
+                    elem.location && elem.location.id === locations.selected.id;
             }
 
             const [filteredTutors, filteredSchedules] = [

@@ -63,10 +63,7 @@ class UpdateCourseForm extends Component {
             this.setState({ success: false });
             this.props
                 .updateCourse(this.props.selectedCourse.id, data)
-                .then(
-                    (result) => redirectTo(this.props.history, ROUTES.COURSES),
-                    id,
-                );
+                .then(() => redirectTo(this.props.history, ROUTES.COURSES), id);
         };
 
         const handleSubmit = this.props.handleSubmit(onSubmit.bind(this));
