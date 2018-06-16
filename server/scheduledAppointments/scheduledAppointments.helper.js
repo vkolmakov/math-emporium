@@ -103,10 +103,15 @@ export default (
         });
     },
 
-    getAllActiveAppointments(now) {
+    getAllActiveAppointmentsWithRelatedData(now) {
         return mainStorage.db.models.scheduledAppointment.findAll({
             where: { googleCalendarAppointmentDate: { $gt: now } },
             order: [["googleCalendarAppointmentDate", "ASC"]],
+            include: [
+                { model: mainStorage.db.models.user },
+                { model: mainStorage.db.models.location },
+                { model: mainStorage.db.models.course },
+            ],
         });
     },
 

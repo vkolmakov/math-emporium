@@ -164,18 +164,18 @@ export default class ScheduledAppointmentsController {
 
         const pluckRequiredFields = ({
             googleCalendarAppointmentDate,
-            userId,
-            courseId,
-            locationId,
+            user,
+            course,
+            location,
         }) => ({
-            googleCalendarAppointmentDate,
-            userId,
-            courseId,
-            locationId,
+            time: googleCalendarAppointmentDate.toISOString(),
+            user: user.email,
+            course: course.code,
+            location: location.name,
         });
 
         return this.helper
-            .getAllActiveAppointments(now)
+            .getAllActiveAppointmentsWithRelatedData(now)
             .then((appointments) => {
                 res.status(200).json(appointments.map(pluckRequiredFields));
             })
