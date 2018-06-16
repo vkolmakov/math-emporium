@@ -167,11 +167,13 @@ export default class ScheduledAppointmentsController {
             user,
             course,
             location,
+            id,
         }) => ({
             time: googleCalendarAppointmentDate.toISOString(),
             user: user.email,
             course: course.code,
             location: location.name,
+            id,
         });
 
         return this.helper
