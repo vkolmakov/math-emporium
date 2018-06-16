@@ -15,15 +15,14 @@ import { getUsers } from "./users/actions";
 import { getEvents } from "./events/actions";
 import { getSettings } from "./settings/actions";
 import { getErrorEvents } from "./errorEvents/actions";
+import { getActiveAppointments } from "./appointments/actions";
 
 import ManageUsers from "./users/index";
 import UserDetail from "./users/components/userDetail";
-
 import ManageEvents from "./events/index";
-
 import ManageErrorEvents from "./errorEvents/index";
-
 import ManageSettings from "./settings/index";
+import ManageAppointments from "./appointments/index";
 
 const BASE_PATH = ROUTE_BASE_PATHS.MANAGE;
 
@@ -47,6 +46,7 @@ class ManagingApp extends Component {
             this.props.getEvents(LATEST_EVENT_LIMIT_DEFAULT),
             this.props.getSettings(),
             this.props.getErrorEvents(),
+            this.props.getActiveAppointments(),
         ]).then(() => this.setState({ initialized: true }));
     }
 
@@ -59,6 +59,7 @@ class ManagingApp extends Component {
             ["events", "Events"],
             ["error-events", "Error Events"],
             ["settings", "Settings"],
+            ["appointments", "Appointments"],
         ];
 
         const sidebarConfig = {
@@ -106,6 +107,11 @@ class ManagingApp extends Component {
                             path={`/${BASE_PATH}/settings`}
                             component={ManageSettings}
                         />
+                        <Route
+                            exact
+                            path={`/${BASE_PATH}/appointments`}
+                            component={ManageAppointments}
+                        />
                     </Switch>
                 </div>
             </MainContentWrap>
@@ -120,5 +126,6 @@ export default connect(
         getEvents,
         getSettings,
         getErrorEvents,
+        getActiveAppointments,
     },
 )(ManagingApp);
