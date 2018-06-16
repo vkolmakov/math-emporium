@@ -40,7 +40,7 @@ class ManageAppointments extends Component {
         return (
             <div className="content">
                 <div className="content-nav">
-                    <h2>Appointments</h2>
+                    <h2>Active Appointments</h2>
                 </div>
 
                 <div className="list-wrap">

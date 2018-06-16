@@ -59,7 +59,7 @@ class ManagingApp extends Component {
             ["events", "Events"],
             ["error-events", "Error Events"],
             ["settings", "Settings"],
-            ["appointments", "Appointments"],
+            ["appointments", "Active Appointments"],
         ];
 
         const sidebarConfig = {
