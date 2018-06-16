@@ -66,7 +66,7 @@ const calendarEvents = {
     invalidate(calendarId) {
         return _cache
             .existingKeys(calendarEvents.type)
-            .filter((key) => (!!calendarId ? key.includes(calendarId) : true))
+            .filter((key) => (calendarId ? key.includes(calendarId) : true))
             .forEach(_cache.remove);
     },
 

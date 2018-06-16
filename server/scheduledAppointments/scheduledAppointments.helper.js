@@ -192,7 +192,7 @@ export default (
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerUser,
                         "appointment",
-                    )} the same time`, // eslint-disable-line max-len
+                    )} the same time`,
                 ),
             };
         };
@@ -212,7 +212,7 @@ export default (
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerLocation,
                         "appointment",
-                    )} at this location at the same time`, // eslint-disable-line max-len
+                    )} at this location at the same time`,
                 ),
             };
         };
@@ -232,7 +232,7 @@ export default (
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerSubject,
                         "appointment",
-                    )} for this subject at the same time`, // eslint-disable-line max-len
+                    )} for this subject at the same time`,
                 ),
             };
         };
@@ -252,7 +252,7 @@ export default (
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerCourse,
                         "appointment",
-                    )} for this course at the same time`, // eslint-disable-line max-len
+                    )} for this course at the same time`,
                 ),
             };
         };
@@ -319,7 +319,7 @@ export default (
                 tutorData.tutor.name
             } on ${formattedTime} in the ${
                 location.name
-            } has been scheduled. ${contactInfo}`; // eslint-disable-line max-len
+            } has been scheduled. ${contactInfo}`;
         const subjectConstructor = () =>
             `Appointment reminder: ${location.name} on ${formattedTime}`;
         return sendEmail(user, { subjectConstructor, emailBodyConstructor });
@@ -473,7 +473,7 @@ export default (
             .then((appointment) => {
                 let result;
 
-                if (!!appointment) {
+                if (appointment) {
                     result = mainStorage.db.models.location
                         .findOne({ where: { id: appointment.locationId } })
                         .then((location) => ({ appointment, location }));

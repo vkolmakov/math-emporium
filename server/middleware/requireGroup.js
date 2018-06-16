@@ -4,7 +4,7 @@ const unathorizedRequest = (req, res) => res.status(401).send(unathorized());
 
 export default function requireGroup(groupId) {
     const ensureUser = (req, res, next) => {
-        if (!!req.user) {
+        if (req.user) {
             return next();
         }
 
@@ -13,7 +13,7 @@ export default function requireGroup(groupId) {
 
     const ensureRequiredGroup = (req, res, next) => {
         const user = req.user;
-        if (!!user && user.dataValues.group >= groupId) {
+        if (user && user.dataValues.group >= groupId) {
             return next();
         }
 

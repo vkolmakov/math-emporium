@@ -60,7 +60,7 @@ export function canTutorCourse(tutors, course, tutor) {
     const selectedTutorNames = selectedTutors.map(R.prop("name"));
 
     const canFindNameInSelectedTutors = Either.either(
-        (_) => false,
+        () => false,
         (n) => R.contains(n, selectedTutorNames),
         predictTutorName(tutorNames, name),
     );

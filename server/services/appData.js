@@ -42,7 +42,7 @@ const collectData = () =>
 
             let data = locations.map(
                 (location) =>
-                    new Promise(async (resolve, reject) => {
+                    new Promise(async (resolve) => {
                         const coursesRes = await Course.findAll({
                             where: {
                                 locationId: location.id,
@@ -103,7 +103,7 @@ const collectData = () =>
     });
 
 export const getAppData = () =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
         return Either.either(
             () =>
                 collectData()

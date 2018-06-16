@@ -7,7 +7,6 @@ import {
 } from "../aux";
 import {
     notFound,
-    isRequired,
     actionFailed,
     errorMessage,
 } from "../services/errorMessages";
@@ -79,7 +78,7 @@ export const handlePost = async (req, res, next) => {
         }
 
         const createdSchedulesPromise = schedules.map((schedule) => {
-            return new Promise(async (resolve, reject) => {
+            return new Promise(async (resolve) => {
                 const createdSchedule = Schedule.build(schedule, {
                     fields: allowedToWrite,
                 });

@@ -20,7 +20,7 @@ function getAuth(resource) {
             [`https://www.googleapis.com/auth/${resource}`],
         );
 
-        authClient.authorize((err, result) => {
+        authClient.authorize((err) => {
             if (err) {
                 reject(err);
             } else {

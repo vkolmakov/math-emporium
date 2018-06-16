@@ -3,7 +3,7 @@ import { events } from "../aux";
 
 function getAdditionalData(eventType, requestBody) {
     switch (eventType) {
-        case events.USER_CREATED_APPOINTMENT:
+        case events.USER_CREATED_APPOINTMENT: {
             const { location, course, time } = requestBody;
             return {
                 time,
@@ -14,11 +14,14 @@ function getAdditionalData(eventType, requestBody) {
                     id: location.id,
                 },
             };
+        }
         case events.USER_SIGNED_IN:
-        case events.USER_REMOVED_APPOINTMENT:
+        case events.USER_REMOVED_APPOINTMENT: {
             return {};
-        default:
+        }
+        default: {
             return {};
+        }
     }
 }
 

@@ -36,7 +36,7 @@ const azureAdOAuth2Login = new AzureAdOAuth2Strategy(
                 where: { email },
                 defaults: { firstName, lastName },
             });
-            const [user, _] = userWithStatus;
+            const [user, _] = userWithStatus; // eslint-disable-line no-unused-vars
             return done(null, user);
         } catch (err) {
             return done(err);
@@ -80,7 +80,7 @@ export default {
 
     destroySession() {
         return (req, res, next) => {
-            if (!!req.session) {
+            if (req.session) {
                 req.session.destroy((err) => {
                     if (err) {
                         next(err);

@@ -58,7 +58,7 @@ module.exports = {
                     ),
                 ]);
             })
-            .then(([codeWithSubjectNameAndLocationId, _]) => {
+            .then(([codeWithSubjectNameAndLocationId]) => {
                 return Promise.all([
                     Promise.resolve(codeWithSubjectNameAndLocationId),
                     queryInterface.sequelize.query(
@@ -101,7 +101,7 @@ module.exports = {
             });
     },
 
-    down: (queryInterface, Sequelize) =>
+    down: (queryInterface) =>
         queryInterface
             .removeColumn("courses", "subjectId")
             .then(queryInterface.dropTable("subjects")),

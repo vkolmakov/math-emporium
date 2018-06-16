@@ -1,5 +1,6 @@
 import SparkPost from "sparkpost";
 import config from "../config";
+import logger from "./logger";
 import { getSettingsValue, SETTINGS_KEYS } from "./settings/settings.service";
 import { pickOneFrom } from "../aux";
 
@@ -76,14 +77,14 @@ function debugSendEmail(letterStructure) {
         null,
         2,
     );
-    console.log(`Sending an email:\n${emailMetadataRepresentation}`); // eslint-disable-line no-console
+    logger.log.debug(`Sending an email:\n${emailMetadataRepresentation}`);
     return Promise.resolve();
 }
 
 export default function sendEmail(user, letterConstructors) {
     return getSettingsValue(SETTINGS_KEYS.duplicateAllEmailsTo)
         .then((additionalRecipientAddress) => {
-            return !!additionalRecipientAddress
+            return additionalRecipientAddress
                 ? createLetter(user, letterConstructors, [
                       createRecipient(additionalRecipientAddress),
                   ])

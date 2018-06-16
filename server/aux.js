@@ -6,6 +6,8 @@ import tzdata from "tzdata";
 
 import { create, env } from "sanctuary";
 
+import logger from "./services/logger";
+
 const _S = create({ checkTypes: false, env });
 
 export const TIMESTAMP_FORMAT = "YYYY-MM-DD-HH-mm";
@@ -33,7 +35,7 @@ export const events = {
 export const isObject = (obj) => obj === Object(obj);
 
 export function hasOneOf(obj, ...keys) {
-    return !!obj
+    return obj
         ? [...keys].some((key) => Object.keys(obj).indexOf(key) > -1)
         : false;
 }
@@ -130,7 +132,7 @@ export const R = {
 };
 
 export const trace = (msg) => (x) => {
-    console.log(msg, x);
+    logger.log.debug(msg, x);
     return x;
 };
 

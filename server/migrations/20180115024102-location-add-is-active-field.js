@@ -9,7 +9,7 @@ module.exports = {
         });
     },
 
-    down: (queryInterface, Sequelize) => {
+    down: (queryInterface) => {
         return queryInterface.removeColumn(TABLE_NAME, NEW_COLUMN_NAME);
     },
 };

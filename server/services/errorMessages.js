@@ -22,7 +22,7 @@ export function isRequired(item) {
 export function actionFailed(action, item = "", explanation = "") {
     return {
         error: `Could not ${action} ${item}${
-            !!explanation ? ": " + explanation : ""
+            explanation ? ": " + explanation : ""
         }`,
         status: 422,
     };
@@ -56,7 +56,7 @@ export function getValidationErrorText(err) {
     };
 
     function hasToken(token, err) {
-        const message = !!err.message ? err.message.toLowerCase() : "";
+        const message = err.message ? err.message.toLowerCase() : "";
         return message.includes(token);
     }
 
@@ -78,7 +78,7 @@ export function getValidationErrorText(err) {
 
     if (err.name === SEQUELIZE_ERROR_NAME.DATABASE) {
         return convertSequelizeDatabaseErrorMessage(err);
-    } else if (!!err.message) {
+    } else if (err.message) {
         return convertGenericErrorMessage(err);
     }
 

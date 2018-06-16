@@ -8,7 +8,7 @@ import {
 const REQUESTED_ITEMS_SEPARATOR = ",";
 
 export function handleGetPublicSettings(req, res, next) {
-    const requestedKeys = !!req.query.items
+    const requestedKeys = req.query.items
         ? req.query.items.split(REQUESTED_ITEMS_SEPARATOR)
         : PUBLIC_SETTINGS_KEYS;
 

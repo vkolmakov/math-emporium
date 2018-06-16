@@ -13,7 +13,7 @@ module.exports = {
         );
     },
 
-    down: (queryInterface, Sequelize) => {
+    down: (queryInterface) => {
         return queryInterface.removeColumn(
             USERS_TABLE_NAME,
             SUBJECT_ID_COLUMN_NAME,

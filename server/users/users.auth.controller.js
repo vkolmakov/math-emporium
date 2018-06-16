@@ -6,7 +6,7 @@ function updateLastSignInStatus(user) {
 }
 
 export function signin(logEvent) {
-    return (req, res, next) => {
+    return (req, res) => {
         const user = req.user;
         const { group, email } = user.dataValues;
         const data = {

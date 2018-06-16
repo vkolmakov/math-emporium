@@ -55,7 +55,7 @@ function findOrCreateSettings(id) {
 
     return Settings.findOne({ id }).then(
         (result) =>
-            !!result ? Promise.resolve(result) : createDefaultSettings(),
+            result ? Promise.resolve(result) : createDefaultSettings(),
     );
 }
 

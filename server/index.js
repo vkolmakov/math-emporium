@@ -18,6 +18,7 @@ import { connectToEventStorage } from "./services/eventStorage";
 import settingsStorage from "./services/settings/settingsStorage";
 import errorEventStorage from "./services/errorEvent/errorEventStorage";
 import mainStorage from "./services/mainStorage";
+import logger from "./services/logger";
 
 import passportService from "./services/passport";
 import morgan from "morgan";
@@ -36,13 +37,13 @@ function connectToEventStorageDatabase() {
     try {
         await mainStorage.connect();
     } catch (err) {
-        console.error(`Could not connect to the main database: ${err}`);
+        logger.log.error(`Could not connect to the main database: ${err}`);
     }
 
     try {
         await connectToEventStorageDatabase();
     } catch (err) {
-        console.error(
+        logger.log.error(
             `Could not connect to the event storage database: ${err}`,
         );
     }
@@ -56,7 +57,7 @@ function connectToEventStorageDatabase() {
             },
         );
     } catch (err) {
-        console.error(
+        logger.log.error(
             `Could not connect to the settings storage database: ${err}`,
         );
     }
@@ -70,7 +71,7 @@ function connectToEventStorageDatabase() {
             },
         );
     } catch (err) {
-        console.error(
+        logger.log.error(
             `Could not connect to the error storage database: ${err}`,
         );
     }
@@ -98,7 +99,7 @@ function connectToEventStorageDatabase() {
         app.use(
             morgan("dev", {
                 // ignore devtools discover requests
-                skip: (req, res) => req.originalUrl.startsWith("/json"),
+                skip: (req) => req.originalUrl.startsWith("/json"),
             }),
         );
     }
@@ -162,5 +163,5 @@ function connectToEventStorageDatabase() {
         );
     }
 
-    app.listen(port, () => console.log(`Running on port ${port}`));
+    app.listen(port, () => logger.log.info(`Running on port ${port}`));
 })();

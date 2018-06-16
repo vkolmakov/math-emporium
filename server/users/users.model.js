@@ -1,5 +1,5 @@
 import phoneNumber from "../services/phoneNumber";
-import { TIMEZONE, authGroups, Either } from "../aux";
+import { authGroups, Either } from "../aux";
 
 export default function createUserModel(sequelize, DataTypes) {
     const user = sequelize.define(
@@ -27,7 +27,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 },
                 set(value) {
                     const parsedPhoneNumberOrNull = Either.either(
-                        (err) => {
+                        () => {
                             throw new Error("Invalid phone number");
                         },
                         (p) => p,

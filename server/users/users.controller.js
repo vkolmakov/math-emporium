@@ -1,23 +1,11 @@
 import db from "sequelize-connect";
-import moment from "moment";
 
-import {
-    createExtractDataValuesFunction,
-    isObject,
-    hasOneOf,
-    pickOneFrom,
-    TIMESTAMP_FORMAT,
-    TIMEZONE,
-    APPOINTMENT_LENGTH,
-} from "../aux";
+import { createExtractDataValuesFunction, isObject, hasOneOf } from "../aux";
 import {
     notFound,
     actionFailed,
     getValidationErrorText,
-    isCustomError,
 } from "../services/errorMessages";
-import { successMessage } from "../services/messages";
-import { availableTutors } from "../services/openSpots/openSpots.service";
 
 const User = db.models.user;
 const Location = db.models.location;
