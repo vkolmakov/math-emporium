@@ -38,8 +38,7 @@ module.exports = {
                 loader: "babel-loader",
                 exclude: /node_modules/,
                 options: {
-                    presets: ["react", "es2015"],
-                    plugins: ["syntax-dynamic-import"],
+                    babelrc: path.resolve(".babelrc"),
                 },
             },
             {
