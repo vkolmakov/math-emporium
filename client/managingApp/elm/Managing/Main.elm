@@ -2,23 +2,23 @@ module Managing.Main exposing (..)
 
 import Html exposing (..)
 import Navigation
-import Managing.Routes as Routes
+import Managing.Routing as Routing
 
 
 type Msg
-    = UrlChange Navigation.Location
+    = RouteChange Navigation.Location
     | ChangeLocation String
 
 
 type alias Model =
-    { route : Routes.Route }
+    { route : Routing.Route }
 
 
-init : Navigation.Location -> ( { route : Routes.Route }, Cmd msg )
+init : Navigation.Location -> ( { route : Routing.Route }, Cmd msg )
 init location =
     let
         initialModel =
-            { route = Routes.parseLocation location }
+            { route = Routing.parseLocation location }
     in
         ( initialModel, Cmd.none )
 
@@ -27,28 +27,28 @@ navigation : Html Msg
 navigation =
     let
         links =
-            [ Routes.link (ChangeLocation "/manage-portal") "/manage-portal"
-            , Routes.link (ChangeLocation "/manage-portal/users") "/manage-portal/users"
+            [ Routing.link (ChangeLocation "/manage-portal") "/manage-portal"
+            , Routing.link (ChangeLocation "/manage-portal/users") "/manage-portal/users"
             ]
                 |> List.map (\link -> div [] [ link ])
     in
         div [] links
 
 
-content : Routes.Route -> Html msg
+content : Routing.Route -> Html msg
 content route =
     case route of
-        Routes.HomeRoute ->
+        Routing.HomeRoute ->
             section [] [ text "home route" ]
 
-        Routes.UsersRoute ->
+        Routing.UsersRoute ->
             section [] [ text "users route" ]
 
-        Routes.UnknownRoute ->
+        Routing.UnknownRoute ->
             section [] [ text "unknown route" ]
 
 
-view : { a | route : Routes.Route } -> Html Msg
+view : { a | route : Routing.Route } -> Html Msg
 view model =
     main_ []
         [ navigation
@@ -58,24 +58,24 @@ view model =
 
 update :
     Msg
-    -> { a | route : Routes.Route }
-    -> ( { a | route : Routes.Route }, Cmd msg )
+    -> { a | route : Routing.Route }
+    -> ( { a | route : Routing.Route }, Cmd msg )
 update msg model =
     case msg of
         ChangeLocation path ->
             ( model, Navigation.newUrl path )
 
-        UrlChange location ->
+        RouteChange location ->
             let
                 nextRoute =
-                    Routes.parseLocation location
+                    Routing.parseLocation location
             in
                 ( { model | route = nextRoute }, Cmd.none )
 
 
-main : Program Never { route : Routes.Route } Msg
+main : Program Never { route : Routing.Route } Msg
 main =
-    Navigation.program UrlChange
+    Navigation.program RouteChange
         { init = init
         , view = view
         , update = update

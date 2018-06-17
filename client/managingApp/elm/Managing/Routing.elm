@@ -1,4 +1,4 @@
-module Managing.Routes exposing (..)
+module Managing.Routing exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (href)
