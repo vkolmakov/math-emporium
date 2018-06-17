@@ -113,7 +113,10 @@
     "xss": "^0.3.7"
   },
   "babel": {
-    "presets": ["node5", "react"]
+    "presets": [
+      "node5",
+      "react"
+    ]
   },
   "engines": {
     "node": "6.12.2"
