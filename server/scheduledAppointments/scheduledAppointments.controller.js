@@ -67,7 +67,6 @@ export default class ScheduledAppointmentsController {
         );
         const activeAppointmentsForUserPromise = this.helper.getActiveAppointmentsForUser(
             user,
-            appointmentData,
             now,
         );
 
