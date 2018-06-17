@@ -21,7 +21,7 @@ export default function createAuthRouter() {
     router.get(
         "/auth/oauth2/callback",
         requireSignin(),
-        controller.signin(createEventLogger(events.USER_SIGNED_IN)),
+        controller.signin(createEventLogger(events.USER_SIGNED_IN))
     );
 
     router.post("/auth/signout", destroySession());
@@ -29,7 +29,7 @@ export default function createAuthRouter() {
     router.post(
         "/auth/record-signin",
         requireGroup(authGroups.USER),
-        controller.recordSignin(),
+        controller.recordSignin()
     );
 
     return router;

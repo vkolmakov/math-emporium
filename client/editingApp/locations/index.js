@@ -119,5 +119,5 @@ export default connect(
     {
         getLocations,
         deleteLocation,
-    },
+    }
 )(EditLocations);

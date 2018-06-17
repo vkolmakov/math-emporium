@@ -24,7 +24,7 @@ export function hideAnnouncement(announcementContent) {
     function persistHiddenAnnouncementForSession() {
         storage.set(
             storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN,
-            announcementContent,
+            announcementContent
         );
     }
 
@@ -57,7 +57,7 @@ export function getAndApplyPublicApplicationStartupSettings() {
     function wasGivenAnnouncementRequestedToBeHidden(announcement) {
         return (
             storage.get(
-                storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN,
+                storage.KEYS.ANNOUNCEMENT_CONTENT_REQUESTED_TO_BE_HIDDEN
             ) === announcement
         );
     }
@@ -78,7 +78,7 @@ export function getAndApplyPublicApplicationStartupSettings() {
                 if (
                     !!announcementContent &&
                     !wasGivenAnnouncementRequestedToBeHidden(
-                        announcementContent,
+                        announcementContent
                     )
                 ) {
                     dispatch(displayAnnouncement());
@@ -86,7 +86,7 @@ export function getAndApplyPublicApplicationStartupSettings() {
 
                 return Promise.resolve();
             },
-            () => {},
+            () => {}
         ); // proceed with default settings on error
 }
 

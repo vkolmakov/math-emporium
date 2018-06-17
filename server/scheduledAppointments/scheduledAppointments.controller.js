@@ -20,7 +20,7 @@ export default class ScheduledAppointmentsController {
         const scheduleOrRejectAppointment = (
             activeAppointmentsForUser,
             completeAppointmentData,
-            now,
+            now
         ) => {
             const {
                 reason,
@@ -28,14 +28,14 @@ export default class ScheduledAppointmentsController {
             } = this.helper.canCreateAppointment(
                 completeAppointmentData,
                 activeAppointmentsForUser,
-                now,
+                now
             );
 
             let result;
             if (canCreateAppointment) {
                 result = this.helper.createAppointment(
                     completeAppointmentData,
-                    now,
+                    now
                 );
             } else {
                 result = Promise.reject(reason);
@@ -63,11 +63,11 @@ export default class ScheduledAppointmentsController {
         const completeAppointmentDataPromise = this.helper.gatherCompleteAppointmentData(
             user,
             appointmentData,
-            appointmentDateTime,
+            appointmentDateTime
         );
         const activeAppointmentsForUserPromise = this.helper.getActiveAppointmentsForUser(
             user,
-            now,
+            now
         );
 
         return Promise.all([
@@ -80,29 +80,29 @@ export default class ScheduledAppointmentsController {
                 return scheduleOrRejectAppointment(
                     activeAppointmentsForUser,
                     completeAppointmentData,
-                    now,
+                    now
                 ).then(() =>
                     Promise.all([
                         this.cacheService.calendarEvents.invalidate(
-                            location.calendarId,
+                            location.calendarId
                         ),
                         this.helper.sendAppointmentCreationConfirmation(
-                            completeAppointmentData,
+                            completeAppointmentData
                         ),
                         this.logger.log.createEvent(req),
                         user.setDefaultAppointmentPreferencesIfNoneSet(
                             location,
                             subject,
-                            course,
+                            course
                         ),
-                    ]),
+                    ])
                 );
             })
             .then(() => {
                 res.status(200).json(successMessage());
             })
             .catch((reason) =>
-                next(actionFailed("schedule", "appointment", reason)),
+                next(actionFailed("schedule", "appointment", reason))
             );
     }
 
@@ -117,7 +117,7 @@ export default class ScheduledAppointmentsController {
         const appointmentWithLocationPromise = this.helper.getSingleActiveAppointmentWithLocation(
             user,
             deletionRecord,
-            now,
+            now
         );
 
         return appointmentWithLocationPromise
@@ -127,22 +127,22 @@ export default class ScheduledAppointmentsController {
                     .then(() =>
                         Promise.all([
                             this.cacheService.calendarEvents.invalidate(
-                                location.calendarId,
+                                location.calendarId
                             ),
                             this.helper.sendAppointmentDeletionConfirmation(
                                 user,
                                 appointment,
-                                location,
+                                location
                             ),
                             this.logger.log.deleteEvent(req),
-                        ]),
+                        ])
                     );
             })
             .then(() => {
                 res.status(200).json(successMessage());
             })
             .catch((reason) =>
-                next(actionFailed("delete", "appointment", reason)),
+                next(actionFailed("delete", "appointment", reason))
             );
     }
 

@@ -28,7 +28,7 @@ export default function createSubjectModel(sequelize, DataTypes) {
                     subject.belongsTo(models.location);
                 },
             },
-        },
+        }
     );
     return subject;
 }

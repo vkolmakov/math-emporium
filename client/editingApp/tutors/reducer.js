@@ -29,7 +29,7 @@ export default (state = INITIAL_STATE, action) => {
                 return {
                     ...state,
                     all: state.all.filter(
-                        (tutor) => tutor.id !== deletedTutorId,
+                        (tutor) => tutor.id !== deletedTutorId
                     ),
                 };
             }

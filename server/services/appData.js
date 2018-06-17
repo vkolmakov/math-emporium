@@ -37,7 +37,7 @@ const collectData = () =>
         try {
             const locationsRes = await Location.findAll();
             const locations = locationsRes.map((locationRes) =>
-                extractLocation(locationRes),
+                extractLocation(locationRes)
             );
 
             let data = locations.map(
@@ -50,7 +50,7 @@ const collectData = () =>
                         });
 
                         const courses = coursesRes.map((courseRes) =>
-                            extractCourse(courseRes),
+                            extractCourse(courseRes)
                         );
 
                         const tutorsRes = await Tutor.findAll({
@@ -65,9 +65,9 @@ const collectData = () =>
                                     tutor,
                                     "courses",
                                     tutor.courses.map((course) =>
-                                        extractCourse(course),
-                                    ),
-                                ),
+                                        extractCourse(course)
+                                    )
+                                )
                             );
 
                         const schedulesRes = await Schedule.findAll({
@@ -82,9 +82,9 @@ const collectData = () =>
                                     schedule,
                                     "tutors",
                                     schedule.tutors.map((tutor) =>
-                                        extractTutor(tutor),
-                                    ),
-                                ),
+                                        extractTutor(tutor)
+                                    )
+                                )
                             );
                         resolve({
                             location,
@@ -92,7 +92,7 @@ const collectData = () =>
                             tutors,
                             schedules,
                         });
-                    }),
+                    })
             );
 
             data = await Promise.all(data);
@@ -110,6 +110,6 @@ export const getAppData = () =>
                     .then(cache.appData.put)
                     .then(resolve),
             resolve,
-            cache.appData.get(),
+            cache.appData.get()
         );
     });

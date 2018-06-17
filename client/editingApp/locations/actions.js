@@ -52,6 +52,6 @@ export function updateLocation(id, data) {
             (err) => {
                 dispatch({ type: UPDATE_LOCATION, payload: err });
                 return Promise.reject();
-            },
+            }
         );
 }

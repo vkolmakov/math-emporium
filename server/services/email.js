@@ -19,7 +19,7 @@ function composeLetterContent(body, user) {
         const handlers = [handleLinks, handleNewlines];
         return `<p>${handlers.reduce(
             (result, handler) => handler(result),
-            sentence,
+            sentence
         )}</p>`;
     }
 
@@ -48,7 +48,7 @@ function createLetter(user, letterConstructors, additionalRecipients = []) {
 
     const { text, html } = composeLetterContent(
         emailBodyConstructor(config.email.NAME, config.HOSTNAME),
-        user,
+        user
     );
     const subject = subjectConstructor(config.email.NAME, config.HOSTNAME);
 
@@ -75,7 +75,7 @@ function debugSendEmail(letterStructure) {
     const emailMetadataRepresentation = JSON.stringify(
         letterStructure,
         null,
-        2,
+        2
     );
     logger.log.debug(`Sending an email:\n${emailMetadataRepresentation}`);
     return Promise.resolve();

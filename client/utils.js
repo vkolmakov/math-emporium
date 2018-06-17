@@ -38,7 +38,7 @@ export const subjectComparator = (x, y) =>
 export const selectTransformOptions = (
     valueKey = "id",
     labelKey = "name",
-    colorKey = null,
+    colorKey = null
 ) => (options) =>
     options.map((option) =>
         Object.keys(option).reduce((result, key) => {
@@ -50,7 +50,7 @@ export const selectTransformOptions = (
                 result.color = option[key];
             }
             return result;
-        }, {}),
+        }, {})
     );
 
 export function inRangeInclusive(l, h, x) {
@@ -66,7 +66,7 @@ export function isPotentialPhoneNumber(rawNumber) {
     return inRangeInclusive(
         LOWER_BOUND_NUM_DIGITS,
         UPPER_BOUND_NUM_DIGITS,
-        numDigits,
+        numDigits
     );
 }
 
@@ -96,7 +96,7 @@ export function parseCookies(onlyKeys, cookies) {
         .map((s) => s.split("="))
         .reduce(
             (acc, [k, v]) => (onlyKeys.includes(k) ? setKey(acc, k, v) : acc),
-            {},
+            {}
         );
 }
 
@@ -105,7 +105,7 @@ export function cleanCookies(onlyKeys, cookies) {
     const createExpiredCookie = (key) => `${key}=;expires=${expiration}`;
 
     return Object.keys(parseCookies(onlyKeys, cookies)).map(
-        createExpiredCookie,
+        createExpiredCookie
     );
 }
 

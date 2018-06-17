@@ -12,8 +12,8 @@ const ErrorEvent = mongoose.model(
         {
             capped: { size: 131072, max: 100 },
             timestamps: true,
-        },
-    ),
+        }
+    )
 );
 
 function saveErrorEvent(errorEvent) {
@@ -37,7 +37,7 @@ export default {
                 {
                     user,
                     pass: password,
-                },
+                }
             );
         };
 

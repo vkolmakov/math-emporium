@@ -54,7 +54,7 @@ class MiniProfileForm extends Component {
         const { lastActiveElement } = this.props;
 
         const displayLoadingModalAndGetAvailableTutors = (
-            selectedOpenSpotInfo,
+            selectedOpenSpotInfo
         ) => () => {
             const { time, course, location, subject } = selectedOpenSpotInfo;
             this.props.displayLoadingModal();
@@ -99,17 +99,17 @@ class MiniProfileForm extends Component {
                 .updateUserProfile({ phoneNumber })
                 .then(
                     displayLoadingModalAndGetAvailableTutors(
-                        this.props.selectedOpenSpotInfo,
+                        this.props.selectedOpenSpotInfo
                     ),
-                    chainErrorHandler(setFormError),
+                    chainErrorHandler(setFormError)
                 )
                 .then(
                     (res) => res.data,
-                    chainErrorHandler(displayErrorMessageModal),
+                    chainErrorHandler(displayErrorMessageModal)
                 )
                 .then(
                     displayTutorSelectionModalOrError,
-                    chainErrorHandler(displayErrorMessageModal),
+                    chainErrorHandler(displayErrorMessageModal)
                 )
                 .catch((err) => err.handler(err.originalError));
         } else {
@@ -170,7 +170,7 @@ const ConnectedMiniProfileForm = connect(
         getAvailableTutors,
     },
     null,
-    { withRef: true },
+    { withRef: true }
 )(MiniProfileForm);
 
 export default class ProfileModal extends Component {

@@ -18,7 +18,7 @@ export default (state = INITIAL_STATE, action) => {
             const data = action.payload.data.map((course) => ({
                 ...course,
                 hexColor: GOOGLE_CALENDAR_COLORS.find(
-                    (color) => color.value === course.color,
+                    (color) => color.value === course.color
                 ).color,
             }));
             return {
@@ -41,7 +41,7 @@ export default (state = INITIAL_STATE, action) => {
                 return {
                     ...state,
                     all: state.all.filter(
-                        (course) => course.id !== deletedCourseId,
+                        (course) => course.id !== deletedCourseId
                     ),
                 };
             } else {

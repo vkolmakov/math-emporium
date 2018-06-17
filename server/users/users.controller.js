@@ -51,7 +51,7 @@ export const updateProfile = () => async (req, res, next) => {
 
                 if (!location.isActive) {
                     res.status(422).json(
-                        actionFailed("add", "location", "location is inactive"),
+                        actionFailed("add", "location", "location is inactive")
                     );
                 }
 

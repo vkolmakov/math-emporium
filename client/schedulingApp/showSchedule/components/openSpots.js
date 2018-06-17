@@ -27,7 +27,7 @@ function partitionOpenSpotsByWeekday(openSpots, startDate) {
         .sort()
         .map((weekday) => ({
             openSpots: openSpotsByWeekdayObj[weekday].sort(
-                (os1, os2) => os1.time - os2.time,
+                (os1, os2) => os1.time - os2.time
             ),
             // a hack here, we assume that startDate is monday
             weekdayDisplay: moment(startDate)
@@ -105,12 +105,12 @@ export default ({
     return Either.either(
         S.compose(
             OpenSpotsMessageWrapper,
-            renderErrorMessage,
+            renderErrorMessage
         ),
         S.compose(
             OpenSpotsWrapper,
-            renderOpenSpots,
+            renderOpenSpots
         ),
-        openSpots,
+        openSpots
     );
 };

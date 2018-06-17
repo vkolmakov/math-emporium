@@ -43,7 +43,7 @@ export default function createCourseModel(sequelize, DataTypes) {
                     course.belongsTo(models.subject);
                 },
             },
-        },
+        }
     );
     return course;
 }

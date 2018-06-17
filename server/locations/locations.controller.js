@@ -91,8 +91,8 @@ export const deleteLocation = (id) =>
                 actionFailed(
                     "remove",
                     "location",
-                    "there are some tutors/courses/schedules associated with this location",
-                ),
+                    "there are some tutors/courses/schedules associated with this location"
+                )
             );
         }
     });

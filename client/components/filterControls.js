@@ -3,8 +3,8 @@ import React from "react";
 const handleChange = (options, event) => (onChange) =>
     onChange(
         options.find(
-            (o) => o.value.toString() === event.target.value.toString(),
-        ),
+            (o) => o.value.toString() === event.target.value.toString()
+        )
     );
 
 export default ({

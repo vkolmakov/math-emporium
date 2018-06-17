@@ -36,7 +36,7 @@ export default function createScheduledAppointmentModel(sequelize, DataTypes) {
                     scheduledAppointment.belongsTo(models.location);
                 },
             },
-        },
+        }
     );
 
     return scheduledAppointment;

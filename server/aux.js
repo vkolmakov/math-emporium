@@ -157,7 +157,7 @@ export const dateTime = {
 
         return _dateFns.format(
             dateWithTimezoneOffset,
-            TIMESTAMP_VISIBLE_FORMAT,
+            TIMESTAMP_VISIBLE_FORMAT
         );
     },
 

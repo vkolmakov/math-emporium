@@ -6,14 +6,14 @@ module.exports = {
         return queryInterface.addColumn(
             USERS_TABLE_NAME,
             PHONE_NUMBER_COLUMN_NAME,
-            { type: Sequelize.STRING },
+            { type: Sequelize.STRING }
         );
     },
 
     down: (queryInterface) => {
         return queryInterface.removeColumn(
             USERS_TABLE_NAME,
-            PHONE_NUMBER_COLUMN_NAME,
+            PHONE_NUMBER_COLUMN_NAME
         );
     },
 };

@@ -10,17 +10,17 @@ export default function createManageUserRouter() {
     router.get(
         "/users",
         requireGroup(authGroups.EMPLOYER),
-        controller.handleGet,
+        controller.handleGet
     );
     router.get(
         "/users/:id",
         requireGroup(authGroups.EMPLOYER),
-        controller.handleGetId,
+        controller.handleGetId
     );
     router.put(
         "/users/:id",
         requireGroup(authGroups.EMPLOYER),
-        controller.handleUpdate,
+        controller.handleUpdate
     );
 
     return router;

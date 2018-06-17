@@ -127,5 +127,5 @@ export default connect(
         getSettings,
         getErrorEvents,
         getActiveAppointments,
-    },
+    }
 )(ManagingApp);

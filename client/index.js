@@ -79,6 +79,6 @@ Promise.all([
         <Provider store={store}>
             <Router immediatelyRedirectTo={immediateRedirect} />
         </Provider>,
-        document.querySelector(".root"),
+        document.querySelector(".root")
     );
 });

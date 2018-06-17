@@ -16,7 +16,7 @@ export function signin(logEvent) {
 
         // sending public data
         Object.keys(data).forEach((k) =>
-            res.cookie(k, data[k], { httpOnly: false }),
+            res.cookie(k, data[k], { httpOnly: false })
         );
 
         const redirectToRoot = () => res.redirect("/");
@@ -34,7 +34,7 @@ export function recordSignin() {
 
         return updateLastSignInStatus(user).then(
             () => res.status(200).json(successMessage()),
-            next,
+            next
         );
     };
 }

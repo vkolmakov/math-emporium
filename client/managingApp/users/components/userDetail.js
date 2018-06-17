@@ -10,7 +10,7 @@ class UserDetail extends Component {
         const { id } = this.props.match.params;
 
         const selectedUser = users.all.find(
-            (user) => user.id === parseInt(id, 10),
+            (user) => user.id === parseInt(id, 10)
         );
 
         if (!selectedUser) {

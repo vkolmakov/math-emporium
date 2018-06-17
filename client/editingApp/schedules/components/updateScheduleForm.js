@@ -26,7 +26,7 @@ class UpdateScheduleForm extends Component {
         const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const selectedLocation = locations.all.find(
-            (loc) => loc.id === location.id,
+            (loc) => loc.id === location.id
         );
 
         setCurrentLocation(selectedLocation);
@@ -44,8 +44,8 @@ class UpdateScheduleForm extends Component {
                         label: tutor.name,
                     })),
                 },
-                ["weekday", "time", "location", "tutors"],
-            ),
+                ["weekday", "time", "location", "tutors"]
+            )
         );
     }
 
@@ -54,16 +54,16 @@ class UpdateScheduleForm extends Component {
         const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
         const tutorOptions = selectTransformOptions("id", "name")(
-            this.props.tutors.all,
+            this.props.tutors.all
         );
         const weekdaysOptions = selectTransformOptions("value", "display")(
-            WEEKDAY_OPTIONS,
+            WEEKDAY_OPTIONS
         );
         const timeOptions = selectTransformOptions("value", "display")(
-            TIME_OPTIONS,
+            TIME_OPTIONS
         );
 
         const onSubmit = (data) => {
@@ -159,5 +159,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateSchedule, setCurrentLocation, getSchedules, setCurrentWeekday },
+    { updateSchedule, setCurrentLocation, getSchedules, setCurrentWeekday }
 )(UpdateScheduleForm);

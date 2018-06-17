@@ -67,9 +67,9 @@ function addTutorCourses(Tutor) {
         return Promise.all(
             entries(groupedByTutor).map(([tutorId, records]) =>
                 Tutor.findOne({ where: { id: tutorId } }).then((tutor) =>
-                    tutor.setCourses(records.map(getCourseId)),
-                ),
-            ),
+                    tutor.setCourses(records.map(getCourseId))
+                )
+            )
         );
     };
 }
@@ -81,7 +81,7 @@ function seed() {
 
     const makeFileName = (body) => `./server/scripts/data/${body}.json`;
     const fileNamesPrimitives = ["locations", "courses", "tutors"].map(
-        makeFileName,
+        makeFileName
     );
     const modelsPrimitives = [Location, Course, Tutor];
 
@@ -93,7 +93,7 @@ function seed() {
     const insertPrimitives = () =>
         mapPromisesInOrder(
             processPair,
-            zip(fileNamesPrimitives, modelsPrimitives),
+            zip(fileNamesPrimitives, modelsPrimitives)
         );
 
     const insertRelations = () => {

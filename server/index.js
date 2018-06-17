@@ -44,7 +44,7 @@ function connectToEventStorageDatabase() {
         await connectToEventStorageDatabase();
     } catch (err) {
         logger.log.error(
-            `Could not connect to the event storage database: ${err}`,
+            `Could not connect to the event storage database: ${err}`
         );
     }
 
@@ -54,11 +54,11 @@ function connectToEventStorageDatabase() {
             {
                 user: config.eventStorage.USER,
                 password: config.eventStorage.PASSWORD,
-            },
+            }
         );
     } catch (err) {
         logger.log.error(
-            `Could not connect to the settings storage database: ${err}`,
+            `Could not connect to the settings storage database: ${err}`
         );
     }
 
@@ -68,11 +68,11 @@ function connectToEventStorageDatabase() {
             {
                 user: config.eventStorage.USER,
                 password: config.eventStorage.PASSWORD,
-            },
+            }
         );
     } catch (err) {
         logger.log.error(
-            `Could not connect to the error storage database: ${err}`,
+            `Could not connect to the error storage database: ${err}`
         );
     }
 
@@ -81,7 +81,7 @@ function connectToEventStorageDatabase() {
 
     const isProduction = config.IS_PRODUCTION;
     const isDevClient = !!process.argv.find(
-        (a) => a === CLI_OPTIONS.DEV_CLIENT,
+        (a) => a === CLI_OPTIONS.DEV_CLIENT
     );
 
     if (isDevClient) {
@@ -100,7 +100,7 @@ function connectToEventStorageDatabase() {
             morgan("dev", {
                 // ignore devtools discover requests
                 skip: (req) => req.originalUrl.startsWith("/json"),
-            }),
+            })
         );
     }
 
@@ -113,7 +113,7 @@ function connectToEventStorageDatabase() {
     ];
 
     crudRoutes.forEach((routeParams) =>
-        app.use("/api", createCrudRouter(...routeParams)),
+        app.use("/api", createCrudRouter(...routeParams))
     );
 
     app.use("/api", createUserRouter());
@@ -148,8 +148,8 @@ function connectToEventStorageDatabase() {
         app.get("*", (req, res) => {
             res.write(
                 middleware.fileSystem.readFileSync(
-                    path.join(__dirname, "../dist/index.html"),
-                ),
+                    path.join(__dirname, "../dist/index.html")
+                )
             );
             res.end();
         });
@@ -159,7 +159,7 @@ function connectToEventStorageDatabase() {
 
         app.use(express.static(path.join(__dirname, "../dist")));
         app.get("*", (req, res) =>
-            res.sendFile(path.join(__dirname, "../dist/index.html")),
+            res.sendFile(path.join(__dirname, "../dist/index.html"))
         );
     }
 

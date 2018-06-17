@@ -182,7 +182,7 @@ export function didUserPreselectAnOpenSpotBeforeSignIn() {
 
 export function retrievePreselectedOpenSpot() {
     const { course, location, time, subject } = JSON.parse(
-        storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT),
+        storage.get(storage.KEYS.PRESELECTED_OPEN_SPOT)
     );
 
     return {

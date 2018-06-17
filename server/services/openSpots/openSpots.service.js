@@ -32,7 +32,7 @@ export function predictTutorName(options, rawName) {
     const [searchStart, searchEnd] = [1, 6];
     const afterSearchingFromStart = R.range(searchStart, searchEnd).reduce(
         searchFromStart,
-        options,
+        options
     );
 
     if (afterSearchingFromStart.length === 1) {
@@ -52,7 +52,7 @@ export function canTutorCourse(tutors, course, tutor) {
     const hasCourse = R.compose(
         R.contains(courseId),
         R.map(R.prop("id")),
-        R.prop("courses"),
+        R.prop("courses")
     );
 
     const selectedTutors = tutors.filter(hasCourse);
@@ -62,7 +62,7 @@ export function canTutorCourse(tutors, course, tutor) {
     const canFindNameInSelectedTutors = Either.either(
         () => false,
         (n) => R.contains(n, selectedTutorNames),
-        predictTutorName(tutorNames, name),
+        predictTutorName(tutorNames, name)
     );
 
     return tutorId
@@ -93,11 +93,11 @@ export function convertScheduleMapToList(scheduleMap) {
         });
         return R.append(
             R.map(transformMapEntry, [...weekdayMap.entries()]),
-            acc,
+            acc
         );
     };
     return R.flatten(
-        R.reduce(foldWeekdayToList, [], [...scheduleMap.entries()]),
+        R.reduce(foldWeekdayToList, [], [...scheduleMap.entries()])
     );
 }
 
@@ -109,16 +109,16 @@ function findExistingTutorByName(tutors, nameToFind) {
     return R.map(
         R.compose(
             getNameAndId,
-            findTutorByName,
+            findTutorByName
         ),
-        predictTutorName(knownTutorNames, nameToFind),
+        predictTutorName(knownTutorNames, nameToFind)
     );
 }
 
 function specialInstructionsToSchedules(tutors, specialInstructions) {
     const replaceWithExistingTutor = R.compose(
         R.curry(findExistingTutorByName)(tutors),
-        R.prop("name"),
+        R.prop("name")
     );
 
     const convert = ({ overwriteTutors, weekday, time }) => ({
@@ -135,21 +135,21 @@ export function getOpenSpots(
     tutors,
     appointments,
     specialInstructions,
-    parameters,
+    parameters
 ) {
     const { course } = parameters;
 
     const canTutorSelectedCourse = R.curry(canTutorCourse)(tutors, course);
     const countSelectedTutors = R.compose(
         R.length,
-        R.filter(canTutorSelectedCourse),
+        R.filter(canTutorSelectedCourse)
     );
     const knownTutorNames = R.map(R.prop("name"), tutors);
     const isKnownTutorName = (name) =>
         Either.either(
             () => false,
             () => true,
-            predictTutorName(knownTutorNames, name),
+            predictTutorName(knownTutorNames, name)
         );
 
     const applySpecialInstructions = (specialInstructions) => (scheduleMap) => {
@@ -165,7 +165,7 @@ export function getOpenSpots(
         return R.reduce(
             processInstruction,
             new Map(scheduleMap),
-            specialInstructions,
+            specialInstructions
         );
     };
 
@@ -198,11 +198,11 @@ export function getOpenSpots(
 
     const updateScheduleMap = R.pipe(
         applySpecialInstructions(specialInstructions),
-        removeScheduledTutors(appointments),
+        removeScheduledTutors(appointments)
     );
 
     const scheduleMap = updateScheduleMap(
-        buildScheduleMap(countSelectedTutors, schedules),
+        buildScheduleMap(countSelectedTutors, schedules)
     );
 
     const renameCounts = ({ weekday, time, tutors }) => ({
@@ -213,7 +213,7 @@ export function getOpenSpots(
 
     const createOpenSpots = R.compose(
         R.map(renameCounts),
-        convertScheduleMapToList,
+        convertScheduleMapToList
     );
 
     return createOpenSpots(scheduleMap);
@@ -245,7 +245,7 @@ export async function openSpots(location, course, startDate, endDate) {
         calendarId,
         startDate.toISOString(),
         endDate.toISOString(),
-        { useCache: true },
+        { useCache: true }
     );
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
@@ -253,7 +253,7 @@ export async function openSpots(location, course, startDate, endDate) {
     const { tutors } = locationData;
     const schedules = specialInstructionsToSchedules(
         tutors,
-        specialInstructions,
+        specialInstructions
     );
 
     const parameters = {
@@ -268,7 +268,7 @@ export function getAvailableTutors(
     tutors,
     appointments,
     specialInstructions,
-    parameters,
+    parameters
 ) {
     const { time, weekday, course } = parameters;
 
@@ -282,14 +282,14 @@ export function getAvailableTutors(
     const applySpecialInstructions = (specialInstructions) => (scheduleMap) => {
         const replaceWithExistingTutor = R.compose(
             R.curry(findExistingTutorByName)(tutors), // TODO: fix
-            R.prop("name"),
+            R.prop("name")
         );
 
         const processInstruction = (acc, instruction) => {
             const { overwriteTutors, weekday, time } = instruction;
             const overwrittenTutors = R.map(
                 replaceWithExistingTutor,
-                overwriteTutors,
+                overwriteTutors
             );
 
             acc.get(weekday).set(time, Either.rights(overwrittenTutors));
@@ -300,7 +300,7 @@ export function getAvailableTutors(
         return R.reduce(
             processInstruction,
             new Map(scheduleMap),
-            specialInstructions,
+            specialInstructions
         );
     };
 
@@ -309,23 +309,23 @@ export function getAvailableTutors(
         const predictTutorFromAppointment = (appointment) =>
             R.map(
                 (n) => ({ name: n }),
-                predictTutorName(allTutorNames, appointment.tutor),
+                predictTutorName(allTutorNames, appointment.tutor)
             );
 
         const takenTutors = Either.rights(
-            R.map(predictTutorFromAppointment, appointments),
+            R.map(predictTutorFromAppointment, appointments)
         );
         const scheduledTutors = scheduleMap.get(weekday).get(time);
         const availableTutors = R.differenceWith(
             compareTutorsByName,
             scheduledTutors,
-            takenTutors,
+            takenTutors
         );
         const availableSelectedTutors = R.innerJoin(
             (availableTutor, selectedTutorName) =>
                 availableTutor.name === selectedTutorName,
             availableTutors,
-            selectedTutorNames,
+            selectedTutorNames
         );
 
         const nextScheduleMap = new Map(scheduleMap);
@@ -336,7 +336,7 @@ export function getAvailableTutors(
 
     const updateScheduleMap = R.pipe(
         applySpecialInstructions(specialInstructions),
-        removeScheduledTutors(appointments),
+        removeScheduledTutors(appointments)
     );
 
     let availableTutors;
@@ -377,7 +377,7 @@ export async function availableTutors(location, course, startDate, endDate) {
         calendarId,
         startDate.toISOString(),
         endDate.toISOString(),
-        { useCache: false },
+        { useCache: false }
     );
 
     const specialInstructions = getSpecialInstructions(calendarEvents);
@@ -396,7 +396,7 @@ export async function availableTutors(location, course, startDate, endDate) {
     const { tutors } = locationData;
     const schedules = specialInstructionsToSchedules(
         tutors,
-        specialInstructions,
+        specialInstructions
     );
 
     return getAvailableTutors(schedules, tutors, appointments, [], parameters);

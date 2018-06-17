@@ -22,7 +22,7 @@ class Sidebar extends Component {
         const { BASE_PATH, links, location } = this.props;
         const currentRouterPath = location.pathname;
         const currentlySelectedEntry = this.getSidebarEntryId(
-            currentRouterPath,
+            currentRouterPath
         );
         const isCurrentlySelectedEntry = (entry) =>
             currentlySelectedEntry === entry;

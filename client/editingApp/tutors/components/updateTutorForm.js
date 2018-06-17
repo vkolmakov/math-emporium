@@ -28,18 +28,18 @@ class UpdateTutorForm extends Component {
                     location: location.id,
                     courses: selectTransformOptions("id", "code")(courses),
                 },
-                ["name", "location", "courses"],
-            ),
+                ["name", "location", "courses"]
+            )
         );
     }
 
     render() {
         const { name, location, courses } = this.props.fields;
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
         const coursesOptions = selectTransformOptions("id", "code")(
-            this.props.courses.all,
+            this.props.courses.all
         );
 
         const { setCurrentLocation } = this.props;
@@ -124,5 +124,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateTutor, setCurrentLocation, getTutors },
+    { updateTutor, setCurrentLocation, getTutors }
 )(withRouterContext(UpdateTutorForm));

@@ -22,7 +22,7 @@ export default function createTutorModel(sequelize, DataTypes) {
                     tutor.belongsTo(models.location);
                 },
             },
-        },
+        }
     );
 
     return tutor;

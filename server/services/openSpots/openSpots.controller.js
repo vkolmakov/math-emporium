@@ -45,7 +45,7 @@ export const handleGetAvailableTutors = async (req, res, next) => {
             location,
             course,
             startDate,
-            endDate,
+            endDate
         );
         res.status(200).json(tutors);
     } catch (err) {

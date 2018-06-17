@@ -46,7 +46,7 @@ class TutorSelectionModal extends Component {
         return `Your appointment for ${course.code} at ${
             location.name
         } on ${time.format(
-            TIMESTAMP_DISPLAY_FORMAT,
+            TIMESTAMP_DISPLAY_FORMAT
         )} was successfully scheduled!`;
     }
 
@@ -59,7 +59,7 @@ class TutorSelectionModal extends Component {
 
         const getAppointmentInfoDisplay = (openSpotInfo) => {
             const displayTime = openSpotInfo.time.format(
-                TIMESTAMP_DISPLAY_FORMAT,
+                TIMESTAMP_DISPLAY_FORMAT
             );
             const appointmentInfoDisplay = `${
                 openSpotInfo.course.code
@@ -73,7 +73,7 @@ class TutorSelectionModal extends Component {
                 return {
                     ...state,
                     requestedTutor: state.tutors.find(
-                        (t) => t.id === tutorOption.value,
+                        (t) => t.id === tutorOption.value
                     ),
                 };
             });
@@ -147,9 +147,9 @@ class TutorSelectionModal extends Component {
                                         time,
                                     }),
                                     redirectToAfterClosing: "/schedule/profile",
-                                }),
+                                })
                         ),
-                    (err) => handleScheduleAppointmentError(err),
+                    (err) => handleScheduleAppointmentError(err)
                 );
             this.props.displayLoadingModal();
         };
@@ -225,5 +225,5 @@ export default connect(
         displayMessageModal,
         signoutUser,
         getUserProfile,
-    },
+    }
 )(TutorSelectionModal);

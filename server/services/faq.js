@@ -20,7 +20,7 @@ export default {
     compileToHtml(markdown) {
         const compile = R.compose(
             sanitizeHtml,
-            mdToHtml,
+            mdToHtml
         );
 
         return compile(markdown);

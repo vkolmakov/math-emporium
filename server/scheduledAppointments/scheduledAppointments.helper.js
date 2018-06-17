@@ -20,7 +20,7 @@ export default (
     calendarService,
     sendEmail,
     openSpotsService,
-    getSettingsValue,
+    getSettingsValue
 ) => ({
     gatherCompleteAppointmentData(user, appointmentData, appointmentDateTime) {
         const locationPromise = mainStorage.db.models.location.findOne({
@@ -39,7 +39,7 @@ export default (
                 appointmentData.location,
                 appointmentData.course,
                 appointmentDateTime,
-                dateTime.addMinutes(appointmentDateTime, APPOINTMENT_LENGTH),
+                dateTime.addMinutes(appointmentDateTime, APPOINTMENT_LENGTH)
             )
             .then((availableTutors) => {
                 const wasExplicitlyRequested = !!appointmentData.tutor;
@@ -67,7 +67,7 @@ export default (
             });
 
         const settingsPromise = getSettingsValue(
-            SETTINGS_KEYS.maximumAppointmentsPerUser,
+            SETTINGS_KEYS.maximumAppointmentsPerUser
         ).then((maximumAppointmentsPerUser) => ({
             [SETTINGS_KEYS.maximumAppointmentsPerUser]: maximumAppointmentsPerUser,
         }));
@@ -118,7 +118,7 @@ export default (
     canCreateAppointment(
         completeAppointmentData,
         activeAppointmentsForUser,
-        now,
+        now
     ) {
         const withRecoverySuggestion = (suggestion, message) => {
             const suggestionMessage = {
@@ -140,7 +140,7 @@ export default (
             };
 
             const missingProps = Object.keys(
-                requiredAppointmentDataTypes,
+                requiredAppointmentDataTypes
             ).reduce((acc, requiredProp) => {
                 const isPresentAndCorrectType =
                     !!appointmentData[requiredProp] &&
@@ -153,7 +153,7 @@ export default (
             return {
                 isValid: missingProps.length === 0,
                 error: `following properties were missing: ${missingProps.join(
-                    ", ",
+                    ", "
                 )}`,
             };
         };
@@ -196,8 +196,8 @@ export default (
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerUser,
-                        "appointment",
-                    )} the same time`,
+                        "appointment"
+                    )} the same time`
                 ),
             };
         };
@@ -205,7 +205,7 @@ export default (
         const doesNotExceedLocationMaximum = ({ location }) => {
             const { maximumAppointmentsPerLocation } = location;
             const activeAppointmentsForUserAtLocation = activeAppointmentsForUser.filter(
-                (appointment) => appointment.locationId === location.id,
+                (appointment) => appointment.locationId === location.id
             );
 
             return {
@@ -216,8 +216,8 @@ export default (
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerLocation,
-                        "appointment",
-                    )} at this location at the same time`,
+                        "appointment"
+                    )} at this location at the same time`
                 ),
             };
         };
@@ -225,7 +225,7 @@ export default (
         const doesNotExceedSubjectMaximum = ({ location, subject }) => {
             const { maximumAppointmentsPerSubject } = location;
             const activeAppointmentsForUserWithSubject = activeAppointmentsForUser.filter(
-                (appointment) => appointment.subjectId === subject.id,
+                (appointment) => appointment.subjectId === subject.id
             );
 
             return {
@@ -236,8 +236,8 @@ export default (
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerSubject,
-                        "appointment",
-                    )} for this subject at the same time`,
+                        "appointment"
+                    )} for this subject at the same time`
                 ),
             };
         };
@@ -245,7 +245,7 @@ export default (
         const doesNotExceedCourseMaximum = ({ location, course }) => {
             const { maximumAppointmentsPerCourse } = location;
             const activeAppointmentsForUserWithCourse = activeAppointmentsForUser.filter(
-                (appointment) => appointment.courseId === course.id,
+                (appointment) => appointment.courseId === course.id
             );
 
             return {
@@ -256,8 +256,8 @@ export default (
                     RECOVERY_SUGGESTION.RESCHEDULE,
                     `cannot have more than ${quantityItemDescription(
                         maximumAppointmentsPerCourse,
-                        "appointment",
-                    )} for this course at the same time`,
+                        "appointment"
+                    )} for this course at the same time`
                 ),
             };
         };
@@ -266,7 +266,7 @@ export default (
             const result = validators.reduce(
                 (result, validator) => {
                     const { isValid, error } = validator(
-                        completeAppointmentData,
+                        completeAppointmentData
                     );
 
                     return {
@@ -276,7 +276,7 @@ export default (
                             : result.accumulatedErrors,
                     };
                 },
-                { isValid: true, accumulatedErrors: [] },
+                { isValid: true, accumulatedErrors: [] }
             );
 
             return {
@@ -407,7 +407,7 @@ export default (
                     googleCalendarAppointmentId,
                     googleCalendarAppointmentDate,
                     googleCalendarId,
-                },
+                }
             );
             return appointment.save();
         };
@@ -438,14 +438,14 @@ export default (
                 subject,
                 course,
                 tutorData,
-            }),
+            })
         );
     },
 
     sendAppointmentDeletionConfirmation(user, appointment, location) {
         const appointmentTimeString = appointment.googleCalendarAppointmentDate;
         const formattedTime = dateTime.formatVisible(
-            dateTime.parse(appointmentTimeString),
+            dateTime.parse(appointmentTimeString)
         );
 
         const contactInfo =
@@ -484,7 +484,7 @@ export default (
                         .then((location) => ({ appointment, location }));
                 } else {
                     result = Promise.reject(
-                        "Requested appointment was not found",
+                        "Requested appointment was not found"
                     );
                 }
 
@@ -512,8 +512,8 @@ export default (
                 // been manually removed from the calendar
                 (error) =>
                     Promise.resolve(
-                        wasAppointmentAlreadyDeletedOnCalendar(error),
-                    ),
+                        wasAppointmentAlreadyDeletedOnCalendar(error)
+                    )
             )
             .then((shouldProceed) => {
                 return shouldProceed ? Promise.resolve() : Promise.reject();

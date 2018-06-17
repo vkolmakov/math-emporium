@@ -20,7 +20,7 @@ module.exports = {
                 });
 
             return Promise.all(
-                removedColumns(Sequelize).map(removeWithTransaction),
+                removedColumns(Sequelize).map(removeWithTransaction)
             );
         }),
 
@@ -31,11 +31,11 @@ module.exports = {
                     TABLE_NAME,
                     column.name,
                     column.options,
-                    { transaction: t },
+                    { transaction: t }
                 );
 
             return Promise.all(
-                removedColumns(Sequelize).map(addWithTransaction),
+                removedColumns(Sequelize).map(addWithTransaction)
             );
         }),
 };

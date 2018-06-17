@@ -61,7 +61,7 @@ export function updateSubject(id, data) {
             (err) => {
                 dispatch({ type: UPDATE_SUBJECT, payload: err });
                 return Promise.reject();
-            },
+            }
         );
     };
 }

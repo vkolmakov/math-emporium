@@ -46,7 +46,7 @@ class EditSchedules extends Component {
         } = this.props;
 
         const weekdayOptions = selectTransformOptions("value", "display")(
-            WEEKDAY_OPTIONS,
+            WEEKDAY_OPTIONS
         );
         const locationsOptions = selectTransformOptions()(locations.all);
 
@@ -207,5 +207,5 @@ export default connect(
         getSchedules,
         deleteSchedule,
         setCurrentWeekday,
-    },
+    }
 )(EditSchedules);

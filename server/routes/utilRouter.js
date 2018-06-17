@@ -28,41 +28,41 @@ export default function createUtilRouter() {
     router.get(
         "/appointments",
         requireGroup(authGroups.EMPLOYER),
-        handleGetAppointments,
+        handleGetAppointments
     );
     router.get(
         "/chrome-extension-data",
         requireGroup(authGroups.EMPLOYER),
-        handleGetChromeExtensionData,
+        handleGetChromeExtensionData
     );
 
     router.get(
         "/events",
         requireGroup(authGroups.EMPLOYER),
-        handleGetAllEvents,
+        handleGetAllEvents
     );
     router.get(
         "/events/latest",
         requireGroup(authGroups.EMPLOYER),
-        handleGetLatestEvents,
+        handleGetLatestEvents
     );
 
     router.get(
         "/error-events",
         requireGroup(authGroups.ADMIN),
-        handleGetAllErrorEvents,
+        handleGetAllErrorEvents
     );
 
     router.get("/public/settings", handleGetPublicSettings);
     router.get(
         "/settings",
         requireGroup(authGroups.EMPLOYER),
-        handleGetSettings,
+        handleGetSettings
     );
     router.put(
         "/settings",
         requireGroup(authGroups.ADMIN),
-        handleUpdateSettings,
+        handleUpdateSettings
     );
 
     return router;

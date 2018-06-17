@@ -29,8 +29,8 @@ class UpdateSubjectForm extends Component {
                     name,
                     location: location.id,
                 },
-                ["name", "location"],
-            ),
+                ["name", "location"]
+            )
         );
     }
 
@@ -40,7 +40,7 @@ class UpdateSubjectForm extends Component {
         const { setCurrentLocation } = this.props;
 
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
 
         const onSubmit = (data) => {
@@ -49,7 +49,7 @@ class UpdateSubjectForm extends Component {
                 .updateSubject(this.props.selectedSubject.id, data)
                 .then(
                     () => redirectTo(this.props.history, ROUTES.SUBJECTS),
-                    id,
+                    id
                 );
         };
 
@@ -119,6 +119,6 @@ export default S.compose(
             validate,
         },
         null,
-        { updateSubject, getSubjects, setCurrentLocation },
-    ),
+        { updateSubject, getSubjects, setCurrentLocation }
+    )
 )(UpdateSubjectForm);

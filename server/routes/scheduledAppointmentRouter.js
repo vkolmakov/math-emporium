@@ -24,35 +24,35 @@ export default function createScheduledAppointmentRouter() {
         calendarServiceFactory(),
         sendEmail,
         openSpotsService,
-        getSettingsValue,
+        getSettingsValue
     );
     const controller = new ScheduledAppointmentsController(
         cache,
         dateTime,
         createEventLogger,
-        helper,
+        helper
     );
 
     router.get(
         `/${ROUTE_PATH_NAME}`,
         requireGroup(authGroups.USER),
-        controller.getForUser.bind(controller),
+        controller.getForUser.bind(controller)
     );
     router.post(
         `/${ROUTE_PATH_NAME}`,
         requireGroup(authGroups.USER),
-        controller.create.bind(controller),
+        controller.create.bind(controller)
     );
     router.delete(
         `/${ROUTE_PATH_NAME}/:id`,
         requireGroup(authGroups.USER),
-        controller.delete.bind(controller),
+        controller.delete.bind(controller)
     );
 
     router.get(
         `/admin/${ROUTE_PATH_NAME}`,
         requireGroup(authGroups.ADMIN),
-        controller.getAllActiveAppointments.bind(controller),
+        controller.getAllActiveAppointments.bind(controller)
     );
 
     return router;

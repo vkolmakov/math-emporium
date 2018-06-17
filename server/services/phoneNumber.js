@@ -13,7 +13,7 @@ function parse(rawPhoneNumber) {
 
     const number = phoneUtil.parseAndKeepRawInput(
         rawPhoneNumber,
-        DEFAULT_REGION,
+        DEFAULT_REGION
     );
     return phoneUtil.isValidNumber(number)
         ? Either.Right(phoneUtil.format(number, DEFAULT_FORMAT))

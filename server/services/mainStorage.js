@@ -22,7 +22,7 @@ export default {
                 dialectOptions: {
                     ssl: config.IS_PRODUCTION,
                 },
-            },
+            }
         );
     },
 };

@@ -19,7 +19,7 @@ class SubjectDetail extends Component {
         const id = parseInt(this.props.match.params.id, 10);
 
         const selectedSubject = subjects.all.find(
-            (subject) => subject.id === id,
+            (subject) => subject.id === id
         );
 
         if (!selectedSubject) {
@@ -56,5 +56,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getSubjects },
+    { getLocations, getSubjects }
 )(SubjectDetail);

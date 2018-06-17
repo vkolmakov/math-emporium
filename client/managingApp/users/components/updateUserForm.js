@@ -34,8 +34,8 @@ class UpdateUserForm extends Component {
                 {
                     group,
                 },
-                FORM_FIELDS,
-            ),
+                FORM_FIELDS
+            )
         );
     }
 
@@ -43,7 +43,7 @@ class UpdateUserForm extends Component {
         const { group } = this.props.fields;
 
         const groupOptions = selectTransformOptions("value", "display")(
-            getAuthGroupOptions(AUTH_GROUPS),
+            getAuthGroupOptions(AUTH_GROUPS)
         );
 
         const onSubmit = (data) => {
@@ -113,5 +113,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateUser, getUsers },
+    { updateUser, getUsers }
 )(UpdateUserForm);

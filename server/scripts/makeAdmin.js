@@ -14,7 +14,7 @@ function makeAdmin(userEmail) {
         .then((user) => {
             if (!user) {
                 throw new Error(
-                    `User ${userEmail} does not exist. Make sure to create this user first.`,
+                    `User ${userEmail} does not exist. Make sure to create this user first.`
                 );
             }
 
