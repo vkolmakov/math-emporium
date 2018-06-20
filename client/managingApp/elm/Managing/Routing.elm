@@ -6,12 +6,7 @@ import Html.Events exposing (onWithOptions)
 import Navigation
 import Json.Decode as Decode
 import UrlParser exposing (..)
-
-
-type Route
-    = HomeRoute
-    | UsersRoute
-    | UnknownRoute
+import Managing.Data.Routing exposing (..)
 
 
 matchers : Parser (Route -> c) c
@@ -32,10 +27,22 @@ parseLocation location =
             UnknownRoute
 
 
-link : msg -> String -> Html.Html msg
-link msg path =
+encodeRoute : Route -> String
+encodeRoute route =
+    case route of
+        HomeRoute ->
+            "/manage-portal"
+
+        UsersRoute ->
+            "/manage-portal/users"
+
+        UnknownRoute ->
+            "/manage-portal"
+
+
+link route msg attrs =
     let
         onClick =
             onWithOptions "click" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
     in
-        a [ onClick, href path ] [ text path ]
+        a ([ onClick, href (encodeRoute route) ] ++ attrs)
