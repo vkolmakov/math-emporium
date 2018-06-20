@@ -4,6 +4,7 @@ import Html exposing (..)
 import Navigation
 import Managing.Routing as Routing
 import Managing.Data.Routing exposing (..)
+import Managing.Page.Users as Users
 
 
 main : Program Never Model Msg
@@ -20,15 +21,24 @@ main =
 -- MODEL
 
 
+type PageState
+    = UsersState Users.Model
+    | Blank
+
+
 type alias Model =
-    { route : Route }
+    { route : Route
+    , pageState : PageState
+    }
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
     let
         initialModel =
-            { route = Routing.parseLocation location }
+            { route = Routing.parseLocation location
+            , pageState = Blank
+            }
     in
         ( initialModel, Cmd.none )
 
@@ -50,7 +60,11 @@ update msg model =
                 nextRoute =
                     Routing.parseLocation location
             in
-                ( { model | route = nextRoute }, Cmd.none )
+                ( { route = nextRoute
+                  , pageState = getPageState nextRoute
+                  }
+                , getPageCmd nextRoute
+                )
 
         ChangeRoute route ->
             let
@@ -58,6 +72,24 @@ update msg model =
                     Routing.encodeRoute route
             in
                 ( model, Navigation.newUrl nextPath )
+
+
+getPageState route =
+    case route of
+        UsersRoute ->
+            UsersState Users.init
+
+        _ ->
+            Blank
+
+
+getPageCmd route =
+    case route of
+        UsersRoute ->
+            Cmd.none
+
+        _ ->
+            Cmd.none
 
 
 
@@ -68,7 +100,7 @@ view : Model -> Html Msg
 view model =
     main_ []
         [ navigation
-        , content model.route
+        , content model
         ]
 
 
@@ -84,14 +116,18 @@ navigation =
         div [] links
 
 
-content : Route -> Html msg
-content route =
-    case route of
-        HomeRoute ->
+error =
+    div []
+
+
+content : Model -> Html msg
+content model =
+    case ( model.route, model.pageState ) of
+        ( HomeRoute, _ ) ->
             section [] [ text "home route" ]
 
-        UsersRoute ->
-            section [] [ text "users route" ]
+        ( UsersRoute, UsersState s ) ->
+            Users.view s
 
-        UnknownRoute ->
+        _ ->
             section [] [ text "unknown route" ]
