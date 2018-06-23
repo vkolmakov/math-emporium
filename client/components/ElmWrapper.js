@@ -21,6 +21,7 @@ export default class ElmWrapper extends Component {
     };
 
     render() {
-        return <div ref={this.storeRootRef} />;
+        const { rootElementProps } = this.props;
+        return <div {...rootElementProps} ref={this.storeRootRef} />;
     }
 }
