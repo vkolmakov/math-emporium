@@ -3,6 +3,7 @@ module Managing.Main exposing (..)
 import Html as H exposing (Html, Attribute)
 import Html.Events as E
 import Html.Attributes as A
+import Http
 import Managing.Styles as Styles
 import Navigation
 import UrlParser exposing (s, (</>))
@@ -38,16 +39,18 @@ type AccessGroup
 
 type alias User =
     { email : String
-    , phoneNumber : Maybe String
-    , group : AccessGroup
     }
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    ( Model (locationToRoute location) Nothing
-    , Cmd.none
-    )
+    let
+        route =
+            (locationToRoute location)
+    in
+        ( Model route Nothing
+        , getInitCmd route
+        )
 
 
 
@@ -57,6 +60,7 @@ init location =
 type Msg
     = BrowserLocationChange Navigation.Location
     | ChangeRoute Route
+    | ReceiveUsers (Result Http.Error (List User))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -66,11 +70,29 @@ update msg model =
             let
                 newRoute =
                     locationToRoute newLocation
+
+                newCmd =
+                    getInitCmd newRoute
             in
-                ( { model | route = newRoute }, Cmd.none )
+                ( { model | route = newRoute }, newCmd )
 
         ChangeRoute newRoute ->
             ( model, Navigation.newUrl <| routeToPath newRoute )
+
+        ReceiveUsers (Ok users) ->
+            ( { model | users = Just users }, Cmd.none )
+
+        ReceiveUsers (Err _) ->
+            ( { model | users = Nothing }, Cmd.none )
+
+
+getInitCmd route =
+    case route of
+        UsersRoute ->
+            getUsers
+
+        _ ->
+            Cmd.none
 
 
 
@@ -113,8 +135,14 @@ viewPageContent model =
         H.div [] [ pageView ]
 
 
+viewUsersPage : Model -> Html msg
 viewUsersPage model =
-    H.text "At users route"
+    case model.users of
+        Nothing ->
+            H.div [] [ H.text "At users route. Loading..." ]
+
+        Just users ->
+            H.div [] (users |> List.map (\u -> H.text <| u.email ++ " "))
 
 
 linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
@@ -177,3 +205,15 @@ locationToRoute location =
 
 
 -- HTTP
+
+
+getUsers : Cmd Msg
+getUsers =
+    let
+        decodeUser =
+            Decode.map User (Decode.at [ "email" ] Decode.string)
+
+        url =
+            "/api/public/locations"
+    in
+        Http.send ReceiveUsers (Http.get url (decodeUser |> Decode.list))
