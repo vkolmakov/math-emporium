@@ -25,12 +25,27 @@ main =
 
 type alias Model =
     { route : Route
+    , users : Maybe (List User)
+    }
+
+
+type AccessGroup
+    = UserGroup
+    | EmployeeGroup
+    | EmployerGroup
+    | AdminGroup
+
+
+type alias User =
+    { email : String
+    , phoneNumber : Maybe String
+    , group : AccessGroup
     }
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    ( Model (locationToRoute location)
+    ( Model (locationToRoute location) Nothing
     , Cmd.none
     )
 
@@ -90,12 +105,16 @@ viewPageContent model =
                     H.text "At home route"
 
                 UsersRoute ->
-                    H.text "At users route"
+                    viewUsersPage model
 
                 UnknownRoute ->
                     H.text "At unknown route"
     in
         H.div [] [ pageView ]
+
+
+viewUsersPage model =
+    H.text "At users route"
 
 
 linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
