@@ -26,8 +26,19 @@ main =
 
 type alias Model =
     { route : Route
-    , users : Maybe (List User)
+    , users : RemoteData (List User)
     }
+
+
+type RemoteDataError
+    = UnathorizedRequest
+    | OtherError String
+
+
+type RemoteData a
+    = Loading
+    | Error RemoteDataError
+    | Available a
 
 
 type AccessGroup
@@ -48,7 +59,7 @@ init location =
         route =
             (locationToRoute location)
     in
-        ( Model route Nothing
+        ( Model route Loading
         , getInitCmd route
         )
 
@@ -80,10 +91,10 @@ update msg model =
             ( model, Navigation.newUrl <| routeToPath newRoute )
 
         ReceiveUsers (Ok users) ->
-            ( { model | users = Just users }, Cmd.none )
+            ( { model | users = Available users }, Cmd.none )
 
-        ReceiveUsers (Err _) ->
-            ( { model | users = Nothing }, Cmd.none )
+        ReceiveUsers (Err e) ->
+            ( { model | users = Error (OtherError <| toString e) }, Cmd.none )
 
 
 getInitCmd route =
@@ -101,7 +112,7 @@ getInitCmd route =
 
 view : Model -> Html Msg
 view model =
-    H.div [ Styles.mainContainerStyle ]
+    H.div [ Styles.mainContainer ]
         [ viewNavigation model
         , viewPageContent model
         ]
@@ -116,6 +127,13 @@ viewNavigation model =
             ]
     in
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
+
+
+loadingSpinner : Html msg
+loadingSpinner =
+    H.div [ Styles.loadingSpinnerContainer ]
+        [ H.div [ Styles.loadingSpinner ] []
+        ]
 
 
 viewPageContent : Model -> Html msg
@@ -138,11 +156,14 @@ viewPageContent model =
 viewUsersPage : Model -> Html msg
 viewUsersPage model =
     case model.users of
-        Nothing ->
-            H.div [] [ H.text "At users route. Loading..." ]
+        Loading ->
+            loadingSpinner
 
-        Just users ->
+        Available users ->
             H.div [] (users |> List.map (\u -> H.text <| u.email ++ " "))
+
+        Error _ ->
+            H.div [] [ H.text "An error ocurred." ]
 
 
 linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
@@ -214,6 +235,6 @@ getUsers =
             Decode.map User (Decode.at [ "email" ] Decode.string)
 
         url =
-            "/api/public/locations"
+            "/api/users"
     in
         Http.send ReceiveUsers (Http.get url (decodeUser |> Decode.list))
