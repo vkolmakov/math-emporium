@@ -8,6 +8,7 @@ import Managing.Styles as Styles
 import Navigation
 import UrlParser exposing (s, (</>))
 import Json.Decode as Decode
+import Date exposing (Date)
 
 
 main : Program Never Model Msg
@@ -51,6 +52,8 @@ type AccessGroup
 type alias User =
     { email : String
     , group : AccessGroup
+    , phone : Maybe String
+    , lastSigninDate : Date
     }
 
 
@@ -98,6 +101,7 @@ update msg model =
             ( { model | users = Error (OtherError <| toString e) }, Cmd.none )
 
 
+getInitCmd : Route -> Cmd Msg
 getInitCmd route =
     case route of
         UsersRoute ->
@@ -154,11 +158,41 @@ viewPageContent model =
         H.div [] [ pageView ]
 
 
+dateToDisplayString : Date -> String
+dateToDisplayString date =
+    let
+        symbol s =
+            \_ -> s
+
+        toks =
+            [ toString << Date.dayOfWeek
+            , symbol ", "
+            , toString << Date.month
+            , symbol " "
+            , toString << Date.day
+            , symbol ", "
+            , toString << Date.hour
+            , symbol ":"
+            , String.padLeft 2 '0' << toString << Date.minute
+            ]
+    in
+        List.map (\tok -> tok date) toks
+            |> String.join ""
+
+
 viewUsersPage : Model -> Html msg
 viewUsersPage model =
     let
         viewUserRow user =
-            H.div [] [ H.text <| user.email ++ " " ++ toString user.group ]
+            H.div []
+                [ H.text <|
+                    String.join " "
+                        [ user.email
+                        , toString user.group
+                        , Maybe.withDefault "" user.phone
+                        , dateToDisplayString user.lastSigninDate
+                        ]
+                ]
     in
         case model.users of
             Loading ->
@@ -233,6 +267,16 @@ locationToRoute location =
 -- HTTP
 
 
+decodeDate : String -> Decode.Decoder Date
+decodeDate date =
+    case Date.fromString date of
+        Ok d ->
+            Decode.succeed d
+
+        Err e ->
+            Decode.fail e
+
+
 getUsers : Cmd Msg
 getUsers =
     let
@@ -254,9 +298,11 @@ getUsers =
                     Decode.fail "Unknown access group ID"
 
         decodeUser =
-            Decode.map2 User
+            Decode.map4 User
                 (Decode.at [ "email" ] Decode.string)
                 (Decode.at [ "group" ] Decode.int |> Decode.andThen decodeGroup)
+                (Decode.at [ "phoneNumber" ] <| Decode.nullable Decode.string)
+                (Decode.at [ "lastSigninAt" ] Decode.string |> Decode.andThen decodeDate)
 
         url =
             "/api/users"
