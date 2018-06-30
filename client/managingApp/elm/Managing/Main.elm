@@ -50,6 +50,7 @@ type AccessGroup
 
 type alias User =
     { email : String
+    , group : AccessGroup
     }
 
 
@@ -155,15 +156,19 @@ viewPageContent model =
 
 viewUsersPage : Model -> Html msg
 viewUsersPage model =
-    case model.users of
-        Loading ->
-            loadingSpinner
+    let
+        viewUserRow user =
+            H.div [] [ H.text <| user.email ++ " " ++ toString user.group ]
+    in
+        case model.users of
+            Loading ->
+                loadingSpinner
 
-        Available users ->
-            H.div [] (users |> List.map (\u -> H.text <| u.email ++ " "))
+            Available users ->
+                H.div [] (users |> List.map viewUserRow)
 
-        Error _ ->
-            H.div [] [ H.text "An error ocurred." ]
+            Error e ->
+                H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
 
 
 linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
@@ -231,8 +236,27 @@ locationToRoute location =
 getUsers : Cmd Msg
 getUsers =
     let
+        decodeGroup groupId =
+            case groupId of
+                1 ->
+                    Decode.succeed UserGroup
+
+                2 ->
+                    Decode.succeed EmployeeGroup
+
+                3 ->
+                    Decode.succeed EmployerGroup
+
+                4 ->
+                    Decode.succeed AdminGroup
+
+                _ ->
+                    Decode.fail "Unknown access group ID"
+
         decodeUser =
-            Decode.map User (Decode.at [ "email" ] Decode.string)
+            Decode.map2 User
+                (Decode.at [ "email" ] Decode.string)
+                (Decode.at [ "group" ] Decode.int |> Decode.andThen decodeGroup)
 
         url =
             "/api/users"
