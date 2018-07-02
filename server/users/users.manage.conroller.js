@@ -26,6 +26,7 @@ export const handleGet = async (req, res, next) => {
     try {
         const usersRes = await User.findAll({
             include: relatedModels,
+            order: [["lastSigninAt", "DESC"]],
         });
         const users = usersRes.map((userRes) => extractDataValues(userRes));
 
