@@ -1,33 +1,53 @@
-module Managing.Styles exposing (mainContainer, loadingSpinner, loadingSpinnerContainer)
+module Managing.Styles
+    exposing
+        ( mainContainer
+        , loadingSpinner
+        , loadingSpinnerContainer
+        , dataTableRow
+        , dataTableCellText
+        )
 
-import Html exposing (Attribute)
-import Html.Attributes as A
+import Html.Styled exposing (Attribute)
+import Css exposing (em, auto, px, pct, hex)
+import Html.Styled.Attributes as A exposing (css)
 
 
 mainContainer : Attribute msg
 mainContainer =
-    A.style
-        [ ( "max-width", "50em" )
-        , ( "margin", "0 auto" )
-        , ( "padding", "1em" )
+    css
+        [ Css.maxWidth (em 50)
+        , Css.margin2 (em 0) auto
+        , Css.padding (em 1)
         ]
 
 
 loadingSpinner : Attribute msg
 loadingSpinner =
-    A.style
-        [ ( "border-radius", "50%" )
-        , ( "width", "24px" )
-        , ( "height", "24px" )
-        , ( "border", "0.25rem solid #d9edf9" )
-        , ( "border-top-color", "#add3e9" )
-        , ( "animation", "spin 0.5s infinite" )
+    css
+        [ Css.borderRadius (pct 50)
+        , Css.width (px 24)
+        , Css.height (px 24)
+        , Css.border3 (Css.rem 0.25) Css.solid (hex "#d9edf9")
+        , Css.borderTopColor (hex "#add3e9")
+        , Css.property "animation" "spin 0.5s infinite"
         ]
 
 
 loadingSpinnerContainer : Attribute msg
 loadingSpinnerContainer =
-    A.style
-        [ ( "display", "flex" )
-        , ( "justify-content", "center" )
+    css
+        [ Css.displayFlex
+        , Css.justifyContent Css.center
         ]
+
+
+dataTableRow : Attribute msg
+dataTableRow =
+    css
+        [ Css.marginBottom (em 1) ]
+
+
+dataTableCellText : Attribute msg
+dataTableCellText =
+    css
+        []

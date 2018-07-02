@@ -1,8 +1,8 @@
 module Managing.Main exposing (..)
 
-import Html as H exposing (Html, Attribute)
-import Html.Events as E
-import Html.Attributes as A
+import Html.Styled as H exposing (Attribute, Html)
+import Html.Styled.Events as E
+import Html.Styled.Attributes as A
 import Http
 import Managing.Styles as Styles
 import Navigation
@@ -15,7 +15,7 @@ main : Program Never Model Msg
 main =
     Navigation.program BrowserLocationChange
         { init = init
-        , view = view
+        , view = view >> H.toUnstyled
         , update = update
         , subscriptions = subscriptions
         }
@@ -115,7 +115,6 @@ getInitCmd route =
 -- VIEW
 
 
-view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
         [ viewNavigation model
@@ -127,8 +126,8 @@ viewNavigation : Model -> Html Msg
 viewNavigation model =
     let
         links =
-            [ linkTo HomeRoute (ChangeRoute HomeRoute) [] [ H.text "To home" ]
-            , linkTo UsersRoute (ChangeRoute UsersRoute) [] [ H.text "To users" ]
+            [ linkTo HomeRoute (ChangeRoute HomeRoute) [] [ H.text "Home" ]
+            , linkTo UsersRoute (ChangeRoute UsersRoute) [] [ H.text "Users" ]
             ]
     in
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
@@ -180,19 +179,45 @@ dateToDisplayString date =
             |> String.join ""
 
 
+dataTableRow content =
+    H.div [ Styles.dataTableRow ] content
+
+
+dataTableCellText label text =
+    H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
+
+
+zip xs ys =
+    case ( xs, ys ) of
+        ( x :: xs_, y :: ys_ ) ->
+            ( x, y ) :: zip xs_ ys_
+
+        _ ->
+            []
+
+
 viewUsersPage : Model -> Html msg
 viewUsersPage model =
     let
+        getData user =
+            [ user.email
+            , toString user.group
+            , Maybe.withDefault "" user.phone
+            , dateToDisplayString user.lastSigninDate
+            ]
+
+        headers =
+            [ "Email"
+            , "Group"
+            , "Phone"
+            , "Last sign-in date"
+            ]
+
         viewUserRow user =
-            H.div []
-                [ H.text <|
-                    String.join " "
-                        [ user.email
-                        , toString user.group
-                        , Maybe.withDefault "" user.phone
-                        , dateToDisplayString user.lastSigninDate
-                        ]
-                ]
+            dataTableRow
+                (zip headers (getData user)
+                    |> List.map (\( label, entry ) -> dataTableCellText label entry)
+                )
     in
         case model.users of
             Loading ->
