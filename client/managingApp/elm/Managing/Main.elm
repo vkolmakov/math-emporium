@@ -108,6 +108,9 @@ getInitCmd route =
         UsersRoute ->
             getUsers
 
+        UserDetailRoute id ->
+            getUserDetail id
+
         _ ->
             Cmd.none
 
@@ -152,6 +155,9 @@ viewPageContent model =
                 UsersRoute ->
                     viewUsersPage model
 
+                UserDetailRoute id ->
+                    viewUserDetailPage { id = id }
+
                 UnknownRoute ->
                     H.text "At unknown route"
     in
@@ -188,10 +194,14 @@ dataTableCellText label text =
     H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
 
 
-dataTableCellEdit id =
+dataTableCellEdit route msg =
     H.div [ Styles.dataTableCellText ]
-        [ linkTo HomeRoute (ChangeRoute HomeRoute) [] [ H.text "Edit" ]
+        [ linkTo route msg [] [ H.text "Edit" ]
         ]
+
+
+
+-- USERS
 
 
 viewUsersPage : Model -> Html Msg
@@ -216,7 +226,7 @@ viewUsersPage model =
                 |> List.map (\( label, entry ) -> dataTableCellText label entry)
 
         actionRows user =
-            [ dataTableCellEdit user.id ]
+            [ dataTableCellEdit (UserDetailRoute user.id) (ChangeRoute <| UserDetailRoute user.id) ]
 
         viewUserRow user =
             dataTableRow (actionRows user ++ dataRows user)
@@ -232,13 +242,12 @@ viewUsersPage model =
                 H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
 
 
-linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
-linkTo to msg attrs =
-    let
-        changeLocationOnClick =
-            E.onWithOptions "click" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
-    in
-        H.a ([ changeLocationOnClick, A.href <| routeToPath to ] ++ attrs)
+
+-- USER DETAIL
+
+
+viewUserDetailPage user =
+    H.div [] [ H.text <| "On user page: " ++ toString user.id ]
 
 
 
@@ -257,6 +266,7 @@ subscriptions model =
 type Route
     = HomeRoute
     | UsersRoute
+    | UserDetailRoute Int
     | UnknownRoute
 
 
@@ -269,6 +279,9 @@ routeToPath r =
         UsersRoute ->
             "/manage-portal/users"
 
+        UserDetailRoute id ->
+            "/manage-portal/users/" ++ toString id
+
         UnknownRoute ->
             "/manage-portal"
 
@@ -280,6 +293,7 @@ locationToRoute location =
             UrlParser.oneOf
                 [ UrlParser.map HomeRoute (s "manage-portal")
                 , UrlParser.map UsersRoute (s "manage-portal" </> s "users")
+                , UrlParser.map UserDetailRoute (s "manage-portal" </> s "users" </> UrlParser.int)
                 ]
     in
         case (UrlParser.parsePath matchers location) of
@@ -288,6 +302,15 @@ locationToRoute location =
 
             Nothing ->
                 UnknownRoute
+
+
+linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
+linkTo to msg attrs =
+    let
+        changeLocationOnClick =
+            E.onWithOptions "click" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
+    in
+        H.a ([ changeLocationOnClick, A.href <| routeToPath to ] ++ attrs)
 
 
 
@@ -336,3 +359,7 @@ getUsers =
             "/api/users"
     in
         Http.send ReceiveUsers (Http.get url (decodeUser |> Decode.list))
+
+
+getUserDetail id =
+    Cmd.none
