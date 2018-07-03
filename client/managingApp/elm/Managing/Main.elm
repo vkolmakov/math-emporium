@@ -50,7 +50,8 @@ type AccessGroup
 
 
 type alias User =
-    { email : String
+    { id : Int
+    , email : String
     , group : AccessGroup
     , phone : Maybe String
     , lastSigninDate : Date
@@ -140,7 +141,7 @@ loadingSpinner =
         ]
 
 
-viewPageContent : Model -> Html msg
+viewPageContent : Model -> Html Msg
 viewPageContent model =
     let
         pageView =
@@ -187,16 +188,13 @@ dataTableCellText label text =
     H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
 
 
-zip xs ys =
-    case ( xs, ys ) of
-        ( x :: xs_, y :: ys_ ) ->
-            ( x, y ) :: zip xs_ ys_
-
-        _ ->
-            []
+dataTableCellEdit id =
+    H.div [ Styles.dataTableCellText ]
+        [ linkTo HomeRoute (ChangeRoute HomeRoute) [] [ H.text "Edit" ]
+        ]
 
 
-viewUsersPage : Model -> Html msg
+viewUsersPage : Model -> Html Msg
 viewUsersPage model =
     let
         getData user =
@@ -213,11 +211,15 @@ viewUsersPage model =
             , "Last sign-in date"
             ]
 
+        dataRows user =
+            List.map2 (,) headers (getData user)
+                |> List.map (\( label, entry ) -> dataTableCellText label entry)
+
+        actionRows user =
+            [ dataTableCellEdit user.id ]
+
         viewUserRow user =
-            dataTableRow
-                (zip headers (getData user)
-                    |> List.map (\( label, entry ) -> dataTableCellText label entry)
-                )
+            dataTableRow (actionRows user ++ dataRows user)
     in
         case model.users of
             Loading ->
@@ -323,7 +325,8 @@ getUsers =
                     Decode.fail "Unknown access group ID"
 
         decodeUser =
-            Decode.map4 User
+            Decode.map5 User
+                (Decode.at [ "id" ] Decode.int)
                 (Decode.at [ "email" ] Decode.string)
                 (Decode.at [ "group" ] Decode.int |> Decode.andThen decodeGroup)
                 (Decode.at [ "phoneNumber" ] <| Decode.nullable Decode.string)
