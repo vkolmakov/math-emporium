@@ -5,10 +5,12 @@ module Managing.Styles
         , loadingSpinnerContainer
         , dataTableRow
         , dataTableCellText
+        , dataTableCellEditLink
         )
 
 import Html.Styled exposing (Attribute)
 import Css exposing (em, auto, px, pct, hex)
+import Css.Media as Media
 import Html.Styled.Attributes as A exposing (css)
 
 
@@ -50,4 +52,25 @@ dataTableRow =
 dataTableCellText : Attribute msg
 dataTableCellText =
     css
-        []
+        [ desktopStyles
+            [-- TODO: add cancelation of the content rule
+            ]
+        , Css.before
+            [ Css.property "content" "attr(data-label)\": \"" ]
+        ]
+
+
+dataTableCellEditLink : Attribute msg
+dataTableCellEditLink =
+    css []
+
+
+
+-- HELPERS
+
+
+desktopStyles : List Css.Style -> Css.Style
+desktopStyles =
+    Media.withMedia
+        [ Media.only Media.screen [ Media.minWidth (px 768) ]
+        ]

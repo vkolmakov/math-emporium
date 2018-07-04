@@ -195,7 +195,7 @@ dataTableCellText label text =
 
 
 dataTableCellEdit route msg =
-    H.div [ Styles.dataTableCellText ]
+    H.div [ Styles.dataTableCellEditLink ]
         [ linkTo route msg [] [ H.text "Edit" ]
         ]
 
