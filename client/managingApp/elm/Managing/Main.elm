@@ -119,6 +119,7 @@ getInitCmd route =
 -- VIEW
 
 
+view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
         [ viewNavigation model
@@ -153,7 +154,7 @@ viewPageContent model =
                     H.text "At home route"
 
                 UsersRoute ->
-                    viewUsersPage model
+                    viewUsersPage model.users
 
                 UserDetailRoute id ->
                     viewUserDetailPage { id = id }
@@ -186,14 +187,17 @@ dateToDisplayString date =
             |> String.join ""
 
 
+dataTableRow : List (Html msg) -> Html msg
 dataTableRow content =
     H.div [ Styles.dataTableRow ] content
 
 
+dataTableCellText : String -> String -> Html msg
 dataTableCellText label text =
     H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
 
 
+dataTableCellEdit : Route -> msg -> Html msg
 dataTableCellEdit route msg =
     H.div [ Styles.dataTableCellEditLink ]
         [ linkTo route msg [] [ H.text "Edit" ]
@@ -204,8 +208,8 @@ dataTableCellEdit route msg =
 -- USERS
 
 
-viewUsersPage : Model -> Html Msg
-viewUsersPage model =
+viewUsersPage : RemoteData (List User) -> Html Msg
+viewUsersPage users =
     let
         getData user =
             [ user.email
@@ -231,7 +235,7 @@ viewUsersPage model =
         viewUserRow user =
             dataTableRow (actionRows user ++ dataRows user)
     in
-        case model.users of
+        case users of
             Loading ->
                 loadingSpinner
 
@@ -361,5 +365,6 @@ getUsers =
         Http.send ReceiveUsers (Http.get url (decodeUser |> Decode.list))
 
 
+getUserDetail : Int -> Cmd msg
 getUserDetail id =
     Cmd.none
