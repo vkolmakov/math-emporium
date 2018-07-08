@@ -9,6 +9,7 @@ import Navigation
 import UrlParser exposing (s, (</>))
 import Json.Decode as Decode
 import Date exposing (Date)
+import Managing.Data.User exposing (User)
 
 
 main : Program Never Model Msg
@@ -28,6 +29,7 @@ main =
 type alias Model =
     { route : Route
     , users : RemoteData (List User)
+    , userDetail : RemoteData User
     }
 
 
@@ -42,29 +44,13 @@ type RemoteData a
     | Available a
 
 
-type AccessGroup
-    = UserGroup
-    | EmployeeGroup
-    | EmployerGroup
-    | AdminGroup
-
-
-type alias User =
-    { id : Int
-    , email : String
-    , group : AccessGroup
-    , phone : Maybe String
-    , lastSigninDate : Date
-    }
-
-
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
     let
         route =
             (locationToRoute location)
     in
-        ( Model route Loading
+        ( Model route Loading Loading
         , getInitCmd route
         )
 
@@ -77,6 +63,7 @@ type Msg
     = BrowserLocationChange Navigation.Location
     | ChangeRoute Route
     | ReceiveUsers (Result Http.Error (List User))
+    | ReceiveUserDetail (Result Http.Error User)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -100,6 +87,12 @@ update msg model =
 
         ReceiveUsers (Err e) ->
             ( { model | users = Error (OtherError <| toString e) }, Cmd.none )
+
+        ReceiveUserDetail (Ok user) ->
+            ( { model | userDetail = Available user }, Cmd.none )
+
+        ReceiveUserDetail (Err e) ->
+            ( { model | userDetail = Error (OtherError <| toString e) }, Cmd.none )
 
 
 getInitCmd : Route -> Cmd Msg
@@ -250,6 +243,7 @@ viewUsersPage users =
 -- USER DETAIL
 
 
+viewUserDetailPage : { b | id : a } -> Html msg
 viewUserDetailPage user =
     H.div [] [ H.text <| "On user page: " ++ toString user.id ]
 
@@ -321,50 +315,19 @@ linkTo to msg attrs =
 -- HTTP
 
 
-decodeDate : String -> Decode.Decoder Date
-decodeDate date =
-    case Date.fromString date of
-        Ok d ->
-            Decode.succeed d
-
-        Err e ->
-            Decode.fail e
-
-
 getUsers : Cmd Msg
 getUsers =
     let
-        decodeGroup groupId =
-            case groupId of
-                1 ->
-                    Decode.succeed UserGroup
-
-                2 ->
-                    Decode.succeed EmployeeGroup
-
-                3 ->
-                    Decode.succeed EmployerGroup
-
-                4 ->
-                    Decode.succeed AdminGroup
-
-                _ ->
-                    Decode.fail "Unknown access group ID"
-
-        decodeUser =
-            Decode.map5 User
-                (Decode.at [ "id" ] Decode.int)
-                (Decode.at [ "email" ] Decode.string)
-                (Decode.at [ "group" ] Decode.int |> Decode.andThen decodeGroup)
-                (Decode.at [ "phoneNumber" ] <| Decode.nullable Decode.string)
-                (Decode.at [ "lastSigninAt" ] Decode.string |> Decode.andThen decodeDate)
-
         url =
             "/api/users"
     in
-        Http.send ReceiveUsers (Http.get url (decodeUser |> Decode.list))
+        Http.send ReceiveUsers (Http.get url (Managing.Data.User.decode |> Decode.list))
 
 
-getUserDetail : Int -> Cmd msg
+getUserDetail : Int -> Cmd Msg
 getUserDetail id =
-    Cmd.none
+    let
+        url =
+            "/api/users/" ++ toString id
+    in
+        Http.send ReceiveUserDetail (Http.get url Managing.Data.User.decode)
