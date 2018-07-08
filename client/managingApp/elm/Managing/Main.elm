@@ -4,12 +4,12 @@ import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Events as E
 import Html.Styled.Attributes as A
 import Http
-import Managing.Styles as Styles
 import Navigation
-import UrlParser exposing (s, (</>))
 import Json.Decode as Decode
 import Date exposing (Date)
+import Managing.Styles as Styles
 import Managing.Data.User exposing (User)
+import Managing.Route as Route exposing (Route)
 
 
 main : Program Never Model Msg
@@ -48,7 +48,7 @@ init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
     let
         route =
-            (locationToRoute location)
+            (Route.fromLocation location)
     in
         ( Model route Loading Loading
         , getInitCmd route
@@ -72,7 +72,7 @@ update msg model =
         BrowserLocationChange newLocation ->
             let
                 newRoute =
-                    locationToRoute newLocation
+                    Route.fromLocation newLocation
 
                 newCmd =
                     getInitCmd newRoute
@@ -80,7 +80,7 @@ update msg model =
                 ( { model | route = newRoute }, newCmd )
 
         ChangeRoute newRoute ->
-            ( model, Navigation.newUrl <| routeToPath newRoute )
+            ( model, Navigation.newUrl <| Route.toHref newRoute )
 
         ReceiveUsers (Ok users) ->
             ( { model | users = Available users }, Cmd.none )
@@ -98,10 +98,10 @@ update msg model =
 getInitCmd : Route -> Cmd Msg
 getInitCmd route =
     case route of
-        UsersRoute ->
+        Route.Users ->
             getUsers
 
-        UserDetailRoute id ->
+        Route.UserDetail id ->
             getUserDetail id
 
         _ ->
@@ -115,17 +115,17 @@ getInitCmd route =
 view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
-        [ viewNavigation model
+        [ viewNavbar model
         , viewPageContent model
         ]
 
 
-viewNavigation : Model -> Html Msg
-viewNavigation model =
+viewNavbar : Model -> Html Msg
+viewNavbar model =
     let
         links =
-            [ linkTo HomeRoute (ChangeRoute HomeRoute) [] [ H.text "Home" ]
-            , linkTo UsersRoute (ChangeRoute UsersRoute) [] [ H.text "Users" ]
+            [ linkTo Route.Home (ChangeRoute Route.Home) [] [ H.text "Home" ]
+            , linkTo Route.Users (ChangeRoute Route.Users) [] [ H.text "Users" ]
             ]
     in
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
@@ -143,16 +143,16 @@ viewPageContent model =
     let
         pageView =
             case model.route of
-                HomeRoute ->
+                Route.Home ->
                     H.text "At home route"
 
-                UsersRoute ->
+                Route.Users ->
                     viewUsersPage model.users
 
-                UserDetailRoute id ->
+                Route.UserDetail id ->
                     viewUserDetailPage { id = id }
 
-                UnknownRoute ->
+                Route.Unknown ->
                     H.text "At unknown route"
     in
         H.div [] [ pageView ]
@@ -223,7 +223,7 @@ viewUsersPage users =
                 |> List.map (\( label, entry ) -> dataTableCellText label entry)
 
         actionRows user =
-            [ dataTableCellEdit (UserDetailRoute user.id) (ChangeRoute <| UserDetailRoute user.id) ]
+            [ dataTableCellEdit (Route.UserDetail user.id) (ChangeRoute <| Route.UserDetail user.id) ]
 
         viewUserRow user =
             dataTableRow (actionRows user ++ dataRows user)
@@ -261,54 +261,13 @@ subscriptions model =
 -- ROUTING
 
 
-type Route
-    = HomeRoute
-    | UsersRoute
-    | UserDetailRoute Int
-    | UnknownRoute
-
-
-routeToPath : Route -> String
-routeToPath r =
-    case r of
-        HomeRoute ->
-            "/manage-portal"
-
-        UsersRoute ->
-            "/manage-portal/users"
-
-        UserDetailRoute id ->
-            "/manage-portal/users/" ++ toString id
-
-        UnknownRoute ->
-            "/manage-portal"
-
-
-locationToRoute : Navigation.Location -> Route
-locationToRoute location =
-    let
-        matchers =
-            UrlParser.oneOf
-                [ UrlParser.map HomeRoute (s "manage-portal")
-                , UrlParser.map UsersRoute (s "manage-portal" </> s "users")
-                , UrlParser.map UserDetailRoute (s "manage-portal" </> s "users" </> UrlParser.int)
-                ]
-    in
-        case (UrlParser.parsePath matchers location) of
-            Just route ->
-                route
-
-            Nothing ->
-                UnknownRoute
-
-
 linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
 linkTo to msg attrs =
     let
         changeLocationOnClick =
             E.onWithOptions "click" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
     in
-        H.a ([ changeLocationOnClick, A.href <| routeToPath to ] ++ attrs)
+        H.a ([ changeLocationOnClick, A.href <| Route.toHref to ] ++ attrs)
 
 
 
