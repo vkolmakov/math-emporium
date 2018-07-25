@@ -1,7 +1,8 @@
-module Managing.Route exposing (Route(..), fromLocation, toHref)
+module Managing.Route exposing (Route(..), fromLocation, toHref, href)
 
 import Navigation
 import UrlParser exposing (s, (</>))
+import Html.Styled.Attributes as A
 
 
 type Route
@@ -16,30 +17,40 @@ fromLocation location =
     let
         matchers =
             UrlParser.oneOf
-                [ UrlParser.map Home (s "manage-portal")
-                , UrlParser.map Users (s "manage-portal" </> s "users")
-                , UrlParser.map UserDetail (s "manage-portal" </> s "users" </> UrlParser.int)
+                [ UrlParser.map Users (s "users")
+                , UrlParser.map UserDetail (s "users" </> UrlParser.int)
                 ]
     in
-        case (UrlParser.parsePath matchers location) of
+        case (UrlParser.parseHash matchers location) of
             Just route ->
                 route
 
             Nothing ->
-                Unknown
+                if (String.isEmpty location.hash) then
+                    Home
+                else
+                    Unknown
 
 
 toHref : Route -> String
 toHref r =
-    case r of
-        Home ->
-            "/manage-portal"
+    let
+        path =
+            case r of
+                Home ->
+                    ""
 
-        Users ->
-            "/manage-portal/users"
+                Users ->
+                    "users"
 
-        UserDetail id ->
-            "/manage-portal/users/" ++ toString id
+                UserDetail id ->
+                    "users/" ++ toString id
 
-        Unknown ->
-            "/manage-portal"
+                Unknown ->
+                    ""
+    in
+        "#" ++ path
+
+
+href route =
+    A.href (toHref route)

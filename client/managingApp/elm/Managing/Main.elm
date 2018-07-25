@@ -1,7 +1,6 @@
-module Managing.Main exposing (..)
+module Managing.Main exposing (main)
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Events as E
 import Html.Styled.Attributes as A
 import Http
 import Navigation
@@ -61,7 +60,6 @@ init location =
 
 type Msg
     = BrowserLocationChange Navigation.Location
-    | ChangeRoute Route
     | ReceiveUsers (Result Http.Error (List User))
     | ReceiveUserDetail (Result Http.Error User)
 
@@ -78,9 +76,6 @@ update msg model =
                     getInitCmd newRoute
             in
                 ( { model | route = newRoute }, newCmd )
-
-        ChangeRoute newRoute ->
-            ( model, Navigation.newUrl <| Route.toHref newRoute )
 
         ReceiveUsers (Ok users) ->
             ( { model | users = Available users }, Cmd.none )
@@ -124,8 +119,8 @@ viewNavbar : Model -> Html Msg
 viewNavbar model =
     let
         links =
-            [ linkTo Route.Home (ChangeRoute Route.Home) [] [ H.text "Home" ]
-            , linkTo Route.Users (ChangeRoute Route.Users) [] [ H.text "Users" ]
+            [ H.a [ Route.href Route.Home ] [ H.text "Home" ]
+            , H.a [ Route.href Route.Users ] [ H.text "Users" ]
             ]
     in
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
@@ -190,10 +185,10 @@ dataTableCellText label text =
     H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
 
 
-dataTableCellEdit : Route -> msg -> Html msg
-dataTableCellEdit route msg =
+dataTableCellEdit : Route -> Html msg
+dataTableCellEdit route =
     H.div [ Styles.dataTableCellEditLink ]
-        [ linkTo route msg [] [ H.text "Edit" ]
+        [ H.a [ Route.href route ] [ H.text "Edit" ]
         ]
 
 
@@ -201,7 +196,7 @@ dataTableCellEdit route msg =
 -- USERS
 
 
-viewUsersPage : RemoteData (List User) -> Html Msg
+viewUsersPage : RemoteData (List User) -> Html msg
 viewUsersPage users =
     let
         getData user =
@@ -223,7 +218,7 @@ viewUsersPage users =
                 |> List.map (\( label, entry ) -> dataTableCellText label entry)
 
         actionRows user =
-            [ dataTableCellEdit (Route.UserDetail user.id) (ChangeRoute <| Route.UserDetail user.id) ]
+            [ dataTableCellEdit (Route.UserDetail user.id) ]
 
         viewUserRow user =
             dataTableRow (actionRows user ++ dataRows user)
@@ -255,19 +250,6 @@ viewUserDetailPage user =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
-
-
-
--- ROUTING
-
-
-linkTo : Route -> msg -> List (Attribute msg) -> List (Html msg) -> Html msg
-linkTo to msg attrs =
-    let
-        changeLocationOnClick =
-            E.onWithOptions "click" { stopPropagation = False, preventDefault = True } (Decode.succeed msg)
-    in
-        H.a ([ changeLocationOnClick, A.href <| Route.toHref to ] ++ attrs)
 
 
 
