@@ -9,6 +9,9 @@ import Date exposing (Date)
 import Managing.Styles as Styles
 import Managing.Data.User exposing (User)
 import Managing.Route as Route exposing (Route)
+import Managing.Request.RemoteData as RemoteData
+import Managing.Page.Users as Users
+import Managing.Page.UserDetail as UserDetail
 
 
 main : Program Never Model Msg
@@ -27,20 +30,9 @@ main =
 
 type alias Model =
     { route : Route
-    , users : RemoteData (List User)
-    , userDetail : RemoteData User
+    , usersPageModel : Users.Model
+    , userDetailPageModel : UserDetail.Model
     }
-
-
-type RemoteDataError
-    = UnathorizedRequest
-    | OtherError String
-
-
-type RemoteData a
-    = Loading
-    | Error RemoteDataError
-    | Available a
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -49,7 +41,7 @@ init location =
         route =
             (Route.fromLocation location)
     in
-        ( Model route Loading Loading
+        ( Model route Users.init UserDetail.init
         , getInitCmd route
         )
 
@@ -60,8 +52,8 @@ init location =
 
 type Msg
     = BrowserLocationChange Navigation.Location
-    | ReceiveUsers (Result Http.Error (List User))
-    | ReceiveUserDetail (Result Http.Error User)
+    | UsersPageMsg Users.Msg
+    | UserDetailPageMsg UserDetail.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -77,29 +69,33 @@ update msg model =
             in
                 ( { model | route = newRoute }, newCmd )
 
-        ReceiveUsers (Ok users) ->
-            ( { model | users = Available users }, Cmd.none )
+        UsersPageMsg msg ->
+            let
+                ( innerModel, innerCmd ) =
+                    Users.update msg model.usersPageModel
+            in
+                ( { model | usersPageModel = innerModel }, Cmd.map UsersPageMsg innerCmd )
 
-        ReceiveUsers (Err e) ->
-            ( { model | users = Error (OtherError <| toString e) }, Cmd.none )
-
-        ReceiveUserDetail (Ok user) ->
-            ( { model | userDetail = Available user }, Cmd.none )
-
-        ReceiveUserDetail (Err e) ->
-            ( { model | userDetail = Error (OtherError <| toString e) }, Cmd.none )
+        UserDetailPageMsg msg ->
+            let
+                ( innerModel, innerCmd ) =
+                    UserDetail.update msg model.userDetailPageModel
+            in
+                ( { model | userDetailPageModel = innerModel }, Cmd.map UserDetailPageMsg innerCmd )
 
 
-getInitCmd : Route -> Cmd Msg
 getInitCmd route =
     case route of
+        Route.Home ->
+            Cmd.none
+
         Route.Users ->
-            getUsers
+            Cmd.map UsersPageMsg Users.initCmd
 
-        Route.UserDetail id ->
-            getUserDetail id
+        Route.UserDetail userId ->
+            Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
 
-        _ ->
+        Route.Unknown ->
             Cmd.none
 
 
@@ -126,13 +122,6 @@ viewNavbar model =
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
 
 
-loadingSpinner : Html msg
-loadingSpinner =
-    H.div [ Styles.loadingSpinnerContainer ]
-        [ H.div [ Styles.loadingSpinner ] []
-        ]
-
-
 viewPageContent : Model -> Html Msg
 viewPageContent model =
     let
@@ -142,105 +131,15 @@ viewPageContent model =
                     H.text "At home route"
 
                 Route.Users ->
-                    viewUsersPage model.users
+                    H.map UsersPageMsg <| Users.view model.usersPageModel
 
                 Route.UserDetail id ->
-                    viewUserDetailPage { id = id }
+                    H.map UserDetailPageMsg <| UserDetail.view model.userDetailPageModel
 
                 Route.Unknown ->
                     H.text "At unknown route"
     in
         H.div [] [ pageView ]
-
-
-dateToDisplayString : Date -> String
-dateToDisplayString date =
-    let
-        symbol s =
-            \_ -> s
-
-        toks =
-            [ toString << Date.dayOfWeek
-            , symbol ", "
-            , toString << Date.month
-            , symbol " "
-            , toString << Date.day
-            , symbol ", "
-            , toString << Date.hour
-            , symbol ":"
-            , String.padLeft 2 '0' << toString << Date.minute
-            ]
-    in
-        List.map (\tok -> tok date) toks
-            |> String.join ""
-
-
-dataTableRow : List (Html msg) -> Html msg
-dataTableRow content =
-    H.div [ Styles.dataTableRow ] content
-
-
-dataTableCellText : String -> String -> Html msg
-dataTableCellText label text =
-    H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
-
-
-dataTableCellEdit : Route -> Html msg
-dataTableCellEdit route =
-    H.div [ Styles.dataTableCellEditLink ]
-        [ H.a [ Route.href route ] [ H.text "Edit" ]
-        ]
-
-
-
--- USERS
-
-
-viewUsersPage : RemoteData (List User) -> Html msg
-viewUsersPage users =
-    let
-        getData user =
-            [ user.email
-            , toString user.group
-            , Maybe.withDefault "" user.phone
-            , dateToDisplayString user.lastSigninDate
-            ]
-
-        headers =
-            [ "Email"
-            , "Group"
-            , "Phone"
-            , "Last sign-in date"
-            ]
-
-        dataRows user =
-            List.map2 (,) headers (getData user)
-                |> List.map (\( label, entry ) -> dataTableCellText label entry)
-
-        actionRows user =
-            [ dataTableCellEdit (Route.UserDetail user.id) ]
-
-        viewUserRow user =
-            dataTableRow (actionRows user ++ dataRows user)
-    in
-        case users of
-            Loading ->
-                loadingSpinner
-
-            Available users ->
-                H.div [] (users |> List.map viewUserRow)
-
-            Error e ->
-                H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
-
-
-
--- USER DETAIL
-
-
-viewUserDetailPage : { b | id : a } -> Html msg
-viewUserDetailPage user =
-    H.div [] [ H.text <| "On user page: " ++ toString user.id ]
 
 
 
@@ -250,25 +149,3 @@ viewUserDetailPage user =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
-
-
-
--- HTTP
-
-
-getUsers : Cmd Msg
-getUsers =
-    let
-        url =
-            "/api/users"
-    in
-        Http.send ReceiveUsers (Http.get url (Managing.Data.User.decode |> Decode.list))
-
-
-getUserDetail : Int -> Cmd Msg
-getUserDetail id =
-    let
-        url =
-            "/api/users/" ++ toString id
-    in
-        Http.send ReceiveUserDetail (Http.get url Managing.Data.User.decode)
