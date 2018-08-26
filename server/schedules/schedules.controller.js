@@ -31,7 +31,7 @@ export const handleGet = async (req, res, next) => {
             include: relatedModels,
         });
         const schedules = schedulesRes.map((schedule) =>
-            extractDataValues(schedule),
+            extractDataValues(schedule)
         );
 
         res.status(200).json(schedules);
@@ -63,7 +63,7 @@ export const handlePost = async (req, res, next) => {
 
         if (!isObject(firstSchedule.location)) {
             throw Error(
-                '"location" object (with "name" or "id" field) is required',
+                '"location" object (with "name" or "id" field) is required'
             );
         }
 
@@ -88,7 +88,7 @@ export const handlePost = async (req, res, next) => {
 
                 if (hasTutors) {
                     await createdSchedule.setTutors(
-                        schedule.tutors.map((tutor) => tutor.id),
+                        schedule.tutors.map((tutor) => tutor.id)
                     );
                 }
 
@@ -158,7 +158,7 @@ export const handleUpdate = async (req, res, next) => {
             ) {
                 // check if first element of the array is a valid tutor object
                 await updatedSchedule.setTutors(
-                    req.body.tutors.map((tutor) => tutor.id),
+                    req.body.tutors.map((tutor) => tutor.id)
                 );
             } else {
                 res.status(422).json(actionFailed("process", "tutors"));

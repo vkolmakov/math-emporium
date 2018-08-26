@@ -40,10 +40,10 @@ export default (state = INITIAL_STATE, action) => {
             if (!payload.id) {
                 const locationId = parseInt(
                     payload.value ? payload.value : payload,
-                    10,
+                    10
                 );
                 selectedLocation = state.all.find(
-                    (loc) => loc.id === locationId,
+                    (loc) => loc.id === locationId
                 );
             } else {
                 selectedLocation = payload;
@@ -61,7 +61,7 @@ export default (state = INITIAL_STATE, action) => {
                 return {
                     ...state,
                     all: state.all.filter(
-                        (location) => location.id !== deletedLocationId,
+                        (location) => location.id !== deletedLocationId
                     ),
                 };
             }

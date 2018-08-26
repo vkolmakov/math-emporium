@@ -35,8 +35,8 @@ class UpdateLocationForm extends Component {
             initialize(
                 "UpdateLocationForm",
                 this.props.selectedLocation,
-                FORM_FIELDS,
-            ),
+                FORM_FIELDS
+            )
         );
     }
 
@@ -61,7 +61,7 @@ class UpdateLocationForm extends Component {
                 .updateLocation(this.props.selectedLocation.id, data)
                 .then(
                     () => redirectTo(this.props.history, ROUTES.LOCATIONS),
-                    id,
+                    id
                 );
         };
 
@@ -181,5 +181,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateLocation, getLocations },
+    { updateLocation, getLocations }
 )(withRouterContext(UpdateLocationForm));

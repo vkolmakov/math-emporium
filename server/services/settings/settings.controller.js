@@ -21,13 +21,13 @@ export function handleGetPublicSettings(req, res, next) {
 export function handleGetSettings(req, res, next) {
     return getDefaultSettings().then(
         (result) => res.status(200).json(result),
-        (err) => next(err),
+        (err) => next(err)
     );
 }
 
 export function handleUpdateSettings(req, res, next) {
     return updateDefaultSettings(req.body).then(
         (result) => res.status(200).json(result),
-        (err) => next(err),
+        (err) => next(err)
     );
 }

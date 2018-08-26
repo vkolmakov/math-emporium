@@ -45,7 +45,7 @@ class EditTutors extends Component {
                         elem.location &&
                         elem.location.id === selectedLocation.id
                     );
-                }),
+                })
             );
 
             tutors = {
@@ -138,5 +138,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, setCurrentLocation, getTutors, deleteTutor, getCourses },
+    { getLocations, setCurrentLocation, getTutors, deleteTutor, getCourses }
 )(EditTutors);

@@ -19,7 +19,7 @@ class ManageEvents extends Component {
     setSelectedEventType(eventTypeOption) {
         if (eventTypeOption) {
             const selectedEventType = EVENT_TYPES_OPTIONS.find(
-                (g) => g.value === eventTypeOption.value,
+                (g) => g.value === eventTypeOption.value
             );
             this.setState({ selectedEventType });
         } else {
@@ -41,7 +41,7 @@ class ManageEvents extends Component {
         if (this.state.selectedEventType) {
             const { selectedEventType } = this.state;
             const filteredEvents = events.all.filter(
-                (e) => e.type === selectedEventType.value,
+                (e) => e.type === selectedEventType.value
             );
 
             events = {
@@ -51,7 +51,7 @@ class ManageEvents extends Component {
         }
 
         const eventTypeOptions = selectTransformOptions("value", "display")(
-            EVENT_TYPES_OPTIONS,
+            EVENT_TYPES_OPTIONS
         );
 
         const tableHeaders = [

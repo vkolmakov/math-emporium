@@ -20,7 +20,7 @@ const MODAL_STATE = {
 const SingleAppointment = (
     courses,
     locations,
-    createAppointmentCancelClickHandler,
+    createAppointmentCancelClickHandler
 ) => ({ id, location, course, time }) => {
     const locationName = locations.find((l) => l.id === location.id).name;
     const courseCode = courses.find((c) => c.id === course.id).code;
@@ -118,7 +118,7 @@ class Appointments extends Component {
                             isOpen={true}
                             onClose={this.resetState.bind(this)}
                             onConfirm={this.deleteSelectedAppointment.bind(
-                                this,
+                                this
                             )}
                         />
                     );
@@ -152,8 +152,8 @@ class Appointments extends Component {
                         SingleAppointment(
                             courses,
                             locations,
-                            this.createAppointmentCancelClickHandler.bind(this),
-                        ),
+                            this.createAppointmentCancelClickHandler.bind(this)
+                        )
                     )}
                 </ul>
             ) : (
@@ -174,5 +174,5 @@ export default connect(
     null,
     {
         deleteAppointment,
-    },
+    }
 )(Appointments);

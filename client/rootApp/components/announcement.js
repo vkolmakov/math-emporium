@@ -25,7 +25,7 @@ class Announcement extends Component {
                 <button
                     onClick={this.props.hideAnnouncement.bind(
                         this,
-                        announcement.content,
+                        announcement.content
                     )}
                     className="announcement-hide-button"
                 />
@@ -49,5 +49,5 @@ export default connect(
     mapStateToProps,
     {
         hideAnnouncement,
-    },
+    }
 )(Announcement);

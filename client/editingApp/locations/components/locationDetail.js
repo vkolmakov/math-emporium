@@ -17,7 +17,7 @@ class LocationDetail extends Component {
         const id = parseInt(this.props.match.params.id, 10);
 
         const selectedLocation = locations.all.find(
-            (location) => location.id === id,
+            (location) => location.id === id
         );
 
         if (!selectedLocation) {
@@ -50,5 +50,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations },
+    { getLocations }
 )(LocationDetail);

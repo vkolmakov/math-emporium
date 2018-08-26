@@ -10,12 +10,12 @@ export default function createUserRouter() {
     router.get(
         "/user/profile",
         requireGroup(authGroups.USER),
-        controller.getProfile(),
+        controller.getProfile()
     );
     router.put(
         "/user/profile",
         requireGroup(authGroups.USER),
-        controller.updateProfile(),
+        controller.updateProfile()
     );
 
     return router;

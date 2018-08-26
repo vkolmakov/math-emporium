@@ -40,7 +40,7 @@ const _cache = {
     get(key) {
         return R.map(
             R.prop("value"),
-            Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key)),
+            Either.toEither(_cache.ERROR_MESSAGES.MISS, memoryCache.get(key))
         );
     },
 
@@ -77,15 +77,12 @@ const calendarEvents = {
             type,
             _cache.keyNames[type](calendarId, weekStartIsoString),
             events,
-            _cache.DURATIONS[type],
+            _cache.DURATIONS[type]
         );
     },
     get(calendarId, weekStartIsoString) {
         return _cache.get(
-            _cache.keyNames[calendarEvents.type](
-                calendarId,
-                weekStartIsoString,
-            ),
+            _cache.keyNames[calendarEvents.type](calendarId, weekStartIsoString)
         );
     },
 };
@@ -105,7 +102,7 @@ const appData = {
             type,
             _cache.keyNames[type](),
             data,
-            _cache.DURATIONS[type],
+            _cache.DURATIONS[type]
         );
     },
 

@@ -23,7 +23,7 @@ export default (err, req, res, next) => {
                 stacktrace: err.stack ? err.stack : "",
             });
             res.status(500).json(
-                errorMessage("An internal server error occurred", 500),
+                errorMessage("An internal server error occurred", 500)
             );
     }
 };

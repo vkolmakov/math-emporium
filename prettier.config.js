@@ -1,6 +1,6 @@
 module.exports = {
     tabWidth: 4,
-    trailingComma: "all",
+    trailingComma: "es5",
     jsxBracketSameLine: true,
     arrowParens: "always",
 };

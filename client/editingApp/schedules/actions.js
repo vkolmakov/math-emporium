@@ -34,7 +34,7 @@ export function updateSchedule(id, data) {
             (err) => {
                 dispatch({ type: UPDATE_SCHEDULE, payload: err });
                 return Promise.reject();
-            },
+            }
         );
     };
 }

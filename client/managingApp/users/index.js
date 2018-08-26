@@ -29,7 +29,7 @@ class ManageUsers extends Component {
     setSelectedGroup(groupOption) {
         if (groupOption) {
             const selectedGroup = getAuthGroupOptions(AUTH_GROUPS).find(
-                (g) => g.value === groupOption.value,
+                (g) => g.value === groupOption.value
             );
             this.setState({ selectedGroup });
         } else {
@@ -41,7 +41,7 @@ class ManageUsers extends Component {
         let { users } = this.props;
 
         const groupOptions = selectTransformOptions("value", "display")(
-            getAuthGroupOptions(AUTH_GROUPS),
+            getAuthGroupOptions(AUTH_GROUPS)
         );
 
         if (!users.all) {
@@ -55,7 +55,7 @@ class ManageUsers extends Component {
         if (this.state.selectedGroup) {
             const { selectedGroup } = this.state;
             const filteredUsers = users.all.filter(
-                (u) => u.group === selectedGroup.value,
+                (u) => u.group === selectedGroup.value
             );
             users = {
                 ...users,

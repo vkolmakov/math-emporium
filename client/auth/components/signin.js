@@ -112,5 +112,5 @@ export default connect(
     {
         persistPreselectedOpenSpot,
         clearOpenSpotSelection,
-    },
+    }
 )(Signin);

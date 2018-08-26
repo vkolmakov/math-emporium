@@ -37,22 +37,22 @@ function AsyncComponent(getComponent) {
 
 const Editing = RequireAuthGroup(AUTH_GROUPS.employee)(
     AsyncComponent(() =>
-        import("@client/editingApp/index").then((module) => module.default),
-    ),
+        import("@client/editingApp/index").then((module) => module.default)
+    )
 );
 
 const Auth = AsyncComponent(() =>
-    import("@client/auth/index").then((module) => module.default),
+    import("@client/auth/index").then((module) => module.default)
 );
 
 const Managing = RequireAuthGroup(AUTH_GROUPS.employer)(
     AsyncComponent(() =>
-        import("@client/managingApp/index").then((module) => module.default),
-    ),
+        import("@client/managingApp/index").then((module) => module.default)
+    )
 );
 
 const Scheduling = AsyncComponent(() =>
-    import("@client/schedulingApp/index").then((module) => module.default),
+    import("@client/schedulingApp/index").then((module) => module.default)
 );
 
 export default class Router extends Component {

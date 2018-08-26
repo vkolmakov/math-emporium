@@ -34,7 +34,7 @@ export default (state = INITIAL_STATE, action) => {
                 return {
                     ...state,
                     all: state.all.filter(
-                        (subject) => subject.id !== deletedSubjectId,
+                        (subject) => subject.id !== deletedSubjectId
                     ),
                 };
             } else {

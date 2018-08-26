@@ -61,5 +61,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getCourses, getSubjects },
+    { getLocations, getCourses, getSubjects }
 )(CourseDetail);

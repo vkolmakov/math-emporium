@@ -69,7 +69,7 @@ export function updateCourse(id, data) {
             (err) => {
                 dispatch({ type: UPDATE_COURSE, payload: err });
                 return Promise.reject();
-            },
+            }
         );
     };
 }

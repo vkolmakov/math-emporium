@@ -39,8 +39,8 @@ class UpdateCourseForm extends Component {
                     location: location.id,
                     subject: subject.id,
                 },
-                FORM_FIELDS,
-            ),
+                FORM_FIELDS
+            )
         );
     }
 
@@ -50,13 +50,13 @@ class UpdateCourseForm extends Component {
         const { setCurrentLocation } = this.props;
 
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
         const colorsOptions = selectTransformOptions("value", "name", "color")(
-            GOOGLE_CALENDAR_COLORS,
+            GOOGLE_CALENDAR_COLORS
         );
         const subjectOptions = selectTransformOptions()(
-            this.props.subjects.all,
+            this.props.subjects.all
         );
 
         const onSubmit = (data) => {
@@ -156,5 +156,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateCourse, getCourses, setCurrentLocation },
+    { updateCourse, getCourses, setCurrentLocation }
 )(withRouterContext(UpdateCourseForm));

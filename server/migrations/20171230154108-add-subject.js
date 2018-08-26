@@ -32,7 +32,7 @@ module.exports = {
             })
             .then(() => {
                 return queryInterface.sequelize.query(
-                    'SELECT "code", "locationId" FROM "courses"',
+                    'SELECT "code", "locationId" FROM "courses"'
                 );
             })
             .then((r) => {
@@ -54,7 +54,7 @@ module.exports = {
                             locationId,
                             createdAt: new Date(),
                             updatedAt: new Date(),
-                        })),
+                        }))
                     ),
                 ]);
             })
@@ -62,7 +62,7 @@ module.exports = {
                 return Promise.all([
                     Promise.resolve(codeWithSubjectNameAndLocationId),
                     queryInterface.sequelize.query(
-                        "SELECT name, id FROM subjects",
+                        "SELECT name, id FROM subjects"
                     ),
                 ]);
             })
@@ -73,7 +73,7 @@ module.exports = {
                     codeToSubject.map(([c, n]) => [
                         c,
                         getSubjectId(n.subjectName),
-                    ]),
+                    ])
                 );
 
                 const addSubjectColumn = () =>
@@ -92,9 +92,9 @@ module.exports = {
                                         subjectId: codeToSubjectId.get(code),
                                         code,
                                     },
-                                },
+                                }
                             );
-                        }),
+                        })
                     );
 
                 return addSubjectColumn().then(setSubjects);

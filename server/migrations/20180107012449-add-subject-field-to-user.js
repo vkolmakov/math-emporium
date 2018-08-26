@@ -9,14 +9,14 @@ module.exports = {
             {
                 type: Sequelize.INTEGER,
                 references: { model: "subjects", key: "id" },
-            },
+            }
         );
     },
 
     down: (queryInterface) => {
         return queryInterface.removeColumn(
             USERS_TABLE_NAME,
-            SUBJECT_ID_COLUMN_NAME,
+            SUBJECT_ID_COLUMN_NAME
         );
     },
 };

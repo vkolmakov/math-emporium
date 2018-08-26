@@ -71,7 +71,7 @@ export default function createLocationModel(sequelize, DataTypes) {
                     ensureUnderLocationMaximum(value) {
                         if (value > this.maximumAppointmentsPerLocation) {
                             throw new Error(
-                                "Maximum number of appointments for subject must be at most as large as maximum for the location",
+                                "Maximum number of appointments for subject must be at most as large as maximum for the location"
                             );
                         }
                     },
@@ -85,7 +85,7 @@ export default function createLocationModel(sequelize, DataTypes) {
                     ensureUnderSubjectMaximum(value) {
                         if (value > this.maximumAppointmentsPerSubject) {
                             throw new Error(
-                                "Maximum number of appointments for course must be at most as large as maximum for the subject",
+                                "Maximum number of appointments for course must be at most as large as maximum for the subject"
                             );
                         }
                     },
@@ -125,13 +125,13 @@ export default function createLocationModel(sequelize, DataTypes) {
                         schedule: Schedule,
                     } = sequelize.models;
                     const conditions = await Promise.all(
-                        [Tutor, Course, Schedule].map(this.hasAny.bind(this)),
+                        [Tutor, Course, Schedule].map(this.hasAny.bind(this))
                     );
 
                     return conditions.every((c) => c === false);
                 },
             },
-        },
+        }
     );
     return location;
 }

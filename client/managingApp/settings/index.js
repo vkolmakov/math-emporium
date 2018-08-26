@@ -86,7 +86,7 @@ class ManageSettings extends Component {
                             error: "Failed to submit settings",
                         },
                     }));
-                },
+                }
             );
         };
 
@@ -127,7 +127,7 @@ class ManageSettings extends Component {
             title: "Update application settings",
             fields: Object.keys(this.props.settings)
                 .filter((key) =>
-                    Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key),
+                    Object.keys(VISIBLE_SETTINGS_INPUT_TYPE).includes(key)
                 )
                 .map(toFormField),
             error: this.state.form.error,
@@ -152,5 +152,5 @@ export default connect(
     mapStateToProps,
     {
         updateSettings,
-    },
+    }
 )(ManageSettings);

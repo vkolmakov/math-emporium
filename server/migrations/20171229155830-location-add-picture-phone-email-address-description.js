@@ -21,7 +21,7 @@ module.exports = {
                     TABLE_NAME,
                     column.name,
                     column.options,
-                    { transaction: t },
+                    { transaction: t }
                 );
 
             return Promise.all(newColumns(Sequelize).map(addWithTransaction));
@@ -35,7 +35,7 @@ module.exports = {
                 });
 
             return Promise.all(
-                newColumns(Sequelize).map(removeWithTransaction),
+                newColumns(Sequelize).map(removeWithTransaction)
             );
         }),
 };

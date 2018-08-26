@@ -1,7 +1,7 @@
 export function selectTransformOptions(
     valueKey = "id",
     labelKey = "name",
-    colorKey = null,
+    colorKey = null
 ) {
     return (options) => {
         return options.map((option) =>
@@ -14,7 +14,7 @@ export function selectTransformOptions(
                     result.color = option[key];
                 }
                 return result;
-            }, {}),
+            }, {})
         );
     };
 }

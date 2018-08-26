@@ -17,7 +17,7 @@ class CreateScheduleForm extends Component {
         const selectedLocation = this.props.locations.selected;
         if (selectedLocation) {
             this.props.dispatch(
-                change(FORM_NAME, "location", selectedLocation.id),
+                change(FORM_NAME, "location", selectedLocation.id)
             );
         }
 
@@ -39,7 +39,7 @@ class CreateScheduleForm extends Component {
             (prevLocation && currentLocation.id !== prevLocation.id)
         ) {
             this.props.dispatch(
-                change(FORM_NAME, "location", currentLocation.id),
+                change(FORM_NAME, "location", currentLocation.id)
             );
             this.props.dispatch(change(FORM_NAME, "tutors", []));
         }
@@ -62,16 +62,16 @@ class CreateScheduleForm extends Component {
         const { setCurrentLocation, setCurrentWeekday } = this.props;
 
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
         const tutorsOptions = selectTransformOptions("id", "name")(
-            this.props.tutors.all,
+            this.props.tutors.all
         );
         const weekdaysOptions = selectTransformOptions("value", "display")(
-            WEEKDAY_OPTIONS,
+            WEEKDAY_OPTIONS
         );
         const timeOptions = selectTransformOptions("value", "display")(
-            TIME_OPTIONS,
+            TIME_OPTIONS
         );
 
         const onSubmit = (data) => {
@@ -93,8 +93,8 @@ class CreateScheduleForm extends Component {
                                     this.props.schedules.selectedWeekday ||
                                     null,
                             },
-                            FORM_FIELDS,
-                        ),
+                            FORM_FIELDS
+                        )
                     );
                 })
                 .then(this.props.getSchedules);
@@ -185,5 +185,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { createSchedule, setCurrentLocation, getSchedules, setCurrentWeekday },
+    { createSchedule, setCurrentLocation, getSchedules, setCurrentWeekday }
 )(CreateScheduleForm);

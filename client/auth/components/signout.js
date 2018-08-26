@@ -47,5 +47,5 @@ reactMixin(Signout.prototype, TimerMixin);
 
 export default connect(
     null,
-    { signoutUser },
+    { signoutUser }
 )(Signout);

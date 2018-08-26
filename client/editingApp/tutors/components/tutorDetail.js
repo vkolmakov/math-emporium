@@ -36,11 +36,11 @@ class TutorDetail extends Component {
             selectedLocation = locations.selected;
         } else {
             selectedLocation = locations.all.find(
-                (location) => location.id === selectedTutor.location.id,
+                (location) => location.id === selectedTutor.location.id
             );
         }
         const [filteredCourses] = [courses.all].map((list) =>
-            list.filter((elem) => elem.location.id === selectedLocation.id),
+            list.filter((elem) => elem.location.id === selectedLocation.id)
         );
 
         courses = {
@@ -79,5 +79,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getLocations, getCourses, getTutors },
+    { getLocations, getCourses, getTutors }
 )(TutorDetail);

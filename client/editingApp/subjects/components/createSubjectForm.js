@@ -15,7 +15,7 @@ class CreateSubjectForm extends Component {
         const selectedLocation = this.props.locations.selected;
         if (selectedLocation) {
             this.props.dispatch(
-                change(FORM_NAME, "location", selectedLocation.id),
+                change(FORM_NAME, "location", selectedLocation.id)
             );
         }
     }
@@ -31,7 +31,7 @@ class CreateSubjectForm extends Component {
             (prevLocation && currentLocation.id !== prevLocation.id)
         ) {
             this.props.dispatch(
-                change(FORM_NAME, "location", currentLocation.id),
+                change(FORM_NAME, "location", currentLocation.id)
             );
         }
     }
@@ -42,7 +42,7 @@ class CreateSubjectForm extends Component {
         const { setCurrentLocation } = this.props;
 
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
 
         const onSubmit = (data) => {
@@ -60,8 +60,8 @@ class CreateSubjectForm extends Component {
                                         ? this.props.locations.selected.id
                                         : null,
                                 },
-                                FORM_FIELDS,
-                            ),
+                                FORM_FIELDS
+                            )
                         );
                     }
                 })
@@ -133,5 +133,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { createSubject, getSubjects, setCurrentLocation },
+    { createSubject, getSubjects, setCurrentLocation }
 )(CreateSubjectForm);

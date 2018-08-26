@@ -39,7 +39,7 @@ class EditCourses extends Component {
             const filteredCourses = courses.all.filter(
                 (course) =>
                     course.location &&
-                    course.location.id === selectedLocation.id,
+                    course.location.id === selectedLocation.id
             );
             courses = {
                 ...courses,
@@ -141,5 +141,5 @@ export default connect(
         deleteCourse,
         setCurrentLocation,
         getSubjects,
-    },
+    }
 )(EditCourses);

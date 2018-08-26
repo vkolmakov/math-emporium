@@ -53,8 +53,8 @@ class UpdateProfileForm extends Component {
                     course: course ? course.id : null,
                     subject: subject ? subject.id : null,
                 },
-                FORM_FIELDS,
-            ),
+                FORM_FIELDS
+            )
         );
     }
 
@@ -68,14 +68,14 @@ class UpdateProfileForm extends Component {
             subject,
         } = this.props.fields;
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
 
         let coursesOptions = [];
         let subjectsOptions = [];
         if (location.value) {
             const filteredSubjects = this.props.subjects.all.filter(
-                (s) => s.location.id === location.value,
+                (s) => s.location.id === location.value
             );
             subjectsOptions = filteredSubjects.map((s) => ({
                 value: s.id,
@@ -84,7 +84,7 @@ class UpdateProfileForm extends Component {
 
             if (subject.value) {
                 const filteredCourses = this.props.courses.all.filter(
-                    (c) => c.subject.id === subject.value,
+                    (c) => c.subject.id === subject.value
                 );
                 coursesOptions = filteredCourses.map((c) => ({
                     value: c.id,
@@ -105,7 +105,7 @@ class UpdateProfileForm extends Component {
                 },
                 (err) => {
                     this.setState({ success: false, error: err.data.error });
-                },
+                }
             );
         };
 
@@ -245,5 +245,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { updateUserProfile },
+    { updateUserProfile }
 )(UpdateProfileForm);

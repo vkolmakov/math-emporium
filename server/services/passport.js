@@ -41,7 +41,7 @@ const azureAdOAuth2Login = new AzureAdOAuth2Strategy(
         } catch (err) {
             return done(err);
         }
-    },
+    }
 );
 
 export default {
@@ -63,7 +63,7 @@ export default {
                         }
                         done(null, user);
                     },
-                    (err) => done(err, false),
+                    (err) => done(err, false)
                 );
             });
 

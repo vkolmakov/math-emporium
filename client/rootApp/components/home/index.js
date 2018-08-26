@@ -95,5 +95,5 @@ export default connect(
     {
         getLocations,
         setLocation,
-    },
+    }
 )(withRouterContext(Home));

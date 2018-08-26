@@ -10,8 +10,8 @@ const Event = mongoose.model(
         },
         {
             timestamps: true,
-        },
-    ),
+        }
+    )
 );
 
 function saveEvent(event) {
@@ -28,7 +28,7 @@ export function connectToEventStorage(url, options) {
         {
             user,
             pass: password,
-        },
+        }
     );
 }
 

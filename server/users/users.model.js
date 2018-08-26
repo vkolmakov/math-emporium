@@ -31,7 +31,7 @@ export default function createUserModel(sequelize, DataTypes) {
                             throw new Error("Invalid phone number");
                         },
                         (p) => p,
-                        phoneNumber.parse(value),
+                        phoneNumber.parse(value)
                     );
 
                     this.setDataValue("phoneNumber", parsedPhoneNumberOrNull);
@@ -63,7 +63,7 @@ export default function createUserModel(sequelize, DataTypes) {
                 setDefaultAppointmentPreferences(
                     locationRes,
                     subjectRes,
-                    courseRes,
+                    courseRes
                 ) {
                     const user = this;
 
@@ -75,27 +75,27 @@ export default function createUserModel(sequelize, DataTypes) {
                         },
                         {
                             fields: ["locationId", "subjectId", "courseId"],
-                        },
+                        }
                     );
                 },
 
                 setDefaultAppointmentPreferencesIfNoneSet(
                     location,
                     subject,
-                    course,
+                    course
                 ) {
                     let result = Promise.resolve();
                     if (!this.hasDefaultAppointmentPreferences()) {
                         result = this.setDefaultAppointmentPreferences(
                             location,
                             subject,
-                            course,
+                            course
                         );
                     }
                     return result;
                 },
             },
-        },
+        }
     );
     return user;
 }

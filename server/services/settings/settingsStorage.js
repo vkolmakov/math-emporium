@@ -7,7 +7,7 @@ const Settings = mongoose.model(
     mongoose.Schema({
         id: String,
         values: Object,
-    }),
+    })
 );
 
 const SETTINGS_KEYS = {
@@ -54,8 +54,7 @@ function findOrCreateSettings(id) {
     };
 
     return Settings.findOne({ id }).then(
-        (result) =>
-            result ? Promise.resolve(result) : createDefaultSettings(),
+        (result) => (result ? Promise.resolve(result) : createDefaultSettings())
     );
 }
 
@@ -91,7 +90,7 @@ export default {
                 {
                     user,
                     pass: password,
-                },
+                }
             );
         };
 
@@ -110,7 +109,7 @@ export default {
 
     getDefaultSettings() {
         return findOrCreateSettings(DEFAULT_SETTINGS_ID).then(
-            (result) => result.values,
+            (result) => result.values
         );
     },
 };

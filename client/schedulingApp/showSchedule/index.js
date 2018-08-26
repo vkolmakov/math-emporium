@@ -74,7 +74,7 @@ class ShowSchedule extends Component {
                 time,
                 course,
                 location,
-                subject,
+                subject
             );
 
             openSpotHandler({ target: { id: potentialOpenSpotElementId } });
@@ -242,7 +242,7 @@ class ShowSchedule extends Component {
                 !!modalInfo.lastActiveElement.nodeId
             ) {
                 const lastActiveElementRef = document.getElementById(
-                    modalInfo.lastActiveElement.nodeId,
+                    modalInfo.lastActiveElement.nodeId
                 );
                 if (lastActiveElementRef) {
                     lastActiveElementRef.focus();
@@ -380,7 +380,7 @@ class ShowSchedule extends Component {
                     time,
                     courses.selected,
                     locations.selected,
-                    subjects.selected,
+                    subjects.selected
                 ),
             expired: () => () => this.props.clearOpenSpotSelection(),
             closed: () => () => this.props.clearOpenSpotSelection(),
@@ -411,12 +411,12 @@ class ShowSchedule extends Component {
                                     onChange={this.onStartDateChange.bind(this)}
                                     onFocus={() =>
                                         this.datePickerWrapRef.classList.add(
-                                            "has-focus",
+                                            "has-focus"
                                         )
                                     }
                                     onBlur={() =>
                                         this.datePickerWrapRef.classList.remove(
-                                            "has-focus",
+                                            "has-focus"
                                         )
                                     }
                                     id="dual-datepicker"
@@ -424,7 +424,7 @@ class ShowSchedule extends Component {
 
                                 <DatePicker
                                     selected={moment(startDate).endOf(
-                                        "isoWeek",
+                                        "isoWeek"
                                     )}
                                     locale="en-gb"
                                     dateFormat="MM/DD/YYYY"
@@ -542,5 +542,5 @@ export default connect(
         displayTutorSelectionModal,
         displayProfileModal,
         displayMessageModal,
-    },
+    }
 )(withRouterContext(ShowSchedule));

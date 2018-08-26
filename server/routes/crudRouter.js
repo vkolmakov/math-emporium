@@ -16,27 +16,27 @@ export default function createCrudRouter(modelName) {
     router.get(
         `/${modelName}`,
         requireGroup(authGroups.EMPLOYEE),
-        controller.handleGet,
+        controller.handleGet
     );
     router.get(
         `/${modelName}/:id`,
         requireGroup(authGroups.EMPLOYER),
-        controller.handleGetId,
+        controller.handleGetId
     );
     router.post(
         `/${modelName}`,
         requireGroup(authGroups.EMPLOYER),
-        controller.handlePost,
+        controller.handlePost
     );
     router.delete(
         `/${modelName}/:id`,
         requireGroup(authGroups.EMPLOYER),
-        controller.handleDelete,
+        controller.handleDelete
     ); // refactor this into a regular lambda and attach .on('finish') to bust the cache
     router.put(
         `/${modelName}/:id`,
         requireGroup(authGroups.EMPLOYER),
-        controller.handleUpdate,
+        controller.handleUpdate
     );
 
     return router;

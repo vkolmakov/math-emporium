@@ -15,7 +15,7 @@ class CreateTutorForm extends Component {
         const selectedLocation = this.props.locations.selected;
         if (selectedLocation) {
             this.props.dispatch(
-                change(FORM_NAME, "location", selectedLocation.id),
+                change(FORM_NAME, "location", selectedLocation.id)
             );
         }
     }
@@ -31,7 +31,7 @@ class CreateTutorForm extends Component {
             (prevLocation && currentLocation.id !== prevLocation.id)
         ) {
             this.props.dispatch(
-                change(FORM_NAME, "location", currentLocation.id),
+                change(FORM_NAME, "location", currentLocation.id)
             );
             this.props.dispatch(change(FORM_NAME, "courses", []));
         }
@@ -40,10 +40,10 @@ class CreateTutorForm extends Component {
     render() {
         const { name, location, courses } = this.props.fields;
         const locationsOptions = selectTransformOptions()(
-            this.props.locations.all,
+            this.props.locations.all
         );
         const coursesOptions = selectTransformOptions("id", "code")(
-            this.props.courses.all,
+            this.props.courses.all
         );
 
         const { setCurrentLocation } = this.props;
@@ -63,8 +63,8 @@ class CreateTutorForm extends Component {
                                     ? this.props.locations.selected.id
                                     : null,
                             },
-                            FORM_FIELDS,
-                        ),
+                            FORM_FIELDS
+                        )
                     );
                 })
                 .then(this.props.getTutors);
@@ -143,5 +143,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { createTutor, setCurrentLocation, getTutors },
+    { createTutor, setCurrentLocation, getTutors }
 )(CreateTutorForm);

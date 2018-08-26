@@ -29,7 +29,7 @@ export default function createScheduleModel(sequelize, DataTypes) {
                     schedule.belongsTo(models.location, { as: "location" });
                 },
             },
-        },
+        }
     );
     return schedule;
 }

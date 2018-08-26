@@ -65,7 +65,7 @@ class SchedulesOverview extends Component {
         }
 
         const filteredSchedules = schedules.all.filter(
-            (schedule) => schedule.location.id === locations.selected.id,
+            (schedule) => schedule.location.id === locations.selected.id
         );
 
         const groupedSchedules = filteredSchedules.reduce(
@@ -76,7 +76,7 @@ class SchedulesOverview extends Component {
                     : [schedule];
                 return groups;
             },
-            {},
+            {}
         );
 
         return (
@@ -121,5 +121,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    { getSchedules, getLocations, setCurrentLocation },
+    { getSchedules, getLocations, setCurrentLocation }
 )(SchedulesOverview);

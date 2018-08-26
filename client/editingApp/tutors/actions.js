@@ -56,7 +56,7 @@ export function updateTutor(id, data) {
             (err) => {
                 dispatch({ type: UPDATE_TUTOR, payload: err });
                 return Promise.reject();
-            },
+            }
         );
     };
 }

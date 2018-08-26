@@ -156,5 +156,5 @@ export default reduxForm(
         validate,
     },
     null,
-    { createLocation, getLocations },
+    { createLocation, getLocations }
 )(CreateLocationForm);

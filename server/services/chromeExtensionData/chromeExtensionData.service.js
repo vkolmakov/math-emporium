@@ -14,7 +14,7 @@ export const packChromeExtensionData = async () => {
         "Sunday",
     ].reduce(
         (result, weekdayName, idx) => set(result, idx + 1, weekdayName),
-        {},
+        {}
     );
 
     const packedChromeExtensionData = data.map((locationData) => ({
@@ -54,9 +54,9 @@ export const packChromeExtensionData = async () => {
                 set(
                     result,
                     tutor.name,
-                    tutor.courses.map((course) => course.code),
+                    tutor.courses.map((course) => course.code)
                 ),
-            {},
+            {}
         ),
     }));
 

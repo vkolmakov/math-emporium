@@ -22,7 +22,7 @@ const transform = {
         return {
             ...settingsValues,
             [SETTINGS_KEYS.faqContent]: faq.compileToHtml(
-                settingsValues[SETTINGS_KEYS.faqText],
+                settingsValues[SETTINGS_KEYS.faqText]
             ),
         };
     },
@@ -31,7 +31,7 @@ const transform = {
         return {
             ...settingsValues,
             [SETTINGS_KEYS.announcementContent]: faq.compileToHtml(
-                settingsValues[SETTINGS_KEYS.announcementText],
+                settingsValues[SETTINGS_KEYS.announcementText]
             ),
         };
     },
@@ -40,13 +40,13 @@ const transform = {
         const DEFAULT_VALUE = 0;
         const maximumAppointmentsPerUser = parseInt(
             settingsValues[SETTINGS_KEYS.maximumAppointmentsPerUser],
-            10,
+            10
         );
 
         return {
             ...settingsValues,
             [SETTINGS_KEYS.maximumAppointmentsPerUser]: isNaN(
-                maximumAppointmentsPerUser,
+                maximumAppointmentsPerUser
             )
                 ? DEFAULT_VALUE
                 : maximumAppointmentsPerUser,
@@ -64,7 +64,7 @@ export function updateDefaultSettings(values) {
     const validSettingsKeys = Object.keys(SETTINGS_KEYS);
     const updatedValues = transformations.reduce(
         (acc, transformation) => transformation(acc),
-        values,
+        values
     );
 
     return settingsStorage

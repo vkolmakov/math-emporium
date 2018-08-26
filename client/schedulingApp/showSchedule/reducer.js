@@ -55,7 +55,7 @@ export default (state = INITIAL_STATE, action) => {
                     payload.data.length > 0
                         ? Either.Right(payload.data)
                         : Either.Left(
-                              "There are no appointments available for this week.",
+                              "There are no appointments available for this week."
                           ),
             };
 

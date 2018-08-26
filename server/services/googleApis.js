@@ -17,7 +17,7 @@ function getAuth(resource) {
             SERVICE_ACCOUNT_EMAIL,
             null,
             SERVICE_KEY_BUFFER,
-            [`https://www.googleapis.com/auth/${resource}`],
+            [`https://www.googleapis.com/auth/${resource}`]
         );
 
         authClient.authorize((err) => {
@@ -65,7 +65,7 @@ class CalendarService {
                         } else {
                             resolve(result.items.map(pickRequiredFields));
                         }
-                    },
+                    }
                 );
             });
 
@@ -81,7 +81,7 @@ class CalendarService {
         return Either.either(
             () => fetchEvents().then(cacheAndReturnEvents),
             (events) => Promise.resolve(events),
-            cache.calendarEvents.get(calendarId, startDate),
+            cache.calendarEvents.get(calendarId, startDate)
         );
     }
 
@@ -118,7 +118,7 @@ class CalendarService {
                     } else {
                         resolve(result);
                     }
-                },
+                }
             );
         });
     }
@@ -137,7 +137,7 @@ class CalendarService {
                     } else {
                         resolve(result);
                     }
-                },
+                }
             );
         });
     }

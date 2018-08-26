@@ -37,7 +37,7 @@ class EditSubjects extends Component {
             const filteredSubjects = subjects.all.filter(
                 (subject) =>
                     subject.location &&
-                    subject.location.id === selectedLocation.id,
+                    subject.location.id === selectedLocation.id
             );
             subjects = {
                 ...subjects,
@@ -118,5 +118,5 @@ export default connect(
         getLocations,
         deleteSubject,
         setCurrentLocation,
-    },
+    }
 )(EditSubjects);

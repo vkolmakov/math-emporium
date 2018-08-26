@@ -142,7 +142,7 @@ class SchedulingApp extends Component {
                             exact
                             path={`/${BASE_PATH}/profile`}
                             component={RequireAuthGroup(AUTH_GROUPS.user)(
-                                Profile,
+                                Profile
                             )}
                         />
                     </Switch>
@@ -175,5 +175,5 @@ export default connect(
         getUserProfile,
         setOpenSpotDataFromProfile,
         markAsInitialized,
-    },
+    }
 )(SchedulingApp);

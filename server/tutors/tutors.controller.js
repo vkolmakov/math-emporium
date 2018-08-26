@@ -80,7 +80,7 @@ export const handlePost = async (req, res, next) => {
             ) {
                 // check if first element of the array is a valid course
                 await createdTutor.setCourses(
-                    req.body.courses.map((course) => course.id),
+                    req.body.courses.map((course) => course.id)
                 );
             } else {
                 res.status(422).json(actionFailed("process", "courses"));
@@ -150,7 +150,7 @@ export const handleUpdate = async (req, res, next) => {
             ) {
                 // check if first element of the array is a valid course
                 await updatedTutor.setCourses(
-                    req.body.courses.map((course) => course.id),
+                    req.body.courses.map((course) => course.id)
                 );
             } else {
                 res.status(422).json(actionFailed("process", "courses"));
