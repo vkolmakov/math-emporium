@@ -339,15 +339,39 @@ export function getAvailableTutors(
         removeScheduledTutors(appointments)
     );
 
-    let availableTutors;
-    try {
-        const scheduleMap = buildScheduleMap(selectTutorsForCourse, schedules);
-        availableTutors = updateScheduleMap(scheduleMap)
-            .get(weekday)
-            .get(time);
-    } catch (e) {
-        // selected schedule does not exist anymore
-        availableTutors = [];
+    const applicableSchedule = schedules.find(
+        (schedule) => schedule.time === time && schedule.weekday === weekday
+    );
+
+    let availableTutors = [];
+    if (applicableSchedule && Array.isArray(applicableSchedule.tutors)) {
+        const isAtLeastOneTutorAvailable =
+            applicableSchedule.tutors.length > appointments.length;
+
+        /**
+         * Make sure to never overbook. If we can't find at least
+         * one tutor to service the appointment, we should bail.
+         *
+         * However, in a case where any tutor is already double/triple-booked
+         * we might end up seeing more tutors than there are actually
+         * available which is fine, because at this point, we cannot tell
+         * which tutors will be _actually_ available until the issue
+         * is manually resolved on the calendar.
+         */
+        if (isAtLeastOneTutorAvailable) {
+            try {
+                const scheduleMap = buildScheduleMap(
+                    selectTutorsForCourse,
+                    schedules
+                );
+                availableTutors = updateScheduleMap(scheduleMap)
+                    .get(weekday)
+                    .get(time);
+            } catch (e) {
+                // selected schedule does not exist anymore
+                availableTutors = [];
+            }
+        }
     }
 
     return availableTutors;
