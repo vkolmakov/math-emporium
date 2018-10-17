@@ -1,4 +1,10 @@
-import { dateTime, pickOneFrom, R, APPOINTMENT_LENGTH } from "../aux";
+import {
+    dateTime,
+    pickOneFrom,
+    R,
+    APPOINTMENT_LENGTH,
+    AVAILABLE_TUTORS_DIAGNOSTIC_DATA_ACTION_NAME,
+} from "../aux";
 import { SETTINGS_KEYS } from "../services/settings/settings.service";
 
 const RECOVERY_SUGGESTION = {
@@ -35,13 +41,14 @@ export default (
         });
 
         const tutorDataPromise = openSpotsService
-            .availableTutors(
+            .availableTutorsWithDiagnosticData(
                 appointmentData.location,
                 appointmentData.course,
                 appointmentDateTime,
-                dateTime.addMinutes(appointmentDateTime, APPOINTMENT_LENGTH)
+                dateTime.addMinutes(appointmentDateTime, APPOINTMENT_LENGTH),
+                AVAILABLE_TUTORS_DIAGNOSTIC_DATA_ACTION_NAME.SCHEDULE_APPOINTMENT
             )
-            .then((availableTutors) => {
+            .then(({ availableTutors, diagnosticData }) => {
                 const wasExplicitlyRequested = !!appointmentData.tutor;
                 const tutorRef = wasExplicitlyRequested
                     ? appointmentData.tutor
@@ -54,7 +61,11 @@ export default (
                 if (isSelectedTutorAvailable) {
                     result = mainStorage.db.models.tutor
                         .findOne({ where: { id: tutorRef.id } })
-                        .then((tutor) => ({ wasExplicitlyRequested, tutor }));
+                        .then((tutor) => ({
+                            wasExplicitlyRequested,
+                            tutor,
+                            diagnosticData,
+                        }));
                 } else {
                     const rejectionReason = wasExplicitlyRequested
                         ? "Requested tutor is no longer available"
@@ -523,5 +534,12 @@ export default (
                     where: { id: appointment.id },
                 });
             });
+    },
+
+    logAppointmentDiagnosticData(
+        scheduledAppointmentId,
+        completeAppointmentData
+    ) {
+        return Promise.resolve();
     },
 });

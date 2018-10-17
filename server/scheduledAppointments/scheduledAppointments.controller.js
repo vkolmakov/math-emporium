@@ -81,7 +81,7 @@ export default class ScheduledAppointmentsController {
                     activeAppointmentsForUser,
                     completeAppointmentData,
                     now
-                ).then(() =>
+                ).then((scheduledAppointment) =>
                     Promise.all([
                         this.cacheService.calendarEvents.invalidate(
                             location.calendarId
@@ -94,6 +94,10 @@ export default class ScheduledAppointmentsController {
                             location,
                             subject,
                             course
+                        ),
+                        this.helper.logAppointmentDiagnosticData(
+                            scheduledAppointment.id,
+                            completeAppointmentData
                         ),
                     ])
                 );
