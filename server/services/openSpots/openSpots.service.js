@@ -377,7 +377,13 @@ export function getAvailableTutors(
     return availableTutors;
 }
 
-export async function availableTutors(location, course, startDate, endDate) {
+export async function availableTutorsWithDiagnosticData(
+    location,
+    course,
+    startDate,
+    endDate,
+    actionName = null
+) {
     /* location: { id: Number },
        course: { id: Number },
        startDate: moment Date,
@@ -423,5 +429,53 @@ export async function availableTutors(location, course, startDate, endDate) {
         specialInstructions
     );
 
-    return getAvailableTutors(schedules, tutors, appointments, [], parameters);
+    const availableTutors = getAvailableTutors(
+        schedules,
+        tutors,
+        appointments,
+        [],
+        parameters
+    );
+
+    /**
+     * Only required for diagnostics
+     */
+    const applicableSchedule = schedules.find(
+        (schedule) => schedule.time === time && schedule.weekday === weekday
+    );
+
+    return {
+        availableTutors,
+        diagnosticData: {
+            actionName,
+            timestamp: moment().toISOString(),
+            calendarState: {
+                calendarId,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                events: calendarEvents,
+            },
+            derivedItems: {
+                scheduledTutors: applicableSchedule
+                    ? applicableSchedule.tutors
+                    : null,
+                appointments,
+                availableTutors,
+            },
+        },
+    };
+}
+
+export function availableTutors(location, course, startDate, endDate) {
+    /* location: { id: Number },
+       course: { id: Number },
+       startDate: moment Date,
+       endDate: moment Date,
+    */
+    return availableTutorsWithDiagnosticData(
+        location,
+        course,
+        startDate,
+        endDate
+    ).then(({ availableTutors }) => availableTutors);
 }
