@@ -95,7 +95,7 @@ export default class ScheduledAppointmentsController {
                             subject,
                             course
                         ),
-                        this.helper.logAppointmentDiagnosticData(
+                        this.helper.writeDiagnosticsDataEntry(
                             scheduledAppointment.id,
                             completeAppointmentData
                         ),
@@ -185,5 +185,15 @@ export default class ScheduledAppointmentsController {
                 res.status(200).json(appointments.map(pluckRequiredFields));
             })
             .catch(() => next(actionFailed("get", "appointments")));
+    }
+
+    getDiagnosticsEntry(req, res, next) {
+        const requestedAppointmentId = parseInt(req.params.id, 10);
+        if (typeof requestedAppointmentId !== "number") {
+            return Promise.reject(
+                "Diagnostic entry appointment ID must be a number"
+            );
+        }
+        return this.helper.getDiagnosticsDataEntry(requestedAppointmentId);
     }
 }

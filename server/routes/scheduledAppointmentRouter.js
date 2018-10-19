@@ -13,6 +13,7 @@ import { getSettingsValue } from "../services/settings/settings.service";
 
 import scheduledAppointmentsHelper from "../scheduledAppointments/scheduledAppointments.helper";
 import ScheduledAppointmentsController from "../scheduledAppointments/scheduledAppointments.controller";
+import ScheduledAppointmentsDiagnosticsDataStorage from "../scheduledAppointments/ScheduledAppointmentsDiagnosticsDataStorage";
 
 export default function createScheduledAppointmentRouter() {
     const ROUTE_PATH_NAME = "scheduled-appointments";
@@ -24,7 +25,8 @@ export default function createScheduledAppointmentRouter() {
         calendarServiceFactory(),
         sendEmail,
         openSpotsService,
-        getSettingsValue
+        getSettingsValue,
+        new ScheduledAppointmentsDiagnosticsDataStorage()
     );
     const controller = new ScheduledAppointmentsController(
         cache,
@@ -53,6 +55,12 @@ export default function createScheduledAppointmentRouter() {
         `/admin/${ROUTE_PATH_NAME}`,
         requireGroup(authGroups.ADMIN),
         controller.getAllActiveAppointments.bind(controller)
+    );
+
+    router.get(
+        `/admin/${ROUTE_PATH_NAME}/diagnostics/:id`,
+        requireGroup(authGroups.ADMIN),
+        controller.getDiagnosticsEntry.bind(controller)
     );
 
     return router;

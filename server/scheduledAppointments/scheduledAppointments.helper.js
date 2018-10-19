@@ -26,7 +26,8 @@ export default (
     calendarService,
     sendEmail,
     openSpotsService,
-    getSettingsValue
+    getSettingsValue,
+    scheduledAppointmentsDiagnosticsDataStorage
 ) => ({
     gatherCompleteAppointmentData(user, appointmentData, appointmentDateTime) {
         const locationPromise = mainStorage.db.models.location.findOne({
@@ -536,10 +537,17 @@ export default (
             });
     },
 
-    logAppointmentDiagnosticData(
-        scheduledAppointmentId,
-        completeAppointmentData
-    ) {
-        return Promise.resolve();
+    writeDiagnosticsDataEntry(scheduledAppointmentId, completeAppointmentData) {
+        const diagnosticData = completeAppointmentData.tutorData.diagnosticData;
+        return scheduledAppointmentsDiagnosticsDataStorage.write(
+            scheduledAppointmentId,
+            diagnosticData
+        );
+    },
+
+    getDiagnosticsDataEntry(scheduledAppointmentId) {
+        return scheduledAppointmentsDiagnosticsDataStorage.read(
+            scheduledAppointmentId
+        );
     },
 });
