@@ -189,11 +189,22 @@ export default class ScheduledAppointmentsController {
 
     getDiagnosticsEntry(req, res, next) {
         const requestedAppointmentId = parseInt(req.params.id, 10);
+
+        let diagnosticsEntryPromise;
         if (typeof requestedAppointmentId !== "number") {
-            return Promise.reject(
-                "Diagnostic entry appointment ID must be a number"
+            diagnosticsEntryPromise = Promise.reject(
+                "Diagnostics entry appointment ID must be a number"
+            );
+        } else {
+            diagnosticsEntryPromise = this.helper.getDiagnosticsDataEntry(
+                requestedAppointmentId
             );
         }
-        return this.helper.getDiagnosticsDataEntry(requestedAppointmentId);
+
+        return diagnosticsEntryPromise
+            .then((diagnosticsEntry) => res.status(200).json(diagnosticsEntry))
+            .catch((error) =>
+                next(actionFailed("get", "diagnosticsEntry", err.toString()))
+            );
     }
 }
