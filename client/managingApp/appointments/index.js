@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import { getAppointmentDiagnosticData } from "./actions";
+
 import LoadingSpinner from "../../components/loadingSpinner";
 import Table from "../../components/table/index";
 
 class ManageAppointments extends Component {
+    showDiagnosticData(appointmentId) {
+        return this.props.getAppointmentDiagnosticData(appointmentId);
+    }
+
     render() {
         const { appointments } = this.props;
 
@@ -35,7 +41,12 @@ class ManageAppointments extends Component {
             },
         ];
 
-        const tableActions = [];
+        const tableActions = [
+            {
+                label: "Diagnosic Data",
+                action: this.showDiagnosticData.bind(this),
+            },
+        ];
 
         return (
             <div className="content">
@@ -63,4 +74,7 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(ManageAppointments);
+export default connect(
+    mapStateToProps,
+    { getAppointmentDiagnosticData }
+)(ManageAppointments);
