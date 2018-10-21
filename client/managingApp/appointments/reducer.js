@@ -8,6 +8,7 @@ const INITIAL_STATE = {
     all: [],
     diagnosticDataDescription: {
         selectedEntry: null,
+        error: null,
         shouldShowModal: false,
     },
 };
@@ -22,13 +23,12 @@ export default (state = INITIAL_STATE, action) => {
             };
         }
         case SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA: {
+            const { data, error } = payload;
             return {
                 ...state,
                 diagnosticDataDescription: {
-                    /**
-                     * When null, requested entry was not found.
-                     */
-                    selectedEntry: payload,
+                    selectedEntry: data,
+                    error: error,
                     shouldShowModal: true,
                 },
             };

@@ -35,14 +35,28 @@ export function getAppointmentDiagnosticData(appointmentId) {
             (response) => {
                 dispatch({
                     type: SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
-                    payload: response.data,
+                    payload: {
+                        error: null,
+                        data: response.data,
+                    },
                 });
             },
             (error) => {
                 if (error.data && error.data.status === 404) {
                     dispatch({
                         type: SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
-                        payload: null,
+                        payload: {
+                            error: error.data,
+                            data: null,
+                        },
+                    });
+                } else {
+                    dispatch({
+                        type: SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
+                        payload: {
+                            error,
+                            data: null,
+                        },
                     });
                 }
             }
