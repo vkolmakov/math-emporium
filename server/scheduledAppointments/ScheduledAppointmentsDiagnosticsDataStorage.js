@@ -25,16 +25,21 @@ export default class ScheduledAppointmentsDiagnosticsDataStorage {
         return ScheduledAppointmentDiagnostic.findOne({
             appointmentId: id,
         }).then((persistedEntry) => {
-            /**
-             * Strip all of the mongoose-specific fields.
-             */
-            return {
-                actionName: persistedEntry.actionName,
-                appointmentId: persistedEntry.appointmentId,
-                timestamp: persistedEntry.appointmentId,
-                calendarState: persistedEntry.calendarState,
-                derivedItems: persistedEntry.derivedItems,
-            };
+            let result = null;
+            if (persistedEntry) {
+                /**
+                 * Strip all of the mongoose-specific fields.
+                 */
+                result = {
+                    actionName: persistedEntry.actionName,
+                    appointmentId: persistedEntry.appointmentId,
+                    timestamp: persistedEntry.appointmentId,
+                    calendarState: persistedEntry.calendarState,
+                    derivedItems: persistedEntry.derivedItems,
+                };
+            }
+
+            return result;
         });
     }
 

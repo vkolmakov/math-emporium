@@ -1,5 +1,5 @@
 import { events } from "../aux";
-import { actionFailed } from "../services/errorMessages";
+import { actionFailed, notFound } from "../services/errorMessages";
 import { successMessage } from "../services/messages";
 import { pluckPublicFields } from "./scheduledAppointments.model";
 
@@ -202,9 +202,14 @@ export default class ScheduledAppointmentsController {
         }
 
         return diagnosticsEntryPromise
-            .then((diagnosticsEntry) => res.status(200).json(diagnosticsEntry))
+            .then((diagnosticsEntry) => {
+                if (diagnosticsEntry) {
+                    return res.status(200).json(diagnosticsEntry);
+                }
+                return next(notFound("diagnostics entry"));
+            })
             .catch((error) =>
-                next(actionFailed("get", "diagnosticsEntry", err.toString()))
+                next(actionFailed("get", "diagnostics entry", error.toString()))
             );
     }
 }
