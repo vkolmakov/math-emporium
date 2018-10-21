@@ -31,13 +31,27 @@ export function getActiveAppointments() {
 
 export function getAppointmentDiagnosticData(appointmentId) {
     return function getAppointmentDiagnosicDataThunk(dispatch) {
-        return axios
-            .get(`${BASE_URL}/diagnostics/${appointmentId}`)
-            .then((response) => {
+        return axios.get(`${BASE_URL}/diagnostics/${appointmentId}`).then(
+            (response) => {
                 dispatch({
                     type: SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
                     payload: response.data,
                 });
-            });
+            },
+            (error) => {
+                if (error.data && error.data.status === 404) {
+                    dispatch({
+                        type: SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
+                        payload: null,
+                    });
+                }
+            }
+        );
+    };
+}
+
+export function clearAppointmentDiagnosticData() {
+    return {
+        type: CLEAR_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA,
     };
 }

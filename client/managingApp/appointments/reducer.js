@@ -6,7 +6,10 @@ import {
 
 const INITIAL_STATE = {
     all: [],
-    currentlyDisplayedDiagnosticDataEntry: null,
+    diagnosticDataDescription: {
+        selectedEntry: null,
+        shouldShowModal: false,
+    },
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -21,14 +24,21 @@ export default (state = INITIAL_STATE, action) => {
         case SET_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA: {
             return {
                 ...state,
-                currentlyDisplayedDiagnosticDataEntry: payload,
+                diagnosticDataDescription: {
+                    /**
+                     * When null, requested entry was not found.
+                     */
+                    selectedEntry: payload,
+                    shouldShowModal: true,
+                },
             };
         }
 
         case CLEAR_CURRENTLY_DISPLAYED_APPOINTMENT_DIAGNOSTIC_DATA: {
             return {
                 ...state,
-                currentlyDisplayedDiagnosticDataEntry: null,
+                diagnosticDataDescription:
+                    INITIAL_STATE.diagnosticDataDescription,
             };
         }
     }
