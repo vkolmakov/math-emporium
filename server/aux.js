@@ -14,6 +14,9 @@ export const TIMESTAMP_FORMAT = "YYYY-MM-DD-HH-mm";
 export const TIMESTAMP_VISIBLE_FORMAT = "MM/DD/YYYY [at] h:mma";
 export const TIMEZONE = "America/Chicago";
 export const APPOINTMENT_LENGTH = 60; // in minutes
+export const AVAILABLE_TUTORS_DIAGNOSTIC_DATA_ACTION_NAME = {
+    SCHEDULE_APPOINTMENT: "SCHEDULE_APPOINTMENT",
+};
 
 const _tz = timezone.timezone;
 _tz.loadingScheme = _tz.loadingSchemes.MANUAL_LOAD;

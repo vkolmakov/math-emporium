@@ -151,3 +151,19 @@
 .confirmation-modal {
     @include base-modal();
 }
+
+.appointment-diagnostic-data-modal {
+    max-width: 50em;
+    margin: 0 auto;
+
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    border: 1px solid $tertiary-color;
+    background: $secondary-color;
+    overflow: auto;
+    outline: none;
+    padding: 1em 3em;
+}

@@ -1,10 +1,20 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import LoadingSpinner from "../../components/loadingSpinner";
-import Table from "../../components/table/index";
+import {
+    getAppointmentDiagnosticData,
+    clearAppointmentDiagnosticData,
+} from "./actions";
+
+import LoadingSpinner from "@client/components/loadingSpinner";
+import Table from "@client/components/table/index";
+import AppointmentDiagnosticDataModal from "./components/AppointmentDiagnosticDataModal";
 
 class ManageAppointments extends Component {
+    showDiagnosticData(appointmentId) {
+        return this.props.getAppointmentDiagnosticData(appointmentId);
+    }
+
     render() {
         const { appointments } = this.props;
 
@@ -35,7 +45,12 @@ class ManageAppointments extends Component {
             },
         ];
 
-        const tableActions = [];
+        const tableActions = [
+            {
+                label: "Diagnosic Data",
+                action: this.showDiagnosticData.bind(this),
+            },
+        ];
 
         return (
             <div className="content">
@@ -50,6 +65,14 @@ class ManageAppointments extends Component {
                         actions={tableActions}
                     />
                 </div>
+                <AppointmentDiagnosticDataModal
+                    diagnosticDataDescription={
+                        this.props.diagnosticDataDescription
+                    }
+                    clearSelection={this.props.clearAppointmentDiagnosticData.bind(
+                        this
+                    )}
+                />
             </div>
         );
     }
@@ -60,7 +83,12 @@ function mapStateToProps(state) {
         appointments: {
             all: state.managing.appointments.all,
         },
+        diagnosticDataDescription:
+            state.managing.appointments.diagnosticDataDescription,
     };
 }
 
-export default connect(mapStateToProps)(ManageAppointments);
+export default connect(
+    mapStateToProps,
+    { getAppointmentDiagnosticData, clearAppointmentDiagnosticData }
+)(ManageAppointments);
