@@ -33,7 +33,7 @@ export default class ScheduledAppointmentsDiagnosticsDataStorage {
                 result = {
                     actionName: persistedEntry.actionName,
                     appointmentId: persistedEntry.appointmentId,
-                    timestamp: persistedEntry.appointmentId,
+                    timestamp: persistedEntry.timestamp,
                     calendarState: persistedEntry.calendarState,
                     derivedItems: persistedEntry.derivedItems,
                 };
