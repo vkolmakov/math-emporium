@@ -8,28 +8,7 @@ import {
 
 import LoadingSpinner from "@client/components/loadingSpinner";
 import Table from "@client/components/table/index";
-import Modal from "@client/components/Modal";
-
-const DiagnosticDataModal = ({ diagnosticDataDescription, clearSelection }) => {
-    const { selectedEntry, error, shouldShowModal } = diagnosticDataDescription;
-
-    let DiagnosticDataDisplay;
-    if (error) {
-        DiagnosticDataDisplay = () => (
-            <pre>{JSON.stringify(error, null, 2)}</pre>
-        );
-    } else {
-        DiagnosticDataDisplay = () => (
-            <pre>{JSON.stringify(selectedEntry, null, 2)}</pre>
-        );
-    }
-
-    return (
-        <Modal isOpen={shouldShowModal} onRequestClose={clearSelection}>
-            <DiagnosticDataDisplay />
-        </Modal>
-    );
-};
+import AppointmentDiagnosticDataModal from "./components/AppointmentDiagnosticDataModal";
 
 class ManageAppointments extends Component {
     showDiagnosticData(appointmentId) {
@@ -86,7 +65,7 @@ class ManageAppointments extends Component {
                         actions={tableActions}
                     />
                 </div>
-                <DiagnosticDataModal
+                <AppointmentDiagnosticDataModal
                     diagnosticDataDescription={
                         this.props.diagnosticDataDescription
                     }
