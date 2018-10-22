@@ -538,10 +538,19 @@ export default (
     },
 
     writeDiagnosticsDataEntry(scheduledAppointmentId, completeAppointmentData) {
-        const diagnosticData = completeAppointmentData.tutorData.diagnosticData;
+        const { tutorData } = completeAppointmentData;
+        const { tutor, diagnosticData, wasExplicitlyRequested } = tutorData;
+        const entryToPersist = {
+            ...diagnosticData,
+            selectedTutor: {
+                name: tutor.name,
+                id: tutor.id,
+                wasExplicitlyRequested,
+            },
+        };
         return scheduledAppointmentsDiagnosticsDataStorage.write(
             scheduledAppointmentId,
-            diagnosticData
+            entryToPersist
         );
     },
 

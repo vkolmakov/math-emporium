@@ -9,6 +9,7 @@ const ScheduledAppointmentDiagnostic = mongoose.model(
             timestamp: Date,
             calendarState: Object,
             derivedItems: Object,
+            selectedTutor: Object,
         },
         {
             /**
@@ -36,6 +37,7 @@ export default class ScheduledAppointmentsDiagnosticsDataStorage {
                     timestamp: persistedEntry.timestamp,
                     calendarState: persistedEntry.calendarState,
                     derivedItems: persistedEntry.derivedItems,
+                    selectedTutor: persistedEntry.selectedTutor,
                 };
             }
 
