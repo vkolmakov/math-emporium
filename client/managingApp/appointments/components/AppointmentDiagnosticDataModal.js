@@ -13,64 +13,52 @@ export default function AppointmentDiagnosticDataModal({
             <pre>{JSON.stringify(error, null, 2)}</pre>
         );
     } else if (selectedEntry) {
-        /**
-         * Calendar events.
-         */
-        const calendarSummaries = selectedEntry.calendarState.events.map(
-            (event) => event.summary
-        );
-        const maxSummaryLength = Math.max(
-            ...calendarSummaries.map((summary) => summary.length)
-        );
-        const calendarEventsDisplay = calendarSummaries
-            .map(
-                (summary) => "| " + summary.padEnd(maxSummaryLength, " ") + " |"
-            )
+        const calendarEventsDisplay = selectedEntry.calendarState.events
+            .map((event) => event.summary)
             .join("\n");
 
-        /**
-         * Appointments.
-         */
         const derivedAppointmentsDisplay = selectedEntry.derivedItems.appointments
             .map(
                 ({ course, tutor, student }) =>
-                    `T: ${tutor} | S: ${student} | C: ${course}`
+                    `Tutor: ${tutor} | Student: ${student} | Course: ${course}`
             )
             .join("\n");
 
-        /**
-         * Schedule.
-         */
         const derivedScheduleDisplay = selectedEntry.derivedItems.scheduledTutors
             .map((tutor) => tutor.name)
             .join("\n");
 
-        /**
-         * Available tutors.
-         */
-        const resultantAvailableTutors = selectedEntry.derivedItems.availableTutors
+        const availableTutors = selectedEntry.derivedItems.availableTutors
             .map((tutor) => tutor.name)
             .join("\n");
+
+        const selectedTutor = selectedEntry.selectedTutor.name;
+
         DiagnosticDataDisplay = () => (
             <div>
                 <div className="calendar-events">
-                    <h2>Present Calendar Events</h2>
+                    <h2>Calendar Events</h2>
                     <pre>{calendarEventsDisplay || "None"}</pre>
                 </div>
 
                 <div>
-                    <h2>Derived Appointments</h2>
+                    <h2>Scheduled Appointments</h2>
                     <pre>{derivedAppointmentsDisplay || "None"}</pre>
                 </div>
 
                 <div>
-                    <h2>Derived Schedule</h2>
+                    <h2>Scheduled Tutors</h2>
                     <pre>{derivedScheduleDisplay || "None"}</pre>
                 </div>
 
                 <div>
-                    <h2>Resultant Available Tutors</h2>
-                    <pre>{resultantAvailableTutors || "None"}</pre>
+                    <h2>Available Tutors</h2>
+                    <pre>{availableTutors || "None"}</pre>
+                </div>
+
+                <div>
+                    <h2>Selected Tutor</h2>
+                    <pre>{selectedTutor || "None"}</pre>
                 </div>
 
                 <div className="raw-data">
@@ -88,7 +76,10 @@ export default function AppointmentDiagnosticDataModal({
     }
 
     return (
-        <Modal isOpen={shouldShowModal} onRequestClose={clearSelection}>
+        <Modal
+            isOpen={shouldShowModal}
+            onRequestClose={clearSelection}
+            className="appointment-diagnostic-data-modal">
             <DiagnosticDataDisplay />
         </Modal>
     );
