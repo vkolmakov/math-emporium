@@ -1,5 +1,5 @@
 import { events } from "../aux";
-import { actionFailed } from "../services/errorMessages";
+import { actionFailed, notFound } from "../services/errorMessages";
 import { successMessage } from "../services/messages";
 import { pluckPublicFields } from "./scheduledAppointments.model";
 
@@ -81,7 +81,7 @@ export default class ScheduledAppointmentsController {
                     activeAppointmentsForUser,
                     completeAppointmentData,
                     now
-                ).then(() =>
+                ).then((scheduledAppointment) =>
                     Promise.all([
                         this.cacheService.calendarEvents.invalidate(
                             location.calendarId
@@ -94,6 +94,10 @@ export default class ScheduledAppointmentsController {
                             location,
                             subject,
                             course
+                        ),
+                        this.helper.writeDiagnosticsDataEntry(
+                            scheduledAppointment.id,
+                            completeAppointmentData
                         ),
                     ])
                 );
@@ -181,5 +185,31 @@ export default class ScheduledAppointmentsController {
                 res.status(200).json(appointments.map(pluckRequiredFields));
             })
             .catch(() => next(actionFailed("get", "appointments")));
+    }
+
+    getDiagnosticsEntry(req, res, next) {
+        const requestedAppointmentId = parseInt(req.params.id, 10);
+
+        let diagnosticsEntryPromise;
+        if (typeof requestedAppointmentId !== "number") {
+            diagnosticsEntryPromise = Promise.reject(
+                "Diagnostics entry appointment ID must be a number"
+            );
+        } else {
+            diagnosticsEntryPromise = this.helper.getDiagnosticsDataEntry(
+                requestedAppointmentId
+            );
+        }
+
+        return diagnosticsEntryPromise
+            .then((diagnosticsEntry) => {
+                if (diagnosticsEntry) {
+                    return res.status(200).json(diagnosticsEntry);
+                }
+                return next(notFound("diagnostics entry"));
+            })
+            .catch((error) =>
+                next(actionFailed("get", "diagnostics entry", error.toString()))
+            );
     }
 }
