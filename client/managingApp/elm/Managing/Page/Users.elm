@@ -9,6 +9,7 @@ import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
 import Managing.Data.User exposing (User)
+import Managing.View.DataTable as DataTable
 
 
 -- MODEL
@@ -50,36 +51,30 @@ update msg model =
 
 view model =
     let
-        getData user =
-            [ user.email
-            , toString user.group
-            , Maybe.withDefault "" user.phone
-            , dateToDisplayString user.lastSigninDate
-            ]
-
-        headers =
-            [ "Email"
-            , "Group"
-            , "Phone"
-            , "Last sign-in date"
-            ]
-
-        dataRows user =
-            List.map2 (,) headers (getData user)
-                |> List.map (\( label, entry ) -> dataTableCellText label entry)
-
-        actionRows user =
-            [ dataTableCellEdit (Route.UserDetail user.id) ]
-
         viewUserRow user =
-            dataTableRow (actionRows user ++ dataRows user)
+            let
+                labelsWithData =
+                    [ ( "Email", user.email )
+                    , ( "Group", toString user.group )
+                    , ( "Phone", Maybe.withDefault "" user.phone )
+                    , ( "Last sign-in date", dateToDisplayString user.lastSigninDate )
+                    ]
+
+                fields =
+                    labelsWithData
+                        |> List.map (\( label, entry ) -> DataTable.textElement label entry)
+
+                actions =
+                    [ DataTable.editLinkElement (Route.UserDetail user.id) ]
+            in
+                DataTable.item (actions ++ fields)
     in
         case model.users of
             RemoteData.Loading ->
                 loadingSpinner
 
             RemoteData.Available users ->
-                H.div [] (users |> List.map viewUserRow)
+                DataTable.table (users |> List.map viewUserRow)
 
             RemoteData.Error e ->
                 H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
@@ -118,23 +113,6 @@ dateToDisplayString date =
     in
         List.map (\tok -> tok date) toks
             |> String.join ""
-
-
-dataTableRow : List (Html msg) -> Html msg
-dataTableRow content =
-    H.div [ Styles.dataTableRow ] content
-
-
-dataTableCellText : String -> String -> Html msg
-dataTableCellText label text =
-    H.div [ Styles.dataTableCellText, A.attribute "data-label" label ] [ H.text text ]
-
-
-dataTableCellEdit : Route -> Html msg
-dataTableCellEdit route =
-    H.div [ Styles.dataTableCellEditLink ]
-        [ H.a [ Route.href route ] [ H.text "Edit" ]
-        ]
 
 
 
