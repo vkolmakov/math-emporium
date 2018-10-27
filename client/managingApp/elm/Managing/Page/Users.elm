@@ -4,12 +4,12 @@ import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Attributes as A
 import Http
 import Json.Decode as Decode
-import Date exposing (Date)
 import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
 import Managing.Data.User exposing (User)
 import Managing.View.DataTable as DataTable
+import Managing.Utils.DateUtils as DateUtils
 
 
 -- MODEL
@@ -57,7 +57,7 @@ view model =
                     [ ( "Email", user.email )
                     , ( "Group", toString user.group )
                     , ( "Phone", Maybe.withDefault "" user.phone )
-                    , ( "Last sign-in date", dateToDisplayString user.lastSigninDate )
+                    , ( "Last sign-in date", DateUtils.toDisplayString user.lastSigninDate )
                     ]
 
                 fields =
@@ -89,30 +89,6 @@ loadingSpinner =
     H.div [ Styles.loadingSpinnerContainer ]
         [ H.div [ Styles.loadingSpinner ] []
         ]
-
-
-dateToDisplayString : Date -> String
-dateToDisplayString date =
-    let
-        symbol s =
-            \_ -> s
-
-        toks =
-            [ toString << Date.dayOfWeek
-            , symbol ", "
-            , toString << Date.month
-            , symbol " "
-            , toString << Date.day
-            , symbol " "
-            , toString << Date.year
-            , symbol ", "
-            , toString << Date.hour
-            , symbol ":"
-            , String.padLeft 2 '0' << toString << Date.minute
-            ]
-    in
-        List.map (\tok -> tok date) toks
-            |> String.join ""
 
 
 
