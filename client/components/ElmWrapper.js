@@ -16,12 +16,12 @@ export default class ElmWrapper extends Component {
         return false;
     }
 
-    storeRootRef = (ref) => {
+    storeRootRef(ref) {
         this.rootRef = ref;
-    };
+    }
 
     render() {
         const { rootElementProps } = this.props;
-        return <div {...rootElementProps} ref={this.storeRootRef} />;
+        return <div {...rootElementProps} ref={this.storeRootRef.bind(this)} />;
     }
 }
