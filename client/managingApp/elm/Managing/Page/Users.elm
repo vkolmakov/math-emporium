@@ -1,14 +1,13 @@
 module Managing.Page.Users exposing (Model, Msg, init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
 import Http
 import Json.Decode as Decode
-import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
 import Managing.Data.User exposing (User)
 import Managing.View.DataTable as DataTable
+import Managing.View.Loading exposing (spinner)
 import Managing.Utils.DateUtils as DateUtils
 
 
@@ -71,24 +70,13 @@ view model =
     in
         case model.users of
             RemoteData.Loading ->
-                loadingSpinner
+                spinner
 
             RemoteData.Available users ->
                 DataTable.table (users |> List.map viewUserRow)
 
             RemoteData.Error e ->
                 H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
-
-
-
--- VIEW GENERIC
-
-
-loadingSpinner : Html msg
-loadingSpinner =
-    H.div [ Styles.loadingSpinnerContainer ]
-        [ H.div [ Styles.loadingSpinner ] []
-        ]
 
 
 
