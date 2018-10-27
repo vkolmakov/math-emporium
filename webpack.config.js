@@ -48,6 +48,7 @@ module.exports = {
                 options: {
                     forceWatch: true,
                     cache: false,
+                    debug: true,
                 },
             },
             {
