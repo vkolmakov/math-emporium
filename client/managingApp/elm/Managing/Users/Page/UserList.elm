@@ -24,8 +24,17 @@ init =
     Model RemoteData.Loading
 
 
-initCmd =
-    getUsers
+initCmd : Model -> Cmd Msg
+initCmd model =
+    case model.users of
+        RemoteData.Loading ->
+            getUsers
+
+        RemoteData.Error _ ->
+            Cmd.none
+
+        RemoteData.Available _ ->
+            Cmd.none
 
 
 

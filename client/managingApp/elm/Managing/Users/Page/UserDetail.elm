@@ -23,8 +23,8 @@ init =
     Model RemoteData.Loading Nothing
 
 
-initCmd =
-    getUserDetail
+initCmd userId =
+    getUserDetail userId
 
 
 

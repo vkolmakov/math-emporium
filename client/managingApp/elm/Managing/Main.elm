@@ -35,9 +35,13 @@ init location =
     let
         route =
             (Route.fromLocation location)
+
+        initialModel =
+            Model route Users.init UserDetail.init
     in
-        ( Model route Users.init UserDetail.init
-        , getInitCmd route
+        ( initialModel
+        , getInitCmd route initialModel
+          -- for initialization, passed route is the same as one on the model
         )
 
 
@@ -60,7 +64,7 @@ update msg model =
                     Route.fromLocation newLocation
 
                 newCmd =
-                    getInitCmd newRoute
+                    getInitCmd newRoute model
             in
                 ( { model | route = newRoute }, newCmd )
 
@@ -79,13 +83,17 @@ update msg model =
                 ( { model | userDetailPageModel = innerModel }, Cmd.map UserDetailPageMsg innerCmd )
 
 
-getInitCmd route =
+{-| Returns a command for a NEW route with the PREVIOUS model.
+This is useful for determining whether or not the data has to
+be refreshed when navigating to a new route
+-}
+getInitCmd route model =
     case route of
         Route.Home ->
             Cmd.none
 
         Route.UserList ->
-            Cmd.map UsersPageMsg Users.initCmd
+            Cmd.map UsersPageMsg (Users.initCmd model.usersPageModel)
 
         Route.UserDetail userId ->
             Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
