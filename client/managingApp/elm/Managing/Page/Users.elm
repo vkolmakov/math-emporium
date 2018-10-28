@@ -1,11 +1,12 @@
 module Managing.Page.Users exposing (Model, Msg, init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
+import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode
 import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
-import Managing.Data.User exposing (User)
+import Managing.Data.User exposing (User, accessGroupToString)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.Utils.DateUtils as DateUtils
@@ -16,11 +17,12 @@ import Managing.Utils.DateUtils as DateUtils
 
 type alias Model =
     { users : RemoteData.RemoteData (List User)
+    , cats : List Int
     }
 
 
 init =
-    Model RemoteData.Loading
+    Model RemoteData.Loading []
 
 
 initCmd =
@@ -54,8 +56,7 @@ view model =
             let
                 labelsWithData =
                     [ ( "Email", user.email )
-                    , ( "Group", toString user.group )
-                    , ( "Phone", Maybe.withDefault "" user.phone )
+                    , ( "Group", accessGroupToString user.group )
                     , ( "Last sign-in date", DateUtils.toDisplayString user.lastSigninDate )
                     ]
 
@@ -64,9 +65,10 @@ view model =
                         |> List.map (\( label, entry ) -> DataTable.textElement label entry)
 
                 actions =
-                    [ DataTable.editLinkElement (Route.UserDetail user.id) ]
+                    [ DataTable.editLinkElement (Route.UserDetail user.id)
+                    ]
             in
-                DataTable.item (actions ++ fields)
+                DataTable.item (fields ++ actions)
     in
         case model.users of
             RemoteData.Loading ->
@@ -89,4 +91,4 @@ getUsers =
         url =
             "/api/users"
     in
-        Http.send ReceiveUsers (Http.get url (Managing.Data.User.decode |> Decode.list))
+        Http.send ReceiveUsers (Http.get url (Managing.Data.User.decodeUser |> Decode.list))

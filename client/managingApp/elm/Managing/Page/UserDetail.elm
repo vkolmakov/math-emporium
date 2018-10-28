@@ -1,18 +1,20 @@
 module Managing.Page.UserDetail exposing (Model, Msg, init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
+import Html.Styled.Attributes as A
 import Http
-import Date exposing (Date)
 import Managing.Styles as Styles
 import Managing.Request.RemoteData as RemoteData
-import Managing.Data.User exposing (User)
+import Managing.Data.User exposing (UserDetail)
+import Managing.Utils.DateUtils as DateUtils
+import Managing.View.Loading exposing (spinner)
 
 
 -- MODEL
 
 
 type alias Model =
-    { userDetail : RemoteData.RemoteData User
+    { userDetail : RemoteData.RemoteData UserDetail
     , id : Maybe Int
     }
 
@@ -30,7 +32,7 @@ initCmd =
 
 
 type Msg
-    = ReceiveUserDetail (Result Http.Error User)
+    = ReceiveUserDetail (Result Http.Error UserDetail)
 
 
 update msg model =
@@ -49,48 +51,43 @@ update msg model =
 view model =
     case model.userDetail of
         RemoteData.Loading ->
-            loadingSpinner
+            spinner
 
-        RemoteData.Available users ->
-            H.div [] [ H.text <| "At user route: " ++ toString model.id ]
+        RemoteData.Available user ->
+            H.div [] [ displayUserDetail user ]
 
         RemoteData.Error e ->
             H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
+
+
+displayUserDetail user =
+    H.div []
+        [ textField "ID" (toString user.id) False
+        , textField "Email" user.email False
+        , textField "Group" (toString user.group) False
+        , textField "Phone" (toString user.phone) False
+        , textField "Last Signin Date" (DateUtils.toDisplayString user.lastSigninDate) False
+        ]
 
 
 
 -- VIEW GENERIC
 
 
-loadingSpinner : Html msg
-loadingSpinner =
-    H.div [ Styles.loadingSpinnerContainer ]
-        [ H.div [ Styles.loadingSpinner ] []
-        ]
-
-
-dateToDisplayString : Date -> String
-dateToDisplayString date =
+textField : String -> String -> Bool -> Html msg
+textField label value isEditable =
     let
-        symbol s =
-            \_ -> s
+        fieldLabel =
+            H.label [ Styles.fieldLabel ] [ H.text label ]
 
-        toks =
-            [ toString << Date.dayOfWeek
-            , symbol ", "
-            , toString << Date.month
-            , symbol " "
-            , toString << Date.day
-            , symbol " "
-            , toString << Date.year
-            , symbol ", "
-            , toString << Date.hour
-            , symbol ":"
-            , String.padLeft 2 '0' << toString << Date.minute
-            ]
+        fieldInput =
+            H.input [ Styles.fieldTextInput, A.disabled <| not isEditable, A.value value ] []
     in
-        List.map (\tok -> tok date) toks
-            |> String.join ""
+        H.div
+            [ Styles.fieldGroup ]
+            [ fieldLabel
+            , fieldInput
+            ]
 
 
 
@@ -103,4 +100,4 @@ getUserDetail id =
         url =
             "/api/users/" ++ toString id
     in
-        Http.send ReceiveUserDetail (Http.get url Managing.Data.User.decode)
+        Http.send ReceiveUserDetail (Http.get url Managing.Data.User.decodeUserDetail)

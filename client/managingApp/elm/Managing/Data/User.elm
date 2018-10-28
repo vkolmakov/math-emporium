@@ -1,4 +1,4 @@
-module Managing.Data.User exposing (User, decode)
+module Managing.Data.User exposing (User, UserDetail, decodeUser, decodeUserDetail, accessGroupToString)
 
 import Date exposing (Date)
 import Json.Decode as Decode
@@ -8,19 +8,52 @@ type alias User =
     { id : Int
     , email : String
     , group : AccessGroup
+    , lastSigninDate : Date
+    }
+
+
+type alias UserDetail =
+    { id : Int
+    , email : String
+    , group : AccessGroup
     , phone : Maybe String
     , lastSigninDate : Date
     }
 
 
-decode : Decode.Decoder User
-decode =
-    Decode.map5 User
+decodeUser : Decode.Decoder User
+decodeUser =
+    Decode.map4 User
+        (Decode.field "id" Decode.int)
+        (Decode.field "email" Decode.string)
+        (Decode.field "group" Decode.int |> Decode.andThen decodeAccessGroup)
+        (Decode.field "lastSigninAt" Decode.string |> Decode.andThen decodeDate)
+
+
+decodeUserDetail : Decode.Decoder UserDetail
+decodeUserDetail =
+    Decode.map5 UserDetail
         (Decode.field "id" Decode.int)
         (Decode.field "email" Decode.string)
         (Decode.field "group" Decode.int |> Decode.andThen decodeAccessGroup)
         (Decode.field "phoneNumber" <| Decode.nullable Decode.string)
         (Decode.field "lastSigninAt" Decode.string |> Decode.andThen decodeDate)
+
+
+accessGroupToString : AccessGroup -> String
+accessGroupToString group =
+    case group of
+        UserGroup ->
+            "User"
+
+        EmployeeGroup ->
+            "Employee"
+
+        EmployerGroup ->
+            "Employer"
+
+        AdminGroup ->
+            "Admin"
 
 
 
