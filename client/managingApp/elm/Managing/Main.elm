@@ -1,17 +1,11 @@
 module Managing.Main exposing (main)
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
-import Http
 import Navigation
-import Json.Decode as Decode
-import Date exposing (Date)
 import Managing.Styles as Styles
-import Managing.Data.User exposing (User)
 import Managing.Route as Route exposing (Route)
-import Managing.Request.RemoteData as RemoteData
-import Managing.Page.Users as Users
-import Managing.Page.UserDetail as UserDetail
+import Managing.Users.Page.UserList as Users
+import Managing.Users.Page.UserDetail as UserDetail
 
 
 main : Program Never Model Msg

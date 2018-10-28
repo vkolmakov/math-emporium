@@ -1,4 +1,4 @@
-module Managing.Data.User exposing (User, UserDetail, decodeUser, decodeUserDetail, accessGroupToString)
+module Managing.Users.Data.User exposing (User, UserDetail, decodeUser, decodeUserDetail, accessGroupToString)
 
 import Date exposing (Date)
 import Json.Decode as Decode
