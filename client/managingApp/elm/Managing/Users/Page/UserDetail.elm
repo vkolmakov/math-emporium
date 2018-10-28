@@ -5,7 +5,7 @@ import Html.Styled.Attributes as A
 import Http
 import Managing.Styles as Styles
 import Managing.Request.RemoteData as RemoteData
-import Managing.Users.Data.User exposing (UserDetail)
+import Managing.Users.Data.UserDetail exposing (UserDetail)
 import Managing.Utils.DateUtils as DateUtils
 import Managing.View.Loading exposing (spinner)
 
@@ -100,4 +100,4 @@ getUserDetail id =
         url =
             "/api/users/" ++ toString id
     in
-        Http.send ReceiveUserDetail (Http.get url Managing.Users.Data.User.decodeUserDetail)
+        Http.send ReceiveUserDetail (Http.get url Managing.Users.Data.UserDetail.decode)

@@ -1,12 +1,12 @@
 module Managing.Users.Page.UserList exposing (Model, Msg, init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Events exposing (onClick)
 import Http
 import Json.Decode as Decode
 import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
-import Managing.Users.Data.User exposing (User, accessGroupToString)
+import Managing.Users.Data.UserListEntry exposing (UserListEntry)
+import Managing.Users.Data.Shared exposing (accessGroupToString)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.Utils.DateUtils as DateUtils
@@ -16,7 +16,7 @@ import Managing.Utils.DateUtils as DateUtils
 
 
 type alias Model =
-    { users : RemoteData.RemoteData (List User)
+    { users : RemoteData.RemoteData (List UserListEntry)
     , cats : List Int
     }
 
@@ -34,7 +34,7 @@ initCmd =
 
 
 type Msg
-    = ReceiveUsers (Result Http.Error (List User))
+    = ReceiveUsers (Result Http.Error (List UserListEntry))
 
 
 update msg model =
@@ -91,4 +91,4 @@ getUsers =
         url =
             "/api/users"
     in
-        Http.send ReceiveUsers (Http.get url (Managing.Users.Data.User.decodeUser |> Decode.list))
+        Http.send ReceiveUsers (Http.get url (Managing.Users.Data.UserListEntry.decode |> Decode.list))
