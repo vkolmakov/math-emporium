@@ -7,7 +7,7 @@ import Html.Styled.Attributes as A
 
 type Route
     = Home
-    | Users
+    | UserList
     | UserDetail Int
     | Unknown
 
@@ -17,7 +17,7 @@ fromLocation location =
     let
         matchers =
             UrlParser.oneOf
-                [ UrlParser.map Users (s "users")
+                [ UrlParser.map UserList (s "users")
                 , UrlParser.map UserDetail (s "users" </> UrlParser.int)
                 ]
     in
@@ -40,7 +40,7 @@ toHref r =
                 Home ->
                     ""
 
-                Users ->
+                UserList ->
                     "users"
 
                 UserDetail id ->

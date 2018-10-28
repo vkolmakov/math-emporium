@@ -83,7 +83,7 @@ getInitCmd route =
         Route.Home ->
             Cmd.none
 
-        Route.Users ->
+        Route.UserList ->
             Cmd.map UsersPageMsg Users.initCmd
 
         Route.UserDetail userId ->
@@ -110,7 +110,7 @@ viewNavbar model =
     let
         links =
             [ H.a [ Route.href Route.Home ] [ H.text "Home" ]
-            , H.a [ Route.href Route.Users ] [ H.text "Users" ]
+            , H.a [ Route.href Route.UserList ] [ H.text "Users" ]
             ]
     in
         H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
@@ -124,7 +124,7 @@ viewPageContent model =
                 Route.Home ->
                     H.text "At home route"
 
-                Route.Users ->
+                Route.UserList ->
                     H.map UsersPageMsg <| Users.view model.usersPageModel
 
                 Route.UserDetail id ->
