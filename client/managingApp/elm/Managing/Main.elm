@@ -5,7 +5,7 @@ import Navigation
 import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
 import Managing.View.SectionNav as SectionNav
-import Managing.Users.Page.UserList as Users
+import Managing.Users.Page.UserList as UserList
 import Managing.Users.Page.UserDetail as UserDetail
 
 
@@ -25,7 +25,7 @@ main =
 
 type alias Model =
     { route : Route
-    , usersPageModel : Users.Model
+    , userListPageModel : UserList.Model
     , userDetailPageModel : UserDetail.Model
     }
 
@@ -37,7 +37,7 @@ init location =
             (Route.fromLocation location)
 
         initialModel =
-            Model route Users.init UserDetail.init
+            Model route UserList.init UserDetail.init
     in
         ( initialModel
         , getInitCmd route initialModel
@@ -51,7 +51,7 @@ init location =
 
 type Msg
     = BrowserLocationChange Navigation.Location
-    | UsersPageMsg Users.Msg
+    | UserListPageMsg UserList.Msg
     | UserDetailPageMsg UserDetail.Msg
 
 
@@ -68,12 +68,12 @@ update msg model =
             in
                 ( { model | route = newRoute }, newCmd )
 
-        UsersPageMsg msg ->
+        UserListPageMsg msg ->
             let
                 ( innerModel, innerCmd ) =
-                    Users.update msg model.usersPageModel
+                    UserList.update msg model.userListPageModel
             in
-                ( { model | usersPageModel = innerModel }, Cmd.map UsersPageMsg innerCmd )
+                ( { model | userListPageModel = innerModel }, Cmd.map UserListPageMsg innerCmd )
 
         UserDetailPageMsg msg ->
             let
@@ -93,7 +93,7 @@ getInitCmd route model =
             Cmd.none
 
         Route.UserList ->
-            Cmd.map UsersPageMsg (Users.initCmd model.usersPageModel)
+            Cmd.map UserListPageMsg (UserList.initCmd model.userListPageModel)
 
         Route.UserDetail userId ->
             Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
@@ -146,7 +146,7 @@ viewPageContent model =
                     H.text "At home route"
 
                 Route.UserList ->
-                    H.map UsersPageMsg <| Users.view model.usersPageModel
+                    H.map UserListPageMsg <| UserList.view model.userListPageModel
 
                 Route.UserDetail id ->
                     H.map UserDetailPageMsg <| UserDetail.view model.userDetailPageModel
