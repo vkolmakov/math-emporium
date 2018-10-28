@@ -105,10 +105,26 @@ navItems =
     ]
 
 
+getHighlightedRoute : Route -> Maybe Route
+getHighlightedRoute route =
+    case route of
+        Route.UserList ->
+            Just Route.UserList
+
+        Route.UserDetail _ ->
+            Just Route.UserList
+
+        Route.Home ->
+            Just Route.Home
+
+        _ ->
+            Nothing
+
+
 view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
-        [ SectionNav.view navItems
+        [ SectionNav.view navItems (getHighlightedRoute model.route)
         , viewPageContent model
         ]
 
