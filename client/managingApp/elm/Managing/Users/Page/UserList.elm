@@ -62,10 +62,10 @@ view model =
 
                 fields =
                     labelsWithData
-                        |> List.map (\( label, entry ) -> DataTable.textElement label entry)
+                        |> List.map (\( label, entry ) -> DataTable.textField label entry)
 
                 actions =
-                    [ DataTable.editLinkElement (Route.UserDetail user.id)
+                    [ DataTable.editLink (Route.UserDetail user.id)
                     ]
             in
                 DataTable.item (fields ++ actions)

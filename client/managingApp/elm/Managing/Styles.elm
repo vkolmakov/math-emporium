@@ -3,22 +3,56 @@ module Managing.Styles
         ( mainContainer
         , loadingSpinner
         , loadingSpinnerContainer
-        , dataTableRow
-        , dataTableCellText
-        , dataTableCellEditLink
+        , dataTableItem
+        , dataTableField
+        , dataTableEditLinkContainer
+        , dataTableAction
+        , dataTableFieldLabelWrapper
+        , dataTableFieldLabelContent
+        , dataTableFieldContentText
         , fieldLabel
         , fieldGroup
         , fieldTextInput
         )
 
 import Html.Styled exposing (Attribute)
-import Css exposing (em, auto, px, pct, hex)
+import Css exposing (em, auto, px, pct, hex, int)
 import Css.Media as Media
 import Html.Styled.Attributes as A exposing (css)
 
 
-defaultFontFamilies =
-    [ "Open Sans", "Optima", "Helvetica", "Arial", "sans-serif" ]
+-- Shared
+
+
+type alias Theme =
+    { fontFamilies : List String
+    , primaryColor : Css.Color
+    , primaryColorFocused : Css.Color
+    , primaryTextColor : Css.Color
+    , secondaryColor : Css.Color
+    , tertiaryColor : Css.Color
+    }
+
+
+theme : Theme
+theme =
+    { fontFamilies = [ "Open Sans", "Optima", "Helvetica", "Arial", "sans-serif" ]
+    , primaryColor = hex "#D9EDF9"
+    , primaryColorFocused = hex "#ADD3E9"
+    , primaryTextColor = hex "#000000"
+    , secondaryColor = hex "#FFFFFF"
+    , tertiaryColor = hex "#A3A3A3"
+    }
+
+
+link =
+    Css.batch
+        [ Css.color theme.primaryTextColor
+        ]
+
+
+
+-- Top-level
 
 
 mainContainer : Attribute msg
@@ -36,8 +70,8 @@ loadingSpinner =
         [ Css.borderRadius (pct 50)
         , Css.width (px 24)
         , Css.height (px 24)
-        , Css.border3 (Css.rem 0.25) Css.solid (hex "#d9edf9")
-        , Css.borderTopColor (hex "#add3e9")
+        , Css.border3 (Css.rem 0.25) Css.solid theme.primaryColor
+        , Css.borderTopColor theme.primaryColorFocused
         , Css.property "animation" "spin 0.5s infinite"
         ]
 
@@ -50,26 +84,65 @@ loadingSpinnerContainer =
         ]
 
 
-dataTableRow : Attribute msg
-dataTableRow =
-    css
-        [ Css.marginBottom (em 1) ]
+
+-- DataTable
 
 
-dataTableCellText : Attribute msg
-dataTableCellText =
+dataTableFieldPadding =
+    em 0.25
+
+
+dataTableItem : Attribute msg
+dataTableItem =
     css
-        [ desktopStyles
-            [-- TODO: add cancelation of the content rule
-            ]
-        , Css.before
-            [ Css.property "content" "attr(data-label)\": \"" ]
+        [ Css.marginBottom (em 1)
         ]
 
 
-dataTableCellEditLink : Attribute msg
-dataTableCellEditLink =
+dataTableField : Attribute msg
+dataTableField =
+    css
+        [ Css.firstChild
+            [ Css.borderTop3 (px 1) Css.solid theme.tertiaryColor
+            ]
+        , Css.displayFlex
+        , Css.flexDirection Css.row
+        , Css.borderBottom3 (px 1) Css.solid theme.tertiaryColor
+        , Css.borderLeft3 (px 1) Css.solid theme.tertiaryColor
+        , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
+        ]
+
+
+dataTableFieldLabelWrapper =
+    css
+        [ Css.flex <| int 1
+        , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
+        , Css.padding dataTableFieldPadding
+        ]
+
+
+dataTableFieldLabelContent =
     css []
+
+
+dataTableFieldContentText =
+    css
+        [ Css.flex <| int 3
+        , Css.padding dataTableFieldPadding
+        ]
+
+
+dataTableEditLinkContainer : Attribute msg
+dataTableEditLinkContainer =
+    css [ Css.padding dataTableFieldPadding ]
+
+
+dataTableAction =
+    css [ link ]
+
+
+
+-- Form
 
 
 fieldLabel =
@@ -92,7 +165,7 @@ fieldTextInput =
             [ Css.cursor Css.notAllowed
             ]
         , Css.fontFamilies
-            defaultFontFamilies
+            theme.fontFamilies
         , Css.fontSize (em 1)
         , Css.padding (em 0.4)
         ]
