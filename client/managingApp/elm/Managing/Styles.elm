@@ -3,6 +3,9 @@ module Managing.Styles
         ( mainContainer
         , loadingSpinner
         , loadingSpinnerContainer
+        , sectionNavContainer
+        , sectionNavItem
+        , sectionNavItemLink
         , dataTableItem
         , dataTableField
         , dataTableEditLinkContainer
@@ -91,6 +94,57 @@ loadingSpinnerContainer =
         [ Css.displayFlex
         , Css.justifyContent Css.center
         ]
+
+
+
+-- SectionNav
+
+
+sectionNavContainer =
+    css
+        [ Css.displayFlex
+        , Css.listStyleType Css.none
+        , Css.padding (px 0)
+        ]
+
+
+sectionNavItem =
+    css
+        [ Css.displayFlex
+        , Css.marginRight (em 0.5)
+        ]
+
+
+sectionNavItemLink =
+    let
+        focusedLink =
+            [ Css.fontWeight Css.bold
+            , Css.backgroundColor theme.primaryColor
+            ]
+    in
+        css
+            [ Css.after
+                -- following styles are required to make the container
+                -- fill up the space as if the text was bold
+                -- to avoid containers jumping around when we transition
+                -- to bold text on hover/focus
+                [ Css.property "content" "attr(data-text)"
+                , Css.display Css.block
+                , Css.fontWeight Css.bold
+                , Css.overflow Css.hidden
+                , Css.visibility Css.hidden
+                , Css.height (px 0)
+                ]
+            , Css.hover focusedLink
+            , Css.focus focusedLink
+
+            -- individual styles
+            , Css.border3 (px 1) Css.solid theme.tertiaryColor
+            , Css.borderRadius (px 5)
+            , Css.padding (em 0.5)
+            , Css.textDecoration Css.none
+            , Css.color theme.primaryTextColor
+            ]
 
 
 

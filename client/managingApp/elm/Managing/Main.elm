@@ -4,6 +4,7 @@ import Html.Styled as H exposing (Attribute, Html)
 import Navigation
 import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
+import Managing.View.SectionNav as SectionNav
 import Managing.Users.Page.UserList as Users
 import Managing.Users.Page.UserDetail as UserDetail
 
@@ -97,23 +98,19 @@ getInitCmd route =
 -- VIEW
 
 
+navItems : List SectionNav.NavItem
+navItems =
+    [ SectionNav.NavItem Route.Home "Home"
+    , SectionNav.NavItem Route.UserList "Users"
+    ]
+
+
 view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
-        [ viewNavbar model
+        [ SectionNav.view navItems
         , viewPageContent model
         ]
-
-
-viewNavbar : Model -> Html Msg
-viewNavbar model =
-    let
-        links =
-            [ H.a [ Route.href Route.Home ] [ H.text "Home" ]
-            , H.a [ Route.href Route.UserList ] [ H.text "Users" ]
-            ]
-    in
-        H.ul [] (links |> List.map (\l -> H.li [] [ l ]))
 
 
 viewPageContent : Model -> Html Msg
