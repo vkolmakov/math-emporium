@@ -1,7 +1,14 @@
-module Managing.View.DataTable exposing (table, item, textField, editLink)
+module Managing.View.DataTable
+    exposing
+        ( table
+        , item
+        , textField
+        , editLink
+        , actionContainer
+        , action
+        )
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
 import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
 
@@ -30,8 +37,15 @@ textField label text =
         ]
 
 
+actionContainer : List (Html msg) -> Html msg
+actionContainer actionElements =
+    H.div [ Styles.dataTableEditLinkContainer ] actionElements
+
+
+action label onClickAttribute =
+    H.button [ Styles.dataTableAction, onClickAttribute ] [ H.text label ]
+
+
 editLink : Route -> Html msg
 editLink route =
-    H.div [ Styles.dataTableEditLinkContainer ]
-        [ H.a [ Styles.dataTableAction, Route.href route ] [ H.text "Edit" ]
-        ]
+    H.a [ Styles.dataTableAction, Route.href route ] [ H.text "Edit" ]

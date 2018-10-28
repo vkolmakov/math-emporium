@@ -17,12 +17,11 @@ import Managing.Utils.DateUtils as DateUtils
 
 type alias Model =
     { users : RemoteData.RemoteData (List UserListEntry)
-    , cats : List Int
     }
 
 
 init =
-    Model RemoteData.Loading []
+    Model RemoteData.Loading
 
 
 initCmd =
@@ -65,10 +64,11 @@ view model =
                         |> List.map (\( label, entry ) -> DataTable.textField label entry)
 
                 actions =
-                    [ DataTable.editLink (Route.UserDetail user.id)
-                    ]
+                    DataTable.actionContainer
+                        [ DataTable.editLink (Route.UserDetail user.id)
+                        ]
             in
-                DataTable.item (fields ++ actions)
+                DataTable.item (fields ++ [ actions ])
     in
         case model.users of
             RemoteData.Loading ->

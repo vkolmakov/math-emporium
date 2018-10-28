@@ -48,6 +48,15 @@ theme =
 link =
     Css.batch
         [ Css.color theme.primaryTextColor
+        , Css.textDecoration Css.underline
+
+        -- potentially override some default browser button styles
+        , Css.fontSize (em 1)
+        , Css.cursor (Css.pointer)
+        , Css.fontFamily Css.inherit
+        , Css.border (px 0)
+        , Css.padding (px 0)
+        , Css.backgroundColor (Css.transparent)
         ]
 
 
@@ -122,7 +131,7 @@ dataTableFieldLabelWrapper =
 
 
 dataTableFieldLabelContent =
-    css []
+    css [ Css.fontWeight Css.bold ]
 
 
 dataTableFieldContentText =
@@ -134,11 +143,21 @@ dataTableFieldContentText =
 
 dataTableEditLinkContainer : Attribute msg
 dataTableEditLinkContainer =
-    css [ Css.padding dataTableFieldPadding ]
+    css
+        [ Css.padding dataTableFieldPadding
+        , Css.displayFlex
+        , Css.justifyContent Css.flexEnd
+        ]
 
 
 dataTableAction =
-    css [ link ]
+    css
+        [ link
+
+        -- because all of the actions are flex-end aligned, only left padding
+        -- is needed to add some space between the actions
+        , Css.paddingLeft (em 0.5)
+        ]
 
 
 
