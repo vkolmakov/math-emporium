@@ -65,7 +65,14 @@ displayUserDetail user =
         labelsWithElements =
             [ ( "ID", H.text (toString user.id) )
             , ( "Email", H.text user.email )
-            , ( "Group", Input.text "Group" (toString user.group) False True )
+            , ( "Group"
+              , Input.text
+                    { label = "Group"
+                    , value = (toString user.group)
+                    , isEditable = True
+                    , isLabelHidden = True
+                    }
+              )
             , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
             , ( "Last Sign-in Date", H.text (DateUtils.toDisplayString user.lastSigninDate) )
             ]
@@ -76,14 +83,6 @@ displayUserDetail user =
 
 
 
-{- DetailForm.container
-   [ DetailForm.textField "ID" (toString user.id) False
-   , DetailForm.textField "Email" user.email False
-   , DetailForm.textField "Group" (toString user.group) False
-   , DetailForm.textField "Phone" (toString user.phone) False
-   , DetailForm.textField "Last Signin Date"  False
-   ]
--}
 -- HTTP
 
 
