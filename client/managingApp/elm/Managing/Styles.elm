@@ -15,6 +15,7 @@ module Managing.Styles
         , dataTableFieldLabelContent
         , dataTableFieldContentText
         , fieldLabel
+        , fieldLabelHidden
         , fieldGroup
         , fieldTextInput
         )
@@ -61,6 +62,19 @@ link =
         , Css.border (px 0)
         , Css.padding (px 0)
         , Css.backgroundColor (Css.transparent)
+        ]
+
+
+visuallyHidden =
+    Css.batch
+        [ Css.border (px 0)
+        , Css.property "clip" "rect(0 0 0 0)"
+        , Css.height (px 1)
+        , Css.margin (px -1)
+        , Css.overflow Css.hidden
+        , Css.padding (px 0)
+        , Css.position Css.absolute
+        , Css.width (px 1)
         ]
 
 
@@ -157,7 +171,7 @@ sectionNavItemLink =
 
 
 dataTableFieldPadding =
-    em 0.25
+    em 0.5
 
 
 dataTableItem : Attribute msg
@@ -186,6 +200,8 @@ dataTableFieldLabelWrapper =
         [ Css.flex <| int 1
         , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
         , Css.padding dataTableFieldPadding
+        , Css.displayFlex
+        , Css.alignItems Css.center
         ]
 
 
@@ -229,11 +245,14 @@ fieldLabel =
         ]
 
 
+fieldLabelHidden =
+    css [ visuallyHidden ]
+
+
 fieldGroup =
     css
         [ Css.displayFlex
         , Css.flexDirection Css.column
-        , Css.marginBottom (em 0.75)
         ]
 
 

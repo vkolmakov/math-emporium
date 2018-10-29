@@ -1,13 +1,13 @@
 module Managing.Users.Page.UserDetail exposing (Model, Msg, init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
 import Http
-import Managing.Styles as Styles
 import Managing.Request.RemoteData as RemoteData
 import Managing.Users.Data.UserDetail exposing (UserDetail)
 import Managing.Utils.DateUtils as DateUtils
 import Managing.View.Loading exposing (spinner)
+import Managing.View.Input as Input
+import Managing.View.DataTable as DataTable
 
 
 -- MODEL
@@ -61,36 +61,29 @@ view model =
 
 
 displayUserDetail user =
-    H.div []
-        [ textField "ID" (toString user.id) False
-        , textField "Email" user.email False
-        , textField "Group" (toString user.group) False
-        , textField "Phone" (toString user.phone) False
-        , textField "Last Signin Date" (DateUtils.toDisplayString user.lastSigninDate) False
-        ]
-
-
-
--- VIEW GENERIC
-
-
-textField : String -> String -> Bool -> Html msg
-textField label value isEditable =
     let
-        fieldLabel =
-            H.label [ Styles.fieldLabel ] [ H.text label ]
-
-        fieldInput =
-            H.input [ Styles.fieldTextInput, A.disabled <| not isEditable, A.value value ] []
-    in
-        H.div
-            [ Styles.fieldGroup ]
-            [ fieldLabel
-            , fieldInput
+        labelsWithElements =
+            [ ( "ID", H.text (toString user.id) )
+            , ( "Email", H.text user.email )
+            , ( "Group", Input.text "Group" (toString user.group) False True )
+            , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
+            , ( "Last Sign-in Date", H.text (DateUtils.toDisplayString user.lastSigninDate) )
             ]
+    in
+        labelsWithElements
+            |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+            |> DataTable.item
 
 
 
+{- DetailForm.container
+   [ DetailForm.textField "ID" (toString user.id) False
+   , DetailForm.textField "Email" user.email False
+   , DetailForm.textField "Group" (toString user.group) False
+   , DetailForm.textField "Phone" (toString user.phone) False
+   , DetailForm.textField "Last Signin Date"  False
+   ]
+-}
 -- HTTP
 
 

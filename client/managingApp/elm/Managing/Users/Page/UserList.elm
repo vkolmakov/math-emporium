@@ -65,7 +65,7 @@ view model =
                 labelsWithData =
                     [ ( "Email", user.email )
                     , ( "Group", accessGroupToString user.group )
-                    , ( "Last sign-in date", DateUtils.toDisplayString user.lastSigninDate )
+                    , ( "Last Sign-in Date", DateUtils.toDisplayString user.lastSigninDate )
                     ]
 
                 fields =

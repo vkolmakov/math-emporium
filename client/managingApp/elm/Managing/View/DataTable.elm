@@ -2,6 +2,7 @@ module Managing.View.DataTable
     exposing
         ( table
         , item
+        , field
         , textField
         , editLink
         , actionContainer
@@ -22,8 +23,8 @@ item content =
     H.div [ Styles.dataTableItem ] content
 
 
-textField : String -> String -> Html msg
-textField label text =
+field : String -> Html msg -> Html msg
+field label contentElement =
     H.div [ Styles.dataTableField ]
         [ H.div [ Styles.dataTableFieldLabelWrapper ]
             -- note that the wrapper is required because
@@ -33,8 +34,13 @@ textField label text =
             -- slightly smaller than the height of the container
             [ H.div [ Styles.dataTableFieldLabelContent ] [ H.text label ]
             ]
-        , H.div [ Styles.dataTableFieldContentText ] [ H.text text ]
+        , H.div [ Styles.dataTableFieldContentText ] [ contentElement ]
         ]
+
+
+textField : String -> String -> Html msg
+textField label text =
+    field label (H.text text)
 
 
 actionContainer : List (Html msg) -> Html msg
