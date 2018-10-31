@@ -18,17 +18,17 @@ type alias InputConfig =
 
 
 -- TODO: Add a single select input
+-- TODO: Add a save button element
 
 
-text : InputConfig -> Html msg
-text inputConfig =
+text inputConfig onInput =
     let
         { isEditable, value } =
             inputConfig
     in
         baseInput
             inputConfig
-            (H.input [ Styles.fieldTextInput, A.disabled <| not isEditable, A.value value ] [])
+            (H.input [ Styles.fieldTextInput, A.disabled <| not isEditable, A.value value, onInput ] [])
 
 
 baseInput : InputConfig -> Html msg -> Html msg

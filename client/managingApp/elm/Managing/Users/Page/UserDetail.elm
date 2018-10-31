@@ -1,6 +1,7 @@
-module Managing.Users.Page.UserDetail exposing (Model, Msg, init, initCmd, update, view)
+module Managing.Users.Page.UserDetail exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
+import Html.Styled.Events as E
 import Http
 import Managing.Request.RemoteData as RemoteData
 import Managing.Users.Data.UserDetail exposing (UserDetail)
@@ -33,15 +34,24 @@ initCmd userId =
 
 type Msg
     = ReceiveUserDetail (Result Http.Error UserDetail)
+    | TriggerMessageToParent String
 
 
+type OutMsg
+    = DoStuffToParent String
+
+
+update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveUserDetail (Ok user) ->
-            ( { model | id = Just user.id, userDetail = RemoteData.Available user }, Cmd.none )
+            ( { model | id = Just user.id, userDetail = RemoteData.Available user }, Cmd.none, Nothing )
 
         ReceiveUserDetail (Err e) ->
-            ( { model | userDetail = RemoteData.Error (RemoteData.OtherError <| toString e) }, Cmd.none )
+            ( { model | userDetail = RemoteData.Error (RemoteData.OtherError <| toString e) }, Cmd.none, Nothing )
+
+        TriggerMessageToParent s ->
+            ( model, Cmd.none, Just (DoStuffToParent s) )
 
 
 
@@ -54,6 +64,7 @@ view model =
             spinner
 
         RemoteData.Available user ->
+            -- TODO: add a save button somewhere here
             H.div [] [ displayUserDetail user ]
 
         RemoteData.Error e ->
@@ -67,11 +78,13 @@ displayUserDetail user =
             , ( "Email", H.text user.email )
             , ( "Group"
               , Input.text
+                    -- TODO: use a select input instead
                     { label = "Group"
                     , value = (toString user.group)
                     , isEditable = True
                     , isLabelHidden = True
                     }
+                    (E.onInput TriggerMessageToParent)
               )
             , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
             , ( "Last Sign-in Date", H.text (DateUtils.toDisplayString user.lastSigninDate) )

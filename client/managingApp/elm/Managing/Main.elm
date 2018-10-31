@@ -38,9 +38,12 @@ init location =
 
         initialModel =
             Model route UserList.init UserDetail.init
+
+        ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
+            getInitModelCmd route initialModel
     in
-        ( initialModel
-        , getInitCmd route initialModel
+        ( initialModelBasedOnRoute
+        , initialCmdBasedOnRoute
           -- for initialization, passed route is the same as one on the model
         )
 
@@ -55,6 +58,22 @@ type Msg
     | UserDetailPageMsg UserDetail.Msg
 
 
+type OutMsg
+    = UserDetailOutMsg (Maybe UserDetail.OutMsg)
+
+
+handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
+handleOutMsg model outMsg =
+    case outMsg of
+        UserDetailOutMsg (Just msg) ->
+            case msg of
+                UserDetail.DoStuffToParent s ->
+                    ( model, Cmd.none )
+
+        UserDetailOutMsg Nothing ->
+            ( model, Cmd.none )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -63,10 +82,10 @@ update msg model =
                 newRoute =
                     Route.fromLocation newLocation
 
-                newCmd =
-                    getInitCmd newRoute model
+                ( updatedModelBasedOnRoute, initCmdBasedOnRoute ) =
+                    getInitModelCmd newRoute model
             in
-                ( { model | route = newRoute }, newCmd )
+                ( { updatedModelBasedOnRoute | route = newRoute }, initCmdBasedOnRoute )
 
         UserListPageMsg msg ->
             let
@@ -77,29 +96,40 @@ update msg model =
 
         UserDetailPageMsg msg ->
             let
-                ( innerModel, innerCmd ) =
+                ( innerModel, innerCmd, outMsg ) =
                     UserDetail.update msg model.userDetailPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (UserDetailOutMsg outMsg)
             in
-                ( { model | userDetailPageModel = innerModel }, Cmd.map UserDetailPageMsg innerCmd )
+                ( { model | userDetailPageModel = innerModel }
+                , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
+                )
 
 
 {-| Returns a command for a NEW route with the PREVIOUS model.
 This is useful for determining whether or not the data has to
 be refreshed when navigating to a new route
 -}
-getInitCmd route model =
+getInitModelCmd : Route -> Model -> ( Model, Cmd Msg )
+getInitModelCmd route model =
     case route of
         Route.Home ->
-            Cmd.none
+            ( model, Cmd.none )
 
         Route.UserList ->
-            Cmd.map UserListPageMsg (UserList.initCmd model.userListPageModel)
+            ( model, Cmd.map UserListPageMsg (UserList.initCmd model.userListPageModel) )
 
         Route.UserDetail userId ->
-            Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
+            -- ensure that we start with a clear model because
+            -- we want to avoid seeing old content if we end up
+            -- navigating to that route more than once
+            ( { model | userDetailPageModel = UserDetail.init }
+            , Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
+            )
 
         Route.Unknown ->
-            Cmd.none
+            ( model, Cmd.none )
 
 
 
