@@ -4,6 +4,7 @@ module Managing.Users.Data.Shared
         , decodeDate
         , decodeAccessGroup
         , accessGroupToString
+        , accessGroupToInt
         )
 
 import Date exposing (Date)
@@ -27,6 +28,21 @@ decodeDate date =
             Decode.fail e
 
 
+getAccessGroupTranslation group =
+    case group of
+        UserGroup ->
+            { id = 1, label = "User" }
+
+        EmployeeGroup ->
+            { id = 2, label = "Employee" }
+
+        EmployerGroup ->
+            { id = 3, label = "Employer" }
+
+        AdminGroup ->
+            { id = 4, label = "Admin" }
+
+
 decodeAccessGroup : Int -> Decode.Decoder AccessGroup
 decodeAccessGroup groupId =
     case groupId of
@@ -47,16 +63,10 @@ decodeAccessGroup groupId =
 
 
 accessGroupToString : AccessGroup -> String
-accessGroupToString group =
-    case group of
-        UserGroup ->
-            "User"
+accessGroupToString =
+    .label << getAccessGroupTranslation
 
-        EmployeeGroup ->
-            "Employee"
 
-        EmployerGroup ->
-            "Employer"
-
-        AdminGroup ->
-            "Admin"
+accessGroupToInt : AccessGroup -> Int
+accessGroupToInt =
+    .id << getAccessGroupTranslation

@@ -1,4 +1,11 @@
-module Managing.View.Input exposing (text, InputConfig)
+module Managing.View.Input
+    exposing
+        ( text
+        , select
+        , InputConfig
+        , SelectOption
+        , toSelectOption
+        )
 
 import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Attributes as A
@@ -12,18 +19,51 @@ type alias InputConfig =
     { isEditable : Bool
     , isLabelHidden : Bool
     , label : String
-    , value : String
     }
 
 
+type SelectOption
+    = SelectOption { label : String, value : String }
 
--- TODO: Add a single select input
+
+toSelectOption : { label : String, value : String } -> SelectOption
+toSelectOption { label, value } =
+    SelectOption { label = label, value = value }
+
+
+
 -- TODO: Add a save button element
 
 
-text inputConfig onInput =
+select : InputConfig -> List SelectOption -> SelectOption -> Attribute msg -> Html msg
+select inputConfig options selectedOption onChange =
     let
-        { isEditable, value } =
+        { isEditable } =
+            inputConfig
+
+        toOptionElement selectOption =
+            case selectOption of
+                SelectOption { label, value } ->
+                    H.option
+                        [ A.value value
+                        , A.selected <| selectOption == selectedOption
+                        ]
+                        [ H.text label ]
+    in
+        baseInput
+            inputConfig
+            (H.select
+                [ Styles.fieldTextInput
+                , A.disabled <| not isEditable
+                , onChange
+                ]
+                (List.map toOptionElement options)
+            )
+
+
+text inputConfig value onInput =
+    let
+        { isEditable } =
             inputConfig
     in
         baseInput
