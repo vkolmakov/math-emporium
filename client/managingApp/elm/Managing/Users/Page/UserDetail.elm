@@ -5,12 +5,13 @@ import Html.Styled.Events as E
 import Http
 import Json.Decode as Json
 import Managing.Request.RemoteData as RemoteData
+import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)
-import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToString, accessGroupToInt, decodeAccessGroup)
-import Managing.Utils.DateUtils as DateUtils
-import Managing.View.Loading exposing (spinner)
-import Managing.View.Input as Input
+import Managing.Utils.Date as Date
 import Managing.View.DataTable as DataTable
+import Managing.View.Input as Input
+import Managing.View.Loading exposing (spinner)
+
 
 
 -- MODEL
@@ -53,7 +54,7 @@ update msg model =
             ( { model | id = Just user.id, userDetail = RemoteData.Available user }, Cmd.none, Nothing )
 
         ReceiveUserDetail (Err e) ->
-            ( { model | userDetail = RemoteData.Error (RemoteData.OtherError <| toString e) }, Cmd.none, Nothing )
+            ( { model | userDetail = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
 
         TriggerMessageToParent s ->
             ( model, Cmd.none, Just (DoStuffToParent s) )
@@ -65,7 +66,7 @@ update msg model =
                         updatedUserDetail =
                             { user | group = group }
                     in
-                        ( { model | userDetail = RemoteData.Available updatedUserDetail }, Cmd.none, Nothing )
+                    ( { model | userDetail = RemoteData.Available updatedUserDetail }, Cmd.none, Nothing )
 
                 _ ->
                     ( model, Cmd.none, Nothing )
@@ -86,23 +87,23 @@ view model =
             H.div [] [ displayUserDetail user ]
 
         RemoteData.Error e ->
-            H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
+            H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
 
 
 displayUserDetail : UserDetail -> Html Msg
 displayUserDetail user =
     let
         labelsWithElements =
-            [ ( "ID", H.text (toString user.id) )
+            [ ( "ID", H.text (String.fromInt user.id) )
             , ( "Email", H.text user.email )
             , ( "Group", accessGroupSelectElement user.group )
             , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
-            , ( "Last Sign-in Date", H.text (DateUtils.toDisplayString user.lastSigninDate) )
+            , ( "Last Sign-in Date", H.text (Date.toDisplayString user.lastSigninDate) )
             ]
     in
-        labelsWithElements
-            |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
-            |> DataTable.item
+    labelsWithElements
+        |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+        |> DataTable.item
 
 
 
@@ -113,18 +114,18 @@ accessGroupToSelectOption : AccessGroup -> Input.SelectOption
 accessGroupToSelectOption group =
     Input.toSelectOption
         { label = accessGroupToString group
-        , value = toString << accessGroupToInt <| group
+        , value = Debug.toString << accessGroupToInt <| group
         }
 
 
 tryParseInt : String -> Json.Decoder Int
 tryParseInt val =
     case String.toInt val of
-        Ok val ->
-            Json.succeed val
+        Just num ->
+            Json.succeed num
 
-        Err err ->
-            Json.fail err
+        Nothing ->
+            Json.fail "Invalid integer"
 
 
 accessGroupSelectElement : AccessGroup -> Html Msg
@@ -136,18 +137,18 @@ accessGroupSelectElement selectedGroup =
                 |> Json.andThen tryParseInt
                 |> Json.andThen decodeAccessGroup
     in
-        Input.select
-            { label = "Group"
-            , isEditable = True
-            , isLabelHidden = True
-            }
-            [ accessGroupToSelectOption UserGroup
-            , accessGroupToSelectOption EmployeeGroup
-            , accessGroupToSelectOption EmployerGroup
-            , accessGroupToSelectOption AdminGroup
-            ]
-            (accessGroupToSelectOption selectedGroup)
-            (E.on "change" (Json.map ChangeAccessGroup decodeAccessGroupFromEvent))
+    Input.select
+        { label = "Group"
+        , isEditable = True
+        , isLabelHidden = True
+        }
+        [ accessGroupToSelectOption UserGroup
+        , accessGroupToSelectOption EmployeeGroup
+        , accessGroupToSelectOption EmployerGroup
+        , accessGroupToSelectOption AdminGroup
+        ]
+        (accessGroupToSelectOption selectedGroup)
+        (E.on "change" (Json.map ChangeAccessGroup decodeAccessGroupFromEvent))
 
 
 
@@ -158,6 +159,6 @@ getUserDetail : Int -> Cmd Msg
 getUserDetail id =
     let
         url =
-            "/api/users/" ++ toString id
+            "/api/users/" ++ String.fromInt id
     in
-        Http.send ReceiveUserDetail (Http.get url Managing.Users.Data.UserDetail.decode)
+    Http.send ReceiveUserDetail (Http.get url Managing.Users.Data.UserDetail.decode)

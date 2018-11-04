@@ -1,8 +1,11 @@
-module Managing.Route exposing (Route(..), fromLocation, toHref, href)
+module Managing.Route exposing (Route(..), fromLocationHref, href, link, toHref)
 
-import Navigation
-import UrlParser exposing (s, (</>))
+import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Attributes as A
+import Html.Styled.Events as E
+import Json.Decode as Json
+import Url exposing (Url)
+import Url.Parser as UrlParser exposing ((</>), Parser, s)
 
 
 type Route
@@ -12,24 +15,23 @@ type Route
     | Unknown
 
 
-fromLocation : Navigation.Location -> Route
-fromLocation location =
+fromLocationHref : String -> Route
+fromLocationHref locationHref =
     let
-        matchers =
+        routeParser =
             UrlParser.oneOf
-                [ UrlParser.map UserList (s "users")
-                , UrlParser.map UserDetail (s "users" </> UrlParser.int)
+                [ UrlParser.map Home (s "manage-portal")
+                , UrlParser.map UserList (s "manage-portal" </> s "users")
+                , UrlParser.map UserDetail (s "manage-portal" </> s "users" </> UrlParser.int)
                 ]
-    in
-        case (UrlParser.parseHash matchers location) of
-            Just route ->
-                route
 
-            Nothing ->
-                if (String.isEmpty location.hash) then
-                    Home
-                else
-                    Unknown
+        correspondingRoute =
+            locationHref
+                |> Url.fromString
+                |> Maybe.andThen (UrlParser.parse routeParser)
+                |> Maybe.withDefault Unknown
+    in
+    correspondingRoute
 
 
 toHref : Route -> String
@@ -44,13 +46,17 @@ toHref r =
                     "users"
 
                 UserDetail id ->
-                    "users/" ++ toString id
+                    "users/" ++ String.fromInt id
 
                 Unknown ->
                     ""
     in
-        "#" ++ path
+    "/manage-portal/" ++ path
 
 
 href route =
     A.href (toHref route)
+
+
+link msg r attrs children =
+    H.a (E.preventDefaultOn "click" (Json.succeed ( msg, True )) :: href r :: attrs) children

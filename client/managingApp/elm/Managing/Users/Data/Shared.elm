@@ -1,14 +1,13 @@
-module Managing.Users.Data.Shared
-    exposing
-        ( AccessGroup(..)
-        , decodeDate
-        , decodeAccessGroup
-        , accessGroupToString
-        , accessGroupToInt
-        )
+module Managing.Users.Data.Shared exposing
+    ( AccessGroup(..)
+    , accessGroupToInt
+    , accessGroupToString
+    , decodeAccessGroup
+    , decodeDate
+    )
 
-import Date exposing (Date)
 import Json.Decode as Decode
+import Managing.Utils.Date as Date exposing (Date)
 
 
 type AccessGroup
@@ -21,11 +20,11 @@ type AccessGroup
 decodeDate : String -> Decode.Decoder Date
 decodeDate date =
     case Date.fromString date of
-        Ok d ->
+        Just d ->
             Decode.succeed d
 
-        Err e ->
-            Decode.fail e
+        Nothing ->
+            Decode.fail "Invalid date"
 
 
 getAccessGroupTranslation group =

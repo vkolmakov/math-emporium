@@ -3,13 +3,14 @@ module Managing.Users.Page.UserList exposing (Model, Msg, init, initCmd, update,
 import Html.Styled as H exposing (Attribute, Html)
 import Http
 import Json.Decode as Decode
-import Managing.Route as Route exposing (Route)
 import Managing.Request.RemoteData as RemoteData
-import Managing.Users.Data.UserListEntry exposing (UserListEntry)
+import Managing.Route as Route exposing (Route)
 import Managing.Users.Data.Shared exposing (accessGroupToString)
+import Managing.Users.Data.UserListEntry exposing (UserListEntry)
+import Managing.Utils.Date as Date
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
-import Managing.Utils.DateUtils as DateUtils
+
 
 
 -- MODEL
@@ -51,7 +52,7 @@ update msg model =
             ( { model | users = RemoteData.Available users }, Cmd.none )
 
         ReceiveUsers (Err e) ->
-            ( { model | users = RemoteData.Error (RemoteData.OtherError <| toString e) }, Cmd.none )
+            ( { model | users = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none )
 
 
 
@@ -65,7 +66,7 @@ view model =
                 labelsWithData =
                     [ ( "Email", user.email )
                     , ( "Group", accessGroupToString user.group )
-                    , ( "Last Sign-in Date", DateUtils.toDisplayString user.lastSigninDate )
+                    , ( "Last Sign-in Date", Date.toDisplayString user.lastSigninDate )
                     ]
 
                 fields =
@@ -77,17 +78,17 @@ view model =
                         [ DataTable.editLink (Route.UserDetail user.id)
                         ]
             in
-                DataTable.item (fields ++ [ actions ])
+            DataTable.item (fields ++ [ actions ])
     in
-        case model.users of
-            RemoteData.Loading ->
-                spinner
+    case model.users of
+        RemoteData.Loading ->
+            spinner
 
-            RemoteData.Available users ->
-                DataTable.table (users |> List.map viewUserRow)
+        RemoteData.Available users ->
+            DataTable.table (users |> List.map viewUserRow)
 
-            RemoteData.Error e ->
-                H.div [] [ H.text <| "An error ocurred: " ++ (toString e) ]
+        RemoteData.Error e ->
+            H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
 
 
 
@@ -100,4 +101,4 @@ getUsers =
         url =
             "/api/users"
     in
-        Http.send ReceiveUsers (Http.get url (Managing.Users.Data.UserListEntry.decode |> Decode.list))
+    Http.send ReceiveUsers (Http.get url (Managing.Users.Data.UserListEntry.decode |> Decode.list))

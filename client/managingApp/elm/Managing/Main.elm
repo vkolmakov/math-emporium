@@ -1,17 +1,20 @@
-module Managing.Main exposing (main)
+port module Managing.Main exposing (main)
 
+import Browser
+import Browser.Navigation as Navigation
 import Html.Styled as H exposing (Attribute, Html)
-import Navigation
-import Managing.Styles as Styles
+import Html.Styled.Attributes as A
+import Html.Styled.Events as E
+import Json.Decode as Json
 import Managing.Route as Route exposing (Route)
-import Managing.View.SectionNav as SectionNav
-import Managing.Users.Page.UserList as UserList
+import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
+import Managing.Users.Page.UserList as UserList
+import Url exposing (Url)
 
 
-main : Program Never Model Msg
 main =
-    Navigation.program BrowserLocationChange
+    Browser.element
         { init = init
         , view = view >> H.toUnstyled
         , update = update
@@ -30,11 +33,11 @@ type alias Model =
     }
 
 
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
+init : String -> ( Model, Cmd Msg )
+init locationHref =
     let
         route =
-            (Route.fromLocation location)
+            Route.fromLocationHref locationHref
 
         initialModel =
             Model route UserList.init UserDetail.init
@@ -42,10 +45,10 @@ init location =
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
     in
-        ( initialModelBasedOnRoute
-        , initialCmdBasedOnRoute
-          -- for initialization, passed route is the same as one on the model
-        )
+    ( initialModelBasedOnRoute
+    , initialCmdBasedOnRoute
+      -- for initialization, passed route is the same as one on the model
+    )
 
 
 
@@ -53,7 +56,8 @@ init location =
 
 
 type Msg
-    = BrowserLocationChange Navigation.Location
+    = LocationHrefChange String
+    | RequestLocationHrefChange String
     | UserListPageMsg UserList.Msg
     | UserDetailPageMsg UserDetail.Msg
 
@@ -75,24 +79,27 @@ handleOutMsg model outMsg =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        BrowserLocationChange newLocation ->
+update message model =
+    case message of
+        RequestLocationHrefChange requestedLocationHref ->
+            (model, pushLocationHrefChange requestedLocationHref)
+
+        LocationHrefChange locationHref ->
             let
                 newRoute =
-                    Route.fromLocation newLocation
+                    Route.fromLocationHref locationHref
 
                 ( updatedModelBasedOnRoute, initCmdBasedOnRoute ) =
                     getInitModelCmd newRoute model
             in
-                ( { updatedModelBasedOnRoute | route = newRoute }, initCmdBasedOnRoute )
+            ( { updatedModelBasedOnRoute | route = newRoute }, initCmdBasedOnRoute )
 
         UserListPageMsg msg ->
             let
                 ( innerModel, innerCmd ) =
                     UserList.update msg model.userListPageModel
             in
-                ( { model | userListPageModel = innerModel }, Cmd.map UserListPageMsg innerCmd )
+            ( { model | userListPageModel = innerModel }, Cmd.map UserListPageMsg innerCmd )
 
         UserDetailPageMsg msg ->
             let
@@ -102,9 +109,9 @@ update msg model =
                 ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
                     handleOutMsg model (UserDetailOutMsg outMsg)
             in
-                ( { model | userDetailPageModel = innerModel }
-                , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
-                )
+            ( { model | userDetailPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
+            )
 
 
 {-| Returns a command for a NEW route with the PREVIOUS model.
@@ -133,13 +140,14 @@ getInitModelCmd route model =
 
 
 
+-- TODO: maybe do Navigation.load "/"
 -- VIEW
 
 
-navItems : List SectionNav.NavItem
-navItems =
-    [ SectionNav.NavItem Route.Home "Home"
-    , SectionNav.NavItem Route.UserList "Users"
+activeNavItems : List NavItem
+activeNavItems =
+    [ NavItem Route.Home "Home"
+    , NavItem Route.UserList "Users"
     ]
 
 
@@ -159,10 +167,9 @@ getHighlightedRoute route =
             Nothing
 
 
-view : Model -> Html Msg
 view model =
     H.div [ Styles.mainContainer ]
-        [ SectionNav.view navItems (getHighlightedRoute model.route)
+        [ viewSectionNav activeNavItems (getHighlightedRoute model.route)
         , viewPageContent model
         ]
 
@@ -184,7 +191,7 @@ viewPageContent model =
                 Route.Unknown ->
                     H.text "At unknown route"
     in
-        H.div [] [ pageView ]
+    H.div [] [ pageView ]
 
 
 
@@ -193,4 +200,63 @@ viewPageContent model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    onLocationHrefChange LocationHrefChange
+
+
+
+-- NAVIGATION
+
+
+port onLocationHrefChange : (String -> msg) -> Sub msg
+port pushLocationHrefChange : String -> Cmd msg
+
+type alias NavItem =
+    { route : Route
+    , label : String
+    }
+
+
+getLinkStyles : Maybe Route -> NavItem -> List (Attribute msg)
+getLinkStyles highlightedRoute navItem =
+    case highlightedRoute of
+        Just r ->
+            if r == navItem.route then
+                [ Styles.sectionNavItemLink, Styles.sectionNavItemLinkHighlighted ]
+
+            else
+                [ Styles.sectionNavItemLink ]
+
+        Nothing ->
+            [ Styles.sectionNavItemLink ]
+
+
+navItemToLink : Maybe Route -> NavItem -> Html Msg
+navItemToLink highlightedRoute navItem =
+    let
+        baseLinkAttributes =
+            [ -- required to allow safely adjust font weight on hover/focus
+              A.attribute "data-text" navItem.label
+            ]
+
+        linkStyles =
+            getLinkStyles highlightedRoute navItem
+    in
+    Route.link
+        (RequestLocationHrefChange (Route.toHref navItem.route))
+        navItem.route
+        (baseLinkAttributes ++ linkStyles)
+        [ H.text navItem.label ]
+
+
+viewSectionNav : List NavItem -> Maybe Route -> Html Msg
+viewSectionNav navItems highlightedRoute =
+    let
+        links =
+            navItems
+                |> List.map (navItemToLink highlightedRoute)
+
+        listItems =
+            links
+                |> List.map (\link -> H.li [ Styles.sectionNavItem ] [ link ])
+    in
+    H.ul [ Styles.sectionNavContainer ] listItems

@@ -1,6 +1,6 @@
 module Managing.Users.Data.UserListEntry exposing (UserListEntry, decode)
 
-import Date exposing (Date)
+import Managing.Utils.Date exposing (Date)
 import Json.Decode as Decode
 import Managing.Users.Data.Shared exposing (AccessGroup, decodeAccessGroup, decodeDate)
 

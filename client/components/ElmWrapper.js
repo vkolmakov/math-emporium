@@ -5,10 +5,22 @@ export default class ElmWrapper extends Component {
         const { flags, ports, src } = this.props;
         const rootRef = this.rootRef;
 
-        const app = src.embed(rootRef, flags);
+        const elementToBeReplacedByElm = document.createElement("div");
+        rootRef.appendChild(elementToBeReplacedByElm);
+
+        const app = src.init({
+            node: elementToBeReplacedByElm,
+            flags: flags || "",
+        });
 
         if (typeof ports === "function") {
-            ports(app.ports);
+            this.portsCleanup = ports(app.ports);
+        }
+    }
+
+    componentWillUnmount() {
+        if (typeof this.portsCleanup === "function") {
+            this.portsCleanup();
         }
     }
 
