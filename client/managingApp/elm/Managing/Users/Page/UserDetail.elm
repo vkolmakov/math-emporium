@@ -4,7 +4,9 @@ import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Events as E
 import Http
 import Json.Decode as Json
+import Json.Encode
 import Managing.Request.RemoteData as RemoteData
+import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)
 import Managing.Utils.Date as Date
@@ -19,13 +21,22 @@ import Managing.View.Loading exposing (spinner)
 
 type alias Model =
     { userDetail : RemoteData.RemoteData UserDetail
+    , userDetailVolatile : UserDetailVolatile
     , id : Maybe Int
     }
 
 
+type alias UserRef =
+    { id : Int }
+
+
+type alias UserDetailVolatile =
+    { group : Maybe AccessGroup }
+
+
 init : Model
 init =
-    Model RemoteData.Loading Nothing
+    Model RemoteData.Loading { group = Nothing } Nothing
 
 
 initCmd : Int -> Cmd Msg
@@ -39,6 +50,8 @@ initCmd userId =
 
 type Msg
     = ReceiveUserDetail (Result Http.Error UserDetail)
+    | PersistUserDetail Int UserDetailVolatile
+    | ReceiveUserPersistenceDetailResponse (Result Http.Error UserRef)
     | TriggerMessageToParent String
     | ChangeAccessGroup AccessGroup
 
@@ -47,7 +60,7 @@ type OutMsg
     = DoStuffToParent String
 
 
-update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveUserDetail (Ok user) ->
@@ -63,13 +76,25 @@ update msg model =
             case model.userDetail of
                 RemoteData.Available user ->
                     let
-                        updatedUserDetail =
-                            { user | group = group }
+                        previousUserDetailVolatile =
+                            model.userDetailVolatile
+
+                        updatedUserDetailVolatile =
+                            { previousUserDetailVolatile | group = Just group }
                     in
-                    ( { model | userDetail = RemoteData.Available updatedUserDetail }, Cmd.none, Nothing )
+                    ( { model | userDetailVolatile = updatedUserDetailVolatile }, Cmd.none, Nothing )
 
                 _ ->
                     ( model, Cmd.none, Nothing )
+
+        PersistUserDetail id user ->
+            ( model, persistUserDetail id user, Nothing )
+
+        ReceiveUserPersistenceDetailResponse (Ok _) ->
+            ( model, Cmd.none, Nothing )
+
+        ReceiveUserPersistenceDetailResponse (Err e) ->
+            ( model, Cmd.none, Nothing )
 
 
 
@@ -83,11 +108,19 @@ view model =
             spinner
 
         RemoteData.Available user ->
-            -- TODO: add a save button somewhere here
-            H.div [] [ displayUserDetail user ]
+            -- TODO: add a submit button somewhere here
+            H.div [ Styles.detailContainer ]
+                [ displayUserDetail user
+                , submitUserDetail user.id model.userDetailVolatile
+                ]
 
         RemoteData.Error e ->
             H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
+
+
+submitUserDetail : Int -> UserDetailVolatile -> Html Msg
+submitUserDetail id user =
+    H.button [ E.onClick (PersistUserDetail id user) ] [ H.text "Submit" ]
 
 
 displayUserDetail : UserDetail -> Html Msg
@@ -162,3 +195,71 @@ getUserDetail id =
             "/api/users/" ++ String.fromInt id
     in
     Http.send ReceiveUserDetail (Http.get url Managing.Users.Data.UserDetail.decode)
+
+
+decodeUserRef =
+    Json.map UserRef
+        (Json.field "id" Json.int)
+
+
+getValuesOnly : List (Maybe a) -> List a
+getValuesOnly maybeValues =
+    let
+        go acc remaining =
+            case remaining of
+                (Just x) :: xs ->
+                    go (x :: acc) xs
+
+                Nothing :: xs ->
+                    go acc xs
+
+                [] ->
+                    List.reverse acc
+    in
+    go [] maybeValues
+
+
+fieldDescriptionToTuple ( maybePropertyValue, propertyKey, encoder ) =
+    case maybePropertyValue of
+        Just propertyValue ->
+            Just ( propertyKey, encoder propertyValue )
+
+        Nothing ->
+            Nothing
+
+
+encodeUserDetailVolatile : UserDetailVolatile -> Json.Encode.Value
+encodeUserDetailVolatile user =
+    let
+        fieldDescriptions =
+            [ ( user.group, "group", \val -> Json.Encode.int <| accessGroupToInt val ) ]
+
+        fields =
+            fieldDescriptions
+                |> List.map fieldDescriptionToTuple
+                |> getValuesOnly
+    in
+    Json.Encode.object fields
+
+
+persistUserDetail : Int -> UserDetailVolatile -> Cmd Msg
+persistUserDetail id user =
+    let
+        url =
+            "/api/users/" ++ String.fromInt id
+
+        body =
+            Http.jsonBody <| encodeUserDetailVolatile user
+
+        request =
+            Http.request
+                { method = "PUT"
+                , headers = []
+                , url = url
+                , body = body
+                , expect = Http.expectJson decodeUserRef
+                , timeout = Nothing
+                , withCredentials = False
+                }
+    in
+    Http.send ReceiveUserPersistenceDetailResponse request

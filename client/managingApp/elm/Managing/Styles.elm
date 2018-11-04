@@ -1,29 +1,30 @@
-module Managing.Styles
-    exposing
-        ( mainContainer
-        , loadingSpinner
-        , loadingSpinnerContainer
-        , sectionNavContainer
-        , sectionNavItem
-        , sectionNavItemLink
-        , sectionNavItemLinkHighlighted
-        , dataTableItem
-        , dataTableField
-        , dataTableEditLinkContainer
-        , dataTableAction
-        , dataTableFieldLabelWrapper
-        , dataTableFieldLabelContent
-        , dataTableFieldContentText
-        , fieldLabel
-        , fieldLabelHidden
-        , fieldGroup
-        , fieldTextInput
-        )
+module Managing.Styles exposing
+    ( dataTableAction
+    , dataTableEditLinkContainer
+    , dataTableField
+    , dataTableFieldContentText
+    , dataTableFieldLabelContent
+    , dataTableFieldLabelWrapper
+    , dataTableItem
+    , detailContainer
+    , fieldGroup
+    , fieldLabel
+    , fieldLabelHidden
+    , fieldTextInput
+    , loadingSpinner
+    , loadingSpinnerContainer
+    , mainContainer
+    , sectionNavContainer
+    , sectionNavItem
+    , sectionNavItemLink
+    , sectionNavItemLinkHighlighted
+    )
 
-import Html.Styled exposing (Attribute)
-import Css exposing (em, auto, px, pct, hex, int)
+import Css exposing (auto, em, hex, int, pct, px)
 import Css.Media as Media
+import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes as A exposing (css)
+
 
 
 -- Shared
@@ -57,11 +58,11 @@ link =
 
         -- potentially override some default browser button styles
         , Css.fontSize (em 1)
-        , Css.cursor (Css.pointer)
+        , Css.cursor Css.pointer
         , Css.fontFamily Css.inherit
         , Css.border (px 0)
         , Css.padding (px 0)
-        , Css.backgroundColor (Css.transparent)
+        , Css.backgroundColor Css.transparent
         ]
 
 
@@ -109,6 +110,11 @@ loadingSpinnerContainer =
         [ Css.displayFlex
         , Css.justifyContent Css.center
         ]
+
+
+detailContainer : Attribute msg
+detailContainer =
+    css []
 
 
 
