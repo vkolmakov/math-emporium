@@ -1,4 +1,4 @@
-module Managing.Users.Page.UserList exposing (Model, Msg, init, initCmd, update, view)
+module Managing.Users.Page.UserList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
 import Html.Styled as H exposing (Attribute, Html)
 import Http
@@ -44,15 +44,24 @@ initCmd model =
 
 type Msg
     = ReceiveUsers (Result Http.Error (List UserListEntry))
+    | NavigateTo Route
 
 
+type OutMsg
+    = RequestNavigationTo Route
+
+
+update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveUsers (Ok users) ->
-            ( { model | users = RemoteData.Available users }, Cmd.none )
+            ( { model | users = RemoteData.Available users }, Cmd.none, Nothing )
 
         ReceiveUsers (Err e) ->
-            ( { model | users = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none )
+            ( { model | users = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
+
+        NavigateTo r ->
+            ( model, Cmd.none, Just (RequestNavigationTo r) )
 
 
 
@@ -75,7 +84,9 @@ view model =
 
                 actions =
                     DataTable.actionContainer
-                        [ DataTable.editLink (Route.UserDetail user.id)
+                        [ DataTable.editLink
+                            (NavigateTo <| Route.UserDetail user.id)
+                            (Route.UserDetail user.id)
                         ]
             in
             DataTable.item (fields ++ [ actions ])

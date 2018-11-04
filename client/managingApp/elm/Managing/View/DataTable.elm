@@ -52,6 +52,6 @@ action label onClickAttribute =
     H.button [ Styles.dataTableAction, onClickAttribute ] [ H.text label ]
 
 
-editLink : Route -> Html msg
-editLink route =
-    H.a [ Styles.dataTableAction, Route.href route ] [ H.text "Edit" ]
+editLink : msg -> Route -> Html msg
+editLink msg route =
+    Route.link msg route [ Styles.dataTableAction ] [ H.text "Edit" ]

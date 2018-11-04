@@ -64,6 +64,7 @@ type Msg
 
 type OutMsg
     = UserDetailOutMsg (Maybe UserDetail.OutMsg)
+    | UserListPageOutMsg (Maybe UserList.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
@@ -77,12 +78,20 @@ handleOutMsg model outMsg =
         UserDetailOutMsg Nothing ->
             ( model, Cmd.none )
 
+        UserListPageOutMsg (Just msg) ->
+            case msg of
+                UserList.RequestNavigationTo requestedRoute ->
+                    ( model, pushLocationHrefChange (Route.toHref requestedRoute) )
+
+        UserListPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         RequestLocationHrefChange requestedLocationHref ->
-            (model, pushLocationHrefChange requestedLocationHref)
+            ( model, pushLocationHrefChange requestedLocationHref )
 
         LocationHrefChange locationHref ->
             let
@@ -96,10 +105,15 @@ update message model =
 
         UserListPageMsg msg ->
             let
-                ( innerModel, innerCmd ) =
+                ( innerModel, innerCmd, outMsg ) =
                     UserList.update msg model.userListPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (UserListPageOutMsg outMsg)
             in
-            ( { model | userListPageModel = innerModel }, Cmd.map UserListPageMsg innerCmd )
+            ( { updatedModelAfterOutMsg | userListPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserListPageMsg innerCmd ]
+            )
 
         UserDetailPageMsg msg ->
             let
@@ -109,7 +123,7 @@ update message model =
                 ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
                     handleOutMsg model (UserDetailOutMsg outMsg)
             in
-            ( { model | userDetailPageModel = innerModel }
+            ( { updatedModelAfterOutMsg | userDetailPageModel = innerModel }
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
             )
 
@@ -208,7 +222,10 @@ subscriptions model =
 
 
 port onLocationHrefChange : (String -> msg) -> Sub msg
+
+
 port pushLocationHrefChange : String -> Cmd msg
+
 
 type alias NavItem =
     { route : Route
