@@ -1,5 +1,5 @@
 import db from "sequelize-connect";
-import { createExtractDataValuesFunction } from "../aux";
+import { createExtractDataValuesFunction, dateTime } from "../aux";
 import { notFound } from "../services/errorMessages";
 
 const User = db.models.user;
@@ -22,13 +22,44 @@ const relatedModels = [Location, Course];
 
 const extractDataValues = createExtractDataValuesFunction(allowedToRead);
 
+function toUserListEntry(userDatabaseRes) {
+    const { id, email, group } = userDatabaseRes;
+    return {
+        id,
+        email,
+        group,
+        lastSigninTimestamp: dateTime.toTimestamp(userDatabaseRes.lastSigninAt),
+    };
+}
+
+function toUserDetailEntry(userDatabaseRes) {
+    const {
+        id,
+        email,
+        group,
+        phoneNumber,
+        firstName,
+        lastName,
+    } = userDatabaseRes;
+
+    return {
+        id,
+        email,
+        group,
+        phoneNumber,
+        firstName,
+        lastName,
+        lastSigninTimestamp: dateTime.toTimestamp(userDatabaseRes.lastSigninAt),
+    };
+}
+
 export const handleGet = async (req, res, next) => {
     try {
         const usersRes = await User.findAll({
             include: relatedModels,
             order: [["lastSigninAt", "DESC"]],
         });
-        const users = usersRes.map((userRes) => extractDataValues(userRes));
+        const users = usersRes.map(toUserListEntry);
 
         res.status(200).json(users);
     } catch (err) {
@@ -38,13 +69,13 @@ export const handleGet = async (req, res, next) => {
 
 export const handleGetId = async (req, res, next) => {
     try {
-        const user = await User.findOne({
+        const userRes = await User.findOne({
             include: relatedModels,
             where: { id: req.params.id },
         });
 
-        if (user) {
-            res.status(200).json(extractDataValues(user));
+        if (userRes) {
+            res.status(200).json(toUserDetailEntry(userRes));
         } else {
             res.status(404).json(notFound("User"));
         }

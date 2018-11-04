@@ -164,6 +164,10 @@ export const dateTime = {
         );
     },
 
+    toTimestamp(dt) {
+        return dt.getTime();
+    },
+
     parse(other) {
         const result = _dateFns.parse(other);
         return result;

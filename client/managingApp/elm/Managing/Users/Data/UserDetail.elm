@@ -1,8 +1,8 @@
 module Managing.Users.Data.UserDetail exposing (UserDetail, decode)
 
-import Managing.Utils.Date exposing (Date)
 import Json.Decode as Decode
-import Managing.Users.Data.Shared exposing (AccessGroup, decodeAccessGroup, decodeDate)
+import Managing.Users.Data.Shared exposing (AccessGroup, decodeAccessGroup)
+import Managing.Utils.Date exposing (Date, decodeTimestamp)
 
 
 type alias UserDetail =
@@ -21,4 +21,4 @@ decode =
         (Decode.field "email" Decode.string)
         (Decode.field "group" Decode.int |> Decode.andThen decodeAccessGroup)
         (Decode.field "phoneNumber" <| Decode.nullable Decode.string)
-        (Decode.field "lastSigninAt" Decode.string |> Decode.andThen decodeDate)
+        (Decode.field "lastSigninTimestamp" Decode.int |> Decode.andThen decodeTimestamp)

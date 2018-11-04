@@ -142,9 +142,10 @@ getInitModelCmd route model =
             ( model, Cmd.map UserListPageMsg (UserList.initCmd model.userListPageModel) )
 
         Route.UserDetail userId ->
-            -- ensure that we start with a clear model because
-            -- we want to avoid seeing old content if we end up
-            -- navigating to that route more than once
+            {- ensure that we start with a clear model because
+               we want to avoid seeing old content if we end up
+               navigating to that route more than once
+            -}
             ( { model | userDetailPageModel = UserDetail.init }
             , Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
             )
