@@ -86,13 +86,14 @@ export const handleGetId = async (req, res, next) => {
 
 export const handleUpdate = async (req, res, next) => {
     try {
-        const updatedUser = await User.update(req.body, {
+        const userId = parseInt(req.params.id, 10);
+        const updatedUsers = await User.update(req.body, {
             fields: allowedToWrite,
-            where: { id: req.params.id },
+            where: { id: userId },
         });
 
-        if (updatedUser[0]) {
-            res.status(200).json({ id: req.params.id });
+        if (updatedUsers[0]) {
+            res.status(200).json({ id: userId });
         } else {
             res.status(404).json(notFound("user"));
         }
