@@ -1,17 +1,16 @@
-module Managing.View.DataTable
-    exposing
-        ( table
-        , item
-        , field
-        , textField
-        , editLink
-        , actionContainer
-        , action
-        )
+module Managing.View.DataTable exposing
+    ( actionContainer
+    , actionLink
+    , editLink
+    , field
+    , item
+    , table
+    , textField
+    )
 
 import Html.Styled as H exposing (Attribute, Html)
-import Managing.Styles as Styles
 import Managing.Route as Route exposing (Route)
+import Managing.Styles as Styles
 
 
 table elements =
@@ -48,7 +47,7 @@ actionContainer actionElements =
     H.div [ Styles.dataTableEditLinkContainer ] actionElements
 
 
-action label onClickAttribute =
+actionLink label onClickAttribute =
     H.button [ Styles.dataTableAction, onClickAttribute ] [ H.text label ]
 
 

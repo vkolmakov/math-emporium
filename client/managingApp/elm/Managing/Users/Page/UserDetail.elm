@@ -10,18 +10,30 @@ import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)
 import Managing.Utils.Date as Date
+import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
+import Process
+import Task
 
 
 
 -- MODEL
 
 
+type PersistenceState
+    = NotRequested
+    | Requested
+    | StillLoading
+    | Done
+    | Failed RemoteData.RemoteDataError
+
+
 type alias Model =
     { userDetail : RemoteData.RemoteData UserDetail
     , userDetailVolatile : UserDetailVolatile
+    , userPersistenceState : PersistenceState
     , id : Maybe Int
     }
 
@@ -36,7 +48,7 @@ type alias UserDetailVolatile =
 
 init : Model
 init =
-    Model RemoteData.Loading { group = Nothing } Nothing
+    Model RemoteData.Loading { group = Nothing } NotRequested Nothing
 
 
 initCmd : Int -> Cmd Msg
@@ -52,6 +64,7 @@ type Msg
     = ReceiveUserDetail (Result Http.Error UserDetail)
     | PersistUserDetail Int UserDetailVolatile
     | ReceiveUserPersistenceDetailResponse (Result Http.Error UserRef)
+    | CheckIfPersistenceCallTakingTooLong
     | TriggerMessageToParent String
     | ChangeAccessGroup AccessGroup
 
@@ -87,14 +100,28 @@ update msg model =
                 _ ->
                     ( model, Cmd.none, Nothing )
 
+        CheckIfPersistenceCallTakingTooLong ->
+            case model.userPersistenceState of
+                Requested ->
+                    ( { model | userPersistenceState = StillLoading }, Cmd.none, Nothing )
+
+                _ ->
+                    ( model, Cmd.none, Nothing )
+
         PersistUserDetail id user ->
-            ( model, persistUserDetail id user, Nothing )
+            ( { model | userPersistenceState = Requested }
+            , Cmd.batch
+                [ persistUserDetail id user
+                , Process.sleep 150 |> Task.perform (always CheckIfPersistenceCallTakingTooLong)
+                ]
+            , Nothing
+            )
 
         ReceiveUserPersistenceDetailResponse (Ok _) ->
-            ( model, Cmd.none, Nothing )
+            ( { model | userPersistenceState = Done }, Cmd.none, Nothing )
 
         ReceiveUserPersistenceDetailResponse (Err e) ->
-            ( model, Cmd.none, Nothing )
+            ( { model | userPersistenceState = Failed (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
 
 
 
@@ -111,16 +138,28 @@ view model =
             -- TODO: add a submit button somewhere here
             H.div [ Styles.detailContainer ]
                 [ displayUserDetail user
-                , submitUserDetail user.id model.userDetailVolatile
+                , submitUserDetail user.id model.userDetailVolatile model.userPersistenceState
                 ]
 
         RemoteData.Error e ->
             H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
 
 
-submitUserDetail : Int -> UserDetailVolatile -> Html Msg
-submitUserDetail id user =
-    H.button [ E.onClick (PersistUserDetail id user) ] [ H.text "Submit" ]
+submitUserDetail : Int -> UserDetailVolatile -> PersistenceState -> Html Msg
+submitUserDetail id user userPersistenceState =
+    let
+        button =
+            case userPersistenceState of
+                StillLoading ->
+                    Button.viewLoading "Submit"
+
+                _ ->
+                    Button.viewBase "Submit" (PersistUserDetail id user)
+    in
+    H.div
+        [ Styles.rightAlignedContainer
+        ]
+        [ button ]
 
 
 displayUserDetail : UserDetail -> Html Msg

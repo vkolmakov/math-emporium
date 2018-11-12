@@ -14,6 +14,8 @@ module Managing.Styles exposing
     , loadingSpinner
     , loadingSpinnerContainer
     , mainContainer
+    , primaryButton
+    , rightAlignedContainer
     , sectionNavContainer
     , sectionNavItem
     , sectionNavItemLink
@@ -66,6 +68,30 @@ link =
         ]
 
 
+baseButton =
+    Css.batch
+        [ Css.after
+            -- if the button needs to have any dynamic content,
+            -- such as a spinner, make sure that the size of the button
+            -- stays the same by taking up the space with a visually-hidden
+            -- label
+            [ Css.property "content" "attr(data-text)"
+            , Css.display Css.block
+            , Css.overflow Css.hidden
+            , Css.visibility Css.hidden
+            , Css.height (px 0)
+            ]
+        , Css.active
+            [ Css.backgroundColor theme.primaryColor ]
+        , Css.fontSize (em 1)
+        , Css.border3 (px 1) Css.solid theme.tertiaryColor
+        , Css.borderRadius (px 5)
+        , Css.padding (em 0.5)
+        , Css.fontFamily Css.inherit
+        , Css.color theme.primaryTextColor
+        ]
+
+
 visuallyHidden =
     Css.batch
         [ Css.border (px 0)
@@ -92,12 +118,12 @@ mainContainer =
         ]
 
 
-loadingSpinner : Attribute msg
-loadingSpinner =
+loadingSpinner : Float -> Attribute msg
+loadingSpinner size =
     css
         [ Css.borderRadius (pct 50)
-        , Css.width (px 24)
-        , Css.height (px 24)
+        , Css.width (em size)
+        , Css.height (em size)
         , Css.border3 (Css.rem 0.25) Css.solid theme.primaryColor
         , Css.borderTopColor theme.primaryColorFocused
         , Css.property "animation" "spin 0.5s infinite"
@@ -115,6 +141,24 @@ loadingSpinnerContainer =
 detailContainer : Attribute msg
 detailContainer =
     css []
+
+
+primaryButton =
+    css
+        [ baseButton
+        ]
+
+
+loadingButton =
+    css [ baseButton ]
+
+
+rightAlignedContainer =
+    css
+        [ Css.displayFlex
+        , Css.flexDirection Css.row
+        , Css.justifyContent Css.flexEnd
+        ]
 
 
 
