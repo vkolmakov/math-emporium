@@ -15,6 +15,8 @@ module Managing.Styles exposing
     , loadingSpinnerContainer
     , mainContainer
     , primaryButton
+    , primaryButtonDisabled
+    , primaryButtonEnabled
     , rightAlignedContainer
     , sectionNavContainer
     , sectionNavItem
@@ -81,8 +83,6 @@ baseButton =
             , Css.visibility Css.hidden
             , Css.height (px 0)
             ]
-        , Css.active
-            [ Css.backgroundColor theme.primaryColor ]
         , Css.fontSize (em 1)
         , Css.border3 (px 1) Css.solid theme.tertiaryColor
         , Css.borderRadius (px 5)
@@ -146,6 +146,18 @@ detailContainer =
 primaryButton =
     css
         [ baseButton
+        ]
+
+
+primaryButtonDisabled =
+    css
+        [ Css.opacity (Css.num 0.5) ]
+
+
+primaryButtonEnabled =
+    css
+        [ Css.active
+            [ Css.backgroundColor theme.primaryColor ]
         ]
 
 

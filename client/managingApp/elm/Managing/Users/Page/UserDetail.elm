@@ -148,18 +148,27 @@ view model =
 submitUserDetail : Int -> UserDetailVolatile -> PersistenceState -> Html Msg
 submitUserDetail id user userPersistenceState =
     let
-        button =
+        buttonMsg =
+            PersistUserDetail id user
+
+        buttonLabel =
+            "Submit"
+
+        buttonState =
             case userPersistenceState of
                 StillLoading ->
-                    Button.viewLoading "Submit"
+                    Button.Loading
+
+                Requested ->
+                    Button.Disabled
 
                 _ ->
-                    Button.viewBase "Submit" (PersistUserDetail id user)
+                    Button.Enabled
     in
     H.div
         [ Styles.rightAlignedContainer
         ]
-        [ button ]
+        [ Button.view buttonLabel buttonState buttonMsg ]
 
 
 displayUserDetail : UserDetail -> Html Msg
