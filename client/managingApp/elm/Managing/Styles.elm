@@ -157,7 +157,9 @@ primaryButtonDisabled =
 primaryButtonEnabled =
     css
         [ Css.active
-            [ Css.backgroundColor theme.primaryColor ]
+            [ Css.transform (Css.translateY <| px 1)
+            , Css.property "filter" "saturate(150%)"
+            ]
         ]
 
 

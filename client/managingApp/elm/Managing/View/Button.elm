@@ -14,22 +14,22 @@ type ButtonState
     | Enabled
 
 
-view label state msg =
+view label id state msg =
     case state of
         Loading ->
-            viewLoading label
+            viewLoading label id
 
         _ ->
-            viewBase label msg state
+            viewBase label id msg state
 
 
-baseAttrs label =
+baseAttrs label id =
     -- data-text is required to keep the size of the button constant
     -- if we need to change the button content to a loading spinner
-    [ A.attribute "data-text" label, Styles.primaryButton ]
+    [ A.id id, A.attribute "data-text" label, Styles.primaryButton ]
 
 
-viewBase label msg state =
+viewBase label id msg state =
     let
         ( isDisabled, additionalStyles ) =
             case state of
@@ -47,9 +47,9 @@ viewBase label msg state =
                     ( True, [] )
     in
     H.button
-        (baseAttrs label ++ additionalStyles ++ [ E.onClick msg, A.disabled isDisabled ])
+        (baseAttrs label id ++ additionalStyles ++ [ E.onClick msg, A.disabled isDisabled ])
         [ H.text label ]
 
 
-viewLoading label =
-    H.button (A.disabled True :: baseAttrs label) [ Loading.viewInlineSpinner ]
+viewLoading label id =
+    H.button (A.disabled True :: baseAttrs label id) [ Loading.viewInlineSpinner ]

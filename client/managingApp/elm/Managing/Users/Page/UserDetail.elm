@@ -1,5 +1,6 @@
 module Managing.Users.Page.UserDetail exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
+import Browser.Dom as Dom
 import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Events as E
 import Http
@@ -16,6 +17,10 @@ import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Process
 import Task
+
+
+submitButtonId =
+    "button-submit"
 
 
 
@@ -67,6 +72,7 @@ type Msg
     | CheckIfPersistenceCallTakingTooLong
     | TriggerMessageToParent String
     | ChangeAccessGroup AccessGroup
+    | NoOp
 
 
 type OutMsg
@@ -118,10 +124,22 @@ update msg model =
             )
 
         ReceiveUserPersistenceDetailResponse (Ok _) ->
-            ( { model | userPersistenceState = Done }, Cmd.none, Nothing )
+            ( { model | userPersistenceState = Done }
+            , attemptFocus submitButtonId
+            , Nothing
+            )
 
         ReceiveUserPersistenceDetailResponse (Err e) ->
-            ( { model | userPersistenceState = Failed (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
+            ( { model | userPersistenceState = Failed (RemoteData.OtherError <| Debug.toString e) }
+            , attemptFocus submitButtonId
+            , Nothing )
+
+        NoOp ->
+            ( model, Cmd.none, Nothing )
+
+
+attemptFocus elementId =
+    Task.attempt (\_ -> NoOp) (Dom.focus elementId)
 
 
 
@@ -168,7 +186,7 @@ submitUserDetail id user userPersistenceState =
     H.div
         [ Styles.rightAlignedContainer
         ]
-        [ Button.view buttonLabel buttonState buttonMsg ]
+        [ Button.view buttonLabel submitButtonId buttonState buttonMsg ]
 
 
 displayUserDetail : UserDetail -> Html Msg
