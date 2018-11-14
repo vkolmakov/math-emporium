@@ -22,14 +22,20 @@ type alias Model =
 
 
 init =
-    Model RemoteData.Loading
+    Model RemoteData.NotRequested
 
 
 initCmd : Model -> Cmd Msg
 initCmd model =
     case model.users of
-        RemoteData.Loading ->
+        RemoteData.NotRequested ->
             getUsers
+
+        RemoteData.Requested ->
+            Cmd.none
+
+        RemoteData.StillLoading ->
+            Cmd.none
 
         RemoteData.Error _ ->
             Cmd.none
@@ -92,7 +98,13 @@ view model =
             DataTable.item (fields ++ [ actions ])
     in
     case model.users of
-        RemoteData.Loading ->
+        RemoteData.NotRequested ->
+            H.div [] []
+
+        RemoteData.Requested ->
+            H.div [] []
+
+        RemoteData.StillLoading ->
             spinner
 
         RemoteData.Available users ->

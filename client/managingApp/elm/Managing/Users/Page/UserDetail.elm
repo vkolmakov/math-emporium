@@ -15,7 +15,6 @@ import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
-import Process
 import Task
 
 
@@ -53,7 +52,7 @@ type alias UserDetailVolatile =
 
 init : Model
 init =
-    Model RemoteData.Loading { group = Nothing } NotRequested Nothing
+    Model RemoteData.NotRequested { group = Nothing } NotRequested Nothing
 
 
 initCmd : Int -> Cmd Msg
@@ -118,7 +117,7 @@ update msg model =
             ( { model | userPersistenceState = Requested }
             , Cmd.batch
                 [ persistUserDetail id user
-                , Process.sleep 150 |> Task.perform (always CheckIfPersistenceCallTakingTooLong)
+                , RemoteData.scheduleLoadingStateTrigger CheckIfPersistenceCallTakingTooLong
                 ]
             , Nothing
             )
@@ -132,7 +131,8 @@ update msg model =
         ReceiveUserPersistenceDetailResponse (Err e) ->
             ( { model | userPersistenceState = Failed (RemoteData.OtherError <| Debug.toString e) }
             , attemptFocus submitButtonId
-            , Nothing )
+            , Nothing
+            )
 
         NoOp ->
             ( model, Cmd.none, Nothing )
@@ -149,7 +149,13 @@ attemptFocus elementId =
 view : Model -> Html Msg
 view model =
     case model.userDetail of
-        RemoteData.Loading ->
+        RemoteData.Requested ->
+            H.div [] []
+
+        RemoteData.NotRequested ->
+            H.div [] []
+
+        RemoteData.StillLoading ->
             spinner
 
         RemoteData.Available user ->
