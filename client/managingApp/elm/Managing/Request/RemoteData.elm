@@ -9,7 +9,7 @@ import Task
 
 
 delayBeforeTooLong =
-    100
+    150
 
 
 scheduleLoadingStateTrigger : msg -> Cmd msg

@@ -6,7 +6,7 @@ import Html.Styled.Events as E
 import Http
 import Json.Decode as Json
 import Json.Encode
-import Managing.Request.RemoteData as RemoteData
+import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)
@@ -26,18 +26,10 @@ submitButtonId =
 -- MODEL
 
 
-type PersistenceState
-    = NotRequested
-    | Requested
-    | StillLoading
-    | Done
-    | Failed RemoteData.RemoteDataError
-
-
 type alias Model =
     { userDetail : RemoteData.RemoteData UserDetail
     , userDetailVolatile : UserDetailVolatile
-    , userPersistenceState : PersistenceState
+    , userPersistenceState : RemoteData UserRef
     , id : Maybe Int
     }
 
@@ -52,7 +44,11 @@ type alias UserDetailVolatile =
 
 init : Model
 init =
-    Model RemoteData.NotRequested { group = Nothing } NotRequested Nothing
+    Model
+        RemoteData.NotRequested
+        { group = Nothing }
+        RemoteData.NotRequested
+        Nothing
 
 
 initCmd : Int -> Cmd Msg
@@ -107,14 +103,14 @@ update msg model =
 
         CheckIfPersistenceCallTakingTooLong ->
             case model.userPersistenceState of
-                Requested ->
-                    ( { model | userPersistenceState = StillLoading }, Cmd.none, Nothing )
+                RemoteData.Requested ->
+                    ( { model | userPersistenceState = RemoteData.StillLoading }, Cmd.none, Nothing )
 
                 _ ->
                     ( model, Cmd.none, Nothing )
 
         PersistUserDetail id user ->
-            ( { model | userPersistenceState = Requested }
+            ( { model | userPersistenceState = RemoteData.Requested }
             , Cmd.batch
                 [ persistUserDetail id user
                 , RemoteData.scheduleLoadingStateTrigger CheckIfPersistenceCallTakingTooLong
@@ -123,13 +119,13 @@ update msg model =
             )
 
         ReceiveUserPersistenceDetailResponse (Ok _) ->
-            ( { model | userPersistenceState = Done }
+            ( { model | userPersistenceState = RemoteData.NotRequested }
             , attemptFocus submitButtonId
             , Nothing
             )
 
         ReceiveUserPersistenceDetailResponse (Err e) ->
-            ( { model | userPersistenceState = Failed (RemoteData.OtherError <| Debug.toString e) }
+            ( { model | userPersistenceState = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }
             , attemptFocus submitButtonId
             , Nothing
             )
@@ -159,7 +155,6 @@ view model =
             spinner
 
         RemoteData.Available user ->
-            -- TODO: add a submit button somewhere here
             H.div [ Styles.detailContainer ]
                 [ displayUserDetail user
                 , submitUserDetail user.id model.userDetailVolatile model.userPersistenceState
@@ -169,7 +164,7 @@ view model =
             H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
 
 
-submitUserDetail : Int -> UserDetailVolatile -> PersistenceState -> Html Msg
+submitUserDetail : Int -> UserDetailVolatile -> RemoteData UserRef -> Html Msg
 submitUserDetail id user userPersistenceState =
     let
         buttonMsg =
@@ -180,10 +175,10 @@ submitUserDetail id user userPersistenceState =
 
         buttonState =
             case userPersistenceState of
-                StillLoading ->
+                RemoteData.StillLoading ->
                     Button.Loading
 
-                Requested ->
+                RemoteData.Requested ->
                     Button.Disabled
 
                 _ ->
