@@ -8,14 +8,20 @@ import Json.Decode as Json
 import Time exposing (Posix, Weekday(..))
 
 
-toMilliseconds hours =
+hoursFromMilliseconds hours =
     hours * 3600 * 1000
 
-{-| Hack for now until there is a better way to
+
+{-|
+
+    Hack for now until there is a better way to
     get the current timezone.
+
+    TODO: Pass the timezone in flags?
+
 -}
 timezoneOffsetMilliseconds =
-    -(toMilliseconds 5)
+    -(hoursFromMilliseconds 5)
 
 
 type Date
@@ -25,7 +31,6 @@ type Date
 timestampToDate : Int -> Date
 timestampToDate timestamp =
     Date <| Time.millisToPosix (timestamp + timezoneOffsetMilliseconds)
-
 
 
 weekdayToString : Weekday -> String

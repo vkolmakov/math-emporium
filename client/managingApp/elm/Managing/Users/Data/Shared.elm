@@ -3,7 +3,6 @@ module Managing.Users.Data.Shared exposing
     , accessGroupToInt
     , accessGroupToString
     , decodeAccessGroup
-    , decodeDate
     )
 
 import Json.Decode as Decode
@@ -15,16 +14,6 @@ type AccessGroup
     | EmployeeGroup
     | EmployerGroup
     | AdminGroup
-
-
-decodeDate : String -> Decode.Decoder Date
-decodeDate date =
-    case Date.fromString date of
-        Just d ->
-            Decode.succeed d
-
-        Nothing ->
-            Decode.fail "Invalid date"
 
 
 getAccessGroupTranslation group =
