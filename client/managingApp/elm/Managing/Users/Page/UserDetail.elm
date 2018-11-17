@@ -45,15 +45,23 @@ type alias UserDetailVolatile =
 init : Model
 init =
     Model
-        RemoteData.NotRequested
+        RemoteData.Requested
         { group = Nothing }
         RemoteData.NotRequested
         Nothing
 
 
+type RemoteRequestItem
+    = UserDetailRequest
+    | UserPersistenceRequest
+
+
 initCmd : Int -> Cmd Msg
 initCmd userId =
-    getUserDetail userId
+    Cmd.batch
+        [ getUserDetail userId
+        , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong UserDetailRequest)
+        ]
 
 
 
@@ -64,7 +72,7 @@ type Msg
     = ReceiveUserDetail (Result Http.Error UserDetail)
     | PersistUserDetail Int UserDetailVolatile
     | ReceiveUserPersistenceDetailResponse (Result Http.Error UserRef)
-    | CheckIfPersistenceCallTakingTooLong
+    | CheckIfTakingTooLong RemoteRequestItem
     | TriggerMessageToParent String
     | ChangeAccessGroup AccessGroup
     | NoOp
@@ -78,10 +86,10 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveUserDetail (Ok user) ->
-            ( { model | id = Just user.id, userDetail = RemoteData.Available user }, Cmd.none, Nothing )
+            noAction { model | id = Just user.id, userDetail = RemoteData.Available user }
 
         ReceiveUserDetail (Err e) ->
-            ( { model | userDetail = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
+            noAction { model | userDetail = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }
 
         TriggerMessageToParent s ->
             ( model, Cmd.none, Just (DoStuffToParent s) )
@@ -96,24 +104,34 @@ update msg model =
                         updatedUserDetailVolatile =
                             { previousUserDetailVolatile | group = Just group }
                     in
-                    ( { model | userDetailVolatile = updatedUserDetailVolatile }, Cmd.none, Nothing )
+                    noAction { model | userDetailVolatile = updatedUserDetailVolatile }
 
                 _ ->
-                    ( model, Cmd.none, Nothing )
+                    noAction model
 
-        CheckIfPersistenceCallTakingTooLong ->
-            case model.userPersistenceState of
-                RemoteData.Requested ->
-                    ( { model | userPersistenceState = RemoteData.StillLoading }, Cmd.none, Nothing )
+        CheckIfTakingTooLong itemRequest ->
+            case itemRequest of
+                UserDetailRequest ->
+                    case model.userDetail of
+                        RemoteData.Requested ->
+                            ( { model | userDetail = RemoteData.StillLoading }, Cmd.none, Nothing )
 
-                _ ->
-                    ( model, Cmd.none, Nothing )
+                        _ ->
+                            noAction model
+
+                UserPersistenceRequest ->
+                    case model.userPersistenceState of
+                        RemoteData.Requested ->
+                            ( { model | userPersistenceState = RemoteData.StillLoading }, Cmd.none, Nothing )
+
+                        _ ->
+                            noAction model
 
         PersistUserDetail id user ->
             ( { model | userPersistenceState = RemoteData.Requested }
             , Cmd.batch
                 [ persistUserDetail id user
-                , RemoteData.scheduleLoadingStateTrigger CheckIfPersistenceCallTakingTooLong
+                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong UserPersistenceRequest)
                 ]
             , Nothing
             )
@@ -131,11 +149,15 @@ update msg model =
             )
 
         NoOp ->
-            ( model, Cmd.none, Nothing )
+            noAction model
 
 
 attemptFocus elementId =
     Task.attempt (\_ -> NoOp) (Dom.focus elementId)
+
+
+noAction model =
+    ( model, Cmd.none, Nothing )
 
 
 

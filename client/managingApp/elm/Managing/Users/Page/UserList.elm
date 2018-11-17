@@ -22,17 +22,24 @@ type alias Model =
 
 
 init =
-    Model RemoteData.NotRequested
+    Model RemoteData.Requested
 
 
 initCmd : Model -> Cmd Msg
 initCmd model =
+    let
+        fetchData =
+            Cmd.batch
+                [ getUsers
+                , RemoteData.scheduleLoadingStateTrigger CheckIfRequestTakesTooLong
+                ]
+    in
     case model.users of
         RemoteData.NotRequested ->
-            getUsers
+            fetchData
 
         RemoteData.Requested ->
-            Cmd.none
+            fetchData
 
         RemoteData.StillLoading ->
             Cmd.none
@@ -51,6 +58,7 @@ initCmd model =
 type Msg
     = ReceiveUsers (Result Http.Error (List UserListEntry))
     | NavigateTo Route
+    | CheckIfRequestTakesTooLong
 
 
 type OutMsg
@@ -68,6 +76,14 @@ update msg model =
 
         NavigateTo r ->
             ( model, Cmd.none, Just (RequestNavigationTo r) )
+
+        CheckIfRequestTakesTooLong ->
+            case model.users of
+                RemoteData.Requested ->
+                    ( { model | users = RemoteData.StillLoading }, Cmd.none, Nothing )
+
+                _ ->
+                    ( model, Cmd.none, Nothing )
 
 
 
