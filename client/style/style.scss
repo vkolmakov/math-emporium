@@ -17,7 +17,7 @@
 $susy: (
     colums: 12,
     container: 50em,
-    global-box-sizing: border-box
+    global-box-sizing: border-box,
 );
 
 body {
@@ -36,7 +36,6 @@ body {
 }
 
 .content {
-
 }
 
 .page-section {
@@ -46,8 +45,12 @@ body {
     }
 
     @keyframes primaryColorFade {
-        from { background: $primary-color; }
-        to   { background: transparent; }
+        from {
+            background: $primary-color;
+        }
+        to {
+            background: transparent;
+        }
     }
 }
 
@@ -58,7 +61,6 @@ select {
 .clearfix {
     @include clearfix;
 }
-
 
 .color-icon {
     @include rounded-border();
@@ -124,16 +126,8 @@ select {
             border-top: 1px solid #eaeaea;
         }
 
-
-
-
         &:nth-child(even) {
-            background: darken($tertiary-color, 5%);
-
-            @include breakpoint($medium-screen) {
-                background: $tertiary-color;
-            }
-
+            background: lighten($tertiary-color, 20%);
         }
     }
 
@@ -149,7 +143,7 @@ select {
         }
 
         &:before {
-            content: attr(data-header)": ";
+            content: attr(data-header) ": ";
             font-weight: bold;
 
             @include breakpoint($medium-screen) {
@@ -174,7 +168,8 @@ select {
                 background-color: $tertiary-color;
                 .action-text {
                     color: $danger-color;
-                    &:hover,&:focus {
+                    &:hover,
+                    &:focus {
                         color: $danger-color;
                     }
                 }
@@ -190,7 +185,8 @@ select {
                 padding: 0.2em;
                 color: black;
                 cursor: pointer;
-                &:hover,&:focus {
+                &:hover,
+                &:focus {
                     color: $primary-color-focused;
                     text-decoration: underline;
                 }
@@ -204,7 +200,6 @@ select {
                 padding: 0.5em;
             }
         }
-
     }
 }
 
@@ -219,7 +214,6 @@ select {
         @include box-sizing(border-box);
         width: 100%;
     }
-
 }
 
 .button {
@@ -239,7 +233,7 @@ select {
     }
 }
 
-.container{
+.container {
     margin: 0 auto;
     width: 90%;
     max-width: 50em;
@@ -260,7 +254,7 @@ select {
     border-radius: 50%;
     width: $size;
     height: $size;
-    border: .25rem solid $primary-color;
+    border: 0.25rem solid $primary-color;
     border-top-color: $primary-color-focused;
     animation: spin $spin-duration infinite;
 }
