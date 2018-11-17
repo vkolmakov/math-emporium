@@ -12,6 +12,7 @@ type Route
     = Home
     | UserList
     | UserDetail Int
+    | EventList
     | Unknown
 
 
@@ -23,6 +24,7 @@ fromLocationHref locationHref =
                 [ UrlParser.map Home (s "manage-portal")
                 , UrlParser.map UserList (s "manage-portal" </> s "users")
                 , UrlParser.map UserDetail (s "manage-portal" </> s "users" </> UrlParser.int)
+                , UrlParser.map EventList (s "manage-portal" </> s "events")
                 ]
 
         correspondingRoute =
@@ -47,6 +49,9 @@ toHref r =
 
                 UserDetail id ->
                     "users/" ++ String.fromInt id
+
+                EventList ->
+                    "events"
 
                 Unknown ->
                     ""

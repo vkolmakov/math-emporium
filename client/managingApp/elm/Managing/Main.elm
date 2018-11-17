@@ -7,6 +7,7 @@ import Html.Styled.Attributes as A
 import Html.Styled.Events as E
 import Html.Styled.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
+import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
@@ -31,6 +32,7 @@ type alias Model =
     { route : Route
     , userListPageModel : UserList.Model
     , userDetailPageModel : UserDetail.Model
+    , eventListPageModel : EventList.Model
     }
 
 
@@ -41,7 +43,7 @@ init locationHref =
             Route.fromLocationHref locationHref
 
         initialModel =
-            Model route UserList.init UserDetail.init
+            Model route UserList.init UserDetail.init EventList.init
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -61,6 +63,7 @@ type Msg
     | RequestLocationHrefChange String
     | UserListPageMsg UserList.Msg
     | UserDetailPageMsg UserDetail.Msg
+    | EventListPageMsg EventList.Msg
 
 
 type OutMsg
@@ -128,6 +131,18 @@ update message model =
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
             )
 
+        EventListPageMsg msg ->
+            let
+                ( innerModel, innerCmd, outMsg ) =
+                    EventList.update msg model.eventListPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (UserDetailOutMsg outMsg)
+            in
+            ( { updatedModelAfterOutMsg | eventListPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
+            )
+
 
 {-| Returns a command for a NEW route with the PREVIOUS model.
 This is useful for determining whether or not the data has to
@@ -151,6 +166,9 @@ getInitModelCmd route model =
             , Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
             )
 
+        Route.EventList ->
+            ( model, Cmd.map EventListPageMsg (EventList.initCmd model.eventListPageModel) )
+
         Route.Unknown ->
             ( model, Cmd.none )
 
@@ -162,8 +180,8 @@ getInitModelCmd route model =
 
 activeNavItems : List NavItem
 activeNavItems =
-    [ NavItem Route.Home "Home"
-    , NavItem Route.UserList "Users"
+    [ NavItem Route.UserList "Users"
+    , NavItem Route.EventList "Events"
     ]
 
 
@@ -178,6 +196,9 @@ getHighlightedRoute route =
 
         Route.Home ->
             Just Route.Home
+
+        Route.EventList ->
+            Just Route.EventList
 
         _ ->
             Nothing
@@ -203,6 +224,9 @@ viewPageContent model =
 
                 Route.UserDetail id ->
                     H.map UserDetailPageMsg <| UserDetail.view model.userDetailPageModel
+
+                Route.EventList ->
+                    H.map EventListPageMsg <| EventList.view model.eventListPageModel
 
                 Route.Unknown ->
                     H.text "At unknown route"
