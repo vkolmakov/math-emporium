@@ -89,7 +89,7 @@ update msg model =
             noAction { model | id = Just user.id, userDetail = RemoteData.Available user }
 
         ReceiveUserDetail (Err e) ->
-            noAction { model | userDetail = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }
+            noAction { model | userDetail = RemoteData.Error <| RemoteData.errorFromHttpError e }
 
         TriggerMessageToParent s ->
             ( model, Cmd.none, Just (DoStuffToParent s) )
@@ -136,14 +136,14 @@ update msg model =
             , Nothing
             )
 
-        ReceiveUserPersistenceDetailResponse (Ok _) ->
-            ( { model | userPersistenceState = RemoteData.NotRequested }
+        ReceiveUserPersistenceDetailResponse (Ok userRef) ->
+            ( { model | userPersistenceState = RemoteData.Available userRef }
             , attemptFocus submitButtonId
             , Nothing
             )
 
         ReceiveUserPersistenceDetailResponse (Err e) ->
-            ( { model | userPersistenceState = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }
+            ( { model | userPersistenceState = RemoteData.Error <| RemoteData.errorFromHttpError e }
             , attemptFocus submitButtonId
             , Nothing
             )
@@ -186,6 +186,23 @@ view model =
             H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
 
 
+viewPersistenceStatus : RemoteData a -> Html msg
+viewPersistenceStatus persistenceState =
+    let
+        message =
+            case persistenceState of
+                RemoteData.Available _ ->
+                    "Saved"
+
+                RemoteData.Error err ->
+                    RemoteData.errorToString err
+
+                _ ->
+                    ""
+    in
+    H.div [] [ H.text message ]
+
+
 submitUserDetail : Int -> UserDetailVolatile -> RemoteData UserRef -> Html Msg
 submitUserDetail id user userPersistenceState =
     let
@@ -209,7 +226,9 @@ submitUserDetail id user userPersistenceState =
     H.div
         [ Styles.rightAlignedContainer
         ]
-        [ Button.view buttonLabel submitButtonId buttonState buttonMsg ]
+        [ viewPersistenceStatus userPersistenceState
+        , Button.view buttonLabel submitButtonId buttonState buttonMsg
+        ]
 
 
 displayUserDetail : UserDetail -> Html Msg
@@ -236,7 +255,7 @@ accessGroupToSelectOption : AccessGroup -> Input.SelectOption
 accessGroupToSelectOption group =
     Input.toSelectOption
         { label = accessGroupToString group
-        , value = Debug.toString << accessGroupToInt <| group
+        , value = String.fromInt << accessGroupToInt <| group
         }
 
 

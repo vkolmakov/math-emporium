@@ -72,7 +72,7 @@ update msg model =
             ( { model | users = RemoteData.Available users }, Cmd.none, Nothing )
 
         ReceiveUsers (Err e) ->
-            ( { model | users = RemoteData.Error (RemoteData.OtherError <| Debug.toString e) }, Cmd.none, Nothing )
+            ( { model | users = RemoteData.Error <| RemoteData.errorFromHttpError e }, Cmd.none, Nothing )
 
         NavigateTo r ->
             ( model, Cmd.none, Just (RequestNavigationTo r) )

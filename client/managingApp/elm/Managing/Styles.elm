@@ -172,6 +172,7 @@ rightAlignedContainer =
         [ Css.displayFlex
         , Css.flexDirection Css.row
         , Css.justifyContent Css.flexEnd
+        , Css.alignItems Css.center
         ]
 
 
