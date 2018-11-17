@@ -36,7 +36,7 @@ $gutter-size: 0.75em;
         .select-filter-empty {
             color: $primary-text-color;
             &:disabled,
-            &[disabled]{
+            &[disabled] {
                 color: #aaa;
             }
         }
@@ -52,8 +52,33 @@ $gutter-size: 0.75em;
             }
 
             > div {
-                // ugh
-                flex: 1
+                // this is required to make sure that
+                // nameless div that hosts react datepicker
+                // will take up all of the available space.
+                flex: 1;
+
+                // the bit with first/last child below is needed
+                // to add rounded corners on the sides of the dual date picker
+                // and not to the divider in the middle
+
+                // this is required to add a rounded border
+                // just on the left side of the first child
+                &:first-child {
+                    .react-datepicker__input-container > input {
+                        border-radius: 5px 0 0 5px;
+                    }
+                }
+
+                // this is required to add a rounded border
+                // just on the right side of the last child
+                &:last-child {
+                    .react-datepicker__input-container > input {
+                        border-radius: 0 5px 5px 0;
+                        // this is needed to avoid two borders in the middle
+                        // stacking up
+                        border-left: 0;
+                    }
+                }
             }
 
             .react-datepicker-wrapper {
@@ -62,7 +87,7 @@ $gutter-size: 0.75em;
 
             .react-datepicker__input-container {
                 > input {
-                    @include input;
+                    @include input-no-rounded-border();
                 }
 
                 width: 100%;
@@ -79,21 +104,22 @@ $gutter-size: 0.75em;
 .react-datepicker__day--in-range {
     background-color: $primary-color;
     color: black;
-    &:hover,&:focus {
+    &:hover,
+    &:focus {
         background-color: $primary-color-focused;
     }
 }
 
 .react-datepicker__header {
-    background-color: $tertiary-color;
+    background-color: lighten($tertiary-color, 25%);
 }
 
 .react-datepicker__week {
-    &:hover,&:focus {
+    &:hover,
+    &:focus {
         background-color: $tertiary-color;
     }
 }
-
 
 .open-spots-message {
     $message-text-color: darken($tertiary-color, 70%);
@@ -115,7 +141,6 @@ $gutter-size: 0.75em;
     .missing-item-info {
         @include open-spots-message;
     }
-
 
     .open-spots-message-main {
         @include open-spots-message;
@@ -197,7 +222,6 @@ $gutter-size: 0.75em;
             @include gallery(4 of 12);
         }
 
-
         > p {
             text-align: center;
         }
@@ -217,8 +241,13 @@ $gutter-size: 0.75em;
             background-color: $primary-color;
             color: $primary-text-color;
 
-            &:hover,&:focus {
+            &:hover,
+            &:focus {
                 background-color: $primary-color-focused;
+            }
+
+            &:active {
+                transform: translateY(1px);
             }
         }
 
@@ -232,8 +261,8 @@ $gutter-size: 0.75em;
         > .expired-spot {
             @include spot();
             cursor: not-allowed;
-            background-color: $tertiary-color;
-            color: lighten($primary-text-color, 64%);
+            background-color: lighten($tertiary-color, 25%);
+            color: $primary-text-color;
         }
     }
 }
@@ -290,8 +319,15 @@ $gutter-size: 0.75em;
 .faq {
     .faq-content {
         // styles for html elements generated from markdown
-        a { color: $primary-text-color; }
-        h2 { margin: 0.25em 0; }
-        h3, p { margin: 0.75em 0; }
+        a {
+            color: $primary-text-color;
+        }
+        h2 {
+            margin: 0.25em 0;
+        }
+        h3,
+        p {
+            margin: 0.75em 0;
+        }
     }
 }
