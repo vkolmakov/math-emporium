@@ -5,6 +5,7 @@ import Browser.Navigation as Navigation
 import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Attributes as A
 import Html.Styled.Events as E
+import Html.Styled.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
@@ -184,8 +185,8 @@ getHighlightedRoute route =
 
 view model =
     H.div [ Styles.mainContainer ]
-        [ viewSectionNav activeNavItems (getHighlightedRoute model.route)
-        , viewPageContent model
+        [ lazy2 viewSectionNav activeNavItems (getHighlightedRoute model.route)
+        , lazy viewPageContent model
         ]
 
 
