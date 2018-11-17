@@ -189,18 +189,18 @@ view model =
 viewPersistenceStatus : RemoteData a -> Html msg
 viewPersistenceStatus persistenceState =
     let
-        message =
+        ( message, attributes ) =
             case persistenceState of
                 RemoteData.Available _ ->
-                    "Saved"
+                    ( "Saved", [ Styles.textColorSuccess ] )
 
                 RemoteData.Error err ->
-                    RemoteData.errorToString err
+                    ( "Error: " ++ RemoteData.errorToString err, [ Styles.textColorError ] )
 
                 _ ->
-                    ""
+                    ( "", [] )
     in
-    H.div [] [ H.text message ]
+    H.strong attributes [ H.text message ]
 
 
 submitUserDetail : Int -> UserDetailVolatile -> RemoteData UserRef -> Html Msg
@@ -226,7 +226,7 @@ submitUserDetail id user userPersistenceState =
     H.div
         [ Styles.rightAlignedContainer
         ]
-        [ viewPersistenceStatus userPersistenceState
+        [ H.div [ Styles.marginRight ] [ viewPersistenceStatus userPersistenceState ]
         , Button.view buttonLabel submitButtonId buttonState buttonMsg
         ]
 

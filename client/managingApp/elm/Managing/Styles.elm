@@ -14,6 +14,7 @@ module Managing.Styles exposing
     , loadingSpinner
     , loadingSpinnerContainer
     , mainContainer
+    , marginRight
     , primaryButton
     , primaryButtonDisabled
     , primaryButtonEnabled
@@ -22,6 +23,8 @@ module Managing.Styles exposing
     , sectionNavItem
     , sectionNavItemLink
     , sectionNavItemLinkHighlighted
+    , textColorError
+    , textColorSuccess
     )
 
 import Css exposing (auto, em, hex, int, pct, px)
@@ -41,6 +44,8 @@ type alias Theme =
     , primaryTextColor : Css.Color
     , secondaryColor : Css.Color
     , tertiaryColor : Css.Color
+    , successColor : Css.Color
+    , dangerColor : Css.Color
     }
 
 
@@ -52,6 +57,8 @@ theme =
     , primaryTextColor = hex "#000000"
     , secondaryColor = hex "#FFFFFF"
     , tertiaryColor = hex "#A3A3A3"
+    , successColor = hex "#296529"
+    , dangerColor = hex "#B33737"
     }
 
 
@@ -174,6 +181,18 @@ rightAlignedContainer =
         , Css.justifyContent Css.flexEnd
         , Css.alignItems Css.center
         ]
+
+
+textColorSuccess =
+    css [ Css.color theme.successColor ]
+
+
+textColorError =
+    css [ Css.color theme.dangerColor ]
+
+
+marginRight =
+    css [ Css.marginRight (em 1) ]
 
 
 
