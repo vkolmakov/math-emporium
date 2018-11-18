@@ -15,6 +15,7 @@ import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
+import Managing.AppConfig exposing (AppConfig)
 import Task
 
 
@@ -27,7 +28,8 @@ submitButtonId =
 
 
 type alias Model =
-    { userDetail : RemoteData.RemoteData UserDetail
+    { appConfig : AppConfig
+    , userDetail : RemoteData.RemoteData UserDetail
     , userDetailVolatile : UserDetailVolatile
     , userPersistenceState : RemoteData UserRef
     , id : Maybe Int
@@ -42,9 +44,10 @@ type alias UserDetailVolatile =
     { group : Maybe AccessGroup }
 
 
-init : Model
-init =
+init : AppConfig -> Model
+init appConfig =
     Model
+        appConfig
         RemoteData.Requested
         { group = Nothing }
         RemoteData.NotRequested
@@ -178,7 +181,7 @@ view model =
 
         RemoteData.Available user ->
             H.div [ Styles.detailContainer ]
-                [ displayUserDetail user
+                [ displayUserDetail model.appConfig user
                 , submitUserDetail user.id model.userDetailVolatile model.userPersistenceState
                 ]
 
@@ -192,15 +195,15 @@ viewPersistenceStatus persistenceState =
         ( message, attributes ) =
             case persistenceState of
                 RemoteData.Available _ ->
-                    ( "Saved", [ Styles.textColorSuccess ] )
+                    ( Just "Saved", [ Styles.textColorSuccess ] )
 
                 RemoteData.Error err ->
-                    ( "Error: " ++ RemoteData.errorToString err, [ Styles.textColorError ] )
+                    ( Just <| "Error: " ++ RemoteData.errorToString err, [ Styles.textColorError ] )
 
                 _ ->
-                    ( "", [] )
+                    ( Nothing, [] )
     in
-    H.strong attributes [ H.text message ]
+    H.strong attributes [ H.text (Maybe.withDefault "" message) ]
 
 
 submitUserDetail : Int -> UserDetailVolatile -> RemoteData UserRef -> Html Msg
@@ -231,15 +234,15 @@ submitUserDetail id user userPersistenceState =
         ]
 
 
-displayUserDetail : UserDetail -> Html Msg
-displayUserDetail user =
+displayUserDetail : AppConfig -> UserDetail -> Html Msg
+displayUserDetail appConfig user =
     let
         labelsWithElements =
             [ ( "ID", H.text (String.fromInt user.id) )
             , ( "Email", H.text user.email )
             , ( "Group", accessGroupSelectElement user.group )
             , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
-            , ( "Last Sign-in Date", H.text (Date.toDisplayString user.lastSigninDate) )
+            , ( "Last Sign-in Date", H.text (Date.toDisplayString  appConfig.localTimezoneOffsetInMinutes user.lastSigninDate) )
             ]
     in
     labelsWithElements

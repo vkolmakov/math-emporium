@@ -7,6 +7,7 @@ import Html.Styled.Attributes as A
 import Html.Styled.Events as E
 import Html.Styled.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
+import Managing.AppConfig as AppConfig exposing (AppConfig)
 import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
@@ -28,22 +29,32 @@ main =
 -- MODEL
 
 
+type alias InitFlags =
+    { initialHref : String
+    , localTimezoneOffsetInMinutes : Int
+    }
+
+
 type alias Model =
     { route : Route
+    , appConfig : AppConfig
     , userListPageModel : UserList.Model
     , userDetailPageModel : UserDetail.Model
     , eventListPageModel : EventList.Model
     }
 
 
-init : String -> ( Model, Cmd Msg )
-init locationHref =
+init : InitFlags -> ( Model, Cmd Msg )
+init flags =
     let
         route =
-            Route.fromLocationHref locationHref
+            Route.fromLocationHref flags.initialHref
+
+        appConfig =
+            AppConfig.create flags.localTimezoneOffsetInMinutes
 
         initialModel =
-            Model route UserList.init UserDetail.init EventList.init
+            Model route appConfig (UserList.init appConfig) (UserDetail.init appConfig) (EventList.init appConfig)
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -162,7 +173,7 @@ getInitModelCmd route model =
                we want to avoid seeing old content if we end up
                navigating to that route more than once
             -}
-            ( { model | userDetailPageModel = UserDetail.init }
+            ( { model | userDetailPageModel = UserDetail.init model.appConfig }
             , Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
             )
 
@@ -170,11 +181,10 @@ getInitModelCmd route model =
             ( model, Cmd.map EventListPageMsg (EventList.initCmd model.eventListPageModel) )
 
         Route.Unknown ->
-            ( model, Cmd.none )
+            ( model, Navigation.load "/" )
 
 
 
--- TODO: maybe do Navigation.load "/"
 -- VIEW
 
 

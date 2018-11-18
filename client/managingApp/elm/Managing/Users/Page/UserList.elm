@@ -3,6 +3,7 @@ module Managing.Users.Page.UserList exposing (Model, Msg, OutMsg(..), init, init
 import Html.Styled as H exposing (Attribute, Html)
 import Http
 import Json.Decode as Decode
+import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData
 import Managing.Route as Route exposing (Route)
 import Managing.Users.Data.Shared exposing (accessGroupToString)
@@ -17,12 +18,13 @@ import Managing.View.Loading exposing (spinner)
 
 
 type alias Model =
-    { users : RemoteData.RemoteData (List UserListEntry)
+    { appConfig : AppConfig
+    , users : RemoteData.RemoteData (List UserListEntry)
     }
 
 
-init =
-    Model RemoteData.Requested
+init appConfig =
+    Model appConfig RemoteData.Requested
 
 
 initCmd : Model -> Cmd Msg
@@ -97,7 +99,7 @@ view model =
                 labelsWithData =
                     [ ( "Email", user.email )
                     , ( "Group", accessGroupToString user.group )
-                    , ( "Last Sign-in Date", Date.toDisplayString user.lastSigninDate )
+                    , ( "Last Sign-in Date", Date.toDisplayString model.appConfig.localTimezoneOffsetInMinutes user.lastSigninDate )
                     ]
 
                 fields =

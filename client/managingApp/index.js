@@ -11,6 +11,11 @@ const rootElementProps = {
     tabIndex: -1,
 };
 
+const flags = {
+    initialHref: location.href,
+    localTimezoneOffsetInMinutes: new Date().getTimezoneOffset(),
+};
+
 const ports = (elmPortsRef) => {
     function onLocationHrefChange() {
         elmPortsRef.onLocationHrefChange.send(location.href);
@@ -32,7 +37,7 @@ export default () => (
     <ElmWrapper
         rootElementProps={rootElementProps}
         src={Managing.Main}
-        flags={location.href}
+        flags={flags}
         ports={ports}
     />
 );

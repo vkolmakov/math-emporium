@@ -8,20 +8,8 @@ import Json.Decode as Json
 import Time exposing (Posix, Weekday(..))
 
 
-hoursFromMilliseconds hours =
-    hours * 3600 * 1000
-
-
-{-|
-
-    Hack for now until there is a better way to
-    get the current timezone.
-
-    TODO: Pass the timezone in flags?
-
--}
-timezoneOffsetMilliseconds =
-    -(hoursFromMilliseconds 5)
+minutesToMilliseconds minutes =
+    minutes * 60 * 1000
 
 
 type Date
@@ -30,7 +18,7 @@ type Date
 
 timestampToDate : Int -> Date
 timestampToDate timestamp =
-    Date <| Time.millisToPosix (timestamp + timezoneOffsetMilliseconds)
+    Date <| Time.millisToPosix timestamp
 
 
 weekdayToString : Weekday -> String
@@ -62,11 +50,24 @@ timezone =
     Time.utc
 
 
-toDisplayString : Date -> String
-toDisplayString (Date timestamp) =
+toDisplayString : Int -> Date -> String
+toDisplayString timezoneOffsetInMinutes (Date timestamp) =
     let
         symbol s =
             \_ -> s
+
+        timezoneOffsetInMilliseconds =
+            minutesToMilliseconds timezoneOffsetInMinutes
+
+        {- There appears to be no way to create a Time.Zone object
+           so instead of passing in our timezone, we are manually adjusting
+           the timestamp by the value that was passed in as a first parameter
+           to this function
+        -}
+        localizedTimestamp =
+            Time.posixToMillis timestamp
+                |> (\milliseconds -> milliseconds - timezoneOffsetInMilliseconds)
+                |> Time.millisToPosix
 
         toks =
             [ weekdayToString << Time.toWeekday timezone
@@ -82,7 +83,7 @@ toDisplayString (Date timestamp) =
             , String.padLeft 2 '0' << String.fromInt << Time.toMinute timezone
             ]
     in
-    List.map (\tok -> tok timestamp) toks
+    List.map (\tok -> tok localizedTimestamp) toks
         |> String.join ""
 
 

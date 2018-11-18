@@ -3,7 +3,9 @@ module Managing.Events.Page.EventList exposing (Model, Msg, init, initCmd, updat
 import Html.Styled as H
 import Http
 import Json.Decode as Json
+import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 
@@ -15,11 +17,13 @@ import Managing.View.Loading exposing (spinner)
 type alias EventListEntry =
     { kind : EventKind
     , user : { email : String }
+    , createdAt : Date
     }
 
 
 type alias Model =
-    { events : RemoteData (List EventListEntry)
+    { appConfig : AppConfig
+    , events : RemoteData (List EventListEntry)
     }
 
 
@@ -29,8 +33,8 @@ type EventKind
     | SignIn
 
 
-init =
-    Model RemoteData.Requested
+init appConfig =
+    Model appConfig RemoteData.Requested
 
 
 eventKindToString eventKind =
@@ -107,6 +111,7 @@ view model =
             let
                 labelsWithData =
                     [ ( "Type", eventKindToString event.kind )
+                    , ( "Time", Date.toDisplayString model.appConfig.localTimezoneOffsetInMinutes event.createdAt )
                     , ( "User", event.user.email )
                     ]
 
@@ -159,9 +164,10 @@ decodeEventUser userEmail =
 
 decodeEvent : Json.Decoder EventListEntry
 decodeEvent =
-    Json.map2 EventListEntry
+    Json.map3 EventListEntry
         (Json.field "type" Json.int |> Json.andThen decodeEventKind)
         (Json.at [ "user", "email" ] Json.string |> Json.andThen decodeEventUser)
+        (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
 
 
 getEvents : Cmd Msg
