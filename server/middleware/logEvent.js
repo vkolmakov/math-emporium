@@ -1,9 +1,10 @@
 import eventStorage from "../services/eventStorage";
 import { events } from "../aux";
 
-function getAdditionalData(eventType, requestBody) {
+function getAdditionalData(eventType, requestBody, additionalData) {
     switch (eventType) {
         case events.USER_CREATED_APPOINTMENT: {
+            const { scheduledAppointmentId } = additionalData;
             const { location, course, time } = requestBody;
             return {
                 time,
@@ -13,12 +14,20 @@ function getAdditionalData(eventType, requestBody) {
                 location: {
                     id: location.id,
                 },
+                appointment: {
+                    id: scheduledAppointmentId,
+                },
+            };
+        }
+        case events.USER_REMOVED_APPOINTMENT: {
+            const { removedAppointmentId } = additionalData;
+            return {
+                appointment: {
+                    id: removedAppointmentId,
+                },
             };
         }
         case events.USER_SIGNED_IN:
-        case events.USER_REMOVED_APPOINTMENT: {
-            return {};
-        }
         default: {
             return {};
         }
@@ -26,7 +35,7 @@ function getAdditionalData(eventType, requestBody) {
 }
 
 export default function createEventLogger(type) {
-    return (req) => {
+    return (req, additionalData = {}) => {
         const { user } = req;
 
         const userEmail = user.get("email");
@@ -38,7 +47,7 @@ export default function createEventLogger(type) {
                 id: userId,
                 email: userEmail,
             },
-            data: getAdditionalData(type, req.body),
+            data: getAdditionalData(type, req.body, additionalData),
         };
 
         return eventStorage.save(event);

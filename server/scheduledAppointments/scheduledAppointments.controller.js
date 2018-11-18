@@ -89,7 +89,9 @@ export default class ScheduledAppointmentsController {
                         this.helper.sendAppointmentCreationConfirmation(
                             completeAppointmentData
                         ),
-                        this.logger.log.createEvent(req),
+                        this.logger.log.createEvent(req, {
+                            scheduledAppointmentId: scheduledAppointment.id,
+                        }),
                         user.setDefaultAppointmentPreferencesIfNoneSet(
                             location,
                             subject,
@@ -138,7 +140,9 @@ export default class ScheduledAppointmentsController {
                                 appointment,
                                 location
                             ),
-                            this.logger.log.deleteEvent(req),
+                            this.logger.log.deleteEvent(req, {
+                                removedAppointmentId: deletionRecord.id,
+                            }),
                         ])
                     );
             })
