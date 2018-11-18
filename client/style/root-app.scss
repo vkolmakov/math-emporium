@@ -14,7 +14,6 @@
     }
 
     min-height: $home-entry-min-height-mobile;
-
 }
 
 .home-header {
@@ -60,7 +59,7 @@
 
 .schedule-appointment-button {
     padding: 1em;
-    border: 1px solid $tertiary-color;
+    border: 1px solid $border-color-for-controls;
 
     font-size: 1em;
     background-color: $primary-color;
@@ -74,7 +73,8 @@
 
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
         background-color: $primary-color-focused;
         font-weight: bold;
     }
@@ -112,15 +112,27 @@
             text-align: center;
         }
 
-        .name { @include location-info-line; }
-        .description { @include location-info-line; }
-        .location-info-link { @include location-info-line; }
+        .name {
+            @include location-info-line;
+        }
+        .description {
+            @include location-info-line;
+        }
+        .location-info-link {
+            @include location-info-line;
+        }
         .contact-info {
             margin-top: 0.5em;
 
-            .address { @include location-info-line; }
-            .phone { @include location-info-line; }
-            .email { @include location-info-line; }
+            .address {
+                @include location-info-line;
+            }
+            .phone {
+                @include location-info-line;
+            }
+            .email {
+                @include location-info-line;
+            }
         }
     }
 

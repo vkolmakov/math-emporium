@@ -261,7 +261,7 @@ $gutter-size: 0.75em;
         > .expired-spot {
             @include spot();
             cursor: not-allowed;
-            background-color: lighten($tertiary-color, 25%);
+            background-color: $tertiary-color;
             color: $primary-text-color;
         }
     }
