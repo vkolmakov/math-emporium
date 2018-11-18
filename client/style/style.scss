@@ -118,7 +118,7 @@ select {
     }
 
     tr {
-        border: 1px solid darken($tertiary-color, 32%);
+        border: 1px solid $border-color-for-controls;
 
         @include breakpoint($medium-screen) {
             border: none;

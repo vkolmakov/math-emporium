@@ -1,7 +1,6 @@
 @import "variables";
 @import "mixins";
 
-
 @mixin input-group-wrap {
     margin: 0.25em 0;
 
@@ -10,9 +9,7 @@
 }
 
 @mixin modal-base-button {
-    @include rounded-border
-
-    font-size: 1em;
+    @include rounded-border font-size: 1em;
     width: 7.5em;
     padding: 0.5em;
 
@@ -35,7 +32,8 @@
     display: flex;
     flex-flow: column wrap;
 
-    .modal-title, .modal-subtitle {
+    .modal-title,
+    .modal-subtitle {
         margin: 0.35em 0;
     }
 
@@ -58,7 +56,8 @@
 
             color: $primary-text-color;
 
-            &:hover,&:focus {
+            &:hover,
+            &:focus {
                 background-color: $tertiary-color;
             }
         }
@@ -69,7 +68,8 @@
             color: $primary-text-color;
             background-color: $primary-color;
 
-            &:hover,&:focus {
+            &:hover,
+            &:focus {
                 background-color: $primary-color-focused;
             }
         }
@@ -161,7 +161,7 @@
     left: 40px;
     right: 40px;
     bottom: 40px;
-    border: 1px solid $tertiary-color;
+    border: 1px solid $border-color-for-controls;
     background: $secondary-color;
     overflow: auto;
     outline: none;
