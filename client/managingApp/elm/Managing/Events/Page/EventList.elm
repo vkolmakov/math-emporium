@@ -36,10 +36,14 @@ type alias AppointmentRef =
     { id : Int }
 
 
+type alias AppointmentDetail =
+    { id : Int }
+
+
 type alias Model =
     { appConfig : AppConfig
     , events : RemoteData (List EventListEntry)
-    , displayedAppointmentDetail : Maybe EventData
+    , displayedEventAppointmentDetail : RemoteData AppointmentDetail
     }
 
 
@@ -54,7 +58,7 @@ type EventKind
 
 
 init appConfig =
-    Model appConfig RemoteData.Requested Nothing
+    Model appConfig RemoteData.Requested RemoteData.NotRequested
 
 
 eventKindToString eventKind =
@@ -75,6 +79,7 @@ eventKindToString eventKind =
 
 type Msg
     = ReceiveEvents (Result Http.Error (List EventListEntry))
+    | ReceiveAppointmentDetail (Result Http.Error AppointmentDetail)
     | CheckIfRequestTakesTooLong
     | ShowScheduledAppointmentDetails Int
     | CloseScheduledAppointmentDetails
@@ -106,14 +111,26 @@ initCmd model =
             Cmd.none
 
 
-update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveEvents (Ok events) ->
             ( { model | events = RemoteData.Available events }, Cmd.none, Nothing )
 
         ReceiveEvents (Err e) ->
-            ( model, Cmd.none, Nothing )
+            ( { model | events = RemoteData.Error (RemoteData.errorFromHttpError e) }, Cmd.none, Nothing )
+
+        ReceiveAppointmentDetail (Ok appointmentDetail) ->
+            ( { model | displayedEventAppointmentDetail = RemoteData.Available appointmentDetail }
+            , Cmd.none
+            , Nothing
+            )
+
+        ReceiveAppointmentDetail (Err e) ->
+            ( { model | displayedEventAppointmentDetail = RemoteData.Error (RemoteData.errorFromHttpError e) }
+            , Cmd.none
+            , Nothing
+            )
 
         CheckIfRequestTakesTooLong ->
             case model.events of
@@ -124,7 +141,10 @@ update msg model =
                     ( model, Cmd.none, Nothing )
 
         ShowScheduledAppointmentDetails appointmentId ->
-            ( { model | displayedAppointmentDetail = Just (EventDataWithAppointment { id = appointmentId }) }, Cmd.none, Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId )
+            ( { model | displayedEventAppointmentDetail = RemoteData.Requested }
+            , getAppointmentDetail appointmentId
+            , Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId
+            )
 
         CloseScheduledAppointmentDetails ->
             ( model, Cmd.none, Nothing )
@@ -171,24 +191,30 @@ view model =
 
         RemoteData.Available events ->
             H.div []
-                [ viewScheduledAppointmentDetailModal model.displayedAppointmentDetail
+                [ viewScheduledAppointmentDetailModal model.displayedEventAppointmentDetail
                 , DataTable.table (events |> List.map viewEventRow)
                 ]
 
         RemoteData.Error e ->
-            H.div [] [ H.text "An error occurred" ]
+            H.div [] [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
 
 
-viewScheduledAppointmentDetailModal : Maybe EventData -> Html Msg
+viewScheduledAppointmentDetailModal : RemoteData AppointmentDetail -> Html Msg
 viewScheduledAppointmentDetailModal maybeAppointmentDetail =
     let
         modalChildren =
             case maybeAppointmentDetail of
-                Just (EventDataWithAppointment appointmentDetail) ->
+                RemoteData.Available appointmentDetail ->
                     [ H.text ("Displaying appointment " ++ String.fromInt appointmentDetail.id)
                     ]
 
-                Nothing ->
+                RemoteData.StillLoading ->
+                    [ spinner ]
+
+                RemoteData.Error e ->
+                    [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
+
+                _ ->
                     []
     in
     viewModal scheduledAppointmentDetailsModalElementId
@@ -240,6 +266,20 @@ decodeEvent =
         (Json.at [ "user", "email" ] Json.string |> Json.andThen decodeEventUser)
         (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
         (Json.maybe (Json.field "data" decodeEventData))
+
+
+decodeAppointmentDetail : Json.Decoder AppointmentDetail
+decodeAppointmentDetail =
+    Json.map AppointmentDetail
+        (Json.field "id" Json.int)
+
+
+getAppointmentDetail appointmentId =
+    let
+        url =
+            "/api/admin/scheduled-appointments/" ++ String.fromInt appointmentId
+    in
+    Http.send ReceiveAppointmentDetail (Http.get url decodeAppointmentDetail)
 
 
 getEvents : Cmd Msg

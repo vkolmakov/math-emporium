@@ -154,7 +154,7 @@ update message model =
                     handleOutMsg model (EventListPageOutMsg outMsg)
             in
             ( { updatedModelAfterOutMsg | eventListPageModel = innerModel }
-            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EventListPageMsg innerCmd ]
             )
 
 
