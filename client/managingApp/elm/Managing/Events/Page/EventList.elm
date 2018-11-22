@@ -1,6 +1,8 @@
-module Managing.Events.Page.EventList exposing (Model, Msg, init, initCmd, update, view)
+port module Managing.Events.Page.EventList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
-import Html.Styled as H
+import Html.Styled as H exposing (Html)
+import Html.Styled.Attributes as A
+import Html.Styled.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
@@ -10,21 +12,39 @@ import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 
 
+scheduledAppointmentDetailsModalElementId =
+    "scheduled-appointment-details-modal"
+
+
 
 -- MODEL
+
+
+type EventData
+    = EventDataWithAppointment AppointmentRef
 
 
 type alias EventListEntry =
     { kind : EventKind
     , user : { email : String }
     , createdAt : Date
+    , data : Maybe EventData
     }
+
+
+type alias AppointmentRef =
+    { id : Int }
 
 
 type alias Model =
     { appConfig : AppConfig
     , events : RemoteData (List EventListEntry)
+    , displayedAppointmentDetail : Maybe EventData
     }
+
+
+type OutMsg
+    = RequestShowModalById String
 
 
 type EventKind
@@ -34,7 +54,7 @@ type EventKind
 
 
 init appConfig =
-    Model appConfig RemoteData.Requested
+    Model appConfig RemoteData.Requested Nothing
 
 
 eventKindToString eventKind =
@@ -56,6 +76,8 @@ eventKindToString eventKind =
 type Msg
     = ReceiveEvents (Result Http.Error (List EventListEntry))
     | CheckIfRequestTakesTooLong
+    | ShowScheduledAppointmentDetails Int
+    | CloseScheduledAppointmentDetails
 
 
 initCmd : Model -> Cmd Msg
@@ -84,6 +106,7 @@ initCmd model =
             Cmd.none
 
 
+update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveEvents (Ok events) ->
@@ -100,11 +123,18 @@ update msg model =
                 _ ->
                     ( model, Cmd.none, Nothing )
 
+        ShowScheduledAppointmentDetails appointmentId ->
+            ( { model | displayedAppointmentDetail = Just (EventDataWithAppointment { id = appointmentId }) }, Cmd.none, Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId )
+
+        CloseScheduledAppointmentDetails ->
+            ( model, Cmd.none, Nothing )
+
 
 
 -- VIEW
 
 
+view : Model -> Html Msg
 view model =
     let
         viewEventRow event =
@@ -118,8 +148,16 @@ view model =
                 fields =
                     labelsWithData
                         |> List.map (\( label, entry ) -> DataTable.textField label entry)
+
+                actions =
+                    case ( event.kind, event.data ) of
+                        ( ScheduleAppointment, Just (EventDataWithAppointment appointmentDetail) ) ->
+                            [ DataTable.actionLink "Details" (E.onClick <| ShowScheduledAppointmentDetails appointmentDetail.id) ]
+
+                        _ ->
+                            []
             in
-            DataTable.item fields
+            DataTable.item (fields ++ [ DataTable.actionContainer actions ])
     in
     case model.events of
         RemoteData.NotRequested ->
@@ -132,10 +170,33 @@ view model =
             spinner
 
         RemoteData.Available events ->
-            DataTable.table (events |> List.map viewEventRow)
+            H.div []
+                [ viewScheduledAppointmentDetailModal model.displayedAppointmentDetail
+                , DataTable.table (events |> List.map viewEventRow)
+                ]
 
         RemoteData.Error e ->
             H.div [] [ H.text "An error occurred" ]
+
+
+viewScheduledAppointmentDetailModal : Maybe EventData -> Html Msg
+viewScheduledAppointmentDetailModal maybeAppointmentDetail =
+    let
+        modalChildren =
+            case maybeAppointmentDetail of
+                Just (EventDataWithAppointment appointmentDetail) ->
+                    [ H.text ("Displaying appointment " ++ String.fromInt appointmentDetail.id)
+                    ]
+
+                Nothing ->
+                    []
+    in
+    viewModal scheduledAppointmentDetailsModalElementId
+        [ H.div [] modalChildren ]
+
+
+viewModal id children =
+    H.node "dialog" [ A.id id ] children
 
 
 
@@ -162,12 +223,23 @@ decodeEventUser userEmail =
     Json.succeed { email = userEmail }
 
 
+decodeEventData : Json.Decoder EventData
+decodeEventData =
+    let
+        decodeEventAppointmentRef =
+            Json.map (EventDataWithAppointment << AppointmentRef)
+                (Json.field "id" Json.int)
+    in
+    Json.oneOf [ Json.field "appointment" decodeEventAppointmentRef ]
+
+
 decodeEvent : Json.Decoder EventListEntry
 decodeEvent =
-    Json.map3 EventListEntry
+    Json.map4 EventListEntry
         (Json.field "type" Json.int |> Json.andThen decodeEventKind)
         (Json.at [ "user", "email" ] Json.string |> Json.andThen decodeEventUser)
         (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+        (Json.maybe (Json.field "data" decodeEventData))
 
 
 getEvents : Cmd Msg

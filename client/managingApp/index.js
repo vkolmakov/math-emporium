@@ -17,6 +17,9 @@ const flags = {
 };
 
 const ports = (elmPortsRef) => {
+    /**
+     * Navigation
+     */
     function onLocationHrefChange() {
         elmPortsRef.onLocationHrefChange.send(location.href);
     }
@@ -26,6 +29,20 @@ const ports = (elmPortsRef) => {
     elmPortsRef.pushLocationHrefChange.subscribe((href) => {
         history.pushState({}, "", href);
         elmPortsRef.onLocationHrefChange.send(location.href);
+    });
+
+    /**
+     * Modals
+     */
+    elmPortsRef.requestShowModal.subscribe((modalId) => {
+        const dialogElement = document.getElementById(modalId);
+        if (dialogElement && typeof dialogElement.showModal === "function") {
+            dialogElement.showModal();
+        } else {
+            console.warn(
+                `requestShowModal elm port: ${modalId} is not a dialog element`
+            );
+        }
     });
 
     return function portsCleanup() {

@@ -80,25 +80,28 @@ type Msg
 type OutMsg
     = UserDetailOutMsg (Maybe UserDetail.OutMsg)
     | UserListPageOutMsg (Maybe UserList.OutMsg)
+    | EventListPageOutMsg (Maybe EventList.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
 handleOutMsg model outMsg =
     case outMsg of
-        UserDetailOutMsg (Just msg) ->
-            case msg of
-                UserDetail.DoStuffToParent s ->
-                    ( model, Cmd.none )
+        UserDetailOutMsg (Just (UserDetail.DoStuffToParent s)) ->
+            ( model, Cmd.none )
 
         UserDetailOutMsg Nothing ->
             ( model, Cmd.none )
 
-        UserListPageOutMsg (Just msg) ->
-            case msg of
-                UserList.RequestNavigationTo requestedRoute ->
-                    ( model, pushLocationHrefChange (Route.toHref requestedRoute) )
+        UserListPageOutMsg (Just (UserList.RequestNavigationTo requestedRoute)) ->
+            ( model, pushLocationHrefChange (Route.toHref requestedRoute) )
 
         UserListPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
+        EventListPageOutMsg (Just (EventList.RequestShowModalById modalId)) ->
+            ( model, requestShowModal modalId )
+
+        EventListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
 
@@ -148,7 +151,7 @@ update message model =
                     EventList.update msg model.eventListPageModel
 
                 ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
-                    handleOutMsg model (UserDetailOutMsg outMsg)
+                    handleOutMsg model (EventListPageOutMsg outMsg)
             in
             ( { updatedModelAfterOutMsg | eventListPageModel = innerModel }
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map UserDetailPageMsg innerCmd ]
@@ -251,6 +254,19 @@ viewPageContent model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     onLocationHrefChange LocationHrefChange
+
+
+
+-- MODAL
+
+
+port requestShowModal : String -> Cmd msg
+
+
+port requestCloseModal : String -> Cmd msg
+
+
+port onModalCloseRequest : (String -> msg) -> Sub msg
 
 
 
