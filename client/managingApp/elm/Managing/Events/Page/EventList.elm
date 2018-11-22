@@ -7,6 +7,7 @@ import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
@@ -37,7 +38,12 @@ type alias AppointmentRef =
 
 
 type alias AppointmentDetail =
-    { id : Int }
+    { id : Int
+    , courseCode : String
+    , locationName : String
+    , timestamp : Date
+    , userEmail : String
+    }
 
 
 type alias Model =
@@ -191,7 +197,7 @@ view model =
 
         RemoteData.Available events ->
             H.div []
-                [ viewScheduledAppointmentDetailModal model.displayedEventAppointmentDetail
+                [ viewScheduledAppointmentDetailModal model.appConfig model.displayedEventAppointmentDetail
                 , DataTable.table (events |> List.map viewEventRow)
                 ]
 
@@ -199,13 +205,24 @@ view model =
             H.div [] [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
 
 
-viewScheduledAppointmentDetailModal : RemoteData AppointmentDetail -> Html Msg
-viewScheduledAppointmentDetailModal maybeAppointmentDetail =
+viewScheduledAppointmentDetailModal : AppConfig -> RemoteData AppointmentDetail -> Html Msg
+viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
     let
         modalChildren =
             case maybeAppointmentDetail of
                 RemoteData.Available appointmentDetail ->
-                    [ H.text ("Displaying appointment " ++ String.fromInt appointmentDetail.id)
+                    let
+                        labelsWithData =
+                            [ ( "ID", String.fromInt appointmentDetail.id )
+                            , ( "User", appointmentDetail.userEmail )
+                            , ( "Appointment Time", Date.toDisplayString appConfig.localTimezoneOffsetInMinutes appointmentDetail.timestamp )
+                            , ( "Location", appointmentDetail.locationName )
+                            , ( "Course", appointmentDetail.courseCode )
+                            ]
+                    in
+                    [ labelsWithData
+                        |> List.map (\( label, entry ) -> DataTable.textField label entry)
+                        |> DataTable.item
                     ]
 
                 RemoteData.StillLoading ->
@@ -222,7 +239,7 @@ viewScheduledAppointmentDetailModal maybeAppointmentDetail =
 
 
 viewModal id children =
-    H.node "dialog" [ A.id id ] children
+    H.node "dialog" [ A.id id, Styles.dialog ] children
 
 
 
@@ -270,8 +287,12 @@ decodeEvent =
 
 decodeAppointmentDetail : Json.Decoder AppointmentDetail
 decodeAppointmentDetail =
-    Json.map AppointmentDetail
+    Json.map5 AppointmentDetail
         (Json.field "id" Json.int)
+        (Json.field "course" Json.string)
+        (Json.field "location" Json.string)
+        (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+        (Json.field "user" Json.string)
 
 
 getAppointmentDetail appointmentId =

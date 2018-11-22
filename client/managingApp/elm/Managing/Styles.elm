@@ -7,6 +7,7 @@ module Managing.Styles exposing
     , dataTableFieldLabelWrapper
     , dataTableItem
     , detailContainer
+    , dialog
     , fieldGroup
     , fieldLabel
     , fieldLabelHidden
@@ -27,7 +28,7 @@ module Managing.Styles exposing
     , textColorSuccess
     )
 
-import Css exposing (auto, em, hex, int, pct, px)
+import Css exposing (auto, em, hex, int, pct, px, vh)
 import Css.Media as Media
 import Html.Styled exposing (Attribute)
 import Html.Styled.Attributes as A exposing (css)
@@ -195,6 +196,10 @@ marginRight =
     css [ Css.marginRight (em 1) ]
 
 
+dialog =
+    css [ Css.position Css.fixed, Css.top (vh 25) ]
+
+
 
 -- SectionNav
 
@@ -281,7 +286,8 @@ dataTableField =
 
 dataTableFieldLabelWrapper =
     css
-        [ Css.flex <| int 1
+        [ Css.width (em 7)
+        , Css.overflow Css.hidden
         , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
         , Css.padding dataTableFieldPadding
         , Css.displayFlex
