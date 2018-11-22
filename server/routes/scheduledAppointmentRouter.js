@@ -56,7 +56,11 @@ export default function createScheduledAppointmentRouter() {
         requireGroup(authGroups.ADMIN),
         controller.getAllActiveAppointments.bind(controller)
     );
-
+    router.get(
+        `/admin/${ROUTE_PATH_NAME}/:id`,
+        requireGroup(authGroups.ADMIN),
+        controller.getById.bind(controller)
+    );
     router.get(
         `/admin/${ROUTE_PATH_NAME}/diagnostics/:id`,
         requireGroup(authGroups.ADMIN),

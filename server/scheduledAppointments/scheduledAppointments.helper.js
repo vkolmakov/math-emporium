@@ -127,6 +127,17 @@ export default (
         });
     },
 
+    getAppointmentById(id) {
+        return mainStorage.db.models.scheduledAppointment.findOne({
+            where: { id },
+            include: [
+                { model: mainStorage.db.models.user },
+                { model: mainStorage.db.models.location },
+                { model: mainStorage.db.models.course },
+            ],
+        });
+    },
+
     canCreateAppointment(
         completeAppointmentData,
         activeAppointmentsForUser,

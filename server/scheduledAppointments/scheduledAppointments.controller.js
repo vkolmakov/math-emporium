@@ -1,7 +1,21 @@
-import { events } from "../aux";
+import { events, dateTime } from "../aux";
 import { actionFailed, notFound } from "../services/errorMessages";
 import { successMessage } from "../services/messages";
 import { pluckPublicFields } from "./scheduledAppointments.model";
+
+const pluckAppointmentDetailFieldsFromDatabaseRecord = ({
+    googleCalendarAppointmentDate,
+    user,
+    course,
+    location,
+    id,
+}) => ({
+    timestamp: dateTime.toTimestamp(googleCalendarAppointmentDate),
+    user: user.email,
+    course: course.code,
+    location: location.name,
+    id,
+});
 
 export default class ScheduledAppointmentsController {
     constructor(cacheService, dateTime, createEventLogger, helper) {
@@ -128,29 +142,56 @@ export default class ScheduledAppointmentsController {
 
         return appointmentWithLocationPromise
             .then(({ appointment, location }) => {
-                return this.helper
-                    .deleteAppointment(appointment)
-                    .then(() =>
-                        Promise.all([
-                            this.cacheService.calendarEvents.invalidate(
-                                location.calendarId
-                            ),
-                            this.helper.sendAppointmentDeletionConfirmation(
-                                user,
-                                appointment,
-                                location
-                            ),
-                            this.logger.log.deleteEvent(req, {
-                                removedAppointmentId: deletionRecord.id,
-                            }),
-                        ])
-                    );
+                return this.helper.deleteAppointment(appointment).then(() =>
+                    Promise.all([
+                        this.cacheService.calendarEvents.invalidate(
+                            location.calendarId
+                        ),
+                        this.helper.sendAppointmentDeletionConfirmation(
+                            user,
+                            appointment,
+                            location
+                        ),
+                        this.logger.log.deleteEvent(req, {
+                            removedAppointmentId: deletionRecord.id,
+                        }),
+                    ])
+                );
             })
             .then(() => {
                 res.status(200).json(successMessage());
             })
             .catch((reason) =>
                 next(actionFailed("delete", "appointment", reason))
+            );
+    }
+
+    getById(req, res, next) {
+        const requestedAppointmentId = parseInt(req.params.id, 10);
+
+        let appointmentPromise;
+        if (typeof requestedAppointmentId !== "number") {
+            appointmentPromise = Promise.reject(
+                "Appointment ID must be a number"
+            );
+        } else {
+            appointmentPromise = this.helper.getAppointmentById(
+                requestedAppointmentId
+            );
+        }
+
+        return appointmentPromise
+            .then((appointment) => {
+                if (appointment) {
+                    const transformedAppointment = pluckAppointmentDetailFieldsFromDatabaseRecord(
+                        appointment
+                    );
+                    return res.status(200).json(transformedAppointment);
+                }
+                return next(notFound("appointment"));
+            })
+            .catch((error) =>
+                next(actionFailed("get", "appointment", error.toString()))
             );
     }
 
@@ -169,24 +210,14 @@ export default class ScheduledAppointmentsController {
     getAllActiveAppointments(req, res, next) {
         const now = this.dateTime.now();
 
-        const pluckRequiredFields = ({
-            googleCalendarAppointmentDate,
-            user,
-            course,
-            location,
-            id,
-        }) => ({
-            time: googleCalendarAppointmentDate.toISOString(),
-            user: user.email,
-            course: course.code,
-            location: location.name,
-            id,
-        });
-
         return this.helper
             .getAllActiveAppointmentsWithRelatedData(now)
             .then((appointments) => {
-                res.status(200).json(appointments.map(pluckRequiredFields));
+                res.status(200).json(
+                    appointments.map(
+                        pluckAppointmentDetailFieldsFromDatabaseRecord
+                    )
+                );
             })
             .catch(() => next(actionFailed("get", "appointments")));
     }
