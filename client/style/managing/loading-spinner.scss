@@ -1,0 +1,13 @@
+.m-loading-spinner {
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    border: 0.25em solid $primary-color;
+    border-top-color: $primary-color-focused;
+    animation: spin 0.5s infinite;
+
+    &--small {
+        width: 0.9em;
+        height: 0.9em;
+    }
+}

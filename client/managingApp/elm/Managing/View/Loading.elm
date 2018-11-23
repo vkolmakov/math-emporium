@@ -5,13 +5,13 @@ import Managing.Styles as Styles
 
 
 viewInlineSpinner =
-    H.div [ Styles.loadingSpinnerContainer ]
-        [ H.div [ Styles.loadingSpinner 0.9 ] []
+    H.div [ Styles.apply [ Styles.utility.centeredFlexContainer ] ]
+        [ H.div [ Styles.apply [ Styles.loadingSpinner.self, Styles.loadingSpinner.small ] ] []
         ]
 
 
 spinner : Html msg
 spinner =
-    H.div [ Styles.loadingSpinnerContainer ]
-        [ H.div [ Styles.loadingSpinner 1.5 ] []
+    H.div [ Styles.apply [ Styles.utility.centeredFlexContainer ] ]
+        [ H.div [ Styles.apply [ Styles.loadingSpinner.self ] ] []
         ]

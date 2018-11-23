@@ -1,5 +1,6 @@
 module Managing.Styles exposing
-    ( apply
+    ( applicationContainer
+    , apply
     , button
     , dataTableEditLinkContainer
     , dataTableField
@@ -14,13 +15,12 @@ module Managing.Styles exposing
     , fieldLabelHidden
     , fieldTextInput
     , loadingSpinner
-    , loadingSpinnerContainer
-    , mainContainer
     , marginRight
     , rightAlignedContainer
     , sectionNav
     , textColorError
     , textColorSuccess
+    , utility
     )
 
 import Css exposing (auto, em, hex, int, pct, px, vh)
@@ -33,6 +33,11 @@ import Html.Styled.Attributes as A exposing (css)
 -- CONVERTED
 
 
+apply : List String -> Attribute msg
+apply classList =
+    A.class (String.join " " classList)
+
+
 button =
     { primary = "m-button m-button--primary"
     , disabled = "m-button m-button--disabled"
@@ -42,16 +47,25 @@ button =
 
 
 sectionNav =
-    { sectionNav = "m-section-nav"
+    { self = "m-section-nav"
     , item = "m-section-nav__item"
     , link = "m-section-nav__link"
     , linkHighlighted = "m-section-nav__link--highlighted"
     }
 
 
-apply : List String -> Attribute msg
-apply classList =
-    A.class (String.join " " classList)
+applicationContainer =
+    { self = "m-application-container" }
+
+
+loadingSpinner =
+    { self = "m-loading-spinner"
+    , small = "m-loading-spinner--small"
+    }
+
+
+utility =
+    { centeredFlexContainer = "u__centered-flex-container" }
 
 
 
@@ -99,35 +113,6 @@ visuallyHidden =
 
 
 -- Top-level
-
-
-mainContainer : Attribute msg
-mainContainer =
-    css
-        [ Css.maxWidth (em 50)
-        , Css.margin2 (em 0) auto
-        , Css.padding (em 1)
-        ]
-
-
-loadingSpinner : Float -> Attribute msg
-loadingSpinner size =
-    css
-        [ Css.borderRadius (pct 50)
-        , Css.width (em size)
-        , Css.height (em size)
-        , Css.border3 (Css.rem 0.25) Css.solid theme.primaryColor
-        , Css.borderTopColor theme.primaryColorFocused
-        , Css.property "animation" "spin 0.5s infinite"
-        ]
-
-
-loadingSpinnerContainer : Attribute msg
-loadingSpinnerContainer =
-    css
-        [ Css.displayFlex
-        , Css.justifyContent Css.center
-        ]
 
 
 detailContainer : Attribute msg

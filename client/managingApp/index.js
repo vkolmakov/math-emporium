@@ -2,6 +2,7 @@ import React from "react";
 
 import ElmWrapper from "@client/components/ElmWrapper";
 import ElmModule from "./elm/Managing/Main.elm";
+import "@client/style/managing/main.scss";
 
 const Managing = ElmModule.Elm.Managing;
 

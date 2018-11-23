@@ -218,7 +218,7 @@ getHighlightedRoute route =
 
 
 view model =
-    H.div [ Styles.mainContainer ]
+    H.div [ Styles.apply [ Styles.applicationContainer.self ] ]
         [ lazy2 viewSectionNav activeNavItems (getHighlightedRoute model.route)
         , lazy viewPageContent model
         ]
@@ -328,4 +328,4 @@ viewSectionNav navItems highlightedRoute =
             links
                 |> List.map (\link -> H.li [ Styles.apply [ Styles.sectionNav.item ] ] [ link ])
     in
-    H.ul [ Styles.apply [ Styles.sectionNav.sectionNav ]] listItems
+    H.ul [ Styles.apply [ Styles.sectionNav.self ] ] listItems
