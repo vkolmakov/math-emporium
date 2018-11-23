@@ -26,7 +26,7 @@ view label id state msg =
 baseAttrs label id =
     -- data-text is required to keep the size of the button constant
     -- if we need to change the button content to a loading spinner
-    [ A.id id, A.attribute "data-text" label, Styles.primaryButton ]
+    [ A.id id, A.attribute "data-text" label, Styles.apply [ Styles.button.primary ] ]
 
 
 viewBase label id msg state =
@@ -34,13 +34,13 @@ viewBase label id msg state =
         ( isDisabled, additionalStyles ) =
             case state of
                 VisuallyDisabled ->
-                    ( True, [ Styles.primaryButtonDisabled ] )
+                    ( True, [ Styles.apply [ Styles.button.disabled ] ] )
 
                 Disabled ->
                     ( True, [] )
 
                 Enabled ->
-                    ( False, [ Styles.primaryButtonEnabled ] )
+                    ( False, [] )
 
                 Loading ->
                     -- should never happen here

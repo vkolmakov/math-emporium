@@ -1,0 +1,37 @@
+@import "../variables.scss";
+
+.m_button {
+    &:after {
+        /**
+         * If the button needs to hold some dynamic content
+         * for example, a spinner, this ensures that its
+         * width stays the same.
+         */
+        content: attr(data-text);
+        display: block;
+        overflow: hidden;
+        visibility: hidden;
+        height: 0px;
+    }
+
+    font-size: 1em;
+    border: 1px solid $tertiary-color;
+    border-radius: 5px;
+    padding: 0.5em;
+    font-family: inherit;
+    color: $primary-text-color;
+
+    &--primary {
+        &:active {
+            transform: translateY(1px);
+            filter: saturate(150%);
+        }
+    }
+
+    &--disabled {
+        opacity: 0.5;
+    }
+
+    &--loading {
+    }
+}

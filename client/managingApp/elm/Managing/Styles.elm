@@ -1,5 +1,7 @@
 module Managing.Styles exposing
-    ( dataTableAction
+    ( apply
+    , button
+    , dataTableAction
     , dataTableEditLinkContainer
     , dataTableField
     , dataTableFieldContentText
@@ -16,9 +18,6 @@ module Managing.Styles exposing
     , loadingSpinnerContainer
     , mainContainer
     , marginRight
-    , primaryButton
-    , primaryButtonDisabled
-    , primaryButtonEnabled
     , rightAlignedContainer
     , sectionNavContainer
     , sectionNavItem
@@ -35,6 +34,23 @@ import Html.Styled.Attributes as A exposing (css)
 
 
 
+-- CONVERTED
+
+
+button =
+    { primary = "m_button m_button--primary"
+    , disabled = "m_button m_button--disabled"
+    , loading = "m_button m_button--loading"
+    }
+
+
+apply : List String -> Attribute msg
+apply classList =
+    A.class (String.join " " classList)
+
+
+
+-- TODO
 -- Shared
 
 
@@ -149,30 +165,6 @@ loadingSpinnerContainer =
 detailContainer : Attribute msg
 detailContainer =
     css []
-
-
-primaryButton =
-    css
-        [ baseButton
-        ]
-
-
-primaryButtonDisabled =
-    css
-        [ Css.opacity (Css.num 0.5) ]
-
-
-primaryButtonEnabled =
-    css
-        [ Css.active
-            [ Css.transform (Css.translateY <| px 1)
-            , Css.property "filter" "saturate(150%)"
-            ]
-        ]
-
-
-loadingButton =
-    css [ baseButton ]
 
 
 rightAlignedContainer =
