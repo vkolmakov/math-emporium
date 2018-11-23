@@ -2,12 +2,7 @@ module Managing.Styles exposing
     ( applicationContainer
     , apply
     , button
-    , dataTableEditLinkContainer
-    , dataTableField
-    , dataTableFieldContentText
-    , dataTableFieldLabelContent
-    , dataTableFieldLabelWrapper
-    , dataTableItem
+    , dataList
     , detailContainer
     , dialog
     , fieldGroup
@@ -55,7 +50,9 @@ sectionNav =
 
 
 applicationContainer =
-    { self = "m-application-container" }
+    { self = "m-application-container"
+    , pageContent = "m-application-container__page-content"
+    }
 
 
 loadingSpinner =
@@ -65,7 +62,19 @@ loadingSpinner =
 
 
 utility =
-    { centeredFlexContainer = "u__centered-flex-container" }
+    { centeredFlexContainer = "utility__centered-flex-container"
+    , boldText = "utility__bold-text"
+    }
+
+
+dataList =
+    { self = "m-data-list"
+    , item = "m-data-list__item"
+    , itemField = "m-data-list__item__field"
+    , itemFieldLabel = "m-data-list__item__field__label"
+    , itemFieldValue = "m-data-list__item__field__value"
+    , itemActions = "m-data-list__item__actions"
+    }
 
 
 
@@ -143,66 +152,6 @@ marginRight =
 
 dialog =
     css [ Css.position Css.fixed, Css.top (vh 25) ]
-
-
-
--- DataTable
-
-
-dataTableFieldPadding =
-    em 0.5
-
-
-dataTableItem : Attribute msg
-dataTableItem =
-    css
-        [ Css.marginBottom (em 1)
-        ]
-
-
-dataTableField : Attribute msg
-dataTableField =
-    css
-        [ Css.firstChild
-            [ Css.borderTop3 (px 1) Css.solid theme.tertiaryColor
-            ]
-        , Css.displayFlex
-        , Css.flexDirection Css.row
-        , Css.borderBottom3 (px 1) Css.solid theme.tertiaryColor
-        , Css.borderLeft3 (px 1) Css.solid theme.tertiaryColor
-        , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
-        ]
-
-
-dataTableFieldLabelWrapper =
-    css
-        [ Css.width (em 7)
-        , Css.overflow Css.hidden
-        , Css.borderRight3 (px 1) Css.solid theme.tertiaryColor
-        , Css.padding dataTableFieldPadding
-        , Css.displayFlex
-        , Css.alignItems Css.center
-        ]
-
-
-dataTableFieldLabelContent =
-    css [ Css.fontWeight Css.bold ]
-
-
-dataTableFieldContentText =
-    css
-        [ Css.flex <| int 3
-        , Css.padding dataTableFieldPadding
-        ]
-
-
-dataTableEditLinkContainer : Attribute msg
-dataTableEditLinkContainer =
-    css
-        [ Css.padding dataTableFieldPadding
-        , Css.displayFlex
-        , Css.justifyContent Css.flexEnd
-        ]
 
 
 

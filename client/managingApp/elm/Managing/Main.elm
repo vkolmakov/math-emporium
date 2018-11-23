@@ -244,7 +244,7 @@ viewPageContent model =
                 Route.Unknown ->
                     H.text "At unknown route"
     in
-    H.div [] [ pageView ]
+    H.div [ Styles.apply [Styles.applicationContainer.pageContent]] [ pageView ]
 
 
 

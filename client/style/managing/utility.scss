@@ -1,7 +1,11 @@
-.u {
+.utility {
     &__centered-flex-container {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    &__bold-text {
+        font-weight: bold;
     }
 }

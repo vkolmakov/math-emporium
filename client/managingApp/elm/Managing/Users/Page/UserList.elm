@@ -99,7 +99,7 @@ view model =
                 labelsWithData =
                     [ ( "Email", user.email )
                     , ( "Group", accessGroupToString user.group )
-                    , ( "Last Sign-in Date", Date.toDisplayString model.appConfig.localTimezoneOffsetInMinutes user.lastSigninDate )
+                    , ( "Last Sign-in", Date.toDisplayString model.appConfig.localTimezoneOffsetInMinutes user.lastSigninDate )
                     ]
 
                 fields =

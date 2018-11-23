@@ -1,0 +1,34 @@
+.m-data-list {
+    &__item {
+        border-top: 1px solid $border-color-for-controls;
+        margin-bottom: 1em;
+
+        &__field {
+            border: 1px solid $border-color-for-controls;
+            border-top: none;
+
+            display: flex;
+            flex-direction: row;
+
+            &__label {
+                flex-shrink: 0;
+
+                width: 7em;
+                overflow: auto;
+                border-right: 1px solid $border-color-for-controls;
+                padding: 0.4em;
+            }
+
+            &__value {
+                overflow: auto;
+                padding: 0.4em;
+            }
+        }
+
+        &__actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.4em;
+        }
+    }
+}
