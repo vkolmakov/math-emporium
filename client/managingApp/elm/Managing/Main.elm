@@ -285,18 +285,18 @@ type alias NavItem =
     }
 
 
-getLinkStyles : Maybe Route -> NavItem -> List (Attribute msg)
+getLinkStyles : Maybe Route -> NavItem -> Attribute msg
 getLinkStyles highlightedRoute navItem =
     case highlightedRoute of
         Just r ->
             if r == navItem.route then
-                [ Styles.sectionNavItemLink, Styles.sectionNavItemLinkHighlighted ]
+                Styles.apply [ Styles.sectionNav.link, Styles.sectionNav.linkHighlighted ]
 
             else
-                [ Styles.sectionNavItemLink ]
+                Styles.apply [ Styles.sectionNav.link ]
 
         Nothing ->
-            [ Styles.sectionNavItemLink ]
+            Styles.apply [ Styles.sectionNav.link ]
 
 
 navItemToLink : Maybe Route -> NavItem -> Html Msg
@@ -313,7 +313,7 @@ navItemToLink highlightedRoute navItem =
     Route.link
         (RequestLocationHrefChange (Route.toHref navItem.route))
         navItem.route
-        (baseLinkAttributes ++ linkStyles)
+        (linkStyles :: baseLinkAttributes)
         [ H.text navItem.label ]
 
 
@@ -326,6 +326,6 @@ viewSectionNav navItems highlightedRoute =
 
         listItems =
             links
-                |> List.map (\link -> H.li [ Styles.sectionNavItem ] [ link ])
+                |> List.map (\link -> H.li [ Styles.apply [ Styles.sectionNav.item ] ] [ link ])
     in
-    H.ul [ Styles.sectionNavContainer ] listItems
+    H.ul [ Styles.apply [ Styles.sectionNav.sectionNav ]] listItems

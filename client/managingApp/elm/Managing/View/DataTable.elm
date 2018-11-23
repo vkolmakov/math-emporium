@@ -48,9 +48,9 @@ actionContainer actionElements =
 
 
 actionLink label onClickAttribute =
-    H.button [ Styles.dataTableAction, onClickAttribute ] [ H.text label ]
+    H.button [ Styles.apply [ Styles.button.asLink ], onClickAttribute ] [ H.text label ]
 
 
 editLink : msg -> Route -> Html msg
 editLink msg route =
-    Route.link msg route [ Styles.dataTableAction ] [ H.text "Edit" ]
+    Route.link msg route [ Styles.apply [ Styles.button.asLink ] ] [ H.text "Edit" ]

@@ -1,0 +1,37 @@
+@import "../variables.scss";
+
+.m-section-nav {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+
+    &__item {
+        display: flex;
+        margin-right: 0.5em;
+        text-align: center;
+    }
+
+    &__link {
+        border: 1px solid $tertiary-color;
+        border-radius: 5px;
+        padding: 0.5em;
+        text-decoration: none;
+        color: $primary-text-color;
+
+        &:after {
+            content: attr(data-text);
+            display: block;
+            font-weight: bold;
+            overflow: hidden;
+            visibility: hidden;
+            height: 0px;
+        }
+
+        &--highlighted,
+        &:focus,
+        &:hover {
+            font-weight: bold;
+            background-color: $primary-color;
+        }
+    }
+}

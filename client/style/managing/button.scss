@@ -1,6 +1,6 @@
 @import "../variables.scss";
 
-.m_button {
+.m-button {
     &:after {
         /**
          * If the button needs to hold some dynamic content
@@ -33,5 +33,13 @@
     }
 
     &--loading {
+    }
+
+    &--as-link {
+        cursor: pointer;
+        text-decoration: underline;
+        border: 0px;
+        padding: 0px;
+        background-color: transparent;
     }
 }
