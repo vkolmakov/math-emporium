@@ -11,6 +11,13 @@
             flex-direction: row;
 
             &__label {
+                // Center alignment is needed for cases where
+                // label and data have different heights.
+                // That way, data fills up just enough space to fit
+                // itself and label adjusts its position.
+                display: flex;
+                align-items: center;
+
                 flex-shrink: 0;
 
                 width: 7em;

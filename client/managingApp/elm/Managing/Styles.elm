@@ -5,10 +5,7 @@ module Managing.Styles exposing
     , dataList
     , detailContainer
     , dialog
-    , fieldGroup
-    , fieldLabel
-    , fieldLabelHidden
-    , fieldTextInput
+    , field
     , loadingSpinner
     , marginRight
     , rightAlignedContainer
@@ -74,6 +71,14 @@ dataList =
     , itemFieldLabel = "m-data-list__item__field__label"
     , itemFieldValue = "m-data-list__item__field__value"
     , itemActions = "m-data-list__item__actions"
+    }
+
+
+field =
+    { self = "m-field"
+    , label = "m-field__label"
+    , labelHidden = "m-field__label--hidden"
+    , input = "m-field__input"
     }
 
 
@@ -152,36 +157,3 @@ marginRight =
 
 dialog =
     css [ Css.position Css.fixed, Css.top (vh 25) ]
-
-
-
--- Form
-
-
-fieldLabel =
-    css
-        [ Css.marginRight (em 0.5)
-        ]
-
-
-fieldLabelHidden =
-    css [ visuallyHidden ]
-
-
-fieldGroup =
-    css
-        [ Css.displayFlex
-        , Css.flexDirection Css.column
-        ]
-
-
-fieldTextInput =
-    css
-        [ Css.disabled
-            [ Css.cursor Css.notAllowed
-            ]
-        , Css.fontFamilies
-            theme.fontFamilies
-        , Css.fontSize (em 1)
-        , Css.padding (em 0.4)
-        ]

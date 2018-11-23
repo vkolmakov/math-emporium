@@ -1,0 +1,43 @@
+@import "../variables.scss";
+
+@mixin visually-hidden() {
+    border: 0px;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0px;
+    position: absolute;
+    width: 1px;
+}
+
+.m-field {
+    width: 14em;
+
+    &__input {
+        // Overriding global styles from main stylesheet.
+        height: inherit;
+
+        background-color: $primary-text-background-color;
+
+        width: 100%;
+        height: 2em;
+
+        border-radius: 5px;
+        border: 1px solid $border-color-for-controls;
+
+        font-size: 1em;
+        font-family: inherit;
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    &__label {
+    }
+
+    &__label--hidden {
+        @include visually-hidden();
+    }
+}

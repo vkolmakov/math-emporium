@@ -1,15 +1,15 @@
-module Managing.View.Input
-    exposing
-        ( text
-        , select
-        , InputConfig
-        , SelectOption
-        , toSelectOption
-        )
+module Managing.View.Input exposing
+    ( InputConfig
+    , SelectOption
+    , select
+    , text
+    , toSelectOption
+    )
 
 import Html.Styled as H exposing (Attribute, Html)
 import Html.Styled.Attributes as A
 import Managing.Styles as Styles
+
 
 
 -- TODO: generate ID and associate label with input
@@ -50,15 +50,15 @@ select inputConfig options selectedOption onChange =
                         ]
                         [ H.text label ]
     in
-        baseInput
-            inputConfig
-            (H.select
-                [ Styles.fieldTextInput
-                , A.disabled <| not isEditable
-                , onChange
-                ]
-                (List.map toOptionElement options)
-            )
+    baseInput
+        inputConfig
+        (H.select
+            [ Styles.apply [ Styles.field.input ]
+            , A.disabled <| not isEditable
+            , onChange
+            ]
+            (List.map toOptionElement options)
+        )
 
 
 text inputConfig value onInput =
@@ -66,9 +66,16 @@ text inputConfig value onInput =
         { isEditable } =
             inputConfig
     in
-        baseInput
-            inputConfig
-            (H.input [ Styles.fieldTextInput, A.disabled <| not isEditable, A.value value, onInput ] [])
+    baseInput
+        inputConfig
+        (H.input
+            [ Styles.apply [ Styles.field.input ]
+            , A.disabled <| not isEditable
+            , A.value value
+            , onInput
+            ]
+            []
+        )
 
 
 baseInput : InputConfig -> Html msg -> Html msg
@@ -79,14 +86,15 @@ baseInput inputConfig inputElement =
 
         labelStyles =
             if isLabelHidden then
-                Styles.fieldLabelHidden
+                [ Styles.field.label, Styles.field.labelHidden ]
+
             else
-                Styles.fieldLabel
+                [ Styles.field.label ]
 
         labelElement =
-            H.label [ labelStyles ] [ H.text label ]
+            H.label [ Styles.apply labelStyles ] [ H.text label ]
     in
-        H.div [ Styles.fieldGroup ]
-            [ labelElement
-            , inputElement
-            ]
+    H.div [ Styles.apply [Styles.field.self]]
+        [ labelElement
+        , inputElement
+        ]
