@@ -1,8 +1,8 @@
 module Managing.Route exposing (Route(..), fromLocationHref, href, link, toHref)
 
-import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
-import Html.Styled.Events as E
+import Html as H exposing (Attribute, Html)
+import Html.Attributes as A
+import Html.Events as E
 import Json.Decode as Json
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s)

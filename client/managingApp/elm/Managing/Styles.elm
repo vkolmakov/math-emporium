@@ -11,10 +11,8 @@ module Managing.Styles exposing
     , utility
     )
 
-import Css exposing (auto, em, hex, int, pct, px, vh)
-import Css.Media as Media
-import Html.Styled exposing (Attribute)
-import Html.Styled.Attributes as A exposing (css)
+import Html exposing (Attribute)
+import Html.Attributes as A
 
 
 

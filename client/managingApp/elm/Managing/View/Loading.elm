@@ -1,6 +1,6 @@
 module Managing.View.Loading exposing (spinner, viewInlineSpinner)
 
-import Html.Styled as H exposing (Html)
+import Html as H exposing (Html)
 import Managing.Styles as Styles
 
 

@@ -1,8 +1,8 @@
 module Managing.Users.Page.UserDetail exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
 import Browser.Dom as Dom
-import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Events as E
+import Html as H exposing (Attribute, Html)
+import Html.Events as E
 import Http
 import Json.Decode as Json
 import Json.Encode

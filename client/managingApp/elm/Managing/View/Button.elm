@@ -1,8 +1,8 @@
 module Managing.View.Button exposing (ButtonState(..), view)
 
-import Html.Styled as H
-import Html.Styled.Attributes as A
-import Html.Styled.Events as E
+import Html as H
+import Html.Attributes as A
+import Html.Events as E
 import Managing.Styles as Styles
 import Managing.View.Loading as Loading
 

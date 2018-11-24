@@ -1,8 +1,8 @@
 port module Managing.Events.Page.EventList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
-import Html.Styled as H exposing (Html)
-import Html.Styled.Attributes as A
-import Html.Styled.Events as E
+import Html as H exposing (Html)
+import Html.Attributes as A
+import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)

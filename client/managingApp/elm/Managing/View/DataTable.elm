@@ -8,7 +8,7 @@ module Managing.View.DataTable exposing
     , textField
     )
 
-import Html.Styled as H exposing (Attribute, Html)
+import Html as H exposing (Attribute, Html)
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
 

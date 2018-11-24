@@ -2,10 +2,10 @@ port module Managing.Main exposing (main)
 
 import Browser
 import Browser.Navigation as Navigation
-import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
-import Html.Styled.Events as E
-import Html.Styled.Lazy exposing (lazy, lazy2)
+import Html as H exposing (Attribute, Html)
+import Html.Attributes as A
+import Html.Events as E
+import Html.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import Managing.AppConfig as AppConfig exposing (AppConfig)
 import Managing.Events.Page.EventList as EventList
@@ -19,7 +19,7 @@ import Url exposing (Url)
 main =
     Browser.element
         { init = init
-        , view = view >> H.toUnstyled
+        , view = view
         , update = update
         , subscriptions = subscriptions
         }

@@ -1,6 +1,6 @@
 module Managing.Users.Page.UserList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
-import Html.Styled as H exposing (Attribute, Html)
+import Html as H exposing (Attribute, Html)
 import Http
 import Json.Decode as Decode
 import Managing.AppConfig exposing (AppConfig)

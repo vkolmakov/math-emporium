@@ -6,8 +6,8 @@ module Managing.View.Input exposing
     , toSelectOption
     )
 
-import Html.Styled as H exposing (Attribute, Html)
-import Html.Styled.Attributes as A
+import Html as H exposing (Attribute, Html)
+import Html.Attributes as A
 import Managing.Styles as Styles
 
 
