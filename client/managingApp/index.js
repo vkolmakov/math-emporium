@@ -39,6 +39,10 @@ const ports = (elmPortsRef) => {
         const dialogElement = document.getElementById(modalId);
         if (dialogElement && typeof dialogElement.showModal === "function") {
             dialogElement.showModal();
+            document.body.classList.add("utility__disable-scroll");
+            dialogElement.addEventListener("close", () => {
+                document.body.classList.remove("utility__disable-scroll");
+            });
         } else {
             console.warn(
                 `requestShowModal elm port: ${modalId} is not a dialog element`

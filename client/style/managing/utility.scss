@@ -18,4 +18,8 @@
     &__text-color-error {
         color: $danger-color;
     }
+
+    &__disable-scroll {
+        overflow: hidden;
+    }
 }
