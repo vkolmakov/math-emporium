@@ -6,6 +6,7 @@ import Html.Styled.Events as E
 import Http
 import Json.Decode as Json
 import Json.Encode
+import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
@@ -15,7 +16,6 @@ import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
-import Managing.AppConfig exposing (AppConfig)
 import Task
 
 
@@ -180,9 +180,8 @@ view model =
             spinner
 
         RemoteData.Available user ->
-            H.div [ Styles.detailContainer ]
-                [ displayUserDetail model.appConfig user
-                , submitUserDetail user.id model.userDetailVolatile model.userPersistenceState
+            DataTable.table
+                [ displayUserDetail model user
                 ]
 
         RemoteData.Error e ->
@@ -195,10 +194,10 @@ viewPersistenceStatus persistenceState =
         ( message, attributes ) =
             case persistenceState of
                 RemoteData.Available _ ->
-                    ( Just "Saved", [ Styles.textColorSuccess ] )
+                    ( Just "Saved", [ Styles.apply [ Styles.utility.textColorSuccess ] ] )
 
                 RemoteData.Error err ->
-                    ( Just <| "Error: " ++ RemoteData.errorToString err, [ Styles.textColorError ] )
+                    ( Just <| "Error: " ++ RemoteData.errorToString err, [ Styles.apply [ Styles.utility.textColorError ] ] )
 
                 _ ->
                     ( Nothing, [] )
@@ -227,26 +226,38 @@ submitUserDetail id user userPersistenceState =
                     Button.Enabled
     in
     H.div
-        [ Styles.rightAlignedContainer
-        ]
-        [ H.div [ Styles.marginRight ] [ viewPersistenceStatus userPersistenceState ]
+        [ Styles.apply [ Styles.persistenceAction.self ] ]
+        [ H.div
+            [ Styles.apply [ Styles.persistenceAction.messageContainer ] ]
+            [ viewPersistenceStatus userPersistenceState ]
         , Button.view buttonLabel submitButtonId buttonState buttonMsg
         ]
 
 
-displayUserDetail : AppConfig -> UserDetail -> Html Msg
-displayUserDetail appConfig user =
+displayUserDetail : Model -> UserDetail -> Html Msg
+displayUserDetail model user =
     let
+        { appConfig, userDetailVolatile, userPersistenceState } =
+            model
+
         labelsWithElements =
             [ ( "ID", H.text (String.fromInt user.id) )
             , ( "Email", H.text user.email )
             , ( "Group", accessGroupSelectElement user.group )
             , ( "Phone", H.text (Maybe.withDefault "" user.phone) )
-            , ( "Last Sign-in Date", H.text (Date.toDisplayString  appConfig.localTimezoneOffsetInMinutes user.lastSigninDate) )
+            , ( "Last Sign-in Date", H.text (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes user.lastSigninDate) )
             ]
+
+        fields =
+            labelsWithElements
+                |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+
+        actions =
+            DataTable.actionContainer
+                [ submitUserDetail user.id userDetailVolatile userPersistenceState
+                ]
     in
-    labelsWithElements
-        |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+    (fields ++ [ actions ])
         |> DataTable.item
 
 

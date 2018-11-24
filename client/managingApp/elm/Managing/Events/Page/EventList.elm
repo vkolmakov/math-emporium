@@ -239,7 +239,7 @@ viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
 
 
 viewModal id children =
-    H.node "dialog" [ A.id id, Styles.dialog ] children
+    H.node "dialog" [ A.id id, Styles.apply [ Styles.dialog.self ] ] children
 
 
 

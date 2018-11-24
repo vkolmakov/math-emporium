@@ -35,7 +35,10 @@
         &__actions {
             display: flex;
             justify-content: flex-end;
-            padding: 0.4em;
+            // Left/right padding is not needed because we
+            // want action elements to be aligned with
+            // the fields.
+            padding: 0.4em 0;
         }
     }
 }

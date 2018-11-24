@@ -3,15 +3,11 @@ module Managing.Styles exposing
     , apply
     , button
     , dataList
-    , detailContainer
     , dialog
     , field
     , loadingSpinner
-    , marginRight
-    , rightAlignedContainer
+    , persistenceAction
     , sectionNav
-    , textColorError
-    , textColorSuccess
     , utility
     )
 
@@ -61,6 +57,8 @@ loadingSpinner =
 utility =
     { centeredFlexContainer = "utility__centered-flex-container"
     , boldText = "utility__bold-text"
+    , textColorSuccess = "utility__text-color-success"
+    , textColorError = "utility__text-color-error"
     }
 
 
@@ -74,6 +72,12 @@ dataList =
     }
 
 
+persistenceAction =
+    { self = "m-persistence-action"
+    , messageContainer = "m-persistence-action__message-container"
+    }
+
+
 field =
     { self = "m-field"
     , label = "m-field__label"
@@ -82,78 +86,6 @@ field =
     }
 
 
-
--- TODO
--- Shared
-
-
-type alias Theme =
-    { fontFamilies : List String
-    , primaryColor : Css.Color
-    , primaryColorFocused : Css.Color
-    , primaryTextColor : Css.Color
-    , secondaryColor : Css.Color
-    , tertiaryColor : Css.Color
-    , successColor : Css.Color
-    , dangerColor : Css.Color
-    }
-
-
-theme : Theme
-theme =
-    { fontFamilies = [ "Open Sans", "Optima", "Helvetica", "Arial", "sans-serif" ]
-    , primaryColor = hex "#D9EDF9"
-    , primaryColorFocused = hex "#ADD3E9"
-    , primaryTextColor = hex "#000000"
-    , secondaryColor = hex "#FFFFFF"
-    , tertiaryColor = hex "#A3A3A3"
-    , successColor = hex "#296529"
-    , dangerColor = hex "#B33737"
-    }
-
-
-visuallyHidden =
-    Css.batch
-        [ Css.border (px 0)
-        , Css.property "clip" "rect(0 0 0 0)"
-        , Css.height (px 1)
-        , Css.margin (px -1)
-        , Css.overflow Css.hidden
-        , Css.padding (px 0)
-        , Css.position Css.absolute
-        , Css.width (px 1)
-        ]
-
-
-
--- Top-level
-
-
-detailContainer : Attribute msg
-detailContainer =
-    css []
-
-
-rightAlignedContainer =
-    css
-        [ Css.displayFlex
-        , Css.flexDirection Css.row
-        , Css.justifyContent Css.flexEnd
-        , Css.alignItems Css.center
-        ]
-
-
-textColorSuccess =
-    css [ Css.color theme.successColor ]
-
-
-textColorError =
-    css [ Css.color theme.dangerColor ]
-
-
-marginRight =
-    css [ Css.marginRight (em 1) ]
-
-
 dialog =
-    css [ Css.position Css.fixed, Css.top (vh 25) ]
+    { self = "m-dialog"
+    }

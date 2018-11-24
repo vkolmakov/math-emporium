@@ -1,3 +1,5 @@
+@import "../variables.scss";
+
 .utility {
     &__centered-flex-container {
         display: flex;
@@ -7,5 +9,13 @@
 
     &__bold-text {
         font-weight: bold;
+    }
+
+    &__text-color-success {
+        color: $success-color;
+    }
+
+    &__text-color-error {
+        color: $danger-color;
     }
 }
