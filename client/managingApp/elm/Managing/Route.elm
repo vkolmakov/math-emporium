@@ -13,6 +13,7 @@ type Route
     | UserList
     | UserDetail Int
     | EventList
+    | ErrorEventList
     | Unknown
 
 
@@ -25,6 +26,7 @@ fromLocationHref locationHref =
                 , UrlParser.map UserList (s "manage-portal" </> s "users")
                 , UrlParser.map UserDetail (s "manage-portal" </> s "users" </> UrlParser.int)
                 , UrlParser.map EventList (s "manage-portal" </> s "events")
+                , UrlParser.map ErrorEventList (s "manage-portal" </> s "errors")
                 ]
 
         correspondingRoute =
@@ -52,6 +54,9 @@ toHref r =
 
                 EventList ->
                     "events"
+
+                ErrorEventList ->
+                    "errors"
 
                 Unknown ->
                     ""

@@ -9,6 +9,7 @@ import Html.Events as E
 import Html.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import Managing.AppConfig as AppConfig exposing (AppConfig)
+import Managing.ErrorEvents.Page.ErrorEventList as ErrorEventList
 import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
@@ -44,6 +45,7 @@ type alias Model =
     , userListPageModel : UserList.Model
     , userDetailPageModel : UserDetail.Model
     , eventListPageModel : EventList.Model
+    , errorEventListPageModel : ErrorEventList.Model
     }
 
 
@@ -57,7 +59,13 @@ init flags =
             AppConfig.create flags.localTimezoneOffsetInMinutes
 
         initialModel =
-            Model route appConfig (UserList.init appConfig) (UserDetail.init appConfig) (EventList.init appConfig)
+            Model
+                route
+                appConfig
+                (UserList.init appConfig)
+                (UserDetail.init appConfig)
+                (EventList.init appConfig)
+                (ErrorEventList.init appConfig)
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -78,6 +86,7 @@ type Msg
     | UserListPageMsg UserList.Msg
     | UserDetailPageMsg UserDetail.Msg
     | EventListPageMsg EventList.Msg
+    | ErrorEventListPageMsg ErrorEventList.Msg
     | NoOp
     | ScrollPositionRestorationFailure Int { x : Float, y : Float }
     | AttemptRestoreScrollPosition Int { x : Float, y : Float }
@@ -87,6 +96,7 @@ type OutMsg
     = UserDetailOutMsg (Maybe UserDetail.OutMsg)
     | UserListPageOutMsg (Maybe UserList.OutMsg)
     | EventListPageOutMsg (Maybe EventList.OutMsg)
+    | ErrorEventListPageOutMsg (Maybe ErrorEventList.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
@@ -111,6 +121,12 @@ handleOutMsg model outMsg =
             ( model, requestCloseModal modalId )
 
         EventListPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
+        ErrorEventListPageOutMsg (Just ErrorEventList.NoOutMsg) ->
+            ( model, Cmd.none )
+
+        ErrorEventListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
 
@@ -207,6 +223,18 @@ update message model =
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EventListPageMsg innerCmd ]
             )
 
+        ErrorEventListPageMsg msg ->
+            let
+                ( innerModel, innerCmd, outMsg ) =
+                    ErrorEventList.update msg model.errorEventListPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (ErrorEventListPageOutMsg outMsg)
+            in
+            ( { updatedModelAfterOutMsg | errorEventListPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map ErrorEventListPageMsg innerCmd ]
+            )
+
         {- Scroll restoration flow:
            * LocationHrefChange makes the first attempt to restore the scroll
            * attemptRestoreScrollPosition will get the current scene size and check
@@ -255,6 +283,9 @@ getInitModelCmd route model =
         Route.EventList ->
             ( model, Cmd.map EventListPageMsg (EventList.initCmd model.eventListPageModel) )
 
+        Route.ErrorEventList ->
+            ( model, Cmd.map ErrorEventListPageMsg (ErrorEventList.initCmd model.errorEventListPageModel) )
+
         Route.Unknown ->
             ( model, Navigation.load "/" )
 
@@ -267,6 +298,7 @@ activeNavItems : List NavItem
 activeNavItems =
     [ NavItem Route.UserList "Users"
     , NavItem Route.EventList "Events"
+    , NavItem Route.ErrorEventList "Errors"
     ]
 
 
@@ -280,12 +312,15 @@ getHighlightedRoute route =
             Just Route.UserList
 
         Route.Home ->
-            Just Route.Home
+            Nothing
 
         Route.EventList ->
             Just Route.EventList
 
-        _ ->
+        Route.ErrorEventList ->
+            Just Route.ErrorEventList
+
+        Route.Unknown ->
             Nothing
 
 
@@ -312,6 +347,9 @@ viewPageContent model =
 
                 Route.EventList ->
                     H.map EventListPageMsg <| EventList.view model.eventListPageModel
+
+                Route.ErrorEventList ->
+                    H.map ErrorEventListPageMsg <| ErrorEventList.view model.errorEventListPageModel
 
                 Route.Unknown ->
                     H.text "At unknown route"
