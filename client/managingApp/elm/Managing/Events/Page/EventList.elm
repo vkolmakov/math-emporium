@@ -84,10 +84,15 @@ eventKindToString eventKind =
 -- UPDATE
 
 
+type RemoteRequestItem
+    = EventListRequest
+    | ScheduledAppointmentDetailsRequest
+
+
 type Msg
     = ReceiveEvents (Result Http.Error (List EventListEntry))
     | ReceiveAppointmentDetail (Result Http.Error AppointmentDetail)
-    | CheckIfRequestTakesTooLong
+    | CheckIfTakingTooLong RemoteRequestItem
     | ShowScheduledAppointmentDetails Int
     | CloseScheduledAppointmentDetails
 
@@ -98,7 +103,7 @@ initCmd model =
         fetchData =
             Cmd.batch
                 [ getEvents
-                , RemoteData.scheduleLoadingStateTrigger CheckIfRequestTakesTooLong
+                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong EventListRequest)
                 ]
     in
     case model.events of
@@ -139,7 +144,7 @@ update msg model =
             , Nothing
             )
 
-        CheckIfRequestTakesTooLong ->
+        CheckIfTakingTooLong EventListRequest ->
             case model.events of
                 RemoteData.Requested ->
                     ( { model | events = RemoteData.StillLoading }, Cmd.none, Nothing )
@@ -147,9 +152,19 @@ update msg model =
                 _ ->
                     ( model, Cmd.none, Nothing )
 
+        CheckIfTakingTooLong ScheduledAppointmentDetailsRequest ->
+            case model.displayedEventAppointmentDetail of
+                RemoteData.Requested ->
+                    ( { model | displayedEventAppointmentDetail = RemoteData.StillLoading }, Cmd.none, Nothing )
+
+                _ ->
+                    ( model, Cmd.none, Nothing )
+
         ShowScheduledAppointmentDetails appointmentId ->
             ( { model | displayedEventAppointmentDetail = RemoteData.Requested }
-            , getAppointmentDetail appointmentId
+            , Cmd.batch
+                [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong ScheduledAppointmentDetailsRequest)
+                , getAppointmentDetail appointmentId ]
             , Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId
             )
 
