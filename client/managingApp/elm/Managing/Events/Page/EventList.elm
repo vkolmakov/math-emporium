@@ -234,12 +234,15 @@ viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
                 _ ->
                     []
     in
-    viewModal scheduledAppointmentDetailsModalElementId
-        [ H.div [] modalChildren ]
+    viewModal scheduledAppointmentDetailsModalElementId modalChildren
 
 
 viewModal id children =
-    H.node "dialog" [ A.id id, Styles.apply [ Styles.dialog.self ] ] children
+    H.node "dialog"
+        [ A.id id
+        , Styles.apply [ Styles.modal.self ]
+        ]
+        [ H.div [ Styles.apply [ Styles.modal.content ] ] children ]
 
 
 

@@ -1,0 +1,10 @@
+.m-modal {
+    position: fixed;
+    top: 25vh;
+    border: 1px solid $border-color-for-controls;
+    border-radius: 5px;
+
+    &__content {
+        padding: 1em;
+    }
+}

@@ -3,9 +3,9 @@ module Managing.Styles exposing
     , apply
     , button
     , dataList
-    , dialog
     , field
     , loadingSpinner
+    , modal
     , persistenceAction
     , sectionNav
     , utility
@@ -84,6 +84,7 @@ field =
     }
 
 
-dialog =
-    { self = "m-dialog"
+modal =
+    { self = "m-modal"
+    , content = "m-modal__content"
     }
