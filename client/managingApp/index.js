@@ -29,7 +29,12 @@ const ports = (elmPortsRef) => {
     let lastSavedScrollPosition = {};
 
     function onLocationHrefChange() {
-        // read last saved scroll position on browser-initiated navigation
+        /**
+         * This navigation request is initiated from the browser navigation buttons
+         * which means that user will likely expect to see the previously observed
+         * scroll position (for example, editing an entry and clicking back button to
+         * return back to the list of entries).
+         */
         const scrollPosition = lastSavedScrollPosition[location.href] || null;
         elmPortsRef.onLocationHrefChange.send({
             href: location.href,
@@ -45,8 +50,13 @@ const ports = (elmPortsRef) => {
 
         history.pushState({}, "", requestedPathname);
 
-        // check if there is a position associated with the new href must happen AFTER pushState
-        const scrollPosition = lastSavedScrollPosition[location.href] || null;
+        /**
+         * This navigation request is initiated from Elm app, which means that
+         * it it very likely coming from a link click. If that happens, we are
+         * more than likely don't have to restore the scroll position, as
+         * the user would not expect us to mess with the scroll.
+         */
+        const scrollPosition = null;
 
         elmPortsRef.onLocationHrefChange.send({
             href: location.href,
