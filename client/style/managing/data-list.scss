@@ -3,6 +3,13 @@
         border-top: 1px solid $border-color-for-controls;
         margin-bottom: 1em;
 
+        &:last-child {
+            // Add some space between items, don't add
+            // any space to the last item. This also helps
+            // when the data-list contains only one element.
+            margin-bottom: 0;
+        }
+
         &__field {
             border: 1px solid $border-color-for-controls;
             border-top: none;
