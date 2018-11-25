@@ -1,6 +1,7 @@
 port module Managing.Main exposing (main)
 
 import Browser
+import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Html as H exposing (Attribute, Html)
 import Html.Attributes as A
@@ -13,6 +14,7 @@ import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Task
 import Url exposing (Url)
 
 
@@ -70,11 +72,12 @@ init flags =
 
 
 type Msg
-    = LocationHrefChange String
+    = LocationHrefChange LocationChangeInfo
     | RequestLocationHrefChange String
     | UserListPageMsg UserList.Msg
     | UserDetailPageMsg UserDetail.Msg
     | EventListPageMsg EventList.Msg
+    | NoOp
 
 
 type OutMsg
@@ -111,15 +114,23 @@ update message model =
         RequestLocationHrefChange requestedLocationHref ->
             ( model, pushLocationHrefChange requestedLocationHref )
 
-        LocationHrefChange locationHref ->
+        LocationHrefChange { href, scrollPosition } ->
             let
                 newRoute =
-                    Route.fromLocationHref locationHref
+                    Route.fromLocationHref href
 
                 ( updatedModelBasedOnRoute, initCmdBasedOnRoute ) =
                     getInitModelCmd newRoute model
+
+                scrollPositionAdjustmentCmd =
+                    case scrollPosition of
+                        Just { x, y } ->
+                            Task.attempt (\_ -> NoOp) (Dom.setViewport x y)
+
+                        Nothing ->
+                            Cmd.none
             in
-            ( { updatedModelBasedOnRoute | route = newRoute }, initCmdBasedOnRoute )
+            ( { updatedModelBasedOnRoute | route = newRoute }, Cmd.batch [ scrollPositionAdjustmentCmd, initCmdBasedOnRoute ] )
 
         UserListPageMsg msg ->
             let
@@ -156,6 +167,9 @@ update message model =
             ( { updatedModelAfterOutMsg | eventListPageModel = innerModel }
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EventListPageMsg innerCmd ]
             )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 {-| Returns a command for a NEW route with the PREVIOUS model.
@@ -244,7 +258,7 @@ viewPageContent model =
                 Route.Unknown ->
                     H.text "At unknown route"
     in
-    H.div [ Styles.apply [Styles.applicationContainer.pageContent]] [ pageView ]
+    H.div [ Styles.apply [ Styles.applicationContainer.pageContent ] ] [ pageView ]
 
 
 
@@ -273,7 +287,13 @@ port onModalCloseRequest : (String -> msg) -> Sub msg
 -- NAVIGATION
 
 
-port onLocationHrefChange : (String -> msg) -> Sub msg
+type alias LocationChangeInfo =
+    { href : String
+    , scrollPosition : Maybe { x : Float, y : Float }
+    }
+
+
+port onLocationHrefChange : (LocationChangeInfo -> msg) -> Sub msg
 
 
 port pushLocationHrefChange : String -> Cmd msg

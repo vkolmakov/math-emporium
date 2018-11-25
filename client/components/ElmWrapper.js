@@ -10,7 +10,7 @@ export default class ElmWrapper extends Component {
 
         const app = src.init({
             node: elementToBeReplacedByElm,
-            flags: flags || "",
+            flags: flags() || "",
         });
 
         if (typeof ports === "function") {
