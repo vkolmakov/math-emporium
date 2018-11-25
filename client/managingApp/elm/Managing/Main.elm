@@ -14,6 +14,7 @@ import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Process
 import Task
 import Url exposing (Url)
 
@@ -78,6 +79,8 @@ type Msg
     | UserDetailPageMsg UserDetail.Msg
     | EventListPageMsg EventList.Msg
     | NoOp
+    | ScrollPositionRestorationFailure Int { x : Float, y : Float }
+    | AttemptRestoreScrollPosition Int { x : Float, y : Float }
 
 
 type OutMsg
@@ -108,6 +111,39 @@ handleOutMsg model outMsg =
             ( model, Cmd.none )
 
 
+scrollRestorationConfig =
+    { maxAttempts = 20
+    , delayBetweenAttempts = 200
+    }
+
+
+attemptRestoreScrollPosition : Int -> { x : Float, y : Float } -> Cmd Msg
+attemptRestoreScrollPosition attemptNum scrollPosition =
+    let
+        attemptScroll result =
+            case result of
+                Ok _ ->
+                    NoOp
+
+                Err _ ->
+                    ScrollPositionRestorationFailure (attemptNum + 1) scrollPosition
+
+        trySetViewport scene { x, y } =
+            if x <= scene.width && y <= scene.height then
+                Dom.setViewport x y
+
+            else
+                Task.fail "Cannot scroll - out of bounds"
+    in
+    if attemptNum > scrollRestorationConfig.maxAttempts then
+        Cmd.none
+
+    else
+        Dom.getViewport
+            |> Task.andThen (\{ scene } -> trySetViewport scene scrollPosition)
+            |> Task.attempt attemptScroll
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
@@ -122,15 +158,15 @@ update message model =
                 ( updatedModelBasedOnRoute, initCmdBasedOnRoute ) =
                     getInitModelCmd newRoute model
 
-                scrollPositionAdjustmentCmd =
+                scrollPositionRestorationCmd =
                     case scrollPosition of
-                        Just { x, y } ->
-                            Task.attempt (\_ -> NoOp) (Dom.setViewport x y)
+                        Just sp ->
+                            attemptRestoreScrollPosition 1 sp
 
                         Nothing ->
                             Cmd.none
             in
-            ( { updatedModelBasedOnRoute | route = newRoute }, Cmd.batch [ scrollPositionAdjustmentCmd, initCmdBasedOnRoute ] )
+            ( { updatedModelBasedOnRoute | route = newRoute }, Cmd.batch [ scrollPositionRestorationCmd, initCmdBasedOnRoute ] )
 
         UserListPageMsg msg ->
             let
@@ -166,6 +202,25 @@ update message model =
             in
             ( { updatedModelAfterOutMsg | eventListPageModel = innerModel }
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EventListPageMsg innerCmd ]
+            )
+
+        {- Scroll restoration flow:
+           * LocationHrefChange makes the first attempt to restore the scroll
+           * attemptRestoreScrollPosition will get the current scene size and check
+             if requested position is reachable, and if it is, it scrolls to it and stops.
+             If not, a ScrollRestorationFailure message is dispatched.
+           * attemptRestoreScrollPosition is also the only place where attemptNum is updated
+             and checked. If we reach the maximum number of attempts, we give up.
+           * ScrollPositionRestorationFailure picks up a failed task from attemptRestoreScrollPosition
+             and schedules an AttemptRestoreScrollPosition, which goes through attemptRestoreScrollPosition.
+        -}
+        AttemptRestoreScrollPosition attemptNum scrollPosition ->
+            ( model, attemptRestoreScrollPosition attemptNum scrollPosition )
+
+        ScrollPositionRestorationFailure attemptNum scrollPosition ->
+            ( model
+            , Process.sleep scrollRestorationConfig.delayBetweenAttempts
+                |> Task.perform (\_ -> AttemptRestoreScrollPosition attemptNum scrollPosition)
             )
 
         NoOp ->
