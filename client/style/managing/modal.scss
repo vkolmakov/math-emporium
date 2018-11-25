@@ -3,8 +3,20 @@
     top: 25vh;
     border: 1px solid $border-color-for-controls;
     border-radius: 5px;
+    padding: 1.5em;
 
-    &__content {
-        padding: 1em;
+    /**
+     * Container for modal content used on Events page.
+     * Sets an initial width/height for the modal to
+     * accomodate potential loading state and avoid seeing
+     * a modal that jumps in side between state transitions.
+     */
+    &__scheduled-appointment-details-modal-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 30em;
+        min-height: 15em;
     }
 }

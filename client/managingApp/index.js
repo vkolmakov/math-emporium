@@ -85,6 +85,17 @@ const ports = (elmPortsRef) => {
         }
     });
 
+    elmPortsRef.requestCloseModal.subscribe((modalId) => {
+        const dialogElement = document.getElementById(modalId);
+        if (dialogElement && typeof dialogElement.close === "function") {
+            dialogElement.close();
+        } else {
+            console.warn(
+                `requestCloseModal elm port: ${modalId} is not a dialog element`
+            );
+        }
+    });
+
     return function portsCleanup() {
         window.removeEventListener("popstate", onLocationHrefChange);
     };

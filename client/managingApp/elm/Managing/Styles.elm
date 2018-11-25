@@ -86,5 +86,5 @@ field =
 
 modal =
     { self = "m-modal"
-    , content = "m-modal__content"
+    , scheduledAppointmentDetailsModalContent = "m-modal__scheduled-appointment-details-modal-content"
     }

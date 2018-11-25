@@ -55,6 +55,7 @@ type alias Model =
 
 type OutMsg
     = RequestShowModalById String
+    | RequestCloseModalById String
 
 
 type EventKind
@@ -153,7 +154,7 @@ update msg model =
             )
 
         CloseScheduledAppointmentDetails ->
-            ( model, Cmd.none, Nothing )
+            ( model, Cmd.none, Just <| RequestCloseModalById scheduledAppointmentDetailsModalElementId )
 
 
 
@@ -219,11 +220,21 @@ viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
                             , ( "Location", appointmentDetail.locationName )
                             , ( "Course", appointmentDetail.courseCode )
                             ]
+
+                        fields =
+                            labelsWithData
+                                |> List.map (\( label, entry ) -> DataTable.textField label entry)
+
+                        actions =
+                            DataTable.actionContainer
+                                [ DataTable.actionLink "Close" (E.onClick <| CloseScheduledAppointmentDetails)
+                                ]
+
+                        item =
+                            (fields ++ [ actions ])
+                                |> DataTable.item
                     in
-                    [ labelsWithData
-                        |> List.map (\( label, entry ) -> DataTable.textField label entry)
-                        |> DataTable.item
-                    ]
+                    [ item ]
 
                 RemoteData.StillLoading ->
                     [ spinner ]
@@ -242,7 +253,7 @@ viewModal id children =
         [ A.id id
         , Styles.apply [ Styles.modal.self ]
         ]
-        [ H.div [ Styles.apply [ Styles.modal.content ] ] children ]
+        [ H.div [ Styles.apply [ Styles.modal.scheduledAppointmentDetailsModalContent ] ] children ]
 
 
 

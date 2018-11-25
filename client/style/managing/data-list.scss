@@ -3,6 +3,12 @@
         border-top: 1px solid $border-color-for-controls;
         margin-bottom: 1em;
 
+        // make sure that the item takes up the whole fixed-width
+        // container it's in (useful for situations where it's
+        // used in a modal, where we need to set a pre-determined
+        // width to avoid jumping content)
+        width: 100%;
+
         &:last-child {
             // Add some space between items, don't add
             // any space to the last item. This also helps

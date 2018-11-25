@@ -107,6 +107,9 @@ handleOutMsg model outMsg =
         EventListPageOutMsg (Just (EventList.RequestShowModalById modalId)) ->
             ( model, requestShowModal modalId )
 
+        EventListPageOutMsg (Just (EventList.RequestCloseModalById modalId)) ->
+            ( model, requestCloseModal modalId )
+
         EventListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
