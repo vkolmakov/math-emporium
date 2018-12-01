@@ -12,6 +12,7 @@ import Managing.AppConfig as AppConfig exposing (AppConfig)
 import Managing.ErrorEvents.Page.ErrorEventList as ErrorEventList
 import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
+import Managing.Settings.Page.EditSettings as EditSettings
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
@@ -46,6 +47,7 @@ type alias Model =
     , userDetailPageModel : UserDetail.Model
     , eventListPageModel : EventList.Model
     , errorEventListPageModel : ErrorEventList.Model
+    , editSettingsPageModel : EditSettings.Model
     }
 
 
@@ -66,6 +68,7 @@ init flags =
                 (UserDetail.init appConfig)
                 (EventList.init appConfig)
                 (ErrorEventList.init appConfig)
+                (EditSettings.init appConfig)
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -87,6 +90,7 @@ type Msg
     | UserDetailPageMsg UserDetail.Msg
     | EventListPageMsg EventList.Msg
     | ErrorEventListPageMsg ErrorEventList.Msg
+    | EditSettingsPageMsg EditSettings.Msg
     | NoOp
     | ScrollPositionRestorationFailure Int { x : Float, y : Float }
     | AttemptRestoreScrollPosition Int { x : Float, y : Float }
@@ -97,6 +101,7 @@ type OutMsg
     | UserListPageOutMsg (Maybe UserList.OutMsg)
     | EventListPageOutMsg (Maybe EventList.OutMsg)
     | ErrorEventListPageOutMsg (Maybe ErrorEventList.OutMsg)
+    | EditSettingsPageOutMsg (Maybe EditSettings.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
@@ -127,6 +132,12 @@ handleOutMsg model outMsg =
             ( model, Cmd.none )
 
         ErrorEventListPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
+        EditSettingsPageOutMsg (Just EditSettings.NoOpOutMsg) ->
+            ( model, Cmd.none )
+
+        EditSettingsPageOutMsg Nothing ->
             ( model, Cmd.none )
 
 
@@ -235,6 +246,18 @@ update message model =
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map ErrorEventListPageMsg innerCmd ]
             )
 
+        EditSettingsPageMsg msg ->
+            let
+                ( innerModel, innerCmd, outMsg ) =
+                    EditSettings.update msg model.editSettingsPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (EditSettingsPageOutMsg outMsg)
+            in
+            ( { updatedModelAfterOutMsg | editSettingsPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EditSettingsPageMsg innerCmd ]
+            )
+
         {- Scroll restoration flow:
            * LocationHrefChange makes the first attempt to restore the scroll
            * attemptRestoreScrollPosition will get the current scene size and check
@@ -286,6 +309,9 @@ getInitModelCmd route model =
         Route.ErrorEventList ->
             ( model, Cmd.map ErrorEventListPageMsg (ErrorEventList.initCmd model.errorEventListPageModel) )
 
+        Route.EditSettings ->
+            ( model, Cmd.map EditSettingsPageMsg (EditSettings.initCmd model.editSettingsPageModel) )
+
         Route.Unknown ->
             ( model, Navigation.load "/" )
 
@@ -299,6 +325,7 @@ activeNavItems =
     [ NavItem Route.UserList "Users"
     , NavItem Route.EventList "Events"
     , NavItem Route.ErrorEventList "Errors"
+    , NavItem Route.EditSettings "Settings"
     ]
 
 
@@ -319,6 +346,9 @@ getHighlightedRoute route =
 
         Route.ErrorEventList ->
             Just Route.ErrorEventList
+
+        Route.EditSettings ->
+            Just Route.EditSettings
 
         Route.Unknown ->
             Nothing
@@ -350,6 +380,9 @@ viewPageContent model =
 
                 Route.ErrorEventList ->
                     H.map ErrorEventListPageMsg <| ErrorEventList.view model.errorEventListPageModel
+
+                Route.EditSettings ->
+                    H.map EditSettingsPageMsg <| EditSettings.view model.editSettingsPageModel
 
                 Route.Unknown ->
                     H.text "At unknown route"
