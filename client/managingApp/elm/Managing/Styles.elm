@@ -6,6 +6,7 @@ module Managing.Styles exposing
     , field
     , loadingSpinner
     , modal
+    , pageError
     , persistenceAction
     , sectionNav
     , utility
@@ -87,4 +88,10 @@ field =
 modal =
     { self = "m-modal"
     , scheduledAppointmentDetailsModalContent = "m-modal__scheduled-appointment-details-modal-content"
+    }
+
+
+pageError =
+    { self = "m-page-error"
+    , message = "m-page-error__message"
     }

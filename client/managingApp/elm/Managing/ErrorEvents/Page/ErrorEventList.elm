@@ -8,6 +8,7 @@ import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
+import Managing.View.PageError exposing (viewPageError)
 
 
 
@@ -47,6 +48,7 @@ type Msg
     = NoOp
     | ReceiveErrorEvents (Result Http.Error (List ErrorEventListEntry))
     | CheckIfTakingTooLong RemoteRequestItem
+    | RetryInit
 
 
 type OutMsg
@@ -89,8 +91,11 @@ update msg model =
         ReceiveErrorEvents (Ok events) ->
             ( { model | errorEvents = RemoteData.Available events }, Cmd.none, Nothing )
 
-        ReceiveErrorEvents (Err _) ->
-            ( model, Cmd.none, Nothing )
+        ReceiveErrorEvents (Err e) ->
+            ( { model | errorEvents = RemoteData.Error (RemoteData.errorFromHttpError e) }
+            , Cmd.none
+            , Nothing
+            )
 
         CheckIfTakingTooLong ErrorEvents ->
             case model.errorEvents of
@@ -99,6 +104,13 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none, Nothing )
+
+        RetryInit ->
+            let
+                initialModel =
+                    init model.appConfig
+            in
+            ( initialModel, initCmd initialModel, Nothing )
 
         NoOp ->
             ( model, Cmd.none, Nothing )
@@ -141,7 +153,7 @@ view model =
                 ]
 
         RemoteData.Error e ->
-            H.div [] [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
+            viewPageError RetryInit e
 
 
 
