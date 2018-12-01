@@ -2,8 +2,10 @@ import errorEventStorage from "./errorEventStorage";
 import { dateTime } from "../../aux";
 
 function transformErrorEvent(errorEvent) {
+    const userEmail = errorEvent.user && errorEvent.user.email;
     const transformedErrorEvent = {
-        userEmail: errorEvent.user && errorEvent.user.email,
+        id: errorEvent._id,
+        userEmail: userEmail ? userEmail : null,
         stacktrace: errorEvent.stacktrace,
         dataBlob: JSON.stringify(errorEvent.data),
         code: errorEvent.type,

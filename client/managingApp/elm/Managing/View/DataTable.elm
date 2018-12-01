@@ -1,9 +1,12 @@
 module Managing.View.DataTable exposing
-    ( actionContainer
+    ( SourceCode
+    , actionContainer
     , actionLink
     , editLink
     , field
     , item
+    , sourceCodeField
+    , sourceCodeFromString
     , table
     , textField
     )
@@ -11,6 +14,15 @@ module Managing.View.DataTable exposing
 import Html as H exposing (Attribute, Html)
 import Managing.Route as Route exposing (Route)
 import Managing.Styles as Styles
+
+
+type SourceCode
+    = SourceCode String
+
+
+sourceCodeFromString : String -> SourceCode
+sourceCodeFromString s =
+    SourceCode s
 
 
 table elements =
@@ -40,6 +52,11 @@ field label contentElement =
 textField : String -> String -> Html msg
 textField label text =
     field label (H.text text)
+
+
+sourceCodeField : String -> SourceCode -> Html msg
+sourceCodeField label (SourceCode s) =
+    field label (H.pre [] [ H.text s ])
 
 
 actionContainer : List (Html msg) -> Html msg
