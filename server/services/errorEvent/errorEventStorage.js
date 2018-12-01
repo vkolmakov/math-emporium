@@ -8,6 +8,9 @@ const ErrorEvent = mongoose.model(
             user: { id: Number, email: String },
             stacktrace: String,
             data: mongoose.Schema.Types.Mixed,
+            url: String,
+            query: String,
+            body: String,
         },
         {
             capped: { size: 131072, max: 100 },

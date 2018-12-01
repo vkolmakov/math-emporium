@@ -10,6 +10,9 @@ function transformErrorEvent(errorEvent) {
         dataBlob: JSON.stringify(errorEvent.data),
         code: errorEvent.type,
         createdAtTimestamp: dateTime.toTimestamp(errorEvent.createdAt),
+        url: errorEvent.url || "",
+        query: errorEvent.query || "",
+        body: errorEvent.body || "",
     };
 
     return transformedErrorEvent;

@@ -23,9 +23,12 @@ type alias Model =
 type alias ErrorEventListEntry =
     { id : String
     , createdAt : Date
-    , dataBlob : String
-    , stacktrace : String
+    , dataBlob : DataTable.SourceCode
+    , stacktrace : DataTable.SourceCode
     , userEmail : Maybe String
+    , url : String
+    , query : DataTable.SourceCode
+    , body : DataTable.SourceCode
     }
 
 
@@ -113,8 +116,11 @@ view model =
                 fields =
                     [ DataTable.textField "Time" (Date.toDisplayString model.appConfig.localTimezoneOffsetInMinutes errorEvent.createdAt)
                     , DataTable.textField "User" (Maybe.withDefault "None" errorEvent.userEmail)
-                    , DataTable.sourceCodeField "Data" (DataTable.sourceCodeFromString errorEvent.dataBlob)
-                    , DataTable.sourceCodeField "Stacktrace" (DataTable.sourceCodeFromString errorEvent.stacktrace)
+                    , DataTable.textField "URL" errorEvent.url
+                    , DataTable.sourceCodeField "Body" errorEvent.body
+                    , DataTable.sourceCodeField "Query" errorEvent.query
+                    , DataTable.sourceCodeField "Data" errorEvent.dataBlob
+                    , DataTable.sourceCodeField "Stacktrace" errorEvent.stacktrace
                     ]
             in
             DataTable.item fields
@@ -143,12 +149,15 @@ view model =
 
 
 decodeErrorEventListEntry =
-    Json.map5 ErrorEventListEntry
+    Json.map8 ErrorEventListEntry
         (Json.field "id" Json.string)
         (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
-        (Json.field "dataBlob" Json.string)
-        (Json.field "stacktrace" Json.string)
+        (Json.field "dataBlob" Json.string |> Json.map DataTable.sourceCodeFromString)
+        (Json.field "stacktrace" Json.string |> Json.map DataTable.sourceCodeFromString)
         (Json.field "userEmail" (Json.nullable Json.string))
+        (Json.field "url" Json.string)
+        (Json.field "query" Json.string |> Json.map DataTable.sourceCodeFromString)
+        (Json.field "body" Json.string |> Json.map DataTable.sourceCodeFromString)
 
 
 getErrorEvents : Cmd Msg
