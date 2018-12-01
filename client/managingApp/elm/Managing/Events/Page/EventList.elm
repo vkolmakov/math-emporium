@@ -10,8 +10,8 @@ import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
-import Managing.View.PageError as PageError
 import Managing.View.Loading exposing (spinner)
+import Managing.View.PageError as PageError
 
 
 scheduledAppointmentDetailsModalElementId =
@@ -50,7 +50,10 @@ type alias AppointmentDetail =
 type alias Model =
     { appConfig : AppConfig
     , events : RemoteData (List EventListEntry)
-    , displayedEventAppointmentDetail : RemoteData AppointmentDetail
+    , displayedEventAppointmentDetail :
+        { data : RemoteData AppointmentDetail
+        , id : Maybe Int
+        }
     }
 
 
@@ -61,7 +64,7 @@ type EventKind
 
 
 init appConfig =
-    Model appConfig RemoteData.Requested RemoteData.NotRequested
+    Model appConfig RemoteData.Requested { data = RemoteData.NotRequested, id = Nothing }
 
 
 eventKindToString eventKind =
@@ -91,7 +94,7 @@ type Msg
     | CheckIfTakingTooLong RemoteRequestItem
     | ShowScheduledAppointmentDetails Int
     | CloseScheduledAppointmentDetails
-    | RetryInit
+    | Retry RemoteRequestItem
 
 
 type OutMsg
@@ -127,6 +130,19 @@ initCmd model =
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
+    let
+        setAppointmentData =
+            setDataField model.displayedEventAppointmentDetail
+
+        initialModel =
+            init model.appConfig
+
+        requestAppointmentDetails appointmentId =
+            Cmd.batch
+                [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong ScheduledAppointmentDetailsRequest)
+                , getAppointmentDetail appointmentId
+                ]
+    in
     case msg of
         ReceiveEvents (Ok events) ->
             ( { model | events = RemoteData.Available events }, Cmd.none, Nothing )
@@ -135,13 +151,13 @@ update msg model =
             ( { model | events = RemoteData.Error (RemoteData.errorFromHttpError e) }, Cmd.none, Nothing )
 
         ReceiveAppointmentDetail (Ok appointmentDetail) ->
-            ( { model | displayedEventAppointmentDetail = RemoteData.Available appointmentDetail }
+            ( { model | displayedEventAppointmentDetail = setAppointmentData (RemoteData.Available appointmentDetail) }
             , Cmd.none
             , Nothing
             )
 
         ReceiveAppointmentDetail (Err e) ->
-            ( { model | displayedEventAppointmentDetail = RemoteData.Error (RemoteData.errorFromHttpError e) }
+            ( { model | displayedEventAppointmentDetail = setAppointmentData (RemoteData.Error <| RemoteData.errorFromHttpError e) }
             , Cmd.none
             , Nothing
             )
@@ -155,30 +171,42 @@ update msg model =
                     ( model, Cmd.none, Nothing )
 
         CheckIfTakingTooLong ScheduledAppointmentDetailsRequest ->
-            case model.displayedEventAppointmentDetail of
+            case model.displayedEventAppointmentDetail.data of
                 RemoteData.Requested ->
-                    ( { model | displayedEventAppointmentDetail = RemoteData.StillLoading }, Cmd.none, Nothing )
+                    ( { model | displayedEventAppointmentDetail = setAppointmentData RemoteData.StillLoading }, Cmd.none, Nothing )
 
                 _ ->
                     ( model, Cmd.none, Nothing )
 
         ShowScheduledAppointmentDetails appointmentId ->
-            ( { model | displayedEventAppointmentDetail = RemoteData.Requested }
-            , Cmd.batch
-                [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong ScheduledAppointmentDetailsRequest)
-                , getAppointmentDetail appointmentId
-                ]
+            ( { model | displayedEventAppointmentDetail = { data = RemoteData.Requested, id = Just appointmentId } }
+            , requestAppointmentDetails appointmentId
             , Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId
             )
 
-        RetryInit ->
-            let
-                initialModel = init model.appConfig
-            in
+        Retry EventListRequest ->
             ( initialModel, initCmd initialModel, Nothing )
 
+        Retry ScheduledAppointmentDetailsRequest ->
+            case model.displayedEventAppointmentDetail.id of
+                Just appointmentId ->
+                    ( { model | displayedEventAppointmentDetail = setAppointmentData RemoteData.Requested }
+                    , requestAppointmentDetails appointmentId
+                    , Nothing
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none, Nothing )
+
         CloseScheduledAppointmentDetails ->
-            ( model, Cmd.none, Just <| RequestCloseModalById scheduledAppointmentDetailsModalElementId )
+            ( { model | displayedEventAppointmentDetail = initialModel.displayedEventAppointmentDetail }
+            , Cmd.none
+            , Just <| RequestCloseModalById scheduledAppointmentDetailsModalElementId
+            )
+
+
+setDataField record data =
+    { record | data = data }
 
 
 
@@ -227,15 +255,15 @@ view model =
                 ]
 
         RemoteData.Error err ->
-            PageError.viewPageError RetryInit err
+            PageError.viewPageError (Retry EventListRequest) err
 
 
-viewScheduledAppointmentDetailModal : AppConfig -> RemoteData AppointmentDetail -> Html Msg
-viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
+viewScheduledAppointmentDetailModal : AppConfig -> { data : RemoteData AppointmentDetail, id : Maybe Int } -> Html Msg
+viewScheduledAppointmentDetailModal appConfig { data, id } =
     let
         modalChildren =
-            case maybeAppointmentDetail of
-                RemoteData.Available appointmentDetail ->
+            case ( data, id ) of
+                ( RemoteData.Available appointmentDetail, Just appointmentId ) ->
                     let
                         labelsWithData =
                             [ ( "ID", String.fromInt appointmentDetail.id )
@@ -260,11 +288,11 @@ viewScheduledAppointmentDetailModal appConfig maybeAppointmentDetail =
                     in
                     [ item ]
 
-                RemoteData.StillLoading ->
+                ( RemoteData.StillLoading, _ ) ->
                     [ spinner ]
 
-                RemoteData.Error e ->
-                    [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
+                ( RemoteData.Error err, _ ) ->
+                    [ PageError.viewPageError (Retry ScheduledAppointmentDetailsRequest) err ]
 
                 _ ->
                     []
