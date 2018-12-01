@@ -1,54 +1,31 @@
 import db from "sequelize-connect";
-import { createExtractDataValuesFunction, dateTime } from "../aux";
+import { dateTime } from "../aux";
 import { notFound } from "../services/errorMessages";
 
 const User = db.models.user;
 const Location = db.models.location;
 const Course = db.models.course;
 
-const allowedToRead = [
-    "id",
-    "email",
-    "firstName",
-    "lastName",
-    "group",
-    "location",
-    "course",
-    "lastSigninAt",
-    "phoneNumber",
-];
 const allowedToWrite = ["group"];
 const relatedModels = [Location, Course];
 
-const extractDataValues = createExtractDataValuesFunction(allowedToRead);
-
 function toUserListEntry(userDatabaseRes) {
-    const { id, email, group } = userDatabaseRes;
     return {
-        id,
-        email,
-        group,
+        id: userDatabaseRes.id,
+        email: userDatabaseRes.email,
+        group: userDatabaseRes.group,
         lastSigninTimestamp: dateTime.toTimestamp(userDatabaseRes.lastSigninAt),
     };
 }
 
 function toUserDetailEntry(userDatabaseRes) {
-    const {
-        id,
-        email,
-        group,
-        phoneNumber,
-        firstName,
-        lastName,
-    } = userDatabaseRes;
-
     return {
-        id,
-        email,
-        group,
-        phoneNumber,
-        firstName,
-        lastName,
+        id: userDatabaseRes.id,
+        email: userDatabaseRes.email,
+        group: userDatabaseRes.group,
+        phoneNumber: userDatabaseRes.phoneNumber,
+        firstName: userDatabaseRes.firstName,
+        lastName: userDatabaseRes.lastName,
         lastSigninTimestamp: dateTime.toTimestamp(userDatabaseRes.lastSigninAt),
     };
 }
