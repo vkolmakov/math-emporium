@@ -10,6 +10,7 @@ import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
+import Managing.View.PageError as PageError
 import Managing.View.Loading exposing (spinner)
 
 
@@ -53,11 +54,6 @@ type alias Model =
     }
 
 
-type OutMsg
-    = RequestShowModalById String
-    | RequestCloseModalById String
-
-
 type EventKind
     = RemoveAppointment
     | ScheduleAppointment
@@ -95,6 +91,12 @@ type Msg
     | CheckIfTakingTooLong RemoteRequestItem
     | ShowScheduledAppointmentDetails Int
     | CloseScheduledAppointmentDetails
+    | RetryInit
+
+
+type OutMsg
+    = RequestShowModalById String
+    | RequestCloseModalById String
 
 
 initCmd : Model -> Cmd Msg
@@ -164,9 +166,16 @@ update msg model =
             ( { model | displayedEventAppointmentDetail = RemoteData.Requested }
             , Cmd.batch
                 [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong ScheduledAppointmentDetailsRequest)
-                , getAppointmentDetail appointmentId ]
+                , getAppointmentDetail appointmentId
+                ]
             , Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId
             )
+
+        RetryInit ->
+            let
+                initialModel = init model.appConfig
+            in
+            ( initialModel, initCmd initialModel, Nothing )
 
         CloseScheduledAppointmentDetails ->
             ( model, Cmd.none, Just <| RequestCloseModalById scheduledAppointmentDetailsModalElementId )
@@ -217,8 +226,8 @@ view model =
                 , DataTable.table (events |> List.map viewEventRow)
                 ]
 
-        RemoteData.Error e ->
-            H.div [] [ H.text <| "An error occurred: " ++ RemoteData.errorToString e ]
+        RemoteData.Error err ->
+            PageError.viewPageError RetryInit err
 
 
 viewScheduledAppointmentDetailModal : AppConfig -> RemoteData AppointmentDetail -> Html Msg

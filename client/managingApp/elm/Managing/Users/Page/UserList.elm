@@ -10,6 +10,7 @@ import Managing.Users.Data.Shared exposing (accessGroupToString)
 import Managing.Users.Data.UserListEntry exposing (UserListEntry)
 import Managing.Utils.Date as Date
 import Managing.View.DataTable as DataTable
+import Managing.View.PageError as PageError
 import Managing.View.Loading exposing (spinner)
 
 
@@ -61,13 +62,14 @@ type Msg
     = ReceiveUsers (Result Http.Error (List UserListEntry))
     | NavigateTo Route
     | CheckIfRequestTakesTooLong
+    | RetryInit
 
 
 type OutMsg
     = RequestNavigationTo Route
 
 
-update : Msg -> Model -> ( Model, Cmd msg, Maybe OutMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         ReceiveUsers (Ok users) ->
@@ -86,6 +88,13 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none, Nothing )
+
+        RetryInit ->
+            let
+                initialModel =
+                    init model.appConfig
+            in
+            ( initialModel, initCmd initialModel, Nothing )
 
 
 
@@ -128,8 +137,8 @@ view model =
         RemoteData.Available users ->
             DataTable.table (users |> List.map viewUserRow)
 
-        RemoteData.Error e ->
-            H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
+        RemoteData.Error err ->
+            PageError.viewPageError RetryInit err
 
 
 
