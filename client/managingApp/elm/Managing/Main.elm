@@ -75,7 +75,7 @@ init flags =
     in
     ( initialModelBasedOnRoute
     , initialCmdBasedOnRoute
-      -- for initialization, passed route is the same as one on the model
+      -- For initialization, passed route is the same as one on the model.
     )
 
 
@@ -283,7 +283,7 @@ update message model =
 
 {-| Returns a command for a NEW route with the PREVIOUS model.
 This is useful for determining whether or not the data has to
-be refreshed when navigating to a new route
+be refreshed when navigating to a new route.
 -}
 getInitModelCmd : Route -> Model -> ( Model, Cmd Msg )
 getInitModelCmd route model =
@@ -295,9 +295,9 @@ getInitModelCmd route model =
             ( model, Cmd.map UserListPageMsg (UserList.initCmd model.userListPageModel) )
 
         Route.UserDetail userId ->
-            {- ensure that we start with a clear model because
+            {- Ensure that we start with a clear model because
                we want to avoid seeing old content if we end up
-               navigating to that route more than once
+               navigating to that route more than once.
             -}
             ( { model | userDetailPageModel = UserDetail.init model.appConfig }
             , Cmd.map UserDetailPageMsg (UserDetail.initCmd userId)
@@ -310,7 +310,10 @@ getInitModelCmd route model =
             ( model, Cmd.map ErrorEventListPageMsg (ErrorEventList.initCmd model.errorEventListPageModel) )
 
         Route.EditSettings ->
-            ( model, Cmd.map EditSettingsPageMsg (EditSettings.initCmd model.editSettingsPageModel) )
+            {- Ensure that settings are always up-to-date. -}
+            ( { model | editSettingsPageModel = EditSettings.init model.appConfig }
+            , Cmd.map EditSettingsPageMsg (EditSettings.initCmd model.editSettingsPageModel)
+            )
 
         Route.Unknown ->
             ( model, Navigation.load "/" )
