@@ -15,8 +15,26 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
 
         width: 30em;
         min-height: 15em;
+
+        &__main-container {
+            min-width: 100%;
+            margin-bottom: 0.5em;
+
+            // Make sure that the error itself takes up the maximum space
+            // and pushes the close button all the way down.
+            flex-grow: 1;
+
+            // Center content that does not fill up the whole space.
+            display: flex;
+            justify-content: center;
+        }
+
+        &__close-button {
+            align-self: flex-end;
+        }
     }
 }

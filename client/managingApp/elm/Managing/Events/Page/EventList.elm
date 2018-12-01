@@ -9,6 +9,7 @@ import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
+import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
@@ -261,7 +262,10 @@ view model =
 viewScheduledAppointmentDetailModal : AppConfig -> { data : RemoteData AppointmentDetail, id : Maybe Int } -> Html Msg
 viewScheduledAppointmentDetailModal appConfig { data, id } =
     let
-        modalChildren =
+        closeModalButton =
+            Button.view "Close" "modal-close-button" Button.Enabled CloseScheduledAppointmentDetails
+
+        contentChildren =
             case ( data, id ) of
                 ( RemoteData.Available appointmentDetail, Just appointmentId ) ->
                     let
@@ -277,14 +281,8 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
                             labelsWithData
                                 |> List.map (\( label, entry ) -> DataTable.textField label entry)
 
-                        actions =
-                            DataTable.actionContainer
-                                [ DataTable.actionLink "Close" (E.onClick <| CloseScheduledAppointmentDetails)
-                                ]
-
                         item =
-                            (fields ++ [ actions ])
-                                |> DataTable.item
+                            DataTable.item fields
                     in
                     [ item ]
 
@@ -296,16 +294,26 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
 
                 _ ->
                     []
+
+        modalContent =
+            [ H.div
+                [ Styles.apply [ Styles.modal.scheduledAppointmentDetailsModalContent.self ] ]
+                [ H.div [ Styles.apply [ Styles.modal.scheduledAppointmentDetailsModalContent.mainContainer ] ]
+                    contentChildren
+                , H.div [ Styles.apply [ Styles.modal.scheduledAppointmentDetailsModalContent.closeButton ] ]
+                    [ closeModalButton ]
+                ]
+            ]
     in
-    viewModal scheduledAppointmentDetailsModalElementId modalChildren
+    viewModal scheduledAppointmentDetailsModalElementId modalContent
 
 
-viewModal id children =
+viewModal id content =
     H.node "dialog"
         [ A.id id
         , Styles.apply [ Styles.modal.self ]
         ]
-        [ H.div [ Styles.apply [ Styles.modal.scheduledAppointmentDetailsModalContent ] ] children ]
+        content
 
 
 

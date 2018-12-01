@@ -87,7 +87,11 @@ field =
 
 modal =
     { self = "m-modal"
-    , scheduledAppointmentDetailsModalContent = "m-modal__scheduled-appointment-details-modal-content"
+    , scheduledAppointmentDetailsModalContent =
+        { self = "m-modal__scheduled-appointment-details-modal-content"
+        , mainContainer = "m-modal__scheduled-appointment-details-modal-content__main-container"
+        , closeButton = "m-modal__scheduled-appointment-details-modal-content__close-button"
+        }
     }
 
 
