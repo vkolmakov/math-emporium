@@ -164,20 +164,17 @@ update msg model =
             )
 
         CheckIfTakingTooLong EventListRequest ->
-            case model.events of
-                RemoteData.Requested ->
-                    ( { model | events = RemoteData.StillLoading }, Cmd.none, Nothing )
-
-                _ ->
-                    ( model, Cmd.none, Nothing )
+            ( { model | events = RemoteData.checkIfTakingTooLong model.events }, Cmd.none, Nothing )
 
         CheckIfTakingTooLong ScheduledAppointmentDetailsRequest ->
-            case model.displayedEventAppointmentDetail.data of
-                RemoteData.Requested ->
-                    ( { model | displayedEventAppointmentDetail = setAppointmentData RemoteData.StillLoading }, Cmd.none, Nothing )
-
-                _ ->
-                    ( model, Cmd.none, Nothing )
+            let
+                checkIfAppointmentDataTakingTooLong =
+                    setAppointmentData << RemoteData.checkIfTakingTooLong
+            in
+            ( { model | displayedEventAppointmentDetail = checkIfAppointmentDataTakingTooLong model.displayedEventAppointmentDetail.data }
+            , Cmd.none
+            , Nothing
+            )
 
         ShowScheduledAppointmentDetails appointmentId ->
             ( { model | displayedEventAppointmentDetail = { data = RemoteData.Requested, id = Just appointmentId } }

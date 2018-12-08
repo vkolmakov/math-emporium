@@ -112,23 +112,17 @@ update msg model =
                 _ ->
                     noAction model
 
-        CheckIfTakingTooLong itemRequest ->
-            case itemRequest of
-                UserDetailRequest ->
-                    case model.userDetail of
-                        RemoteData.Requested ->
-                            ( { model | userDetail = RemoteData.StillLoading }, Cmd.none, Nothing )
+        CheckIfTakingTooLong UserDetailRequest ->
+            ( { model | userDetail = RemoteData.checkIfTakingTooLong model.userDetail }
+            , Cmd.none
+            , Nothing
+            )
 
-                        _ ->
-                            noAction model
-
-                UserPersistenceRequest ->
-                    case model.userPersistenceState of
-                        RemoteData.Requested ->
-                            ( { model | userPersistenceState = RemoteData.StillLoading }, Cmd.none, Nothing )
-
-                        _ ->
-                            noAction model
+        CheckIfTakingTooLong UserPersistenceRequest ->
+            ( { model | userPersistenceState = RemoteData.checkIfTakingTooLong model.userPersistenceState }
+            , Cmd.none
+            , Nothing
+            )
 
         PersistUserDetail id user ->
             ( { model | userPersistenceState = RemoteData.Requested }

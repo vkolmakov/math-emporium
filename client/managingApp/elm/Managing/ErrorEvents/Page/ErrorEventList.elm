@@ -98,12 +98,10 @@ update msg model =
             )
 
         CheckIfTakingTooLong ErrorEvents ->
-            case model.errorEvents of
-                RemoteData.Requested ->
-                    ( { model | errorEvents = RemoteData.StillLoading }, Cmd.none, Nothing )
-
-                _ ->
-                    ( model, Cmd.none, Nothing )
+            ( { model | errorEvents = RemoteData.checkIfTakingTooLong model.errorEvents }
+            , Cmd.none
+            , Nothing
+            )
 
         RetryInit ->
             let
