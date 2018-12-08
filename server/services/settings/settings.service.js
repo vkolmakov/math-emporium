@@ -1,5 +1,6 @@
 import { R } from "../../aux";
 import settingsStorage from "./settingsStorage";
+import { successMessage } from "../messages";
 import faq from "../faq";
 
 export const SETTINGS_KEYS = settingsStorage.keys;
@@ -62,14 +63,29 @@ export function updateDefaultSettings(values) {
     ];
 
     const validSettingsKeys = Object.keys(SETTINGS_KEYS);
-    const updatedValues = transformations.reduce(
-        (acc, transformation) => transformation(acc),
-        values
-    );
+    const validUpdatedSettings = R.pick(validSettingsKeys, values);
 
-    return settingsStorage
-        .updateDefaultSettings(R.pick(validSettingsKeys, updatedValues))
-        .then((settingsDocument) => settingsDocument.values);
+    return getDefaultSettings()
+        .then((previousSettings) => {
+            return {
+                ...previousSettings,
+                ...validUpdatedSettings,
+            };
+        })
+        .then((mergedSettings) => {
+            const updatedValues = transformations.reduce(
+                (acc, transformation) => transformation(acc),
+                mergedSettings
+            );
+
+            return updatedValues;
+        })
+        .then((mergedTransformedSettings) => {
+            return settingsStorage.updateDefaultSettings(
+                mergedTransformedSettings
+            );
+        })
+        .then(successMessage);
 }
 
 export function getSettingsValue(key) {
