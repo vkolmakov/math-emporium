@@ -8,6 +8,7 @@ module Managing.View.Input exposing
 
 import Html as H exposing (Attribute, Html)
 import Html.Attributes as A
+import Html.Events as E
 import Managing.Styles as Styles
 
 
@@ -61,7 +62,7 @@ select inputConfig options selectedOption onChange =
         )
 
 
-text inputConfig value onInput =
+text inputConfig value onInputMsg =
     let
         { isEditable } =
             inputConfig
@@ -72,7 +73,7 @@ text inputConfig value onInput =
             [ Styles.apply [ Styles.field.input ]
             , A.disabled <| not isEditable
             , A.value value
-            , onInput
+            , E.onInput onInputMsg
             ]
             []
         )
@@ -94,7 +95,7 @@ baseInput inputConfig inputElement =
         labelElement =
             H.label [ Styles.apply labelStyles ] [ H.text label ]
     in
-    H.div [ Styles.apply [Styles.field.self]]
+    H.div [ Styles.apply [ Styles.field.self ] ]
         [ labelElement
         , inputElement
         ]

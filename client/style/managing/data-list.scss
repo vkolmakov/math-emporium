@@ -42,6 +42,8 @@
             &__value {
                 overflow: auto;
                 padding: 0.4em;
+                display: flex;
+                align-items: center;
             }
         }
 

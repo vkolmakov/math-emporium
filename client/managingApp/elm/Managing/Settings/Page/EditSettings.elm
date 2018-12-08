@@ -14,6 +14,7 @@ import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
+import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
 
@@ -47,6 +48,7 @@ type Msg
     = ReceiveSettings (Result Http.Error Settings)
     | Retry RemoteRequestItem
     | CheckIfTakingTooLong RemoteRequestItem
+    | OnApplicationTitleChange String
     | NoOp
 
 
@@ -105,6 +107,16 @@ update msg model =
             , Nothing
             )
 
+        OnApplicationTitleChange updatedApplicationTitle ->
+            let
+                updateSettings s =
+                    { s | applicationTitle = updatedApplicationTitle }
+            in
+            ( { model | settings = RemoteData.map updateSettings model.settings }
+            , Cmd.none
+            , Nothing
+            )
+
         NoOp ->
             noOp
 
@@ -136,7 +148,20 @@ view model =
 
 viewSettings : Settings -> Html Msg
 viewSettings settings =
-    H.div [] [ H.text "Settings!" ]
+    let
+        labelsWithElements =
+            [ ( "Application Title", viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange ) ]
+
+        fields =
+            labelsWithElements
+                |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+    in
+    fields
+        |> DataTable.item
+
+
+viewTextInputField label initialValue onInput =
+    Input.text { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
 
 
 

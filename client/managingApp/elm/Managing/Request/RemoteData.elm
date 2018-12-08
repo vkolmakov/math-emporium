@@ -3,6 +3,7 @@ module Managing.Request.RemoteData exposing
     , RemoteDataError(..)
     , errorFromHttpError
     , errorToString
+    , map
     , scheduleLoadingStateTrigger
     )
 
@@ -58,3 +59,22 @@ type RemoteData a
     | StillLoading -- Intermediate state - data is loading for a long time after the request was made
     | Error RemoteDataError
     | Available a
+
+
+map : (a -> b) -> RemoteData a -> RemoteData b
+map fn val =
+    case val of
+        Available x ->
+            Available (fn x)
+
+        NotRequested ->
+            NotRequested
+
+        Requested ->
+            Requested
+
+        StillLoading ->
+            StillLoading
+
+        Error e ->
+            Error e
