@@ -11,6 +11,7 @@ module Managing.Settings.Page.EditSettings exposing
 import Html as H exposing (Html)
 import Http
 import Json.Decode as Json
+import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Button as Button
@@ -19,7 +20,11 @@ import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
 
-submitSettingsButtonId = "submit-settings-button"
+
+submitSettingsButtonId =
+    "submit-settings-button"
+
+
 
 -- MODEL
 
@@ -33,16 +38,21 @@ type alias Settings =
 type alias Model =
     { appConfig : AppConfig
     , settings : RemoteData Settings
+    , settingsPersistenceState : RemoteData SettingsPersistenceResponse
     }
 
 
 init : AppConfig -> Model
 init appConfig =
-    Model appConfig RemoteData.Requested
+    Model appConfig RemoteData.Requested RemoteData.NotRequested
 
 
 
 -- UPDATE
+
+
+type alias SettingsPersistenceResponse =
+    String
 
 
 type Msg
@@ -50,6 +60,8 @@ type Msg
     | Retry RemoteRequestItem
     | CheckIfTakingTooLong RemoteRequestItem
     | OnApplicationTitleChange String
+    | PersistSettings Settings
+    | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
 
 
@@ -118,6 +130,15 @@ update msg model =
             , Nothing
             )
 
+        PersistSettings settings ->
+            noOp
+
+        ReceiveSettingsPersistenceResponse (Ok _) ->
+            noOp
+
+        ReceiveSettingsPersistenceResponse (Err _) ->
+            noOp
+
         NoOp ->
             noOp
 
@@ -140,15 +161,15 @@ view model =
 
         RemoteData.Available settings ->
             DataTable.table
-                [ viewSettings settings
+                [ viewSettings settings model.settingsPersistenceState
                 ]
 
         RemoteData.Error err ->
             PageError.viewPageError (Retry SettingsRequest) err
 
 
-viewSettings : Settings -> Html Msg
-viewSettings settings =
+viewSettings : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
+viewSettings settings settingsPersistenceState =
     let
         labelsWithElements =
             [ ( "Application Title", viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange ) ]
@@ -159,7 +180,7 @@ viewSettings settings =
 
         actions =
             [ DataTable.actionContainer
-                [ viewSubmitSettingsButton settings ]
+                [ viewSubmitSettingsButton settings settingsPersistenceState ]
             ]
     in
     (fields ++ actions)
@@ -170,9 +191,27 @@ viewTextInputField label initialValue onInput =
     Input.text { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
 
 
-viewSubmitSettingsButton : Settings -> Html Msg
-viewSubmitSettingsButton settings =
-    Button.view "Submit" submitSettingsButtonId Button.Enabled NoOp
+viewSubmitSettingsButton : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
+viewSubmitSettingsButton settings settingsPersistenceState =
+    let
+        buttonLabel =
+            "Submit"
+
+        buttonMsg =
+            PersistSettings settings
+
+        buttonState =
+            case settingsPersistenceState of
+                RemoteData.StillLoading ->
+                    Button.Loading
+
+                RemoteData.Requested ->
+                    Button.Disabled
+
+                _ ->
+                    Button.Enabled
+    in
+    Button.view buttonLabel submitSettingsButtonId buttonState buttonMsg
 
 
 
@@ -186,6 +225,39 @@ getSettings =
             "/api/settings"
     in
     Http.send ReceiveSettings (Http.get url decodeSettings)
+
+
+encodeSettings : Settings -> Json.Encode.Value
+encodeSettings settings =
+    Json.Encode.object []
+
+
+decodeSettingsPersistenceResponse : Json.Decoder SettingsPersistenceResponse
+decodeSettingsPersistenceResponse =
+    Json.string
+
+
+persistSettings : Settings -> Cmd Msg
+persistSettings settings =
+    let
+        url =
+            "/api/settings"
+
+        body =
+            Http.jsonBody <| encodeSettings settings
+
+        request =
+            Http.request
+                { method = "PUT"
+                , headers = []
+                , url = url
+                , body = body
+                , expect = Http.expectJson decodeSettingsPersistenceResponse
+                , timeout = Nothing
+                , withCredentials = False
+                }
+    in
+    Http.send ReceiveSettingsPersistenceResponse request
 
 
 decodeSettings =
