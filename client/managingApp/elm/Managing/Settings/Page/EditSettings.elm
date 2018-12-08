@@ -13,12 +13,13 @@ import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
 
-
+submitSettingsButtonId = "submit-settings-button"
 
 -- MODEL
 
@@ -155,13 +156,23 @@ viewSettings settings =
         fields =
             labelsWithElements
                 |> List.map (\( label, contentElement ) -> DataTable.field label contentElement)
+
+        actions =
+            [ DataTable.actionContainer
+                [ viewSubmitSettingsButton settings ]
+            ]
     in
-    fields
+    (fields ++ actions)
         |> DataTable.item
 
 
 viewTextInputField label initialValue onInput =
     Input.text { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
+
+
+viewSubmitSettingsButton : Settings -> Html Msg
+viewSubmitSettingsButton settings =
+    Button.view "Submit" submitSettingsButtonId Button.Enabled NoOp
 
 
 
