@@ -71,6 +71,7 @@ type OutMsg
 
 type RemoteRequestItem
     = SettingsRequest
+    | SettingsPersistenceRequest
 
 
 initCmd : Model -> Cmd Msg
@@ -104,21 +105,27 @@ update msg model =
             )
 
         CheckIfTakingTooLong SettingsRequest ->
-            case model.settings of
-                RemoteData.Requested ->
-                    ( { model | settings = RemoteData.StillLoading }
-                    , Cmd.none
-                    , Nothing
-                    )
+            ( { model | settings = RemoteData.checkIfTakingTooLong model.settings }
+            , Cmd.none
+            , Nothing
+            )
 
-                _ ->
-                    noOp
+        CheckIfTakingTooLong SettingsPersistenceRequest ->
+            ( { model | settingsPersistenceState = RemoteData.checkIfTakingTooLong model.settingsPersistenceState }
+            , Cmd.none
+            , Nothing
+            )
 
         Retry SettingsRequest ->
             ( initialModel
             , initCmd initialModel
             , Nothing
             )
+
+        Retry SettingsPersistenceRequest ->
+            -- this should never happen since retries
+            -- will be handled through PersistSettings
+            noOp
 
         OnApplicationTitleChange updatedApplicationTitle ->
             let
@@ -131,7 +138,13 @@ update msg model =
             )
 
         PersistSettings settings ->
-            noOp
+            ( model
+            , Cmd.batch
+                [ persistSettings settings
+                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong SettingsPersistenceRequest)
+                ]
+            , Nothing
+            )
 
         ReceiveSettingsPersistenceResponse (Ok _) ->
             noOp

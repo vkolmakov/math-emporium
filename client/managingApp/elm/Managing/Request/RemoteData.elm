@@ -1,6 +1,7 @@
 module Managing.Request.RemoteData exposing
     ( RemoteData(..)
     , RemoteDataError(..)
+    , checkIfTakingTooLong
     , errorFromHttpError
     , errorToString
     , map
@@ -78,3 +79,13 @@ map fn val =
 
         Error e ->
             Error e
+
+
+checkIfTakingTooLong : RemoteData a -> RemoteData a
+checkIfTakingTooLong val =
+    case val of
+        Requested ->
+            StillLoading
+
+        _ ->
+            val
