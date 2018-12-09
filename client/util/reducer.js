@@ -10,7 +10,7 @@ const INITIAL_UTIL_STATE = {
     settings: {
         applicationMainHomePictureLink: "",
         applicationTitle: "math-emporium",
-        faqContent: "",
+        faqContent: void 0,
         announcementContent: "",
         announcementBackgroundColor: "",
         announcementTextColor: "",

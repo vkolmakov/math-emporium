@@ -14,7 +14,7 @@ class Profile extends Component {
         // always fetch new active appointments
         this.props.getActiveUserAppointments();
 
-        if (!this.props.faqContent) {
+        if (typeof this.props.faqContent === "undefined") {
             this.props.getFaqContent();
         }
     }
@@ -28,11 +28,12 @@ class Profile extends Component {
             faqContent,
             appointments,
         } = this.props;
+
         const isInitialized = [
             profile,
             courses.all,
             locations.all,
-            faqContent,
+            typeof faqContent === "string",
             appointments,
         ].every(Boolean);
 
