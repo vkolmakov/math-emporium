@@ -35,6 +35,7 @@ type alias Settings =
     { applicationTitle : String
     , applicationMainHomePictureLink : String
     , duplicateAllEmailsTo : String
+    , faqText : String
     }
 
 
@@ -65,6 +66,7 @@ type Msg
     | OnApplicationTitleChange String
     | OnApplicationMainHomePictureLinkChange String
     | OnDuplicateAllEmailsToChange String
+    | OnFaqTextChange String
     | PersistSettings Settings
     | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
@@ -162,6 +164,16 @@ update msg model =
             , Nothing
             )
 
+        OnFaqTextChange updatedValue ->
+            let
+                updateSettings s =
+                    { s | faqText = updatedValue }
+            in
+            ( { model | settings = RemoteData.map updateSettings model.settings }
+            , Cmd.none
+            , Nothing
+            )
+
         PersistSettings settings ->
             ( { model | settingsPersistenceState = RemoteData.Requested }
             , Cmd.batch
@@ -225,6 +237,9 @@ viewSettings settings settingsPersistenceState =
             , ( "Duplicate All Emails to Address"
               , viewTextInputField "Duplicate All Emails to Address" settings.duplicateAllEmailsTo OnDuplicateAllEmailsToChange
               )
+            , ( "FAQ Text"
+              , viewTextAreaField "FAQ Text" settings.faqText OnFaqTextChange
+              )
             ]
 
         fields =
@@ -244,6 +259,10 @@ viewTextInputField label initialValue onInput =
     Input.text { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
 
 
+viewTextAreaField label initialValue onInput =
+    Input.longText { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
+
+
 
 -- HTTP
 
@@ -258,10 +277,11 @@ getSettings =
 
 
 decodeSettings =
-    Json.map3 Settings
+    Json.map4 Settings
         (Json.field "applicationTitle" Json.string)
         (Json.field "applicationMainHomePictureLink" Json.string)
         (Json.field "duplicateAllEmailsTo" Json.string)
+        (Json.field "faqText" Json.string)
 
 
 persistSettings : Settings -> Cmd Msg
@@ -293,6 +313,7 @@ encodeSettings settings =
         [ ( "applicationTitle", Json.Encode.string settings.applicationTitle )
         , ( "applicationMainHomePictureLink", Json.Encode.string settings.applicationMainHomePictureLink )
         , ( "duplicateAllEmailsTo", Json.Encode.string settings.duplicateAllEmailsTo )
+        , ( "faqText", Json.Encode.string settings.faqText )
         ]
 
 

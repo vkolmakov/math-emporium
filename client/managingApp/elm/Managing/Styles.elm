@@ -83,6 +83,7 @@ field =
     , label = "m-field__label"
     , labelHidden = "m-field__label--hidden"
     , input = "m-field__input"
+    , longTextInput = "m-field__long-text-input"
     }
 
 

@@ -1,6 +1,7 @@
 module Managing.View.Input exposing
     ( InputConfig
     , SelectOption
+    , longText
     , select
     , text
     , toSelectOption
@@ -73,6 +74,19 @@ text inputConfig value onInputMsg =
             [ Styles.apply [ Styles.field.input ]
             , A.disabled <| not isEditable
             , A.value value
+            , E.onInput onInputMsg
+            ]
+            []
+        )
+
+
+longText inputConfig value onInputMsg =
+    baseInput
+        inputConfig
+        (H.textarea
+            [ Styles.apply [ Styles.field.longTextInput ]
+            , A.value value
+            , A.disabled <| not inputConfig.isEditable
             , E.onInput onInputMsg
             ]
             []
