@@ -41,6 +41,7 @@ type alias Settings =
     , duplicateAllEmailsTo : String
     , faqText : String
     , maximumAppointmentsPerUser : Maybe Int
+    , announcementText : String
     }
 
 
@@ -80,6 +81,7 @@ type Field
     | DuplicateAllEmailsToField
     | FaqTextField
     | MaximumAppointmentsPerUserChangeField
+    | AnnouncementTextField
 
 
 type OutMsg
@@ -162,6 +164,9 @@ update msg model =
 
                         MaximumAppointmentsPerUserChangeField ->
                             { s | maximumAppointmentsPerUser = String.toInt updatedValue }
+
+                        AnnouncementTextField ->
+                            { s | announcementText = updatedValue }
             in
             ( { model | settings = RemoteData.map updateSettings model.settings }
             , Cmd.none
@@ -245,6 +250,9 @@ viewSettings settings settingsPersistenceState =
             , ( "Maximum Appointments per User"
               , viewTextInputField "Maximum Appointments per User" maximumNumberOfAppointmentsPerUserString (OnFieldValueChange MaximumAppointmentsPerUserChangeField)
               )
+            , ( "Announcement Text"
+              , viewTextAreaField "Announcement Text" settings.announcementText (OnFieldValueChange AnnouncementTextField)
+              )
             ]
 
         fields =
@@ -282,12 +290,13 @@ getSettings =
 
 
 decodeSettings =
-    Json.map5 Settings
+    Json.map6 Settings
         (Json.field "applicationTitle" Json.string)
         (Json.field "applicationMainHomePictureLink" Json.string)
         (Json.field "duplicateAllEmailsTo" Json.string)
         (Json.field "faqText" Json.string)
         (Json.field "maximumAppointmentsPerUser" (Json.nullable Json.int))
+        (Json.field "announcementText" Json.string)
 
 
 persistSettings : Settings -> Cmd Msg
@@ -321,6 +330,7 @@ encodeSettings settings =
         , ( "duplicateAllEmailsTo", Json.Encode.string settings.duplicateAllEmailsTo )
         , ( "faqText", Json.Encode.string settings.faqText )
         , ( "maximumAppointmentsPerUser", Json.Encode.int (Maybe.withDefault defaultMaximumAppointmentsPerUser settings.maximumAppointmentsPerUser) )
+        , ( "announcementText", Json.Encode.string settings.announcementText )
         ]
 
 
