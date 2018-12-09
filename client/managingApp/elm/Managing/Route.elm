@@ -15,6 +15,7 @@ type Route
     | EventList
     | ErrorEventList
     | EditSettings
+    | AppointmentList
     | Unknown
 
 
@@ -29,6 +30,7 @@ fromLocationHref locationHref =
                 , UrlParser.map EventList (s "manage-portal" </> s "events")
                 , UrlParser.map ErrorEventList (s "manage-portal" </> s "errors")
                 , UrlParser.map EditSettings (s "manage-portal" </> s "settings")
+                , UrlParser.map AppointmentList (s "manage-portal" </> s "appointments")
                 ]
 
         correspondingRoute =
@@ -62,6 +64,9 @@ toHref r =
 
                 EditSettings ->
                     "settings"
+
+                AppointmentList ->
+                    "appointments"
 
                 Unknown ->
                     ""

@@ -9,6 +9,7 @@ import Html.Events as E
 import Html.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import Managing.AppConfig as AppConfig exposing (AppConfig)
+import Managing.Appointments.Page.AppointmentList as AppointmentList
 import Managing.ErrorEvents.Page.ErrorEventList as ErrorEventList
 import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
@@ -48,6 +49,7 @@ type alias Model =
     , eventListPageModel : EventList.Model
     , errorEventListPageModel : ErrorEventList.Model
     , editSettingsPageModel : EditSettings.Model
+    , appointmentListPageModel : AppointmentList.Model
     }
 
 
@@ -69,6 +71,7 @@ init flags =
                 (EventList.init appConfig)
                 (ErrorEventList.init appConfig)
                 (EditSettings.init appConfig)
+                (AppointmentList.init appConfig)
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -91,9 +94,10 @@ type Msg
     | EventListPageMsg EventList.Msg
     | ErrorEventListPageMsg ErrorEventList.Msg
     | EditSettingsPageMsg EditSettings.Msg
-    | NoOp
+    | AppointmentListPageMsg AppointmentList.Msg
     | ScrollPositionRestorationFailure Int { x : Float, y : Float }
     | AttemptRestoreScrollPosition Int { x : Float, y : Float }
+    | NoOp
 
 
 type OutMsg
@@ -102,6 +106,7 @@ type OutMsg
     | EventListPageOutMsg (Maybe EventList.OutMsg)
     | ErrorEventListPageOutMsg (Maybe ErrorEventList.OutMsg)
     | EditSettingsPageOutMsg (Maybe EditSettings.OutMsg)
+    | AppointmentListPageOutMsg (Maybe AppointmentList.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
@@ -138,6 +143,12 @@ handleOutMsg model outMsg =
             ( model, Cmd.none )
 
         EditSettingsPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
+        AppointmentListPageOutMsg (Just AppointmentList.NoOutMsg) ->
+            ( model, Cmd.none )
+
+        AppointmentListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
 
@@ -258,6 +269,18 @@ update message model =
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map EditSettingsPageMsg innerCmd ]
             )
 
+        AppointmentListPageMsg msg ->
+            let
+                ( innerModel, innerCmd, outMsg ) =
+                    AppointmentList.update msg model.appointmentListPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (AppointmentListPageOutMsg outMsg)
+            in
+            ( { updatedModelAfterOutMsg | appointmentListPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map AppointmentListPageMsg innerCmd ]
+            )
+
         {- Scroll restoration flow:
            * LocationHrefChange makes the first attempt to restore the scroll
            * attemptRestoreScrollPosition will get the current scene size and check
@@ -315,6 +338,9 @@ getInitModelCmd route model =
             , Cmd.map EditSettingsPageMsg (EditSettings.initCmd model.editSettingsPageModel)
             )
 
+        Route.AppointmentList ->
+            ( model, Cmd.map AppointmentListPageMsg (AppointmentList.initCmd model.appointmentListPageModel) )
+
         Route.Unknown ->
             ( model, Navigation.load "/" )
 
@@ -329,6 +355,7 @@ activeNavItems =
     , NavItem Route.EventList "Events"
     , NavItem Route.ErrorEventList "Errors"
     , NavItem Route.EditSettings "Settings"
+    , NavItem Route.AppointmentList "Appointments"
     ]
 
 
@@ -352,6 +379,9 @@ getHighlightedRoute route =
 
         Route.EditSettings ->
             Just Route.EditSettings
+
+        Route.AppointmentList ->
+            Just Route.AppointmentList
 
         Route.Unknown ->
             Nothing
@@ -386,6 +416,9 @@ viewPageContent model =
 
                 Route.EditSettings ->
                     H.map EditSettingsPageMsg <| EditSettings.view model.editSettingsPageModel
+
+                Route.AppointmentList ->
+                    H.map AppointmentListPageMsg <| AppointmentList.view model.appointmentListPageModel
 
                 Route.Unknown ->
                     H.text "At unknown route"
