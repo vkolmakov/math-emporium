@@ -4,6 +4,7 @@ module Managing.Styles exposing
     , button
     , dataList
     , field
+    , home
     , loadingSpinner
     , modal
     , pageError
@@ -98,4 +99,10 @@ modal =
 pageError =
     { self = "m-page-error"
     , message = "m-page-error__message"
+    }
+
+
+home =
+    { self = "m-home"
+    , message = "m-home__message"
     }

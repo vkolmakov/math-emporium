@@ -370,7 +370,7 @@ viewPageContent model =
         pageView =
             case model.route of
                 Route.Home ->
-                    H.text "At home route"
+                    viewHomePage
 
                 Route.UserList ->
                     H.map UserListPageMsg <| UserList.view model.userListPageModel
@@ -391,6 +391,10 @@ viewPageContent model =
                     H.text "At unknown route"
     in
     H.div [ Styles.apply [ Styles.applicationContainer.pageContent ] ] [ pageView ]
+
+
+viewHomePage =
+    H.h2 [ Styles.apply [ Styles.home.message ] ] [ H.text "Select an option" ]
 
 
 
