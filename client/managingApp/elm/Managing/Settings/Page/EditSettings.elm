@@ -68,14 +68,18 @@ type Msg
     = ReceiveSettings (Result Http.Error Settings)
     | Retry RemoteRequestItem
     | CheckIfTakingTooLong RemoteRequestItem
-    | OnApplicationTitleChange String
-    | OnApplicationMainHomePictureLinkChange String
-    | OnDuplicateAllEmailsToChange String
-    | OnFaqTextChange String
-    | OnMaximumAppointmentsPerUserChange String
+    | OnFieldValueChange Field String
     | PersistSettings Settings
     | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
+
+
+type Field
+    = ApplicationTitleField
+    | ApplicationMainHomePictureLinkField
+    | DuplicateAllEmailsToField
+    | FaqTextField
+    | MaximumAppointmentsPerUserChangeField
 
 
 type OutMsg
@@ -140,50 +144,24 @@ update msg model =
             -- will be handled through PersistSettings
             noOp
 
-        OnApplicationTitleChange updatedApplicationTitle ->
+        OnFieldValueChange field updatedValue ->
             let
                 updateSettings s =
-                    { s | applicationTitle = updatedApplicationTitle }
-            in
-            ( { model | settings = RemoteData.map updateSettings model.settings }
-            , Cmd.none
-            , Nothing
-            )
+                    case field of
+                        ApplicationTitleField ->
+                            { s | applicationTitle = updatedValue }
 
-        OnApplicationMainHomePictureLinkChange updatedValue ->
-            let
-                updateSettings s =
-                    { s | applicationMainHomePictureLink = updatedValue }
-            in
-            ( { model | settings = RemoteData.map updateSettings model.settings }
-            , Cmd.none
-            , Nothing
-            )
+                        ApplicationMainHomePictureLinkField ->
+                            { s | applicationMainHomePictureLink = updatedValue }
 
-        OnDuplicateAllEmailsToChange updatedValue ->
-            let
-                updateSettings s =
-                    { s | duplicateAllEmailsTo = updatedValue }
-            in
-            ( { model | settings = RemoteData.map updateSettings model.settings }
-            , Cmd.none
-            , Nothing
-            )
+                        DuplicateAllEmailsToField ->
+                            { s | duplicateAllEmailsTo = updatedValue }
 
-        OnFaqTextChange updatedValue ->
-            let
-                updateSettings s =
-                    { s | faqText = updatedValue }
-            in
-            ( { model | settings = RemoteData.map updateSettings model.settings }
-            , Cmd.none
-            , Nothing
-            )
+                        FaqTextField ->
+                            { s | faqText = updatedValue }
 
-        OnMaximumAppointmentsPerUserChange updatedValue ->
-            let
-                updateSettings s =
-                    { s | maximumAppointmentsPerUser = String.toInt updatedValue }
+                        MaximumAppointmentsPerUserChangeField ->
+                            { s | maximumAppointmentsPerUser = String.toInt updatedValue }
             in
             ( { model | settings = RemoteData.map updateSettings model.settings }
             , Cmd.none
@@ -253,19 +231,19 @@ viewSettings settings settingsPersistenceState =
 
         labelsWithElements =
             [ ( "Application Title"
-              , viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange
+              , viewTextInputField "Application Title" settings.applicationTitle (OnFieldValueChange ApplicationTitleField)
               )
             , ( "Main Home Picture Link"
-              , viewTextInputField "Main Home Picture Link" settings.applicationMainHomePictureLink OnApplicationMainHomePictureLinkChange
+              , viewTextInputField "Main Home Picture Link" settings.applicationMainHomePictureLink (OnFieldValueChange ApplicationMainHomePictureLinkField)
               )
             , ( "Duplicate All Emails to Address"
-              , viewTextInputField "Duplicate All Emails to Address" settings.duplicateAllEmailsTo OnDuplicateAllEmailsToChange
+              , viewTextInputField "Duplicate All Emails to Address" settings.duplicateAllEmailsTo (OnFieldValueChange DuplicateAllEmailsToField)
               )
             , ( "FAQ Text"
-              , viewTextAreaField "FAQ Text" settings.faqText OnFaqTextChange
+              , viewTextAreaField "FAQ Text" settings.faqText (OnFieldValueChange FaqTextField)
               )
             , ( "Maximum Appointments per User"
-              , viewTextInputField "Maximum Appointments per User" maximumNumberOfAppointmentsPerUserString OnMaximumAppointmentsPerUserChange
+              , viewTextInputField "Maximum Appointments per User" maximumNumberOfAppointmentsPerUserString (OnFieldValueChange MaximumAppointmentsPerUserChangeField)
               )
             ]
 
