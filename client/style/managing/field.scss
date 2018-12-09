@@ -11,8 +11,10 @@
     width: 1px;
 }
 
+$field-width: 14em;
+
 .m-field {
-    width: 14em;
+    width: $field-width;
 
     &__input {
         // Overriding global styles from main stylesheet.
@@ -29,6 +31,9 @@
         font-family: inherit;
 
         padding: 0 0.5em;
+
+        // Subtract left and right padding
+        width: calc(#{$field-width} - 1em);
 
         &:disabled {
             cursor: not-allowed;

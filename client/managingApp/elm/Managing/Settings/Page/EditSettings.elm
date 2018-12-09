@@ -62,6 +62,7 @@ type Msg
     | Retry RemoteRequestItem
     | CheckIfTakingTooLong RemoteRequestItem
     | OnApplicationTitleChange String
+    | OnApplicationMainHomePictureLinkChange String
     | PersistSettings Settings
     | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
@@ -139,6 +140,16 @@ update msg model =
             , Nothing
             )
 
+        OnApplicationMainHomePictureLinkChange updatedValue ->
+            let
+                updateSettings s =
+                    { s | applicationMainHomePictureLink = updatedValue }
+            in
+            ( { model | settings = RemoteData.map updateSettings model.settings }
+            , Cmd.none
+            , Nothing
+            )
+
         PersistSettings settings ->
             ( { model | settingsPersistenceState = RemoteData.Requested }
             , Cmd.batch
@@ -193,7 +204,9 @@ viewSettings : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
 viewSettings settings settingsPersistenceState =
     let
         labelsWithElements =
-            [ ( "Application Title", viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange ) ]
+            [ ( "Application Title", viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange )
+            , ( "Main Home Picture Link", viewTextInputField "Main Home Picture Link" settings.applicationMainHomePictureLink OnApplicationMainHomePictureLinkChange )
+            ]
 
         fields =
             labelsWithElements
@@ -258,6 +271,7 @@ encodeSettings : Settings -> Json.Encode.Value
 encodeSettings settings =
     Json.Encode.object
         [ ( "applicationTitle", Json.Encode.string settings.applicationTitle )
+        , ( "applicationMainHomePictureLink", Json.Encode.string settings.applicationMainHomePictureLink )
         ]
 
 
