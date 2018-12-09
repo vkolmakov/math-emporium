@@ -98,3 +98,9 @@
     }
     height: 100vh;
 }
+
+@mixin on-medium-screen() {
+    @media (min-width: $medium-screen) {
+        @content;
+    }
+}

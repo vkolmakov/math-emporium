@@ -1,4 +1,5 @@
 @import "../variables.scss";
+@import "../mixins.scss";
 
 @mixin visually-hidden() {
     border: 0px;
@@ -20,18 +21,24 @@
     font-size: 1em;
     font-family: inherit;
 
-    // Subtract left and right padding
-    width: calc(#{$field-width} - 1em);
+    width: 100%;
+    @include on-medium-screen {
+        width: 20em;
+    }
 
     &:disabled {
         cursor: not-allowed;
     }
 }
 
-$field-width: 20em;
-
 .m-field {
-    width: $field-width;
+    width: 100%;
+    @include on-medium-screen {
+        width: 20em;
+    }
+
+    display: flex;
+    flex: 1;
 
     &__input {
         @include base-input();
