@@ -4,7 +4,7 @@ import Html as H exposing (Attribute, Html)
 import Http
 import Json.Decode as Decode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Request.RemoteData as RemoteData
+import Managing.Utils.RemoteData as RemoteData
 import Managing.Route as Route exposing (Route)
 import Managing.Users.Data.Shared exposing (accessGroupToString)
 import Managing.Users.Data.UserListEntry exposing (UserListEntry)

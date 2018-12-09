@@ -4,7 +4,7 @@ import Html as H exposing (Html)
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)

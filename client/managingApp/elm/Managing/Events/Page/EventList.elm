@@ -6,7 +6,7 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.View.Button as Button

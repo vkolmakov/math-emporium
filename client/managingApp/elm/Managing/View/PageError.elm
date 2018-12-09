@@ -2,7 +2,7 @@ module Managing.View.PageError exposing (viewPageError)
 
 import Html as H exposing (Html)
 import Html.Events as E
-import Managing.Request.RemoteData as RemoteData
+import Managing.Utils.RemoteData as RemoteData
 import Managing.Styles as Styles
 
 

@@ -5,7 +5,7 @@ module Managing.View.Persistence exposing
     )
 
 import Html as H exposing (Html)
-import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.View.Button as Button
 

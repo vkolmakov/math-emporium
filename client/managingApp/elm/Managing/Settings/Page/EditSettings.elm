@@ -13,7 +13,7 @@ import Http
 import Json.Decode as Json
 import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Utils.Browser exposing (attemptFocus)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable

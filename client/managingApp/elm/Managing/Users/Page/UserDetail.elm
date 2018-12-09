@@ -6,7 +6,7 @@ import Http
 import Json.Decode as Json
 import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)

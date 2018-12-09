@@ -1,4 +1,4 @@
-module Managing.Request.RemoteData exposing
+module Managing.Utils.RemoteData exposing
     ( RemoteData(..)
     , RemoteDataError(..)
     , checkIfTakingTooLong
