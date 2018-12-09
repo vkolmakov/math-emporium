@@ -34,6 +34,7 @@ submitSettingsButtonId =
 type alias Settings =
     { applicationTitle : String
     , applicationMainHomePictureLink : String
+    , duplicateAllEmailsTo : String
     }
 
 
@@ -63,6 +64,7 @@ type Msg
     | CheckIfTakingTooLong RemoteRequestItem
     | OnApplicationTitleChange String
     | OnApplicationMainHomePictureLinkChange String
+    | OnDuplicateAllEmailsToChange String
     | PersistSettings Settings
     | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
@@ -150,6 +152,16 @@ update msg model =
             , Nothing
             )
 
+        OnDuplicateAllEmailsToChange updatedValue ->
+            let
+                updateSettings s =
+                    { s | duplicateAllEmailsTo = updatedValue }
+            in
+            ( { model | settings = RemoteData.map updateSettings model.settings }
+            , Cmd.none
+            , Nothing
+            )
+
         PersistSettings settings ->
             ( { model | settingsPersistenceState = RemoteData.Requested }
             , Cmd.batch
@@ -204,8 +216,15 @@ viewSettings : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
 viewSettings settings settingsPersistenceState =
     let
         labelsWithElements =
-            [ ( "Application Title", viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange )
-            , ( "Main Home Picture Link", viewTextInputField "Main Home Picture Link" settings.applicationMainHomePictureLink OnApplicationMainHomePictureLinkChange )
+            [ ( "Application Title"
+              , viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange
+              )
+            , ( "Main Home Picture Link"
+              , viewTextInputField "Main Home Picture Link" settings.applicationMainHomePictureLink OnApplicationMainHomePictureLinkChange
+              )
+            , ( "Duplicate All Emails to Address"
+              , viewTextInputField "Duplicate All Emails to Address" settings.duplicateAllEmailsTo OnDuplicateAllEmailsToChange
+              )
             ]
 
         fields =
@@ -239,9 +258,10 @@ getSettings =
 
 
 decodeSettings =
-    Json.map2 Settings
+    Json.map3 Settings
         (Json.field "applicationTitle" Json.string)
         (Json.field "applicationMainHomePictureLink" Json.string)
+        (Json.field "duplicateAllEmailsTo" Json.string)
 
 
 persistSettings : Settings -> Cmd Msg
@@ -272,6 +292,7 @@ encodeSettings settings =
     Json.Encode.object
         [ ( "applicationTitle", Json.Encode.string settings.applicationTitle )
         , ( "applicationMainHomePictureLink", Json.Encode.string settings.applicationMainHomePictureLink )
+        , ( "duplicateAllEmailsTo", Json.Encode.string settings.duplicateAllEmailsTo )
         ]
 
 
