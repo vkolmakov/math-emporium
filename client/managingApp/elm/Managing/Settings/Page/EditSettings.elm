@@ -14,11 +14,13 @@ import Json.Decode as Json
 import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Request.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.Browser exposing (attemptFocus)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
+import Managing.View.Persistence as Persistence
 
 
 submitSettingsButtonId =
@@ -52,7 +54,7 @@ init appConfig =
 
 
 type alias SettingsPersistenceResponse =
-    String
+    { message : String }
 
 
 type Msg
@@ -138,7 +140,7 @@ update msg model =
             )
 
         PersistSettings settings ->
-            ( model
+            ( { model | settingsPersistenceState = RemoteData.Requested }
             , Cmd.batch
                 [ persistSettings settings
                 , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong SettingsPersistenceRequest)
@@ -146,11 +148,17 @@ update msg model =
             , Nothing
             )
 
-        ReceiveSettingsPersistenceResponse (Ok _) ->
-            noOp
+        ReceiveSettingsPersistenceResponse (Ok response) ->
+            ( { model | settingsPersistenceState = RemoteData.Available response }
+            , attemptFocus NoOp submitSettingsButtonId
+            , Nothing
+            )
 
-        ReceiveSettingsPersistenceResponse (Err _) ->
-            noOp
+        ReceiveSettingsPersistenceResponse (Err err) ->
+            ( { model | settingsPersistenceState = RemoteData.Error (RemoteData.errorFromHttpError err) }
+            , attemptFocus NoOp submitSettingsButtonId
+            , Nothing
+            )
 
         NoOp ->
             noOp
@@ -193,7 +201,7 @@ viewSettings settings settingsPersistenceState =
 
         actions =
             [ DataTable.actionContainer
-                [ viewSubmitSettingsButton settings settingsPersistenceState ]
+                [ Persistence.view submitSettingsButtonId (PersistSettings settings) settingsPersistenceState ]
             ]
     in
     (fields ++ actions)
@@ -202,29 +210,6 @@ viewSettings settings settingsPersistenceState =
 
 viewTextInputField label initialValue onInput =
     Input.text { isEditable = True, isLabelHidden = True, label = label } initialValue onInput
-
-
-viewSubmitSettingsButton : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
-viewSubmitSettingsButton settings settingsPersistenceState =
-    let
-        buttonLabel =
-            "Submit"
-
-        buttonMsg =
-            PersistSettings settings
-
-        buttonState =
-            case settingsPersistenceState of
-                RemoteData.StillLoading ->
-                    Button.Loading
-
-                RemoteData.Requested ->
-                    Button.Disabled
-
-                _ ->
-                    Button.Enabled
-    in
-    Button.view buttonLabel submitSettingsButtonId buttonState buttonMsg
 
 
 
@@ -240,14 +225,10 @@ getSettings =
     Http.send ReceiveSettings (Http.get url decodeSettings)
 
 
-encodeSettings : Settings -> Json.Encode.Value
-encodeSettings settings =
-    Json.Encode.object []
-
-
-decodeSettingsPersistenceResponse : Json.Decoder SettingsPersistenceResponse
-decodeSettingsPersistenceResponse =
-    Json.string
+decodeSettings =
+    Json.map2 Settings
+        (Json.field "applicationTitle" Json.string)
+        (Json.field "applicationMainHomePictureLink" Json.string)
 
 
 persistSettings : Settings -> Cmd Msg
@@ -273,7 +254,14 @@ persistSettings settings =
     Http.send ReceiveSettingsPersistenceResponse request
 
 
-decodeSettings =
-    Json.map2 Settings
-        (Json.field "applicationTitle" Json.string)
-        (Json.field "applicationMainHomePictureLink" Json.string)
+encodeSettings : Settings -> Json.Encode.Value
+encodeSettings settings =
+    Json.Encode.object
+        [ ( "applicationTitle", Json.Encode.string settings.applicationTitle )
+        ]
+
+
+decodeSettingsPersistenceResponse : Json.Decoder SettingsPersistenceResponse
+decodeSettingsPersistenceResponse =
+    Json.map SettingsPersistenceResponse
+        (Json.field "message" Json.string)
