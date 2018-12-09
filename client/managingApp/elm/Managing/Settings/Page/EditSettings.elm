@@ -27,6 +27,10 @@ submitSettingsButtonId =
     "submit-settings-button"
 
 
+defaultMaximumAppointmentsPerUser =
+    5
+
+
 
 -- MODEL
 
@@ -36,6 +40,7 @@ type alias Settings =
     , applicationMainHomePictureLink : String
     , duplicateAllEmailsTo : String
     , faqText : String
+    , maximumAppointmentsPerUser : Maybe Int
     }
 
 
@@ -67,6 +72,7 @@ type Msg
     | OnApplicationMainHomePictureLinkChange String
     | OnDuplicateAllEmailsToChange String
     | OnFaqTextChange String
+    | OnMaximumAppointmentsPerUserChange String
     | PersistSettings Settings
     | ReceiveSettingsPersistenceResponse (Result Http.Error SettingsPersistenceResponse)
     | NoOp
@@ -174,6 +180,16 @@ update msg model =
             , Nothing
             )
 
+        OnMaximumAppointmentsPerUserChange updatedValue ->
+            let
+                updateSettings s =
+                    { s | maximumAppointmentsPerUser = String.toInt updatedValue }
+            in
+            ( { model | settings = RemoteData.map updateSettings model.settings }
+            , Cmd.none
+            , Nothing
+            )
+
         PersistSettings settings ->
             ( { model | settingsPersistenceState = RemoteData.Requested }
             , Cmd.batch
@@ -227,6 +243,14 @@ view model =
 viewSettings : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg
 viewSettings settings settingsPersistenceState =
     let
+        maximumNumberOfAppointmentsPerUserString =
+            case settings.maximumAppointmentsPerUser of
+                Just n ->
+                    String.fromInt n
+
+                Nothing ->
+                    ""
+
         labelsWithElements =
             [ ( "Application Title"
               , viewTextInputField "Application Title" settings.applicationTitle OnApplicationTitleChange
@@ -239,6 +263,9 @@ viewSettings settings settingsPersistenceState =
               )
             , ( "FAQ Text"
               , viewTextAreaField "FAQ Text" settings.faqText OnFaqTextChange
+              )
+            , ( "Maximum Appointments per User"
+              , viewTextInputField "Maximum Appointments per User" maximumNumberOfAppointmentsPerUserString OnMaximumAppointmentsPerUserChange
               )
             ]
 
@@ -277,11 +304,12 @@ getSettings =
 
 
 decodeSettings =
-    Json.map4 Settings
+    Json.map5 Settings
         (Json.field "applicationTitle" Json.string)
         (Json.field "applicationMainHomePictureLink" Json.string)
         (Json.field "duplicateAllEmailsTo" Json.string)
         (Json.field "faqText" Json.string)
+        (Json.field "maximumAppointmentsPerUser" (Json.nullable Json.int))
 
 
 persistSettings : Settings -> Cmd Msg
@@ -314,6 +342,7 @@ encodeSettings settings =
         , ( "applicationMainHomePictureLink", Json.Encode.string settings.applicationMainHomePictureLink )
         , ( "duplicateAllEmailsTo", Json.Encode.string settings.duplicateAllEmailsTo )
         , ( "faqText", Json.Encode.string settings.faqText )
+        , ( "maximumAppointmentsPerUser", Json.Encode.int (Maybe.withDefault defaultMaximumAppointmentsPerUser settings.maximumAppointmentsPerUser) )
         ]
 
 
