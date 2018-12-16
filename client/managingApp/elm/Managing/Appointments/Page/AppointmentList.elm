@@ -26,6 +26,13 @@ import Managing.View.RemoteData exposing (viewItemList)
 type alias Model =
     { appConfig : AppConfig
     , appointments : RemoteData (List Appointment)
+    , displayedDiagnosticDataEntry :
+        Maybe (RemoteData AppointmentDiagnosticData)
+    }
+
+
+type alias AppointmentDiagnosticData =
+    { time : Date
     }
 
 
@@ -33,6 +40,7 @@ init : AppConfig -> Model
 init appConfig =
     { appConfig = appConfig
     , appointments = RemoteData.Requested
+    , displayedDiagnosticDataEntry = Nothing
     }
 
 
@@ -43,8 +51,9 @@ init appConfig =
 type Msg
     = NoOp
     | ReceiveAppointments (Result Http.Error (List Appointment))
+    | ReceiveAppointmentDiagnosticData Int (Result Http.Error AppointmentDiagnosticData)
     | CheckIfTakingTooLong RemoteRequestItem
-    | RetryInit
+    | Retry RemoteRequestItem
 
 
 type OutMsg
@@ -53,6 +62,7 @@ type OutMsg
 
 type RemoteRequestItem
     = AppointmentsRequest
+    | AppointmentDiagnosticDataRequest Int
 
 
 initCmd : Model -> Cmd Msg
@@ -97,18 +107,46 @@ update msg model =
             , Nothing
             )
 
+        ReceiveAppointmentDiagnosticData appointmentId (Ok diagnosticData) ->
+            ( { model | displayedDiagnosticDataEntry = Just (RemoteData.Available diagnosticData) }
+            , Cmd.none
+            , Nothing
+            )
+
+        ReceiveAppointmentDiagnosticData appointmentId (Err e) ->
+            let
+                updatedDiagnosticDataEntry =
+                    Just (e |> RemoteData.errorFromHttpError |> RemoteData.Error)
+            in
+            ( { model | displayedDiagnosticDataEntry = updatedDiagnosticDataEntry }
+            , Cmd.none
+            , Nothing
+            )
+
         CheckIfTakingTooLong AppointmentsRequest ->
             ( { model | appointments = RemoteData.checkIfTakingTooLong model.appointments }
             , Cmd.none
             , Nothing
             )
 
-        RetryInit ->
+        CheckIfTakingTooLong (AppointmentDiagnosticDataRequest _) ->
+            ( { model | appointments = RemoteData.checkIfTakingTooLong model.appointments }
+            , Cmd.none
+            , Nothing
+            )
+
+        Retry AppointmentsRequest ->
             let
                 initialModel =
                     init model.appConfig
             in
             ( initialModel, initCmd initialModel, Nothing )
+
+        Retry (AppointmentDiagnosticDataRequest appointmentId) ->
+            ( { model | displayedDiagnosticDataEntry = Just RemoteData.Requested }
+            , getAppointmentDiagnosticData appointmentId
+            , Nothing
+            )
 
         NoOp ->
             noOp
@@ -119,7 +157,7 @@ update msg model =
 
 
 view model =
-    viewItemList model.appointments (viewAppointmentListEntry model.appConfig) RetryInit
+    viewItemList model.appointments (viewAppointmentListEntry model.appConfig) (Retry AppointmentsRequest)
 
 
 viewAppointmentListEntry : AppConfig -> Appointment -> Html msg
@@ -142,3 +180,16 @@ getAppointments =
             "/api/admin/scheduled-appointments"
     in
     Http.send ReceiveAppointments (Http.get url (decodeAppointment |> Json.list))
+
+
+getAppointmentDiagnosticData id =
+    let
+        url =
+            "/api/admin/scheduled-appointments/diagnostics/" ++ String.fromInt id
+    in
+    Http.send (ReceiveAppointmentDiagnosticData id) (Http.get url decodeAppointmentDiagnosticData)
+
+
+decodeAppointmentDiagnosticData =
+    Json.map AppointmentDiagnosticData
+        (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
