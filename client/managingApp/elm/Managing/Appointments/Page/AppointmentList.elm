@@ -15,8 +15,7 @@ import Managing.AppConfig exposing (AppConfig)
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
-import Managing.View.Loading exposing (spinner)
-import Managing.View.PageError exposing (viewPageError)
+import Managing.View.RemoteData exposing (viewItemList)
 
 
 
@@ -123,7 +122,14 @@ update msg model =
 
 
 view model =
-    H.div [] [ H.text "Appointments" ]
+    viewItemList model.appointments viewAppointmentListEntry RetryInit
+
+
+viewAppointmentListEntry : AppointmentListEntry -> Html msg
+viewAppointmentListEntry appointment =
+    DataTable.item
+        [ DataTable.textField "ID" (String.fromInt appointment.id)
+        ]
 
 
 
@@ -131,4 +137,13 @@ view model =
 
 
 getAppointments =
-    Cmd.none
+    let
+        url =
+            "/api/admin/scheduled-appointments"
+    in
+    Http.send ReceiveAppointments (Http.get url (decodeAppointment |> Json.list))
+
+
+decodeAppointment =
+    Json.map AppointmentListEntry
+        (Json.field "id" Json.int)
