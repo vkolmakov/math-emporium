@@ -13,12 +13,9 @@ import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
+import Managing.View.Modal as Modal exposing (Modal)
 import Managing.View.PageError as PageError
 import Managing.View.RemoteData exposing (viewItemList)
-
-
-scheduledAppointmentDetailsModalElementId =
-    "scheduled-appointment-details-modal"
 
 
 
@@ -88,8 +85,8 @@ type Msg
 
 
 type OutMsg
-    = RequestShowModalById String
-    | RequestCloseModalById String
+    = RequestShowModal Modal
+    | RequestCloseModal Modal
 
 
 initCmd : Model -> Cmd Msg
@@ -168,7 +165,7 @@ update msg model =
         ShowScheduledAppointmentDetails appointmentId ->
             ( { model | displayedEventAppointmentDetail = { data = RemoteData.Requested, id = Just appointmentId } }
             , requestAppointmentDetails appointmentId
-            , Just <| RequestShowModalById scheduledAppointmentDetailsModalElementId
+            , Just <| RequestShowModal Modal.ScheduledAppointmentDetailsModal
             )
 
         Retry EventListRequest ->
@@ -188,7 +185,7 @@ update msg model =
         CloseScheduledAppointmentDetails ->
             ( { model | displayedEventAppointmentDetail = initialModel.displayedEventAppointmentDetail }
             , Cmd.none
-            , Just <| RequestCloseModalById scheduledAppointmentDetailsModalElementId
+            , Just <| RequestCloseModal Modal.ScheduledAppointmentDetailsModal
             )
 
 
@@ -278,15 +275,7 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
                 ]
             ]
     in
-    viewModal scheduledAppointmentDetailsModalElementId modalContent
-
-
-viewModal id content =
-    H.node "dialog"
-        [ A.id id
-        , Styles.apply [ Styles.modal.self ]
-        ]
-        content
+    Modal.viewModal Modal.ScheduledAppointmentDetailsModal modalContent
 
 
 

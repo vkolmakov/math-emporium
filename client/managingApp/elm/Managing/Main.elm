@@ -17,6 +17,7 @@ import Managing.Settings.Page.EditSettings as EditSettings
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Managing.View.Modal as Modal
 import Process
 import Task
 import Url exposing (Url)
@@ -124,11 +125,11 @@ handleOutMsg model outMsg =
         UserListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
-        EventListPageOutMsg (Just (EventList.RequestShowModalById modalId)) ->
-            ( model, requestShowModal modalId )
+        EventListPageOutMsg (Just (EventList.RequestShowModal modal)) ->
+            ( model, requestShowModal (Modal.getModalElementId modal) )
 
-        EventListPageOutMsg (Just (EventList.RequestCloseModalById modalId)) ->
-            ( model, requestCloseModal modalId )
+        EventListPageOutMsg (Just (EventList.RequestCloseModal modal)) ->
+            ( model, requestCloseModal (Modal.getModalElementId modal) )
 
         EventListPageOutMsg Nothing ->
             ( model, Cmd.none )
