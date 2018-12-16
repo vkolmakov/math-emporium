@@ -12,6 +12,7 @@ import Html as H exposing (Html)
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
+import Managing.Shared.Data.Appointment exposing (Appointment, decodeAppointment)
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
@@ -24,16 +25,7 @@ import Managing.View.RemoteData exposing (viewItemList)
 
 type alias Model =
     { appConfig : AppConfig
-    , appointments : RemoteData (List AppointmentListEntry)
-    }
-
-
-type alias AppointmentListEntry =
-    { id : Int
-    , time : Date
-    , course : String
-    , location : String
-    , user : String
+    , appointments : RemoteData (List Appointment)
     }
 
 
@@ -50,7 +42,7 @@ init appConfig =
 
 type Msg
     = NoOp
-    | ReceiveAppointments (Result Http.Error (List AppointmentListEntry))
+    | ReceiveAppointments (Result Http.Error (List Appointment))
     | CheckIfTakingTooLong RemoteRequestItem
     | RetryInit
 
@@ -130,7 +122,7 @@ view model =
     viewItemList model.appointments (viewAppointmentListEntry model.appConfig) RetryInit
 
 
-viewAppointmentListEntry : AppConfig -> AppointmentListEntry -> Html msg
+viewAppointmentListEntry : AppConfig -> Appointment -> Html msg
 viewAppointmentListEntry appConfig { id, user, time, course, location } =
     DataTable.item
         [ DataTable.textField "User" user
@@ -150,12 +142,3 @@ getAppointments =
             "/api/admin/scheduled-appointments"
     in
     Http.send ReceiveAppointments (Http.get url (decodeAppointment |> Json.list))
-
-
-decodeAppointment =
-    Json.map5 AppointmentListEntry
-        (Json.field "id" Json.int)
-        (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
-        (Json.field "course" Json.string)
-        (Json.field "location" Json.string)
-        (Json.field "user" Json.string)

@@ -6,6 +6,7 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
+import Managing.Shared.Data.Appointment exposing (Appointment, AppointmentRef, decodeAppointment, decodeAppointmentRef)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
@@ -36,24 +37,11 @@ type alias EventListEntry =
     }
 
 
-type alias AppointmentRef =
-    { id : Int }
-
-
-type alias AppointmentDetail =
-    { id : Int
-    , courseCode : String
-    , locationName : String
-    , timestamp : Date
-    , userEmail : String
-    }
-
-
 type alias Model =
     { appConfig : AppConfig
     , events : RemoteData (List EventListEntry)
     , displayedEventAppointmentDetail :
-        { data : RemoteData AppointmentDetail
+        { data : RemoteData Appointment
         , id : Maybe Int
         }
     }
@@ -92,7 +80,7 @@ type RemoteRequestItem
 
 type Msg
     = ReceiveEvents (Result Http.Error (List EventListEntry))
-    | ReceiveAppointmentDetail (Result Http.Error AppointmentDetail)
+    | ReceiveAppointmentDetail (Result Http.Error Appointment)
     | CheckIfTakingTooLong RemoteRequestItem
     | ShowScheduledAppointmentDetails Int
     | CloseScheduledAppointmentDetails
@@ -244,7 +232,7 @@ view model =
         ]
 
 
-viewScheduledAppointmentDetailModal : AppConfig -> { data : RemoteData AppointmentDetail, id : Maybe Int } -> Html Msg
+viewScheduledAppointmentDetailModal : AppConfig -> { data : RemoteData Appointment, id : Maybe Int } -> Html Msg
 viewScheduledAppointmentDetailModal appConfig { data, id } =
     let
         closeModalButton =
@@ -256,10 +244,10 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
                     let
                         labelsWithData =
                             [ ( "ID", String.fromInt appointmentDetail.id )
-                            , ( "User", appointmentDetail.userEmail )
-                            , ( "Appointment Time", Date.toDisplayString appConfig.localTimezoneOffsetInMinutes appointmentDetail.timestamp )
-                            , ( "Location", appointmentDetail.locationName )
-                            , ( "Course", appointmentDetail.courseCode )
+                            , ( "User", appointmentDetail.user )
+                            , ( "Appointment Time", Date.toDisplayString appConfig.localTimezoneOffsetInMinutes appointmentDetail.time )
+                            , ( "Location", appointmentDetail.location )
+                            , ( "Course", appointmentDetail.course )
                             ]
 
                         fields =
@@ -327,12 +315,8 @@ decodeEventUser userEmail =
 
 decodeEventData : Json.Decoder EventData
 decodeEventData =
-    let
-        decodeEventAppointmentRef =
-            Json.map (EventDataWithAppointment << AppointmentRef)
-                (Json.field "id" Json.int)
-    in
-    Json.oneOf [ Json.field "appointment" decodeEventAppointmentRef ]
+    Json.oneOf
+        [ Json.field "appointment" decodeAppointmentRef |> Json.map EventDataWithAppointment ]
 
 
 decodeEvent : Json.Decoder EventListEntry
@@ -344,22 +328,12 @@ decodeEvent =
         (Json.maybe (Json.field "data" decodeEventData))
 
 
-decodeAppointmentDetail : Json.Decoder AppointmentDetail
-decodeAppointmentDetail =
-    Json.map5 AppointmentDetail
-        (Json.field "id" Json.int)
-        (Json.field "course" Json.string)
-        (Json.field "location" Json.string)
-        (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
-        (Json.field "user" Json.string)
-
-
 getAppointmentDetail appointmentId =
     let
         url =
             "/api/admin/scheduled-appointments/" ++ String.fromInt appointmentId
     in
-    Http.send ReceiveAppointmentDetail (Http.get url decodeAppointmentDetail)
+    Http.send ReceiveAppointmentDetail (Http.get url decodeAppointment)
 
 
 getEvents : Cmd Msg
