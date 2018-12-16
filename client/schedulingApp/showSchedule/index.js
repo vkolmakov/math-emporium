@@ -419,17 +419,35 @@ class ShowSchedule extends Component {
                                             "has-focus"
                                         )
                                     }
+                                    ref={(activeDatePickerInputRef) => {
+                                        this.activeDatePickerInputRef = activeDatePickerInputRef;
+                                    }}
                                     id="dual-datepicker"
                                 />
-
-                                <DatePicker
-                                    selected={moment(startDate).endOf(
-                                        "isoWeek"
-                                    )}
-                                    locale="en-gb"
-                                    dateFormat="MM/DD/YYYY"
-                                    disabled={true}
-                                />
+                                <div
+                                    className="dual-datepicker__inactive-input-container"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        /**
+                                         * Input is wrapped in a div so that we can disable it
+                                         * and still be able to fire an onClick and redirect the click to
+                                         * the actual active date picker element.
+                                         */
+                                        if (
+                                            this.activeDatePickerInputRef &&
+                                            typeof this.activeDatePickerInputRef
+                                                .setFocus === "function"
+                                        ) {
+                                            this.activeDatePickerInputRef.setFocus();
+                                        }
+                                    }}>
+                                    <input
+                                        value={moment(startDate)
+                                            .endOf("isoWeek")
+                                            .format("MM/DD/YYYY")}
+                                        disabled={true}
+                                    />
+                                </div>
                             </div>
                         </div>
 
