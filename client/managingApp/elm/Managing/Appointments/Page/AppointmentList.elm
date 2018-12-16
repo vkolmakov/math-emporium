@@ -29,7 +29,12 @@ type alias Model =
 
 
 type alias AppointmentListEntry =
-    { id : Int }
+    { id : Int
+    , time : Date
+    , course : String
+    , location : String
+    , user : String
+    }
 
 
 init : AppConfig -> Model
@@ -122,13 +127,16 @@ update msg model =
 
 
 view model =
-    viewItemList model.appointments viewAppointmentListEntry RetryInit
+    viewItemList model.appointments (viewAppointmentListEntry model.appConfig) RetryInit
 
 
-viewAppointmentListEntry : AppointmentListEntry -> Html msg
-viewAppointmentListEntry appointment =
+viewAppointmentListEntry : AppConfig -> AppointmentListEntry -> Html msg
+viewAppointmentListEntry appConfig { id, user, time, course, location } =
     DataTable.item
-        [ DataTable.textField "ID" (String.fromInt appointment.id)
+        [ DataTable.textField "User" user
+        , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
+        , DataTable.textField "Location" location
+        , DataTable.textField "Course" course
         ]
 
 
@@ -145,5 +153,9 @@ getAppointments =
 
 
 decodeAppointment =
-    Json.map AppointmentListEntry
+    Json.map5 AppointmentListEntry
         (Json.field "id" Json.int)
+        (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+        (Json.field "course" Json.string)
+        (Json.field "location" Json.string)
+        (Json.field "user" Json.string)
