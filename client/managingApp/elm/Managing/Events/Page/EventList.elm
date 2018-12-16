@@ -6,13 +6,14 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageError as PageError
+import Managing.View.RemoteData exposing (viewItemList)
 
 
 scheduledAppointmentDetailsModalElementId =
@@ -236,24 +237,11 @@ view model =
             in
             DataTable.item (fields ++ [ DataTable.actionContainer actions ])
     in
-    case model.events of
-        RemoteData.NotRequested ->
-            H.div [] []
-
-        RemoteData.Requested ->
-            H.div [] []
-
-        RemoteData.StillLoading ->
-            spinner
-
-        RemoteData.Available events ->
-            H.div []
-                [ viewScheduledAppointmentDetailModal model.appConfig model.displayedEventAppointmentDetail
-                , DataTable.table (events |> List.map viewEventRow)
-                ]
-
-        RemoteData.Error err ->
-            PageError.viewPageError (Retry EventListRequest) err
+    H.div
+        []
+        [ viewScheduledAppointmentDetailModal model.appConfig model.displayedEventAppointmentDetail
+        , viewItemList model.events viewEventRow (Retry EventListRequest)
+        ]
 
 
 viewScheduledAppointmentDetailModal : AppConfig -> { data : RemoteData AppointmentDetail, id : Maybe Int } -> Html Msg

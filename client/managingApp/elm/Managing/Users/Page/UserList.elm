@@ -4,14 +4,13 @@ import Html as H exposing (Attribute, Html)
 import Http
 import Json.Decode as Decode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Utils.RemoteData as RemoteData
 import Managing.Route as Route exposing (Route)
 import Managing.Users.Data.Shared exposing (accessGroupToString)
 import Managing.Users.Data.UserListEntry exposing (UserListEntry)
 import Managing.Utils.Date as Date
+import Managing.Utils.RemoteData as RemoteData
 import Managing.View.DataTable as DataTable
-import Managing.View.PageError as PageError
-import Managing.View.Loading exposing (spinner)
+import Managing.View.RemoteData exposing (viewItemList)
 
 
 
@@ -124,21 +123,7 @@ view model =
             in
             DataTable.item (fields ++ [ actions ])
     in
-    case model.users of
-        RemoteData.NotRequested ->
-            H.div [] []
-
-        RemoteData.Requested ->
-            H.div [] []
-
-        RemoteData.StillLoading ->
-            spinner
-
-        RemoteData.Available users ->
-            DataTable.table (users |> List.map viewUserRow)
-
-        RemoteData.Error err ->
-            PageError.viewPageError RetryInit err
+    viewItemList model.users viewUserRow RetryInit
 
 
 

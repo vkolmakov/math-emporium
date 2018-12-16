@@ -4,11 +4,10 @@ import Html as H exposing (Html)
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Utils.Date as Date exposing (Date)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
-import Managing.View.Loading exposing (spinner)
-import Managing.View.PageError exposing (viewPageError)
+import Managing.View.RemoteData exposing (viewItemList)
 
 
 
@@ -135,23 +134,7 @@ view model =
             in
             DataTable.item fields
     in
-    case model.errorEvents of
-        RemoteData.NotRequested ->
-            H.div [] []
-
-        RemoteData.Requested ->
-            H.div [] []
-
-        RemoteData.StillLoading ->
-            spinner
-
-        RemoteData.Available events ->
-            H.div []
-                [ DataTable.table (events |> List.map viewErrorEventRow)
-                ]
-
-        RemoteData.Error e ->
-            viewPageError RetryInit e
+    viewItemList model.errorEvents viewErrorEventRow RetryInit
 
 
 
