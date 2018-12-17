@@ -1,4 +1,4 @@
-port module Managing.Events.Page.EventList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
+module Managing.Events.Page.EventList exposing (Model, Msg, OutMsg(..), init, initCmd, update, view)
 
 import Html as H exposing (Html)
 import Html.Attributes as A

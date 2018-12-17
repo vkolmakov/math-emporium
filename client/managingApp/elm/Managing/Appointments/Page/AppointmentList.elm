@@ -9,6 +9,7 @@ module Managing.Appointments.Page.AppointmentList exposing
     )
 
 import Html as H exposing (Html)
+import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
@@ -16,6 +17,9 @@ import Managing.Shared.Data.Appointment exposing (Appointment, decodeAppointment
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
+import Managing.View.Loading exposing (spinner)
+import Managing.View.Modal as Modal exposing (Modal)
+import Managing.View.PageError as PageError
 import Managing.View.RemoteData exposing (viewItemList)
 
 
@@ -52,12 +56,14 @@ type Msg
     = NoOp
     | ReceiveAppointments (Result Http.Error (List Appointment))
     | ReceiveAppointmentDiagnosticData Int (Result Http.Error AppointmentDiagnosticData)
+    | ShowAppointmentDiagnosticData Int
     | CheckIfTakingTooLong RemoteRequestItem
     | Retry RemoteRequestItem
 
 
 type OutMsg
-    = NoOutMsg
+    = RequestShowModal Modal
+    | RequestCloseModal Modal
 
 
 type RemoteRequestItem
@@ -96,6 +102,12 @@ update msg model =
     let
         noOp =
             ( model, Cmd.none, Nothing )
+
+        requestAppointmentDiagnosticData appointmentId =
+            Cmd.batch
+                [ getAppointmentDiagnosticData appointmentId
+                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong <| AppointmentDiagnosticDataRequest appointmentId)
+                ]
     in
     case msg of
         ReceiveAppointments (Ok appointments) ->
@@ -130,9 +142,20 @@ update msg model =
             )
 
         CheckIfTakingTooLong (AppointmentDiagnosticDataRequest _) ->
-            ( { model | appointments = RemoteData.checkIfTakingTooLong model.appointments }
+            let
+                updatedDisplayedDiagnosticDataEntry =
+                    model.displayedDiagnosticDataEntry
+                        |> Maybe.map RemoteData.checkIfTakingTooLong
+            in
+            ( { model | displayedDiagnosticDataEntry = updatedDisplayedDiagnosticDataEntry }
             , Cmd.none
             , Nothing
+            )
+
+        ShowAppointmentDiagnosticData appointmentId ->
+            ( { model | displayedDiagnosticDataEntry = Just RemoteData.Requested }
+            , requestAppointmentDiagnosticData appointmentId
+            , Just <| RequestShowModal Modal.AppointmentDiagnosticDataModal
             )
 
         Retry AppointmentsRequest ->
@@ -144,7 +167,7 @@ update msg model =
 
         Retry (AppointmentDiagnosticDataRequest appointmentId) ->
             ( { model | displayedDiagnosticDataEntry = Just RemoteData.Requested }
-            , getAppointmentDiagnosticData appointmentId
+            , requestAppointmentDiagnosticData appointmentId
             , Nothing
             )
 
@@ -157,17 +180,48 @@ update msg model =
 
 
 view model =
-    viewItemList model.appointments (viewAppointmentListEntry model.appConfig) (Retry AppointmentsRequest)
+    H.div []
+        [ viewItemList model.appointments (viewAppointmentListEntry model.appConfig) (Retry AppointmentsRequest)
+        , viewAppointmentDiagnosticDataModal model.displayedDiagnosticDataEntry
+        ]
 
 
-viewAppointmentListEntry : AppConfig -> Appointment -> Html msg
+viewAppointmentListEntry : AppConfig -> Appointment -> Html Msg
 viewAppointmentListEntry appConfig { id, user, time, course, location } =
     DataTable.item
         [ DataTable.textField "User" user
         , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
         , DataTable.textField "Location" location
         , DataTable.textField "Course" course
+        , DataTable.actionContainer
+            [ DataTable.actionLink "Diagnostic Data" (E.onClick <| ShowAppointmentDiagnosticData id) ]
         ]
+
+
+viewAppointmentDiagnosticDataModal : Maybe (RemoteData AppointmentDiagnosticData) -> Html Msg
+viewAppointmentDiagnosticDataModal displayedDiagnosticDataEntry =
+    let
+        modalContent =
+            case displayedDiagnosticDataEntry of
+                Nothing ->
+                    []
+
+                Just RemoteData.Requested ->
+                    []
+
+                Just RemoteData.NotRequested ->
+                    []
+
+                Just (RemoteData.Error err) ->
+                    [ PageError.viewPageError NoOp err ]
+
+                Just RemoteData.StillLoading ->
+                    [ spinner ]
+
+                Just (RemoteData.Available diagnosticData) ->
+                    [ H.text "Available!" ]
+    in
+    Modal.viewModal Modal.AppointmentDiagnosticDataModal modalContent
 
 
 

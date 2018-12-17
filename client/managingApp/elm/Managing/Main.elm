@@ -146,8 +146,11 @@ handleOutMsg model outMsg =
         EditSettingsPageOutMsg Nothing ->
             ( model, Cmd.none )
 
-        AppointmentListPageOutMsg (Just AppointmentList.NoOutMsg) ->
-            ( model, Cmd.none )
+        AppointmentListPageOutMsg (Just (AppointmentList.RequestShowModal modal)) ->
+            ( model, requestShowModal (Modal.getModalElementId modal) )
+
+        AppointmentListPageOutMsg (Just (AppointmentList.RequestCloseModal modal)) ->
+            ( model, requestCloseModal (Modal.getModalElementId modal) )
 
         AppointmentListPageOutMsg Nothing ->
             ( model, Cmd.none )
