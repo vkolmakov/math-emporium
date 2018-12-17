@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { dateTime } from "../aux";
 
 const ScheduledAppointmentDiagnostic = mongoose.model(
     "ScheduledAppointmentDiagnostic",
@@ -34,7 +35,7 @@ export default class ScheduledAppointmentsDiagnosticsDataStorage {
                 result = {
                     actionName: persistedEntry.actionName,
                     appointmentId: persistedEntry.appointmentId,
-                    timestamp: persistedEntry.timestamp,
+                    timestamp: dateTime.toTimestamp(persistedEntry.timestamp),
                     calendarState: persistedEntry.calendarState,
                     derivedItems: persistedEntry.derivedItems,
                     selectedTutor: persistedEntry.selectedTutor,
