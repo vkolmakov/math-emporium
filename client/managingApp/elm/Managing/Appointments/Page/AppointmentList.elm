@@ -37,8 +37,12 @@ type alias Model =
     }
 
 
-type alias DiagnosticEntryAppointment =
-    { course : String, student : String, tutor : String }
+type CourseCode
+    = CourseCode String
+
+
+type StudentName
+    = StudentName String
 
 
 type TutorName
@@ -47,6 +51,10 @@ type TutorName
 
 type CalendarEventSummary
     = CalendarEventSummary String
+
+
+type alias DiagnosticEntryAppointment =
+    { course : CourseCode, student : StudentName, tutor : TutorName }
 
 
 type alias AppointmentDiagnosticData =
@@ -262,7 +270,9 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
                                 |> DataTable.sourceCodeFromString
 
                         derivedAppointmentToString { course, student, tutor } =
-                            String.join "; " [ "Tutor: " ++ tutor, "Student: " ++ student, "Course: " ++ course ]
+                            case ( course, student, tutor ) of
+                                ( CourseCode c, StudentName s, TutorName t ) ->
+                                    String.join "; " [ "Tutor: " ++ t, "Student: " ++ s, "Course: " ++ c ]
 
                         derivedAppointmentsText =
                             derivedAppointments
@@ -329,9 +339,9 @@ decodeAppointmentDiagnosticData =
 
         decodeDerivedAppointment =
             Json.map3 DiagnosticEntryAppointment
-                (Json.field "course" Json.string)
-                (Json.field "student" Json.string)
-                (Json.field "tutor" Json.string)
+                (Json.field "course" (Json.map CourseCode Json.string))
+                (Json.field "student" (Json.map StudentName Json.string))
+                (Json.field "tutor" (Json.map TutorName Json.string))
 
         decodeTutorName =
             Json.field "name" (Json.map TutorName Json.string)
