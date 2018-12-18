@@ -1,5 +1,7 @@
 module Managing.Utils.Date exposing
     ( Date
+    , TimezoneOffset
+    , createTimezoneOffsetInMinutes
     , decodeTimestamp
     , toDisplayString
     )
@@ -10,6 +12,15 @@ import Time exposing (Posix, Weekday(..))
 
 minutesToMilliseconds minutes =
     minutes * 60 * 1000
+
+
+type TimezoneOffset
+    = TimezoneOffsetInMinutes Int
+
+
+createTimezoneOffsetInMinutes : Int -> TimezoneOffset
+createTimezoneOffsetInMinutes minutes =
+    TimezoneOffsetInMinutes minutes
 
 
 type Date
@@ -50,8 +61,8 @@ timezone =
     Time.utc
 
 
-toDisplayString : Int -> Date -> String
-toDisplayString timezoneOffsetInMinutes (Date timestamp) =
+toDisplayString : TimezoneOffset -> Date -> String
+toDisplayString (TimezoneOffsetInMinutes timezoneOffsetInMinutes) (Date timestamp) =
     let
         symbol s =
             \_ -> s
