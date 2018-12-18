@@ -45,9 +45,13 @@ type TutorName
     = TutorName String
 
 
+type CalendarEventSummary
+    = CalendarEventSummary String
+
+
 type alias AppointmentDiagnosticData =
     { time : Date
-    , presentCalendarEvents : List String
+    , presentCalendarEvents : List CalendarEventSummary
     , derivedAppointments : List DiagnosticEntryAppointment
     , derivedScheduledTutors : List TutorName
     , derivedAvailableTutors : List TutorName
@@ -252,7 +256,10 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
                             diagnosticData
 
                         presentCalendarEventsText =
-                            DataTable.sourceCodeFromString (String.join "\n" presentCalendarEvents)
+                            presentCalendarEvents
+                                |> List.map (\(CalendarEventSummary summary) -> summary)
+                                |> String.join "\n"
+                                |> DataTable.sourceCodeFromString
 
                         derivedAppointmentToString { course, student, tutor } =
                             String.join "; " [ "Tutor: " ++ tutor, "Student: " ++ student, "Course: " ++ course ]
@@ -318,7 +325,7 @@ getAppointmentDiagnosticData id =
 decodeAppointmentDiagnosticData =
     let
         decodeCalendarEventName =
-            Json.field "summary" Json.string
+            Json.field "summary" (Json.map CalendarEventSummary Json.string)
 
         decodeDerivedAppointment =
             Json.map3 DiagnosticEntryAppointment
