@@ -37,10 +37,21 @@ type alias Model =
     }
 
 
+type alias DiagnosticEntryAppointment =
+    { course : String, student : String, tutor : String }
+
+
+type TutorName
+    = TutorName String
+
+
 type alias AppointmentDiagnosticData =
     { time : Date
-
-    -- TODO: add more fields
+    , presentCalendarEvents : List String
+    , derivedAppointments : List DiagnosticEntryAppointment
+    , derivedScheduledTutors : List TutorName
+    , derivedAvailableTutors : List TutorName
+    , selectedTutor : TutorName
     }
 
 
@@ -164,7 +175,9 @@ update msg model =
             )
 
         CloseAppointmentDiagnosticData ->
-            ( { model | displayedDiagnosticDataEntry = Nothing }
+            -- Keep the displayedDiagnosticDataEntry unchanged to avoid flashing
+            -- an empty container just before the modal will be actually closed.
+            ( model
             , Cmd.none
             , Just <| RequestCloseModal Modal.AppointmentDiagnosticDataModal
             )
@@ -235,11 +248,37 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
 
                 Just (RemoteData.Available diagnosticData) ->
                     let
-                        { time } =
+                        { time, presentCalendarEvents, derivedAppointments, derivedScheduledTutors, derivedAvailableTutors, selectedTutor } =
                             diagnosticData
+
+                        presentCalendarEventsText =
+                            DataTable.sourceCodeFromString (String.join "\n" presentCalendarEvents)
+
+                        derivedAppointmentToString { course, student, tutor } =
+                            String.join "; " [ "Tutor: " ++ tutor, "Student: " ++ student, "Course: " ++ course ]
+
+                        derivedAppointmentsText =
+                            derivedAppointments
+                                |> List.map derivedAppointmentToString
+                                |> String.join "\n"
+                                |> DataTable.sourceCodeFromString
+
+                        getTutorListText tutorList =
+                            tutorList
+                                |> List.map (\(TutorName name) -> name)
+                                |> String.join "\n"
+                                |> DataTable.sourceCodeFromString
+
+                        getSelectedTutorText (TutorName name) =
+                            DataTable.sourceCodeFromString name
                     in
                     [ DataTable.item
                         [ DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
+                        , DataTable.sourceCodeField "Preset Calendar Events" presentCalendarEventsText
+                        , DataTable.sourceCodeField "Derived Appointments" derivedAppointmentsText
+                        , DataTable.sourceCodeField "Derived Scheduled Tutors" (getTutorListText derivedScheduledTutors)
+                        , DataTable.sourceCodeField "Derived Available Tutors" (getTutorListText derivedAvailableTutors)
+                        , DataTable.sourceCodeField "Selected Tutor" (getSelectedTutorText selectedTutor)
                         ]
                     ]
 
@@ -277,5 +316,23 @@ getAppointmentDiagnosticData id =
 
 
 decodeAppointmentDiagnosticData =
-    Json.map AppointmentDiagnosticData
+    let
+        decodeCalendarEventName =
+            Json.field "summary" Json.string
+
+        decodeDerivedAppointment =
+            Json.map3 DiagnosticEntryAppointment
+                (Json.field "course" Json.string)
+                (Json.field "student" Json.string)
+                (Json.field "tutor" Json.string)
+
+        decodeTutorName =
+            Json.field "name" (Json.map TutorName Json.string)
+    in
+    Json.map6 AppointmentDiagnosticData
         (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+        (Json.at [ "calendarState", "events" ] (Json.list decodeCalendarEventName))
+        (Json.at [ "derivedItems", "appointments" ] (Json.list decodeDerivedAppointment))
+        (Json.at [ "derivedItems", "scheduledTutors" ] (Json.list decodeTutorName))
+        (Json.at [ "derivedItems", "availableTutors" ] (Json.list decodeTutorName))
+        (Json.field "selectedTutor" decodeTutorName)
