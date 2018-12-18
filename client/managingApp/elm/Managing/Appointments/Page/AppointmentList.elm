@@ -21,7 +21,7 @@ import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.View.Modal as Modal exposing (Modal)
-import Managing.View.PageError as PageError
+import Managing.View.PageMessage as PageMessage
 import Managing.View.RemoteData exposing (viewItemList)
 
 
@@ -253,7 +253,7 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
 
                 Just (RemoteData.Error err) ->
                     -- TODO: add retry logic (thread appointment ID to the view)
-                    [ PageError.viewPageError NoOp err ]
+                    [ PageMessage.viewPageMessage (PageMessage.Error err) ]
 
                 Just RemoteData.StillLoading ->
                     [ spinner ]

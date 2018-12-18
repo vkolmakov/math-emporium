@@ -1,11 +1,11 @@
 @import "../variables.scss";
 
-.m-page-error {
+.m-page-message {
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    &__message {
+    &__text {
         color: $full-screen-info-text-color;
         margin: 1em 0;
     }

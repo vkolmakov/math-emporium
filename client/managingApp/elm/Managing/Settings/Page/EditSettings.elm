@@ -13,13 +13,13 @@ import Http
 import Json.Decode as Json
 import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Utils.Browser exposing (attemptFocus)
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
-import Managing.View.PageError as PageError
+import Managing.View.PageMessage as PageMessage
 import Managing.View.Persistence as Persistence
 
 
@@ -220,7 +220,7 @@ view model =
                 ]
 
         RemoteData.Error err ->
-            PageError.viewPageError (Retry SettingsRequest) err
+            PageMessage.viewPageError (Retry SettingsRequest) err
 
 
 viewSettings : Settings -> RemoteData SettingsPersistenceResponse -> Html Msg

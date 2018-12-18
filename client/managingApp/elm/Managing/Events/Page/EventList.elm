@@ -14,7 +14,7 @@ import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.View.Modal as Modal exposing (Modal)
-import Managing.View.PageError as PageError
+import Managing.View.PageMessage as PageMessage
 import Managing.View.RemoteData exposing (viewItemList)
 
 
@@ -260,7 +260,7 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
                     [ spinner ]
 
                 ( RemoteData.Error err, _ ) ->
-                    [ PageError.viewPageError (Retry ScheduledAppointmentDetailsRequest) err ]
+                    [ PageMessage.viewPageError (Retry ScheduledAppointmentDetailsRequest) err ]
 
                 _ ->
                     []

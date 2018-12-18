@@ -4,7 +4,7 @@ import Html as H exposing (Html)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
-import Managing.View.PageError exposing (viewPageError)
+import Managing.View.PageMessage as PageMessage exposing (viewPageMessage, viewPageError)
 
 
 viewItemList : RemoteData (List a) -> (a -> Html msg) -> msg -> Html msg
@@ -19,10 +19,15 @@ viewItemList pageContent viewListEntry retryOnErrorMsg =
         RemoteData.StillLoading ->
             spinner
 
-        RemoteData.Available xs ->
-            H.div []
-                [ xs |> List.map viewListEntry |> DataTable.table
-                ]
+        RemoteData.Available list ->
+            case list of
+                [] ->
+                    viewPageMessage PageMessage.NoItemsAvailable
+
+                xs ->
+                    H.div []
+                        [ xs |> List.map viewListEntry |> DataTable.table
+                        ]
 
         RemoteData.Error err ->
             viewPageError retryOnErrorMsg err

@@ -7,7 +7,7 @@ module Managing.Styles exposing
     , home
     , loadingSpinner
     , modal
-    , pageError
+    , pageMessage
     , persistenceAction
     , sectionNav
     , utility
@@ -102,9 +102,9 @@ modal =
     }
 
 
-pageError =
-    { self = "m-page-error"
-    , message = "m-page-error__message"
+pageMessage =
+    { self = "m-page-message"
+    , text = "m-page-message__text"
     }
 
 
