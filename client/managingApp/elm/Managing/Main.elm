@@ -113,8 +113,8 @@ type OutMsg
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
 handleOutMsg model outMsg =
     case outMsg of
-        UserDetailOutMsg (Just (UserDetail.DoStuffToParent s)) ->
-            ( model, Cmd.none )
+        UserDetailOutMsg (Just UserDetail.RequestUserListDataRefresh) ->
+            ( { model | userListPageModel = UserList.init model.appConfig }, Cmd.none )
 
         UserDetailOutMsg Nothing ->
             ( model, Cmd.none )

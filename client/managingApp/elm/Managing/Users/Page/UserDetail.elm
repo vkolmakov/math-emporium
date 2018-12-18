@@ -76,13 +76,12 @@ type Msg
     | PersistUserDetail Int UserDetailVolatile
     | ReceiveUserPersistenceDetailResponse (Result Http.Error UserRef)
     | CheckIfTakingTooLong RemoteRequestItem
-    | TriggerMessageToParent String
     | ChangeAccessGroup AccessGroup
     | NoOp
 
 
 type OutMsg
-    = DoStuffToParent String
+    = RequestUserListDataRefresh
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
@@ -93,9 +92,6 @@ update msg model =
 
         ReceiveUserDetail (Err e) ->
             noAction { model | userDetail = RemoteData.Error <| RemoteData.errorFromHttpError e }
-
-        TriggerMessageToParent s ->
-            ( model, Cmd.none, Just (DoStuffToParent s) )
 
         ChangeAccessGroup group ->
             case model.userDetail of
@@ -136,7 +132,7 @@ update msg model =
         ReceiveUserPersistenceDetailResponse (Ok userRef) ->
             ( { model | userPersistenceState = RemoteData.Available userRef }
             , attemptFocus NoOp submitButtonId
-            , Nothing
+            , Just RequestUserListDataRefresh
             )
 
         ReceiveUserPersistenceDetailResponse (Err e) ->
