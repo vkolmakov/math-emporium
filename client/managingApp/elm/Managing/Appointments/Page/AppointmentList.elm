@@ -193,7 +193,7 @@ update msg model =
 view model =
     H.div []
         [ viewItemList model.appointments (viewAppointmentListEntry model.appConfig) (Retry AppointmentsRequest)
-        , viewAppointmentDiagnosticDataModal model.displayedDiagnosticDataEntry
+        , viewAppointmentDiagnosticDataModal model.appConfig model.displayedDiagnosticDataEntry
         ]
 
 
@@ -209,8 +209,8 @@ viewAppointmentListEntry appConfig { id, user, time, course, location } =
         ]
 
 
-viewAppointmentDiagnosticDataModal : Maybe (RemoteData AppointmentDiagnosticData) -> Html Msg
-viewAppointmentDiagnosticDataModal displayedDiagnosticDataEntry =
+viewAppointmentDiagnosticDataModal : AppConfig -> Maybe (RemoteData AppointmentDiagnosticData) -> Html Msg
+viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
     let
         closeModalButton =
             Button.view "Close" "modal-close-button" Button.Enabled CloseAppointmentDiagnosticData
@@ -234,8 +234,14 @@ viewAppointmentDiagnosticDataModal displayedDiagnosticDataEntry =
                     [ spinner ]
 
                 Just (RemoteData.Available diagnosticData) ->
-                    -- TODO: render diagnostic data
-                    [ H.text "Available!" ]
+                    let
+                        { time } =
+                            diagnosticData
+                    in
+                    [ DataTable.item
+                        [ DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
+                        ]
+                    ]
 
         content =
             [ H.div
