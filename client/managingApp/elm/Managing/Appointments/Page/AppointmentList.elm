@@ -14,8 +14,10 @@ import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Shared.Data.Appointment exposing (Appointment, decodeAppointment)
+import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
+import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Loading exposing (spinner)
 import Managing.View.Modal as Modal exposing (Modal)
@@ -37,6 +39,8 @@ type alias Model =
 
 type alias AppointmentDiagnosticData =
     { time : Date
+
+    -- TODO: add more fields
     }
 
 
@@ -57,6 +61,7 @@ type Msg
     | ReceiveAppointments (Result Http.Error (List Appointment))
     | ReceiveAppointmentDiagnosticData Int (Result Http.Error AppointmentDiagnosticData)
     | ShowAppointmentDiagnosticData Int
+    | CloseAppointmentDiagnosticData
     | CheckIfTakingTooLong RemoteRequestItem
     | Retry RemoteRequestItem
 
@@ -158,6 +163,12 @@ update msg model =
             , Just <| RequestShowModal Modal.AppointmentDiagnosticDataModal
             )
 
+        CloseAppointmentDiagnosticData ->
+            ( { model | displayedDiagnosticDataEntry = Nothing }
+            , Cmd.none
+            , Just <| RequestCloseModal Modal.AppointmentDiagnosticDataModal
+            )
+
         Retry AppointmentsRequest ->
             let
                 initialModel =
@@ -201,7 +212,10 @@ viewAppointmentListEntry appConfig { id, user, time, course, location } =
 viewAppointmentDiagnosticDataModal : Maybe (RemoteData AppointmentDiagnosticData) -> Html Msg
 viewAppointmentDiagnosticDataModal displayedDiagnosticDataEntry =
     let
-        modalContent =
+        closeModalButton =
+            Button.view "Close" "modal-close-button" Button.Enabled CloseAppointmentDiagnosticData
+
+        contentChildren =
             case displayedDiagnosticDataEntry of
                 Nothing ->
                     []
@@ -213,15 +227,27 @@ viewAppointmentDiagnosticDataModal displayedDiagnosticDataEntry =
                     []
 
                 Just (RemoteData.Error err) ->
+                    -- TODO: add retry logic (thread appointment ID to the view)
                     [ PageError.viewPageError NoOp err ]
 
                 Just RemoteData.StillLoading ->
                     [ spinner ]
 
                 Just (RemoteData.Available diagnosticData) ->
+                    -- TODO: render diagnostic data
                     [ H.text "Available!" ]
+
+        content =
+            [ H.div
+                [ Styles.apply [ Styles.modal.appointmentDiagnosticDataModalContent.self ] ]
+                [ H.div [ Styles.apply [ Styles.modal.appointmentDiagnosticDataModalContent.mainContainer ] ]
+                    contentChildren
+                , H.div [ Styles.apply [ Styles.modal.appointmentDiagnosticDataModalContent.closeButton ] ]
+                    [ closeModalButton ]
+                ]
+            ]
     in
-    Modal.viewModal Modal.AppointmentDiagnosticDataModal modalContent
+    Modal.viewModal Modal.AppointmentDiagnosticDataModal content
 
 
 

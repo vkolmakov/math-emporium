@@ -94,6 +94,11 @@ modal =
         , mainContainer = "m-modal__scheduled-appointment-details-modal-content__main-container"
         , closeButton = "m-modal__scheduled-appointment-details-modal-content__close-button"
         }
+    , appointmentDiagnosticDataModalContent =
+        { self = "m-modal__appointment-diagnostic-data-modal-content"
+        , mainContainer = "m-modal__appointment-diagnostic-data-modal-content__main-container"
+        , closeButton = "m-modal__appointment-diagnostic-data-modal-content__close-button"
+        }
     }
 
 

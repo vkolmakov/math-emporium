@@ -1,3 +1,39 @@
+@mixin base-modal-content($width, $min-height) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    /**
+     * Set an initial width/height for the modal to
+     * accomodate potential loading state and avoid seeing
+     * a modal that jumps in side between state transitions.
+     *
+     * Modal height is not fixed because minor vertical growth in
+     * the modal size is more tollerable than not having
+     * enough space when new content is added and styles are not
+     * adjusted, especially given that the content is centered.
+     */
+    width: $width;
+    min-height: $min-height;
+
+    /**
+     * Assume that main-container is present.
+     */
+    &__main-container {
+        min-width: 100%;
+        margin-bottom: 0.5em;
+
+        // Make sure that the error itself takes up the maximum space
+        // and pushes the close button all the way down.
+        flex-grow: 1;
+
+        // Center content that does not fill up the whole space.
+        display: flex;
+        justify-content: center;
+    }
+}
+
 .m-modal {
     position: fixed;
     top: 25vh;
@@ -6,32 +42,21 @@
     padding: 1.5em;
 
     /**
-     * Container for modal content used on Events page.
-     * Sets an initial width/height for the modal to
-     * accomodate potential loading state and avoid seeing
-     * a modal that jumps in side between state transitions.
+     * Used on Events page.
      */
     &__scheduled-appointment-details-modal-content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
+        @include base-modal-content($width: 30em, $min-height: 15em);
 
-        width: 30em;
-        min-height: 15em;
-
-        &__main-container {
-            min-width: 100%;
-            margin-bottom: 0.5em;
-
-            // Make sure that the error itself takes up the maximum space
-            // and pushes the close button all the way down.
-            flex-grow: 1;
-
-            // Center content that does not fill up the whole space.
-            display: flex;
-            justify-content: center;
+        &__close-button {
+            align-self: flex-end;
         }
+    }
+
+    /**
+     * Used on Appointments page.
+     */
+    &__appointment-diagnostic-data-modal-content {
+        @include base-modal-content($width: 30em, $min-height: 15em);
 
         &__close-button {
             align-self: flex-end;
