@@ -56,7 +56,14 @@
      * Used on Appointments page.
      */
     &__appointment-diagnostic-data-modal-content {
-        @include base-modal-content($width: 30em, $min-height: 15em);
+        @include base-modal-content($width: 30em, $min-height: 20em);
+
+        &__main-container {
+            // Limit maximum height of the container to avoid situations
+            // where modal content might end up being of the viewfinder
+            max-height: 30em;
+            overflow: scroll;
+        }
 
         &__close-button {
             align-self: flex-end;
