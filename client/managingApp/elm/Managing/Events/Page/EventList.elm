@@ -30,15 +30,10 @@ import Managing.View.RemoteData exposing (viewItemList)
 -- MODEL
 
 
-type EventData
-    = EventDataWithAppointment AppointmentRef
-
-
 type alias EventListEntry =
     { kind : EventKind
     , user : { email : String }
     , createdAt : Date
-    , data : Maybe EventData
     }
 
 
@@ -53,8 +48,8 @@ type alias Model =
 
 
 type EventKind
-    = RemoveAppointment
-    | ScheduleAppointment
+    = RemoveAppointment AppointmentRef
+    | ScheduleAppointment AppointmentRef
     | SignIn
 
 
@@ -64,10 +59,10 @@ init appConfig =
 
 eventKindToString eventKind =
     case eventKind of
-        RemoveAppointment ->
+        RemoveAppointment _ ->
             "Remove Appointment"
 
-        ScheduleAppointment ->
+        ScheduleAppointment _ ->
             "Schedule Appointment"
 
         SignIn ->
@@ -221,9 +216,9 @@ view model =
                         |> List.map (\( label, entry ) -> DataTable.textField label entry)
 
                 actions =
-                    case ( event.kind, event.data ) of
-                        ( ScheduleAppointment, Just (EventDataWithAppointment appointmentDetail) ) ->
-                            [ DataTable.actionLink "Details" (E.onClick <| ShowScheduledAppointmentDetails appointmentDetail.id) ]
+                    case event.kind of
+                        ScheduleAppointment appointmentRef ->
+                            [ DataTable.actionLink "Details" (E.onClick <| ShowScheduledAppointmentDetails appointmentRef.id) ]
 
                         _ ->
                             []
@@ -298,10 +293,12 @@ decodeEventKind : Int -> Json.Decoder EventKind
 decodeEventKind eventKindId =
     case eventKindId of
         1 ->
-            Json.succeed ScheduleAppointment
+            Json.field "appointment" decodeAppointmentRef
+                |> Json.map ScheduleAppointment
 
         2 ->
-            Json.succeed RemoveAppointment
+            Json.field "appointment" decodeAppointmentRef
+                |> Json.map RemoveAppointment
 
         3 ->
             Json.succeed SignIn
@@ -314,19 +311,18 @@ decodeEventUser userEmail =
     Json.succeed { email = userEmail }
 
 
-decodeEventData : Json.Decoder EventData
-decodeEventData =
-    Json.oneOf
-        [ Json.field "appointment" decodeAppointmentRef |> Json.map EventDataWithAppointment ]
-
-
 decodeEvent : Json.Decoder EventListEntry
 decodeEvent =
-    Json.map4 EventListEntry
-        (Json.field "type" Json.int |> Json.andThen decodeEventKind)
-        (Json.at [ "user", "email" ] Json.string |> Json.andThen decodeEventUser)
-        (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
-        (Json.maybe (Json.field "data" decodeEventData))
+    let
+        decodeEventListEntry eventKind =
+            Json.map3 EventListEntry
+                (Json.succeed eventKind)
+                (Json.at [ "user", "email" ] Json.string |> Json.andThen decodeEventUser)
+                (Json.field "createdAtTimestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+    in
+    Json.field "type" Json.int
+        |> Json.andThen decodeEventKind
+        |> Json.andThen decodeEventListEntry
 
 
 getAppointmentDetail appointmentId =
