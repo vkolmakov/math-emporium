@@ -19,7 +19,7 @@ export default function createManageUserRouter() {
     );
     router.put(
         "/users/:id",
-        requireGroup(authGroups.EMPLOYER),
+        requireGroup(authGroups.ADMIN),
         controller.handleUpdate
     );
 

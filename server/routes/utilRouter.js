@@ -23,7 +23,11 @@ export default function createUtilRouter() {
     const router = express.Router();
 
     router.get("/open-spots", handleGetOpenSpots);
-    router.get("/available-tutors", handleGetAvailableTutors);
+    router.get(
+        "/available-tutors",
+        requireGroup(authGroups.USER),
+        handleGetAvailableTutors
+    );
 
     router.get(
         "/appointments",
