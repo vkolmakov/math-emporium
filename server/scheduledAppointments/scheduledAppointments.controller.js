@@ -9,12 +9,14 @@ const pluckAppointmentDetailFieldsFromDatabaseRecord = ({
     course,
     location,
     id,
+    isDeleted,
 }) => ({
     timestamp: dateTime.toTimestamp(googleCalendarAppointmentDate),
     user: user.email,
     course: course.code,
     location: location.name,
     id,
+    isDeleted,
 });
 
 export default class ScheduledAppointmentsController {

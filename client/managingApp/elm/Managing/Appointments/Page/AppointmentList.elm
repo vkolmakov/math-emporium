@@ -13,7 +13,13 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Shared.Data.Appointment exposing (Appointment, decodeAppointment)
+import Managing.Shared.Data.Appointment
+    exposing
+        ( Appointment(..)
+        , appointmentStateToString
+        , decodeAppointment
+        , getAppointmentRecord
+        )
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
@@ -223,12 +229,20 @@ view model =
 
 
 viewAppointmentListEntry : AppConfig -> Appointment -> Html Msg
-viewAppointmentListEntry appConfig { id, user, time, course, location } =
+viewAppointmentListEntry appConfig appointment =
+    let
+        { id, user, time, course, location } =
+            getAppointmentRecord appointment
+
+        appointmentStateDisplay =
+            appointmentStateToString appointment
+    in
     DataTable.item
         [ DataTable.textField "User" user
         , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
         , DataTable.textField "Location" location
         , DataTable.textField "Course" course
+        , DataTable.textField "State" appointmentStateDisplay
         , DataTable.actionContainer
             [ DataTable.actionLink "Diagnostic Data" (E.onClick <| ShowAppointmentDiagnosticData id) ]
         ]

@@ -6,7 +6,15 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Shared.Data.Appointment exposing (Appointment, AppointmentRef, decodeAppointment, decodeAppointmentRef)
+import Managing.Shared.Data.Appointment
+    exposing
+        ( Appointment(..)
+        , AppointmentRef
+        , appointmentStateToString
+        , decodeAppointment
+        , decodeAppointmentRef
+        , getAppointmentRecord
+        )
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
@@ -237,14 +245,18 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
 
         contentChildren =
             case ( data, id ) of
-                ( RemoteData.Available appointmentDetail, Just appointmentId ) ->
+                ( RemoteData.Available appointment, Just appointmentId ) ->
                     let
+                        ( appointmentRecord, appointmentStateDisplay ) =
+                            ( getAppointmentRecord appointment, appointmentStateToString appointment )
+
                         labelsWithData =
-                            [ ( "ID", String.fromInt appointmentDetail.id )
-                            , ( "User", appointmentDetail.user )
-                            , ( "Appointment Time", Date.toDisplayString appConfig.localTimezoneOffsetInMinutes appointmentDetail.time )
-                            , ( "Location", appointmentDetail.location )
-                            , ( "Course", appointmentDetail.course )
+                            [ ( "ID", String.fromInt appointmentRecord.id )
+                            , ( "User", appointmentRecord.user )
+                            , ( "Appointment Time", Date.toDisplayString appConfig.localTimezoneOffsetInMinutes appointmentRecord.time )
+                            , ( "Location", appointmentRecord.location )
+                            , ( "Course", appointmentRecord.course )
+                            , ( "State", appointmentStateDisplay )
                             ]
 
                         fields =
