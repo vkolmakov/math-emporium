@@ -5,15 +5,7 @@ function getAdditionalData(eventType, requestBody, additionalData) {
     switch (eventType) {
         case events.USER_CREATED_APPOINTMENT: {
             const { scheduledAppointmentId } = additionalData;
-            const { location, course, time } = requestBody;
             return {
-                time,
-                course: {
-                    id: course.id,
-                },
-                location: {
-                    id: location.id,
-                },
                 appointment: {
                     id: scheduledAppointmentId,
                 },
