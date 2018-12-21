@@ -92,27 +92,54 @@ $gutter-size: 0.75em;
     }
 }
 
+/**
+ * react-datepicker style overrides
+ */
 .react-datepicker {
     @include set-font();
-}
 
-.react-datepicker__day--in-range {
-    background-color: $primary-color;
-    color: black;
-    &:hover,
-    &:focus {
-        background-color: $primary-color-focused;
+    &__week {
+        &:hover,
+        &:focus {
+            background-color: $tertiary-color;
+        }
     }
-}
 
-.react-datepicker__header {
-    background-color: lighten($tertiary-color, 25%);
-}
+    &__header {
+        background-color: lighten($tertiary-color, 25%);
+    }
 
-.react-datepicker__week {
-    &:hover,
-    &:focus {
-        background-color: $tertiary-color;
+    &__day {
+        // Swap margin and padding for every date cell.
+        // Margin leaves gaps that are not clickable and
+        // gaps created by padding are clickable, which makes
+        // it easier to start treating a click on any of the days
+        // as a week selection.
+        margin: 0;
+        padding: 0.166rem;
+
+        border-radius: 0;
+
+        &:hover,
+        &:focus {
+            // Keep the same color on hover since we're not concerned
+            // with individual days.
+            background-color: inherit;
+            border-radius: 0;
+        }
+
+        &--in-range {
+            // currently-selected week
+            background-color: $primary-color;
+            color: black;
+
+            &:hover,
+            &:focus {
+                // Same idea here, make sure to not single out any particular day
+                background-color: $primary-color;
+                border-radius: 0;
+            }
+        }
     }
 }
 
