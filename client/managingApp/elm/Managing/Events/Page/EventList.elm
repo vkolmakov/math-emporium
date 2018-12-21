@@ -48,9 +48,9 @@ type alias Model =
 
 
 type EventKind
-    = RemoveAppointment AppointmentRef
-    | ScheduleAppointment AppointmentRef
-    | SignIn
+    = DeleteAppointmentEvent (Maybe AppointmentRef)
+    | ScheduleAppointmentEvent (Maybe AppointmentRef)
+    | SignInEvent
 
 
 init appConfig =
@@ -59,13 +59,13 @@ init appConfig =
 
 eventKindToString eventKind =
     case eventKind of
-        RemoveAppointment _ ->
-            "Remove Appointment"
+        DeleteAppointmentEvent _ ->
+            "Delete Appointment"
 
-        ScheduleAppointment _ ->
+        ScheduleAppointmentEvent _ ->
             "Schedule Appointment"
 
-        SignIn ->
+        SignInEvent ->
             "Sign In"
 
 
@@ -217,7 +217,10 @@ view model =
 
                 actions =
                     case event.kind of
-                        ScheduleAppointment appointmentRef ->
+                        ScheduleAppointmentEvent (Just appointmentRef) ->
+                            [ DataTable.actionLink "Details" (E.onClick <| ShowScheduledAppointmentDetails appointmentRef.id) ]
+
+                        DeleteAppointmentEvent (Just appointmentRef) ->
                             [ DataTable.actionLink "Details" (E.onClick <| ShowScheduledAppointmentDetails appointmentRef.id) ]
 
                         _ ->
@@ -293,15 +296,17 @@ decodeEventKind : Int -> Json.Decoder EventKind
 decodeEventKind eventKindId =
     case eventKindId of
         1 ->
-            Json.field "appointment" decodeAppointmentRef
-                |> Json.map ScheduleAppointment
+            Json.at ["data", "appointment"] decodeAppointmentRef
+                |> Json.maybe
+                |> Json.map ScheduleAppointmentEvent
 
         2 ->
-            Json.field "appointment" decodeAppointmentRef
-                |> Json.map RemoveAppointment
+            Json.at ["data", "appointment"] decodeAppointmentRef
+                |> Json.maybe
+                |> Json.map DeleteAppointmentEvent
 
         3 ->
-            Json.succeed SignIn
+            Json.succeed SignInEvent
 
         _ ->
             Json.fail "Unknown event kind"
