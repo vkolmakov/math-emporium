@@ -79,6 +79,7 @@ const ports = (elmPortsRef) => {
             };
             dialogElement.addEventListener("close", onDialogClose);
         } else {
+            // eslint-disable-next-line no-console
             console.warn(
                 `requestShowModal elm port: ${modalId} is not a dialog element`
             );
@@ -90,6 +91,7 @@ const ports = (elmPortsRef) => {
         if (dialogElement && typeof dialogElement.close === "function") {
             dialogElement.close();
         } else {
+            // eslint-disable-next-line no-console
             console.warn(
                 `requestCloseModal elm port: ${modalId} is not a dialog element`
             );
