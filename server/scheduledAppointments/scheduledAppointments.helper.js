@@ -11,6 +11,13 @@ const RECOVERY_SUGGESTION = {
     RESCHEDULE: "RESCHEDULE",
 };
 
+function activeAppointmentCondition(now) {
+    return {
+        googleCalendarAppointmentDate: { $gt: now },
+        isDeleted: false,
+    };
+}
+
 const quantityItemDescription = (quantity, item) => {
     let result;
     if (quantity === 1) {
@@ -109,7 +116,7 @@ export default (
         return mainStorage.db.models.scheduledAppointment.findAll({
             where: {
                 userId: user.id,
-                googleCalendarAppointmentDate: { $gt: now },
+                ...activeAppointmentCondition(now),
             },
             order: [["googleCalendarAppointmentDate", "ASC"]],
         });
@@ -117,7 +124,7 @@ export default (
 
     getAllActiveAppointmentsWithRelatedData(now) {
         return mainStorage.db.models.scheduledAppointment.findAll({
-            where: { googleCalendarAppointmentDate: { $gt: now } },
+            where: { ...activeAppointmentCondition(now) },
             order: [["googleCalendarAppointmentDate", "ASC"]],
             include: [
                 { model: mainStorage.db.models.user },
@@ -495,7 +502,7 @@ export default (
                 where: {
                     userId: user.id,
                     id: id,
-                    googleCalendarAppointmentDate: { $gt: now },
+                    ...activeAppointmentCondition(now),
                 },
             })
             .then((appointment) => {
@@ -539,12 +546,18 @@ export default (
                     )
             )
             .then((shouldProceed) => {
-                return shouldProceed ? Promise.resolve() : Promise.reject();
+                return shouldProceed
+                    ? Promise.resolve()
+                    : Promise.reject("Failed to delete calendar event.");
             })
             .then(() => {
-                return mainStorage.db.models.scheduledAppointment.destroy({
-                    where: { id: appointment.id },
-                });
+                return mainStorage.db.models.scheduledAppointment.update(
+                    { isDeleted: true },
+                    {
+                        where: { id: appointment.id },
+                        fields: ["isDeleted"],
+                    }
+                );
             });
     },
 

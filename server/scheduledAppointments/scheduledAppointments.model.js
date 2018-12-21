@@ -25,6 +25,10 @@ export default function createScheduledAppointmentModel(sequelize, DataTypes) {
             googleCalendarId: {
                 type: DataTypes.STRING,
             },
+            isDeleted: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
         },
         {
             timestamps: true,
