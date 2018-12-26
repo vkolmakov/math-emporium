@@ -6,16 +6,17 @@ import Http
 import Json.Decode as Json
 import Json.Encode
 import Managing.AppConfig exposing (AppConfig)
-import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.Styles as Styles
 import Managing.Users.Data.Shared exposing (AccessGroup(..), accessGroupToInt, accessGroupToString, decodeAccessGroup)
 import Managing.Users.Data.UserDetail exposing (UserDetail)
 import Managing.Utils.Browser exposing (attemptFocus)
 import Managing.Utils.Date as Date
+import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Button as Button
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
+import Managing.View.PageMessage as PageMessage exposing (viewPageMessage)
 import Managing.View.Persistence as Persistence
 
 
@@ -171,7 +172,7 @@ view model =
                 ]
 
         RemoteData.Error e ->
-            H.div [] [ H.text <| "An error ocurred: " ++ Debug.toString e ]
+            viewPageMessage <| PageMessage.Error e
 
 
 submitUserDetail : Int -> UserDetailVolatile -> RemoteData UserRef -> Html Msg

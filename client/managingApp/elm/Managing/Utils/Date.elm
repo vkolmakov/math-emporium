@@ -7,7 +7,7 @@ module Managing.Utils.Date exposing
     )
 
 import Json.Decode as Json
-import Time exposing (Posix, Weekday(..))
+import Time exposing (Month(..), Posix, Weekday(..))
 
 
 minutesToMilliseconds minutes =
@@ -57,6 +57,46 @@ weekdayToString d =
             "Sunday"
 
 
+monthToString : Month -> String
+monthToString month =
+    case month of
+        Jan ->
+            "January"
+
+        Feb ->
+            "February"
+
+        Mar ->
+            "March"
+
+        Apr ->
+            "April"
+
+        May ->
+            "May"
+
+        Jun ->
+            "June"
+
+        Jul ->
+            "July"
+
+        Aug ->
+            "August"
+
+        Sep ->
+            "September"
+
+        Oct ->
+            "October"
+
+        Nov ->
+            "November"
+
+        Dec ->
+            "December"
+
+
 timezone =
     Time.utc
 
@@ -83,7 +123,7 @@ toDisplayString (TimezoneOffsetInMinutes timezoneOffsetInMinutes) (Date timestam
         toks =
             [ weekdayToString << Time.toWeekday timezone
             , symbol ", "
-            , Debug.toString << Time.toMonth timezone
+            , monthToString << Time.toMonth timezone
             , symbol " "
             , String.fromInt << Time.toDay timezone
             , symbol " "
