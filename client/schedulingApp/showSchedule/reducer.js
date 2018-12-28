@@ -48,17 +48,23 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
     const { payload, type } = action;
     switch (type) {
-        case SA_GET_OPEN_SPOTS:
+        case SA_GET_OPEN_SPOTS: {
+            let openSpots;
+            if (!payload.data || payload.data.error) {
+                openSpots = Either.Left("An unknown error occurred.");
+            } else if (payload.data.length === 0) {
+                openSpots = Either.Left(
+                    "There are no appointments available for this week."
+                );
+            } else {
+                openSpots = Either.Right(payload.data);
+            }
+
             return {
                 ...state,
-                openSpots:
-                    payload.data.length > 0
-                        ? Either.Right(payload.data)
-                        : Either.Left(
-                              "There are no appointments available for this week."
-                          ),
+                openSpots,
             };
-
+        }
         case SA_SET_START_DATE:
             // expect a moment object
             return {
