@@ -94,6 +94,127 @@ class ShowSchedule extends Component {
         }
     }
 
+    renderControls() {
+        const { locations, courses, subjects, startDate } = this.props;
+
+        const locationsOptions = this.createLocationsOptions(locations);
+        const subjectsOptions = this.createSubjectsOptions(subjects, locations);
+        const coursesOptions = this.createCoursesOptions(courses, subjects);
+
+        return (
+            <div className="show-schedule-controls">
+                <div className="column">
+                    <div className="input-group">
+                        <label htmlFor="dual-datepicker">Week</label>
+                        <div
+                            ref={(datePickerWrapRef) =>
+                                (this.datePickerWrapRef = datePickerWrapRef)
+                            }
+                            className="dual-datepicker-wrap">
+                            <DatePicker
+                                selected={startDate}
+                                startDate={startDate}
+                                endDate={moment(startDate).endOf("isoWeek")}
+                                locale="en-gb"
+                                dateFormat="MM/DD/YYYY"
+                                readOnly={true}
+                                onChange={this.onStartDateChange.bind(this)}
+                                onFocus={() =>
+                                    this.datePickerWrapRef.classList.add(
+                                        "has-focus"
+                                    )
+                                }
+                                onBlur={() =>
+                                    this.datePickerWrapRef.classList.remove(
+                                        "has-focus"
+                                    )
+                                }
+                                ref={(activeDatePickerInputRef) => {
+                                    this.activeDatePickerInputRef = activeDatePickerInputRef;
+                                }}
+                                id="dual-datepicker"
+                            />
+                            <div
+                                className="dual-datepicker__inactive-input-container"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    /**
+                                     * Input is wrapped in a div so that we can disable it
+                                     * and still be able to fire an onClick and redirect the click to
+                                     * the actual active date picker element.
+                                     */
+                                    if (
+                                        this.activeDatePickerInputRef &&
+                                        typeof this.activeDatePickerInputRef
+                                            .setFocus === "function"
+                                    ) {
+                                        this.activeDatePickerInputRef.setFocus();
+                                    }
+                                }}>
+                                <input
+                                    value={moment(startDate)
+                                        .endOf("isoWeek")
+                                        .format("MM/DD/YYYY")}
+                                    disabled={true}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <FilterControls
+                        options={locationsOptions}
+                        currentValue={
+                            locations.selected ? locations.selected.id : null
+                        }
+                        placeholder="Select..."
+                        label="Location"
+                        error={!locations.selected}
+                        selectRef={(input) => {
+                            this.locationSelect = input;
+                        }}
+                        onChange={this.onLocationChange.bind(this)}
+                    />
+                </div>
+
+                <div className="column">
+                    <FilterControls
+                        options={subjectsOptions}
+                        currentValue={
+                            subjects.selected ? subjects.selected.id : null
+                        }
+                        disabled={!this.props.locations.selected}
+                        placeholder="Select..."
+                        label="Subject"
+                        error={locations.selected && !subjects.selected}
+                        selectRef={(input) => {
+                            this.subjectSelect = input;
+                        }}
+                        onChange={this.onSubjectChange.bind(this)}
+                    />
+
+                    <FilterControls
+                        options={coursesOptions}
+                        currentValue={
+                            courses.selected ? courses.selected.id : null
+                        }
+                        disabled={!this.props.subjects.selected}
+                        placeholder="Select..."
+                        label="Course"
+                        error={
+                            locations.selected &&
+                            subjects.selected &&
+                            !courses.selected
+                        }
+                        selectRef={(input) => {
+                            this.courseSelect = input;
+                        }}
+                        onChange={this.onCourseChange.bind(this)}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     onSelectChange(prevVal, handler, key = "id") {
         return (nextVal) => {
             let isValChange;
@@ -369,11 +490,6 @@ class ShowSchedule extends Component {
             modalInfo,
         } = this.props;
         const now = moment();
-
-        const locationsOptions = this.createLocationsOptions(locations);
-        const subjectsOptions = this.createSubjectsOptions(subjects, locations);
-        const coursesOptions = this.createCoursesOptions(courses, subjects);
-
         const openSpotHandlers = {
             available: (time) =>
                 this.createAvailableOpenSpotHandler(
@@ -390,120 +506,11 @@ class ShowSchedule extends Component {
             ? this.selectModal(modalInfo.status).bind(this)
             : () => <span />;
 
+        const Controls = this.renderControls.bind(this);
+
         return (
             <div className="content">
-                <div className="show-schedule-controls">
-                    <div className="column">
-                        <div className="input-group">
-                            <label htmlFor="dual-datepicker">Week</label>
-                            <div
-                                ref={(datePickerWrapRef) =>
-                                    (this.datePickerWrapRef = datePickerWrapRef)
-                                }
-                                className="dual-datepicker-wrap">
-                                <DatePicker
-                                    selected={startDate}
-                                    startDate={startDate}
-                                    endDate={moment(startDate).endOf("isoWeek")}
-                                    locale="en-gb"
-                                    dateFormat="MM/DD/YYYY"
-                                    readOnly={true}
-                                    onChange={this.onStartDateChange.bind(this)}
-                                    onFocus={() =>
-                                        this.datePickerWrapRef.classList.add(
-                                            "has-focus"
-                                        )
-                                    }
-                                    onBlur={() =>
-                                        this.datePickerWrapRef.classList.remove(
-                                            "has-focus"
-                                        )
-                                    }
-                                    ref={(activeDatePickerInputRef) => {
-                                        this.activeDatePickerInputRef = activeDatePickerInputRef;
-                                    }}
-                                    id="dual-datepicker"
-                                />
-                                <div
-                                    className="dual-datepicker__inactive-input-container"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        /**
-                                         * Input is wrapped in a div so that we can disable it
-                                         * and still be able to fire an onClick and redirect the click to
-                                         * the actual active date picker element.
-                                         */
-                                        if (
-                                            this.activeDatePickerInputRef &&
-                                            typeof this.activeDatePickerInputRef
-                                                .setFocus === "function"
-                                        ) {
-                                            this.activeDatePickerInputRef.setFocus();
-                                        }
-                                    }}>
-                                    <input
-                                        value={moment(startDate)
-                                            .endOf("isoWeek")
-                                            .format("MM/DD/YYYY")}
-                                        disabled={true}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <FilterControls
-                            options={locationsOptions}
-                            currentValue={
-                                locations.selected
-                                    ? locations.selected.id
-                                    : null
-                            }
-                            placeholder="Select..."
-                            label="Location"
-                            error={!locations.selected}
-                            selectRef={(input) => {
-                                this.locationSelect = input;
-                            }}
-                            onChange={this.onLocationChange.bind(this)}
-                        />
-                    </div>
-
-                    <div className="column">
-                        <FilterControls
-                            options={subjectsOptions}
-                            currentValue={
-                                subjects.selected ? subjects.selected.id : null
-                            }
-                            disabled={!this.props.locations.selected}
-                            placeholder="Select..."
-                            label="Subject"
-                            error={locations.selected && !subjects.selected}
-                            selectRef={(input) => {
-                                this.subjectSelect = input;
-                            }}
-                            onChange={this.onSubjectChange.bind(this)}
-                        />
-
-                        <FilterControls
-                            options={coursesOptions}
-                            currentValue={
-                                courses.selected ? courses.selected.id : null
-                            }
-                            disabled={!this.props.subjects.selected}
-                            placeholder="Select..."
-                            label="Course"
-                            error={
-                                locations.selected &&
-                                subjects.selected &&
-                                !courses.selected
-                            }
-                            selectRef={(input) => {
-                                this.courseSelect = input;
-                            }}
-                            onChange={this.onCourseChange.bind(this)}
-                        />
-                    </div>
-                </div>
+                <Controls />
 
                 <OpenSpots
                     isCourseSelected={!!courses.selected}
