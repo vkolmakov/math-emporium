@@ -39,17 +39,23 @@ body {
 }
 
 .page-section {
-    &:focus {
-        outline: 0;
-        animation: primaryColorFade 1.5s forwards;
-    }
+    outline: 0;
 
-    @keyframes primaryColorFade {
-        from {
-            background: $primary-color;
+    @include on-medium-screen {
+        // Adds visual focus on page content for medium screens
+        // which is helpful when skip links are used and would
+        // probably be confusing in mobile environments.
+        &:focus {
+            animation: primaryColorFade 1.5s forwards;
         }
-        to {
-            background: transparent;
+
+        @keyframes primaryColorFade {
+            from {
+                background: $primary-color;
+            }
+            to {
+                background: transparent;
+            }
         }
     }
 }
