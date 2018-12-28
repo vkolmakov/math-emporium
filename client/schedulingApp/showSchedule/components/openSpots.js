@@ -36,17 +36,29 @@ function partitionOpenSpotsByWeekday(openSpots, startDate) {
         }));
 }
 
+const OpenSpotsContent = ({ hasMessage, children }) => {
+    const className = hasMessage
+        ? "open-spots-content--has-message"
+        : "open-spots-content";
+
+    return <div className={className}>{...children}</div>;
+};
+
 const OpenSpotsWrapper = (content) => (
-    <div
-        aria-live="polite"
-        aria-relevant="additions"
-        className="open-spots-display">
-        {content}
-    </div>
+    <OpenSpotsContent>
+        <div
+            aria-live="polite"
+            aria-relevant="additions"
+            className="open-spots-display">
+            {content}
+        </div>
+    </OpenSpotsContent>
 );
 
 const OpenSpotsMessageWrapper = (content) => (
-    <div className="open-spots-message">{content}</div>
+    <OpenSpotsContent hasMessage>
+        <div className="open-spots-message">{content}</div>
+    </OpenSpotsContent>
 );
 
 export default ({

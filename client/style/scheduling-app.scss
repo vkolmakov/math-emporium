@@ -143,10 +143,27 @@ $gutter-size: 0.75em;
     }
 }
 
+.open-spots-content {
+    &--has-message {
+        // Having a minimum height allows us to avoid content jumps during
+        // transitions from loading/error state back to having some content
+        // on mobile screens.
+        min-height: 100vh;
+
+        @include on-medium-screen {
+            // Cancel out the min-height set for mobile on desktops because
+            // bigger screens won't suffer from this content jump and having
+            // a min-height of 100vh will generate a scroll bar since the message
+            // does not include nav and controls.
+            min-height: auto;
+        }
+    }
+}
+
 .open-spots-message {
     $message-text-color: darken($tertiary-color, 70%);
 
-    @include breakpoint($medium-screen) {
+    @include on-medium-screen {
         margin: 2em auto;
     }
 
