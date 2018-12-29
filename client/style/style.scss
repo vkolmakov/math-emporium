@@ -46,8 +46,13 @@ body {
         // which is helpful when skip links are used and would
         // probably be confusing in mobile environments.
         &:focus {
-            animation: primaryColorFade 1.5s forwards;
+            animation: primaryColorFade 0.75s forwards;
         }
+
+        // This ensures that the focus indication captures the whole page
+        // and does not produce a scroll bar by subtracting the height of
+        // the nav bar.
+        min-height: calc(100vh - 3em);
 
         @keyframes primaryColorFade {
             from {
