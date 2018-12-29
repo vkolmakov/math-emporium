@@ -41,6 +41,11 @@ function getLastActiveElementInfo(event) {
 }
 
 class ShowSchedule extends Component {
+    constructor() {
+        super();
+        this.Controls = this.renderControls.bind(this);
+    }
+
     componentDidMount() {
         const {
             selectedOpenSpotInfo,
@@ -89,6 +94,49 @@ class ShowSchedule extends Component {
                 startDate,
                 subject: subjects.selected,
             });
+        } else {
+            this.focusOnNextInput();
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        const location = this.props.locations.selected;
+        const [prevCourse, course] = [
+            prevProps.courses.selected,
+            this.props.courses.selected,
+        ];
+        const [prevSubject, subject] = [
+            prevProps.subjects.selected,
+            this.props.subjects.selected,
+        ];
+        const [prevStartDate, startDate] = [
+            prevProps.startDate,
+            this.props.startDate,
+        ];
+
+        const isEverythingSelected = [
+            location,
+            course,
+            startDate,
+            subject,
+        ].every((e) => !!e);
+
+        const isRerenderWithNewCourse =
+            (prevCourse && course && prevCourse.id !== course.id) ||
+            !prevCourse;
+        const isRerenderWithNewSubject =
+            (prevSubject && subject && prevSubject.id !== subject.id) ||
+            !prevSubject;
+        const isRerenderWithNewDate =
+            prevStartDate && startDate && prevStartDate !== startDate;
+
+        if (
+            isEverythingSelected &&
+            (isRerenderWithNewCourse ||
+                isRerenderWithNewDate ||
+                isRerenderWithNewSubject)
+        ) {
+            this.props.getOpenSpots({ location, course, startDate, subject });
         } else {
             this.focusOnNextInput();
         }
@@ -304,49 +352,6 @@ class ShowSchedule extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        const location = this.props.locations.selected;
-        const [prevCourse, course] = [
-            prevProps.courses.selected,
-            this.props.courses.selected,
-        ];
-        const [prevSubject, subject] = [
-            prevProps.subjects.selected,
-            this.props.subjects.selected,
-        ];
-        const [prevStartDate, startDate] = [
-            prevProps.startDate,
-            this.props.startDate,
-        ];
-
-        const isEverythingSelected = [
-            location,
-            course,
-            startDate,
-            subject,
-        ].every((e) => !!e);
-
-        const isRerenderWithNewCourse =
-            (prevCourse && course && prevCourse.id !== course.id) ||
-            !prevCourse;
-        const isRerenderWithNewSubject =
-            (prevSubject && subject && prevSubject.id !== subject.id) ||
-            !prevSubject;
-        const isRerenderWithNewDate =
-            prevStartDate && startDate && prevStartDate !== startDate;
-
-        if (
-            isEverythingSelected &&
-            (isRerenderWithNewCourse ||
-                isRerenderWithNewDate ||
-                isRerenderWithNewSubject)
-        ) {
-            this.props.getOpenSpots({ location, course, startDate, subject });
-        } else {
-            this.focusOnNextInput();
-        }
-    }
-
     selectModal(currentModalStatus) {
         const onRequestClose = () => {
             this.props.clearOpenSpotSelection();
@@ -506,7 +511,7 @@ class ShowSchedule extends Component {
             ? this.selectModal(modalInfo.status).bind(this)
             : () => <span />;
 
-        const Controls = this.renderControls.bind(this);
+        const Controls = this.Controls;
 
         return (
             <div className="content">
