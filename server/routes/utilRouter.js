@@ -18,9 +18,20 @@ import {
     handleUpdateSettings,
 } from "../services/settings/settings.controller";
 import { handleGetAllErrorEvents } from "../services/errorEvent/errorEvent.controller";
+import createCalendarCheckService from "../services/calendarCheck/calendarCheck.controller";
+
+import mainStorage from "../services/mainStorage";
+import { calendarService } from "../services/googleApis";
+import * as appointmentsService from "../services/appointments/appointments.service";
 
 export default function createUtilRouter() {
     const router = express.Router();
+
+    const calendarCheckService = createCalendarCheckService(
+        mainStorage,
+        calendarService,
+        appointmentsService
+    );
 
     router.get("/open-spots", handleGetOpenSpots);
     router.get(
@@ -67,6 +78,17 @@ export default function createUtilRouter() {
         "/settings",
         requireGroup(authGroups.ADMIN),
         handleUpdateSettings
+    );
+
+    router.get(
+        "/admin/calendar/schedule-check",
+        requireGroup(authGroups.ADMIN),
+        calendarCheckService.scheduleCheck
+    );
+    router.get(
+        "/admin/calendar/appointments-check",
+        requireGroup(authGroups.ADMIN),
+        calendarCheckService.scheduleCheck
     );
 
     return router;

@@ -47,8 +47,8 @@ function extractSpecialInstructions(summary) {
         return null;
     }
 
-    const instructionsRegex = /^_\d+\((.+?)\)$/;
-    const match = summary.trim().match(instructionsRegex);
+    const overwriteTutorsInstructionRegex = /^_\d+\((.+?)\)$/;
+    const match = summary.trim().match(overwriteTutorsInstructionRegex);
 
     if (!match) {
         return null;
@@ -59,6 +59,10 @@ function extractSpecialInstructions(summary) {
             name: sanitizeCalendarInput(tutorName),
         })),
     };
+}
+
+export function isScheduleOverrideSpecialInstruction(specialInstruction) {
+    return Array.isArray(specialInstruction.overwriteTutors);
 }
 
 export function getSpecialInstructions(calendarEvents) {
