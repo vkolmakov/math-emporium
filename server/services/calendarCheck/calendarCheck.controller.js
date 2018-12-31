@@ -1,4 +1,5 @@
 import { dateTime } from "../../aux";
+import { actionFailed } from "../errorMessages";
 
 /**
  * @desc Measured in days. Restriction is added due to Google Calendar API
@@ -72,6 +73,62 @@ function createScheduleOverridesReducer(validTutorNames) {
     };
 }
 
+function toValidationObject(isValid, reason) {
+    return { isValid, reason: isValid ? null : reason };
+}
+
+function getValidatedRequestInputOrValidationErrors(query) {
+    const locationId = parseInt(query.locationId, 10);
+    const startDateTimestamp = parseInt(query.startDate, 10);
+    const endDateTimestamp = parseInt(query.endDate, 10);
+
+    const startDate = dateTime.fromTimestamp(startDateTimestamp);
+    const endDate = dateTime.fromTimestamp(endDateTimestamp);
+
+    // location existence will be checked later
+
+    const validations = [
+        toValidationObject(
+            !Number.isNaN(locationId),
+            "locationId must be a number"
+        ),
+        toValidationObject(
+            dateTime.isValid(startDate),
+            "startDate is not a valid timestamp"
+        ),
+        toValidationObject(
+            dateTime.isValid(endDate),
+            "endDate is not a valid timestamp"
+        ),
+        toValidationObject(
+            dateTime.isAfter(endDate, startDate),
+            "endDate must be larger than startDate"
+        ),
+        toValidationObject(
+            dateTime.differenceInDays(startDate, endDate) <=
+                MAX_DISTANCE_FOR_CALENDAR_CHECK,
+            `difference between startDate and endDate must not exceed ${MAX_DISTANCE_FOR_CALENDAR_CHECK} days`
+        ),
+    ];
+
+    const validationErrorMessages = validations.reduce(
+        (result, { isValid, reason }) => {
+            if (!isValid) {
+                result.push(reason);
+            }
+
+            return result;
+        },
+        []
+    );
+
+    if (validationErrorMessages.length > 0) {
+        return { errors: validationErrorMessages };
+    }
+
+    return { validatedInput: { locationId, startDate, endDate } };
+}
+
 export default (
     mainStorage,
     getCalendarServicePromise,
@@ -83,32 +140,24 @@ export default (
          * startDate: timestamp
          * endDate: timestamp
          */
+        const requestInputOrValidationErrors = getValidatedRequestInputOrValidationErrors(
+            req.query
+        );
 
-        /**
-         * input
-         */
-        const locationId = parseInt(req.query.locationId, 10);
-        const startDateTimestamp = parseInt(req.query.startDate, 10);
-        const endDateTimestamp = parseInt(req.query.endDate, 10);
+        const handleError = (reason) =>
+            next(actionFailed("perform", "schedule check", reason));
 
-        // validation
-        const startDate = dateTime.fromTimestamp(startDateTimestamp);
-        const endDate = dateTime.fromTimestamp(endDateTimestamp);
-
-        // location existence will be checked later
-        const hasValidLocationId = !Number.isNaN(locationId);
-
-        const isValidDateInterval =
-            dateTime.isValid(startDate) &&
-            dateTime.isValid(endDate) &&
-            dateTime.isAfter(endDate, startDate) &&
-            dateTime.differenceInDays(startDate, endDate) <=
-                MAX_DISTANCE_FOR_CALENDAR_CHECK;
-
-        if (!hasValidLocationId || !isValidDateInterval) {
-            // TODO: proper error handling
-            return res.status(500).json("Invalid Input");
+        if (requestInputOrValidationErrors.errors) {
+            return handleError(
+                requestInputOrValidationErrors.errors.join(", ")
+            );
         }
+
+        const {
+            locationId,
+            startDate,
+            endDate,
+        } = requestInputOrValidationErrors.validatedInput;
 
         /**
          * dependencies
@@ -155,7 +204,8 @@ export default (
                         )
                 )
             )
-            .then((result) => res.status(200).json(result));
+            .then((result) => res.status(200).json(result))
+            .catch(handleError);
     },
 
     appointmentsCheck(req, res, next) {
