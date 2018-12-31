@@ -2,6 +2,20 @@ import moment from "moment";
 
 import { TIMESTAMP_FORMAT, sanitizeCalendarInput } from "../../aux";
 
+function getBaseCalendarEventFields(calendarEvent) {
+    const startDateTime = moment(calendarEvent.start.dateTime);
+    const directCalendarEventLink = calendarEvent.htmlLink;
+
+    return {
+        // TODO: track all references to startDateTime and remove them/convert to use startDateTimeObject
+        startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
+        startDateTimeObject: startDateTime.toDate(),
+        directCalendarEventLink,
+        weekday: parseInt(startDateTime.format("E"), 10),
+        time: startDateTime.hours() * 60 + startDateTime.minutes(),
+    };
+}
+
 function extractInfoFromSummary(summary) {
     if (!summary) {
         return null;
@@ -28,12 +42,9 @@ export function getAppointments(calendarEvents) {
             return results;
         }
 
-        const startDateTime = moment(item.start.dateTime);
         const appointment = {
             ...appointmentInfo,
-            startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format("E"), 10),
-            time: startDateTime.hours() * 60 + startDateTime.minutes(),
+            ...getBaseCalendarEventFields(item),
         };
 
         return results.concat(appointment);
@@ -72,12 +83,9 @@ export function getSpecialInstructions(calendarEvents) {
             return results;
         }
 
-        const startDateTime = moment(item.start.dateTime);
         const instructions = {
             ...instructionsInfo,
-            startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format("E"), 10),
-            time: startDateTime.hours() * 60 + startDateTime.minutes(),
+            ...getBaseCalendarEventFields(item),
         };
 
         return results.concat(instructions);
