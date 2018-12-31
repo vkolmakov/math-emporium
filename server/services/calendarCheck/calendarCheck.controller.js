@@ -1,6 +1,27 @@
 import { dateTime } from "../../aux";
 
+/**
+ * @desc Measured in days. Restriction is added due to Google Calendar API
+ * restricting the number of events that could be possibly fetched. If the distance
+ * is too large and includes too many calendar events, we might end up missing events.
+ */
 const MAX_DISTANCE_FOR_CALENDAR_CHECK = 14;
+
+const scheduleCheckResult = {
+    unit() {
+        return { invalidScheduleEntries: [] };
+    },
+
+    createInvalidScheduleEntry(invalidTutorNames, scheduleOverride) {
+        return {
+            invalidTutorNames,
+            directCalendarEventLink: scheduleOverride.directCalendarEventLink,
+            timestamp: dateTime.toTimestamp(
+                scheduleOverride.startDateTimeObject
+            ),
+        };
+    },
+};
 
 function getLocationCalendarEvents(
     locationIdToCalendarId,
@@ -22,6 +43,32 @@ function getLocationCalendarEvents(
                 { useCache: false }
             );
         });
+    };
+}
+
+function createScheduleOverridesReducer(validTutorNames) {
+    const validTutorNamesLowerCase = new Set(
+        validTutorNames.map((name) => name.toLowerCase())
+    );
+
+    const isValidTutorName = (tutorName) =>
+        validTutorNamesLowerCase.has(String(tutorName).toLowerCase());
+
+    return function reduceScheduleOverride(result, scheduleOverride) {
+        const invalidTutorNames = scheduleOverride.overwriteTutors
+            .filter((tutor) => !isValidTutorName(tutor.name))
+            .map((tutor) => tutor.name);
+
+        if (invalidTutorNames.length > 0) {
+            const invalidScheduleEntry = scheduleCheckResult.createInvalidScheduleEntry(
+                invalidTutorNames,
+                scheduleOverride
+            );
+
+            result.invalidScheduleEntries.push(invalidScheduleEntry);
+        }
+
+        return result;
     };
 }
 
@@ -74,6 +121,14 @@ export default (
                 .then((location) => location.calendarId);
         };
 
+        const getValidTutorNamesForLocation = (id) => {
+            return mainStorage.db.models.tutor
+                .findAll({
+                    where: { locationId: id },
+                })
+                .then((tutors) => tutors.map((t) => t.name));
+        };
+
         const calendarEventsToScheduleOverrides = (calendarEvents) => {
             const specialInstructions = appointmentsService.getSpecialInstructions(
                 calendarEvents
@@ -91,6 +146,15 @@ export default (
 
         return getCalendarEvents(locationId, startDate, endDate)
             .then(calendarEventsToScheduleOverrides)
+            .then((scheduleOverrides) =>
+                getValidTutorNamesForLocation(locationId).then(
+                    (validTutorNames) =>
+                        scheduleOverrides.reduce(
+                            createScheduleOverridesReducer(validTutorNames),
+                            scheduleCheckResult.unit()
+                        )
+                )
+            )
             .then((result) => res.status(200).json(result));
     },
 
