@@ -16,10 +16,12 @@ function getBaseCalendarEventFields(calendarEvent) {
     };
 }
 
-function extractInfoFromSummary(summary) {
-    if (!summary) {
+export function calendarEventToAppointment(calendarEvent) {
+    if (!calendarEvent || !calendarEvent.summary) {
         return null;
     }
+
+    const { summary } = calendarEvent;
 
     const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
     const match = summary.trim().match(appointmentRegex);
@@ -32,31 +34,30 @@ function extractInfoFromSummary(summary) {
         tutor: sanitizeCalendarInput(match[1]),
         student: match[2],
         course: sanitizeCalendarInput(match[3]),
+        ...getBaseCalendarEventFields(calendarEvent),
     };
 }
 
 export function getAppointments(calendarEvents) {
     const appointments = calendarEvents.reduce((results, item) => {
-        const appointmentInfo = extractInfoFromSummary(item.summary);
+        const appointmentInfo = calendarEventToAppointment(item);
+
         if (!appointmentInfo) {
             return results;
         }
 
-        const appointment = {
-            ...appointmentInfo,
-            ...getBaseCalendarEventFields(item),
-        };
-
-        return results.concat(appointment);
+        return results.concat(appointmentInfo);
     }, []);
 
     return appointments;
 }
 
-function extractSpecialInstructions(summary) {
-    if (!summary) {
+export function calendarEventToSpecialInstruction(calendarEvent) {
+    if (!calendarEvent || !calendarEvent.summary) {
         return null;
     }
+
+    const { summary } = calendarEvent;
 
     const overwriteTutorsInstructionRegex = /^_\d+\((.+?)\)$/;
     const match = summary.trim().match(overwriteTutorsInstructionRegex);
@@ -69,6 +70,7 @@ function extractSpecialInstructions(summary) {
         overwriteTutors: match[1].split("_").map((tutorName) => ({
             name: sanitizeCalendarInput(tutorName),
         })),
+        ...getBaseCalendarEventFields(calendarEvent),
     };
 }
 
@@ -78,17 +80,13 @@ export function isScheduleOverrideSpecialInstruction(specialInstruction) {
 
 export function getSpecialInstructions(calendarEvents) {
     const specialInstructions = calendarEvents.reduce((results, item) => {
-        const instructionsInfo = extractSpecialInstructions(item.summary);
+        const instructionsInfo = calendarEventToSpecialInstruction(item);
+
         if (!instructionsInfo) {
             return results;
         }
 
-        const instructions = {
-            ...instructionsInfo,
-            ...getBaseCalendarEventFields(item),
-        };
-
-        return results.concat(instructions);
+        return results.concat(instructionsInfo);
     }, []);
 
     return specialInstructions;
