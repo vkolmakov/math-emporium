@@ -1,6 +1,6 @@
 export function notFound(item) {
     return {
-        error: `Selected ${item} was not found`,
+        error: `Selected ${item} was not found.`,
         status: 404,
     };
 }
