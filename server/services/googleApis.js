@@ -67,19 +67,24 @@ class CalendarService {
                     },
                     (err, result) => {
                         if (err) {
+                            let errorText;
+
                             if (err.code === 404) {
-                                const errorText = [
+                                // Treating this error as 500 because from the standpoint of
+                                // the application it's not actually a 404 and should not be logged
+                                // and exposed as such.
+                                errorText = [
                                     `Could not reach Google calendar ${calendarId}.`,
                                     "Make sure that the Google calendar ID is correct and shared with the service account.",
                                     `Full error: ${JSON.stringify(err)}`,
                                 ].join(" ");
-                                // Treating this error as 500 because from the standpoint of
-                                // the application it's not actually a 404 and should not be logged
-                                // and exposed as such.
-                                reject(errorMessage(errorText, 500));
                             } else {
-                                reject(err);
+                                errorText = `Google calendar error for ${calendarId}: ${JSON.stringify(
+                                    err
+                                )}`;
                             }
+
+                            reject(errorMessage(errorText, 500));
                         } else {
                             resolve(result.items.map(pickRequiredFields));
                         }
