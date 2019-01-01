@@ -83,12 +83,17 @@ export default function createUtilRouter() {
     router.get(
         "/admin/calendar/schedule-check",
         requireGroup(authGroups.ADMIN),
-        calendarCheckService.scheduleCheck
+        calendarCheckService.scheduleCheckHandler
     );
     router.get(
         "/admin/calendar/appointments-check",
         requireGroup(authGroups.ADMIN),
-        calendarCheckService.scheduleCheck
+        calendarCheckService.appointmentsCheckHandler
+    );
+    router.get(
+        "/admin/calendar/calendar-events-check",
+        requireGroup(authGroups.ADMIN),
+        calendarCheckService.calendarEventsCheckHandler
     );
 
     return router;

@@ -1,5 +1,5 @@
 import { dateTime } from "../../aux";
-import { actionFailed } from "../errorMessages";
+import { actionFailed, notFound, isCustomError } from "../errorMessages";
 
 /**
  * @desc Measured in days. Restriction is added due to Google Calendar API
@@ -24,10 +24,20 @@ const scheduleCheckResult = {
     },
 };
 
-function getLocationCalendarEvents(
-    locationIdToCalendarId,
-    getCalendarServicePromise
-) {
+function getLocationCalendarEvents(mainStorage, getCalendarServicePromise) {
+    const locationIdToCalendarId = (id) => {
+        return mainStorage.db.models.location
+            .findOne({
+                where: { id: id },
+            })
+            .then((location) => {
+                if (!location) {
+                    return Promise.reject(notFound("location"));
+                }
+                return Promise.resolve(location.calendarId);
+            });
+    };
+
     return function getLocationCalendarEventsInner(
         locationId,
         startDate,
@@ -44,6 +54,28 @@ function getLocationCalendarEvents(
                 { useCache: false }
             );
         });
+    };
+}
+
+function calendarEventsToScheduleOverrides(appointmentsService) {
+    return function calendarEventsToScheduleOverridesInner(calendarEvents) {
+        const specialInstructions = appointmentsService.getSpecialInstructions(
+            calendarEvents
+        );
+
+        return specialInstructions.filter(
+            appointmentsService.isScheduleOverrideSpecialInstruction
+        );
+    };
+}
+
+function getValidTutorNamesForLocation(mainStorage) {
+    return function getValidTutorNamesForLocationInner(locationId) {
+        return mainStorage.db.models.tutor
+            .findAll({
+                where: { locationId: locationId },
+            })
+            .then((tutors) => tutors.map((t) => t.name));
     };
 }
 
@@ -134,7 +166,7 @@ export default (
     getCalendarServicePromise,
     appointmentsService
 ) => ({
-    scheduleCheck(req, res, next) {
+    scheduleCheckHandler(req, res, next) {
         /**
          * locationId: number
          * startDate: timestamp
@@ -144,8 +176,12 @@ export default (
             req.query
         );
 
-        const handleError = (reason) =>
-            next(actionFailed("perform", "schedule check", reason));
+        const handleError = (error) => {
+            if (isCustomError(error)) {
+                return next(error);
+            }
+            return next(actionFailed("perform", "schedule check", error));
+        };
 
         if (requestInputOrValidationErrors.errors) {
             return handleError(
@@ -162,53 +198,33 @@ export default (
         /**
          * dependencies
          */
-        const locationIdToCalendarId = (id) => {
-            return mainStorage.db.models.location
-                .findOne({
-                    where: { id: id },
-                })
-                .then((location) => location.calendarId);
-        };
-
-        const getValidTutorNamesForLocation = (id) => {
-            return mainStorage.db.models.tutor
-                .findAll({
-                    where: { locationId: id },
-                })
-                .then((tutors) => tutors.map((t) => t.name));
-        };
-
-        const calendarEventsToScheduleOverrides = (calendarEvents) => {
-            const specialInstructions = appointmentsService.getSpecialInstructions(
-                calendarEvents
-            );
-
-            return specialInstructions.filter(
-                appointmentsService.isScheduleOverrideSpecialInstruction
-            );
-        };
 
         const getCalendarEvents = getLocationCalendarEvents(
-            locationIdToCalendarId,
+            mainStorage,
             getCalendarServicePromise
         );
 
+        const getValidTutorNames = getValidTutorNamesForLocation(mainStorage);
+
         return getCalendarEvents(locationId, startDate, endDate)
-            .then(calendarEventsToScheduleOverrides)
+            .then(calendarEventsToScheduleOverrides(appointmentsService))
             .then((scheduleOverrides) =>
-                getValidTutorNamesForLocation(locationId).then(
-                    (validTutorNames) =>
-                        scheduleOverrides.reduce(
-                            createScheduleOverridesReducer(validTutorNames),
-                            scheduleCheckResult.unit()
-                        )
+                getValidTutorNames(locationId).then((validTutorNames) =>
+                    scheduleOverrides.reduce(
+                        createScheduleOverridesReducer(validTutorNames),
+                        scheduleCheckResult.unit()
+                    )
                 )
             )
             .then((result) => res.status(200).json(result))
             .catch(handleError);
     },
 
-    appointmentsCheck(req, res, next) {
+    appointmentsCheckHandler(req, res, next) {
         res.status(200).json("Checking appointments");
+    },
+
+    calendarEventsCheckHandler(req, res, next) {
+        res.status(200).json("Checking calendar events");
     },
 });
