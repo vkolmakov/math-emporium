@@ -8,17 +8,39 @@ import { actionFailed, notFound, isCustomError } from "../errorMessages";
  */
 const MAX_DISTANCE_FOR_CALENDAR_CHECK = 14;
 
-const scheduleCheckResult = {
+const calendarCheckResult = {
     unit() {
-        return { invalidScheduleEntries: [] };
+        return {
+            invalidSchedules: [],
+            invalidAppointments: [],
+            unrecognizedCalendarEvents: [],
+        };
     },
 
-    createInvalidScheduleEntry(invalidTutorNames, scheduleOverride) {
+    createInvalidSchedulesEntry(invalidTutorNames, scheduleOverride) {
         return {
             invalidTutorNames,
             directCalendarEventLink: scheduleOverride.directCalendarEventLink,
             timestamp: dateTime.toTimestamp(
                 scheduleOverride.startDateTimeObject
+            ),
+        };
+    },
+
+    createInvalidAppointmentsEntry(invalidTutorName, appointment) {
+        return {
+            invalidTutorName,
+            directCalendarEventLink: appointment.directCalendarEventLink,
+            timestamp: dateTime.toTimestamp(appointment.startDateTimeObject),
+        };
+    },
+
+    createUnrecognizedCalendarEventsEntry(calendarEvent) {
+        return {
+            directCalendarEventLink: calendarEvent.htmlLink,
+            summary: calendarEvent.summary,
+            timestamp: dateTime.toTimestamp(
+                dateTime.fromISOString(calendarEvent.start.dateTime)
             ),
         };
     },
@@ -57,18 +79,6 @@ function getLocationCalendarEvents(mainStorage, getCalendarServicePromise) {
     };
 }
 
-function calendarEventsToScheduleOverrides(appointmentsService) {
-    return function calendarEventsToScheduleOverridesInner(calendarEvents) {
-        const specialInstructions = appointmentsService.getSpecialInstructions(
-            calendarEvents
-        );
-
-        return specialInstructions.filter(
-            appointmentsService.isScheduleOverrideSpecialInstruction
-        );
-    };
-}
-
 function getValidTutorNamesForLocation(mainStorage) {
     return function getValidTutorNamesForLocationInner(locationId) {
         return mainStorage.db.models.tutor
@@ -79,7 +89,11 @@ function getValidTutorNamesForLocation(mainStorage) {
     };
 }
 
-function createScheduleOverridesReducer(validTutorNames) {
+function createCalendarEventsReducer(
+    validTutorNames,
+    calendarEventToSpecialInstruction,
+    calendarEventToAppointment
+) {
     const validTutorNamesLowerCase = new Set(
         validTutorNames.map((name) => name.toLowerCase())
     );
@@ -87,21 +101,64 @@ function createScheduleOverridesReducer(validTutorNames) {
     const isValidTutorName = (tutorName) =>
         validTutorNamesLowerCase.has(String(tutorName).toLowerCase());
 
-    return function reduceScheduleOverride(result, scheduleOverride) {
+    const reduceSpecialInstruction = (result, specialInstruction) => {
+        // For now this is the only type of special instruction
+        let scheduleOverride = specialInstruction;
+
         const invalidTutorNames = scheduleOverride.overwriteTutors
             .filter((tutor) => !isValidTutorName(tutor.name))
             .map((tutor) => tutor.name);
 
         if (invalidTutorNames.length > 0) {
-            const invalidScheduleEntry = scheduleCheckResult.createInvalidScheduleEntry(
+            const invalidSchedulesEntry = calendarCheckResult.createInvalidSchedulesEntry(
                 invalidTutorNames,
                 scheduleOverride
             );
 
-            result.invalidScheduleEntries.push(invalidScheduleEntry);
+            result.invalidSchedules.push(invalidSchedulesEntry);
         }
 
         return result;
+    };
+
+    const reduceAppointment = (result, appointment) => {
+        const hasValidTutorName =
+            appointment.tutor && isValidTutorName(appointment.tutor);
+
+        if (!hasValidTutorName) {
+            const invalidAppointmentsEntry = calendarCheckResult.createInvalidAppointmentsEntry(
+                appointment.tutor,
+                appointment
+            );
+            result.invalidAppointments.push(invalidAppointmentsEntry);
+        }
+
+        return result;
+    };
+
+    const reduceUnrecognizedCalendarEvent = (result, calendarEvent) => {
+        const unrecognizedCalendarEventsEntry = calendarCheckResult.createUnrecognizedCalendarEventsEntry(
+            calendarEvent
+        );
+        result.unrecognizedCalendarEvents.push(unrecognizedCalendarEventsEntry);
+
+        return result;
+    };
+
+    return function reduceCalendarEvent(result, calendarEvent) {
+        const specialInstruction = calendarEventToSpecialInstruction(
+            calendarEvent
+        );
+        if (specialInstruction) {
+            return reduceSpecialInstruction(result, specialInstruction);
+        }
+
+        const appointment = calendarEventToAppointment(calendarEvent);
+        if (appointment) {
+            return reduceAppointment(result, appointment);
+        }
+
+        return reduceUnrecognizedCalendarEvent(result, calendarEvent);
     };
 }
 
@@ -161,12 +218,23 @@ function getValidatedRequestInputOrValidationErrors(query) {
     return { validatedInput: { locationId, startDate, endDate } };
 }
 
+function createErrorHandler(nextMiddlewareCallback) {
+    return function handleError(error) {
+        if (isCustomError(error)) {
+            return nextMiddlewareCallback(error);
+        }
+        return nextMiddlewareCallback(
+            actionFailed("perform", "schedule check", error)
+        );
+    };
+}
+
 export default (
     mainStorage,
     getCalendarServicePromise,
     appointmentsService
 ) => ({
-    scheduleCheckHandler(req, res, next) {
+    calendarCheckHandler(req, res, next) {
         /**
          * locationId: number
          * startDate: timestamp
@@ -176,12 +244,7 @@ export default (
             req.query
         );
 
-        const handleError = (error) => {
-            if (isCustomError(error)) {
-                return next(error);
-            }
-            return next(actionFailed("perform", "schedule check", error));
-        };
+        const handleError = createErrorHandler(next);
 
         if (requestInputOrValidationErrors.errors) {
             return handleError(
@@ -195,36 +258,34 @@ export default (
             endDate,
         } = requestInputOrValidationErrors.validatedInput;
 
-        /**
-         * dependencies
-         */
-
         const getCalendarEvents = getLocationCalendarEvents(
             mainStorage,
             getCalendarServicePromise
         );
 
         const getValidTutorNames = getValidTutorNamesForLocation(mainStorage);
+        const {
+            calendarEventToSpecialInstruction,
+            calendarEventToAppointment,
+        } = appointmentsService;
 
-        return getCalendarEvents(locationId, startDate, endDate)
-            .then(calendarEventsToScheduleOverrides(appointmentsService))
-            .then((scheduleOverrides) =>
-                getValidTutorNames(locationId).then((validTutorNames) =>
-                    scheduleOverrides.reduce(
-                        createScheduleOverridesReducer(validTutorNames),
-                        scheduleCheckResult.unit()
-                    )
+        const calendarEventsWithValidTutorNamesPromise = Promise.all([
+            getCalendarEvents(locationId, startDate, endDate),
+            getValidTutorNames(locationId),
+        ]);
+
+        return calendarEventsWithValidTutorNamesPromise
+            .then(([calendarEvents, validTutorNames]) =>
+                calendarEvents.reduce(
+                    createCalendarEventsReducer(
+                        validTutorNames,
+                        calendarEventToSpecialInstruction,
+                        calendarEventToAppointment
+                    ),
+                    calendarCheckResult.unit()
                 )
             )
             .then((result) => res.status(200).json(result))
             .catch(handleError);
-    },
-
-    appointmentsCheckHandler(req, res, next) {
-        res.status(200).json("Checking appointments");
-    },
-
-    calendarEventsCheckHandler(req, res, next) {
-        res.status(200).json("Checking calendar events");
     },
 });

@@ -172,6 +172,10 @@ export const dateTime = {
         return new Date(timestamp);
     },
 
+    fromISOString(s) {
+        return new Date(s);
+    },
+
     parse(other) {
         const result = _dateFns.parse(other);
         return result;
