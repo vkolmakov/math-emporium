@@ -21,11 +21,6 @@
     font-size: 1em;
     font-family: inherit;
 
-    width: 100%;
-    @include on-medium-screen {
-        width: 20em;
-    }
-
     &:disabled {
         cursor: not-allowed;
     }
@@ -38,6 +33,7 @@
     }
 
     display: flex;
+    flex-direction: column;
     flex: 1;
 
     &__input {

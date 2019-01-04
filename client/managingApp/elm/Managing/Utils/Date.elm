@@ -3,6 +3,8 @@ module Managing.Utils.Date exposing
     , TimezoneOffset
     , createTimezoneOffsetInMinutes
     , decodeTimestamp
+    , timestampToDate
+    , toDebugTimestampString
     , toDisplayString
     )
 
@@ -136,6 +138,18 @@ toDisplayString (TimezoneOffsetInMinutes timezoneOffsetInMinutes) (Date timestam
     in
     List.map (\tok -> tok localizedTimestamp) toks
         |> String.join ""
+
+
+toDebugTimestampString : TimezoneOffset -> Date -> String
+toDebugTimestampString (TimezoneOffsetInMinutes timezoneOffsetInMinutes) (Date timestamp) =
+    let
+        timezoneOffsetInMilliseconds =
+            minutesToMilliseconds timezoneOffsetInMinutes
+    in
+    timestamp
+        |> Time.posixToMillis
+        -- |> (\m -> m - timezoneOffsetInMilliseconds)
+        |> String.fromInt
 
 
 decodeTimestamp : Int -> Json.Decoder Date

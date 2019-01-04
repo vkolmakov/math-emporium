@@ -6,6 +6,7 @@ module Managing.Utils.RemoteData exposing
     , errorToString
     , map
     , scheduleLoadingStateTrigger
+    , withDefault
     )
 
 import Http
@@ -79,6 +80,16 @@ map fn val =
 
         Error e ->
             Error e
+
+
+withDefault : a -> RemoteData a -> a
+withDefault defaultVal x =
+    case x of
+        Available val ->
+            val
+
+        _ ->
+            defaultVal
 
 
 checkIfTakingTooLong : RemoteData a -> RemoteData a

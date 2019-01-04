@@ -2,6 +2,7 @@ module Managing.Styles exposing
     ( applicationContainer
     , apply
     , button
+    , calendarCheck
     , dataList
     , field
     , home
@@ -111,4 +112,10 @@ pageMessage =
 home =
     { self = "m-home"
     , message = "m-home__message"
+    }
+
+
+calendarCheck =
+    { self = "m-calendar-check"
+    , inputContainer = "m-calendar-check__input-container"
     }
