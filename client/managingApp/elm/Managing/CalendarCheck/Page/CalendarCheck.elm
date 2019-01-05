@@ -11,6 +11,7 @@ module Managing.CalendarCheck.Page.CalendarCheck exposing
 import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
 import Managing.Styles as Styles
@@ -53,9 +54,19 @@ init appConfig =
 -- UPDATE
 
 
+type RemoteDataRequest
+    = LocationsRequest
+
+
+
+-- TODO: Add Msg for receiving calendar check results and locations
+
+
 type Msg
     = StartDateChange String
     | EndDateChange String
+    | ReceiveLocations (Result Http.Error (List Location))
+    | CheckIfTakingTooLong RemoteDataRequest
     | NoOp
 
 
@@ -65,7 +76,32 @@ type OutMsg
 
 initCmd : Model -> Cmd Msg
 initCmd model =
-    Cmd.none
+    let
+        fetchData =
+            Cmd.batch
+                [ getLocations
+                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong LocationsRequest)
+                ]
+    in
+    case model.locations of
+        RemoteData.NotRequested ->
+            fetchData
+
+        RemoteData.Requested ->
+            fetchData
+
+        RemoteData.StillLoading ->
+            Cmd.none
+
+        RemoteData.Error _ ->
+            Cmd.none
+
+        RemoteData.Available _ ->
+            Cmd.none
+
+
+
+-- TODO: Replace String with DatePickerDateRepresentation String
 
 
 getUpdatedDate : String -> Maybe Date
@@ -82,6 +118,24 @@ update msg model =
 
         EndDateChange endDateString ->
             ( { model | selectedEndDate = getUpdatedDate endDateString }, Cmd.none, Nothing )
+
+        ReceiveLocations (Err e) ->
+            ( { model | locations = RemoteData.Error (RemoteData.errorFromHttpError e) }
+            , Cmd.none
+            , Nothing
+            )
+
+        ReceiveLocations (Ok locations) ->
+            ( { model | locations = RemoteData.Available locations }
+            , Cmd.none
+            , Nothing
+            )
+
+        CheckIfTakingTooLong LocationsRequest ->
+            ( { model | locations = RemoteData.checkIfTakingTooLong model.locations }
+            , Cmd.none
+            , Nothing
+            )
 
         NoOp ->
             ( model, Cmd.none, Nothing )
@@ -153,4 +207,26 @@ viewInputs model =
 
 
 -- HTTP
--- TODO: add locations fetch and make it a part of initCmd
+
+
+decodeLocation : Json.Decoder Location
+decodeLocation =
+    Json.map2
+        Location
+        (Json.field "id" Json.int)
+        (Json.field "name" Json.string)
+
+
+getLocations : Cmd Msg
+getLocations =
+    let
+        url =
+            "/api/locations"
+    in
+    Http.send
+        ReceiveLocations
+        (Http.get url (decodeLocation |> Json.list))
+
+
+
+-- TODO: add calendar check cmd fetch
