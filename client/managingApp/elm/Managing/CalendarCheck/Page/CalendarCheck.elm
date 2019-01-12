@@ -62,9 +62,14 @@ type RemoteDataRequest
 -- TODO: Add Msg for receiving calendar check results and locations
 
 
+type DatePickerDateValue
+    = DatePickerDateValue String
+
+
 type Msg
-    = StartDateChange String
-    | EndDateChange String
+    = StartDateChange DatePickerDateValue
+    | EndDateChange DatePickerDateValue
+    | SelectedLocationChange (Maybe Location)
     | ReceiveLocations (Result Http.Error (List Location))
     | CheckIfTakingTooLong RemoteDataRequest
     | NoOp
@@ -100,12 +105,8 @@ initCmd model =
             Cmd.none
 
 
-
--- TODO: Replace String with DatePickerDateRepresentation String
-
-
-getUpdatedDate : String -> Maybe Date
-getUpdatedDate dateString =
+getUpdatedDate : DatePickerDateValue -> Maybe Date
+getUpdatedDate (DatePickerDateValue dateString) =
     String.toInt dateString
         |> Maybe.map Date.timestampToDate
 
@@ -113,11 +114,17 @@ getUpdatedDate dateString =
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
-        StartDateChange startDateString ->
-            ( { model | selectedStartDate = getUpdatedDate startDateString }, Cmd.none, Nothing )
+        StartDateChange value ->
+            ( { model | selectedStartDate = getUpdatedDate value }, Cmd.none, Nothing )
 
-        EndDateChange endDateString ->
-            ( { model | selectedEndDate = getUpdatedDate endDateString }, Cmd.none, Nothing )
+        EndDateChange value ->
+            ( { model | selectedEndDate = getUpdatedDate value }, Cmd.none, Nothing )
+
+        SelectedLocationChange value ->
+            ( { model | selectedLocation = value }
+            , Cmd.none
+            , Nothing
+            )
 
         ReceiveLocations (Err e) ->
             ( { model | locations = RemoteData.Error (RemoteData.errorFromHttpError e) }
@@ -191,18 +198,46 @@ viewInputs model =
         locationSelectOptions =
             noValueOption :: List.map locationToSelectOption locationsList
 
+        decodeSelectedLocationFromChangeEvent =
+            Json.at [ "target", "value" ] Json.string
+                |> Json.andThen (decodeLocationFromRawLocationId locationsList)
+                |> Json.map SelectedLocationChange
+
         viewLocationSelect =
             Input.select
                 { isEditable = True, isLabelHidden = False, label = "Location" }
                 locationSelectOptions
                 selectedLocationOption
-                (E.on "change" (Json.succeed NoOp))
+                (E.on "change" decodeSelectedLocationFromChangeEvent)
     in
     H.div [ Styles.apply [ Styles.calendarCheck.inputContainer ] ]
         [ viewLocationSelect
-        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "Start Date" selectedStartDate StartDateChange
-        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "End Date" selectedEndDate EndDateChange
+        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "Start Date" selectedStartDate (StartDateChange << DatePickerDateValue)
+        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "End Date" selectedEndDate (EndDateChange << DatePickerDateValue)
         ]
+
+
+decodeLocationFromRawLocationId : List Location -> String -> Json.Decoder (Maybe Location)
+decodeLocationFromRawLocationId locations rawLocationId =
+    let
+        find list getAttribute item =
+            case list of
+                x :: xs ->
+                    if getAttribute x == item then
+                        Just x
+
+                    else
+                        find xs getAttribute item
+
+                [] ->
+                    Nothing
+
+        maybeLocationId =
+            String.toInt rawLocationId
+    in
+    maybeLocationId
+        |> Maybe.andThen (find locations .id)
+        |> Json.succeed
 
 
 
