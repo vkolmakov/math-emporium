@@ -17,6 +17,8 @@ import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date, TimezoneOffset)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
 import Managing.View.Input as Input
+import Managing.View.Loading exposing (spinner)
+import Managing.View.PageMessage as PageMessage exposing (viewPageError, viewPageMessage)
 
 
 
@@ -69,6 +71,7 @@ type Msg
     | ReceiveLocations (Result Http.Error (List Location))
     | ReceiveCalendarCheckResult (Result Http.Error CalendarCheckResult)
     | CheckIfTakingTooLong RemoteDataRequest
+    | Retry RemoteDataRequest
     | NoOp
 
 
@@ -108,17 +111,19 @@ getUpdatedDate (DatePickerDateValue dateString) =
         |> Maybe.map Date.timestampToDate
 
 
-attemptCalendarCheckRequest : Maybe Location -> Maybe Date -> Maybe Date -> Cmd Msg
+attemptCalendarCheckRequest : Maybe Location -> Maybe Date -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
 attemptCalendarCheckRequest selectedLocation selectedStartDate selectedEndDate =
     case ( selectedLocation, selectedStartDate, selectedEndDate ) of
         ( Just location, Just startDate, Just endDate ) ->
-            Cmd.batch
+            ( RemoteData.Requested
+            , Cmd.batch
                 [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
                 , getCalendarCheckResult location startDate endDate
                 ]
+            )
 
         _ ->
-            Cmd.none
+            ( RemoteData.NotRequested, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
@@ -128,9 +133,12 @@ update msg model =
             let
                 updatedStartDate =
                     getUpdatedDate value
+
+                ( nextCalendarCheckResultState, command ) =
+                    attemptCalendarCheckRequest model.selectedLocation updatedStartDate model.selectedEndDate
             in
-            ( { model | selectedStartDate = updatedStartDate }
-            , attemptCalendarCheckRequest model.selectedLocation updatedStartDate model.selectedEndDate
+            ( { model | selectedStartDate = updatedStartDate, calendarCheckResult = nextCalendarCheckResultState }
+            , command
             , Nothing
             )
 
@@ -138,15 +146,22 @@ update msg model =
             let
                 updatedEndDate =
                     getUpdatedDate value
+
+                ( nextCalendarCheckResultState, command ) =
+                    attemptCalendarCheckRequest model.selectedLocation model.selectedStartDate updatedEndDate
             in
-            ( { model | selectedEndDate = updatedEndDate }
-            , attemptCalendarCheckRequest model.selectedLocation model.selectedStartDate updatedEndDate
+            ( { model | selectedEndDate = updatedEndDate, calendarCheckResult = nextCalendarCheckResultState }
+            , command
             , Nothing
             )
 
         SelectedLocationChange updatedLocation ->
-            ( { model | selectedLocation = updatedLocation }
-            , attemptCalendarCheckRequest updatedLocation model.selectedStartDate model.selectedEndDate
+            let
+                ( nextCalendarCheckResultState, command ) =
+                    attemptCalendarCheckRequest updatedLocation model.selectedStartDate model.selectedEndDate
+            in
+            ( { model | selectedLocation = updatedLocation, calendarCheckResult = nextCalendarCheckResultState }
+            , command
             , Nothing
             )
 
@@ -186,6 +201,10 @@ update msg model =
             , Nothing
             )
 
+        Retry _ ->
+            -- TODO: implement
+            ( model, Cmd.none, Nothing )
+
         NoOp ->
             ( model, Cmd.none, Nothing )
 
@@ -200,8 +219,26 @@ view model =
 
 
 viewCalendarCheckResult : RemoteData CalendarCheckResult -> Html Msg
-viewCalendarCheckResult calendarCheckResult =
-    H.div [] [ H.text "Here's the calendar check result" ]
+viewCalendarCheckResult calendarCheckResultRemoteData =
+    let
+        viewContent =
+            case calendarCheckResultRemoteData of
+                RemoteData.NotRequested ->
+                    H.div [] []
+
+                RemoteData.Requested ->
+                    H.div [] []
+
+                RemoteData.StillLoading ->
+                    spinner
+
+                RemoteData.Error err ->
+                    viewPageError (Retry CalendarCheckResultRequest) err
+
+                RemoteData.Available calendarCheckResult ->
+                    H.div [] [ H.text "Here's the calendar check result" ]
+    in
+    H.div [] [ viewContent ]
 
 
 noValueOption : Input.SelectOption
