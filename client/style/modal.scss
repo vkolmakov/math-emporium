@@ -9,7 +9,9 @@
 }
 
 @mixin modal-base-button {
-    @include rounded-border font-size: 1em;
+    @include rounded-border();
+
+    font-size: 1em;
     width: 7.5em;
     padding: 0.5em;
 
@@ -74,6 +76,16 @@
             }
         }
     }
+}
+
+.ReactModal__Body--open {
+    /**
+     * Disable scrolling of the background when
+     * a modal is opened through react-modal.
+     * This class is added to the body of the document
+     * by the library as soon as any modal is opened.
+     */
+    overflow: hidden;
 }
 
 .message-modal {
