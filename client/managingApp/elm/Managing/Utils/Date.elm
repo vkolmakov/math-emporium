@@ -2,6 +2,7 @@ module Managing.Utils.Date exposing
     ( Date
     , TimezoneOffset
     , createTimezoneOffsetInMinutes
+    , dateToTimestamp
     , decodeTimestamp
     , timestampToDate
     , toDebugTimestampString
@@ -12,6 +13,7 @@ import Json.Decode as Json
 import Time exposing (Month(..), Posix, Weekday(..))
 
 
+minutesToMilliseconds : Int -> Int
 minutesToMilliseconds minutes =
     minutes * 60 * 1000
 
@@ -27,6 +29,11 @@ createTimezoneOffsetInMinutes minutes =
 
 type Date
     = Date Posix
+
+
+dateToTimestamp : Date -> Int
+dateToTimestamp (Date posixTimestamp) =
+    Time.posixToMillis posixTimestamp
 
 
 timestampToDate : Int -> Date

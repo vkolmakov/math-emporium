@@ -9,7 +9,6 @@ module Managing.CalendarCheck.Page.CalendarCheck exposing
     )
 
 import Html as H exposing (Html)
-import Html.Attributes as A
 import Html.Events as E
 import Http
 import Json.Decode as Json
@@ -56,10 +55,7 @@ init appConfig =
 
 type RemoteDataRequest
     = LocationsRequest
-
-
-
--- TODO: Add Msg for receiving calendar check results and locations
+    | CalendarCheckResultRequest
 
 
 type DatePickerDateValue
@@ -71,6 +67,7 @@ type Msg
     | EndDateChange DatePickerDateValue
     | SelectedLocationChange (Maybe Location)
     | ReceiveLocations (Result Http.Error (List Location))
+    | ReceiveCalendarCheckResult (Result Http.Error CalendarCheckResult)
     | CheckIfTakingTooLong RemoteDataRequest
     | NoOp
 
@@ -111,18 +108,45 @@ getUpdatedDate (DatePickerDateValue dateString) =
         |> Maybe.map Date.timestampToDate
 
 
+attemptCalendarCheckRequest : Maybe Location -> Maybe Date -> Maybe Date -> Cmd Msg
+attemptCalendarCheckRequest selectedLocation selectedStartDate selectedEndDate =
+    case ( selectedLocation, selectedStartDate, selectedEndDate ) of
+        ( Just location, Just startDate, Just endDate ) ->
+            Cmd.batch
+                [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
+                , getCalendarCheckResult location startDate endDate
+                ]
+
+        _ ->
+            Cmd.none
+
+
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         StartDateChange value ->
-            ( { model | selectedStartDate = getUpdatedDate value }, Cmd.none, Nothing )
+            let
+                updatedStartDate =
+                    getUpdatedDate value
+            in
+            ( { model | selectedStartDate = updatedStartDate }
+            , attemptCalendarCheckRequest model.selectedLocation updatedStartDate model.selectedEndDate
+            , Nothing
+            )
 
         EndDateChange value ->
-            ( { model | selectedEndDate = getUpdatedDate value }, Cmd.none, Nothing )
+            let
+                updatedEndDate =
+                    getUpdatedDate value
+            in
+            ( { model | selectedEndDate = updatedEndDate }
+            , attemptCalendarCheckRequest model.selectedLocation model.selectedStartDate updatedEndDate
+            , Nothing
+            )
 
-        SelectedLocationChange value ->
-            ( { model | selectedLocation = value }
-            , Cmd.none
+        SelectedLocationChange updatedLocation ->
+            ( { model | selectedLocation = updatedLocation }
+            , attemptCalendarCheckRequest updatedLocation model.selectedStartDate model.selectedEndDate
             , Nothing
             )
 
@@ -138,8 +162,26 @@ update msg model =
             , Nothing
             )
 
+        ReceiveCalendarCheckResult (Err e) ->
+            ( { model | calendarCheckResult = RemoteData.Error (RemoteData.errorFromHttpError e) }
+            , Cmd.none
+            , Nothing
+            )
+
+        ReceiveCalendarCheckResult (Ok calendarCheckResult) ->
+            ( { model | calendarCheckResult = RemoteData.Available calendarCheckResult }
+            , Cmd.none
+            , Nothing
+            )
+
         CheckIfTakingTooLong LocationsRequest ->
             ( { model | locations = RemoteData.checkIfTakingTooLong model.locations }
+            , Cmd.none
+            , Nothing
+            )
+
+        CheckIfTakingTooLong CalendarCheckResultRequest ->
+            ( { model | calendarCheckResult = RemoteData.checkIfTakingTooLong model.calendarCheckResult }
             , Cmd.none
             , Nothing
             )
@@ -162,6 +204,7 @@ viewCalendarCheckResult calendarCheckResult =
     H.div [] [ H.text "Here's the calendar check result" ]
 
 
+noValueOption : Input.SelectOption
 noValueOption =
     Input.toSelectOption { label = "", value = "" }
 
@@ -263,5 +306,28 @@ getLocations =
         (Http.get url (decodeLocation |> Json.list))
 
 
+decodeCalendarCheckResult : Json.Decoder CalendarCheckResult
+decodeCalendarCheckResult =
+    Json.succeed (CalendarCheckResult "Hello!")
 
--- TODO: add calendar check cmd fetch
+
+getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
+getCalendarCheckResult location startDate endDate =
+    let
+        queryParams =
+            [ ( "locationId", String.fromInt location.id )
+            , ( "startDate", startDate |> Date.dateToTimestamp |> String.fromInt )
+            , ( "endDate", endDate |> Date.dateToTimestamp |> String.fromInt )
+            ]
+
+        query =
+            queryParams
+                |> List.map (\( key, value ) -> key ++ "=" ++ value)
+                |> String.join "&"
+
+        url =
+            "/api/admin/calendar/check" ++ "?" ++ query
+    in
+    Http.send
+        ReceiveCalendarCheckResult
+        (Http.get url decodeCalendarCheckResult)
