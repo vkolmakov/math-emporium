@@ -31,8 +31,24 @@ type alias Location =
     }
 
 
+type alias CalendarEvent =
+    { directCalendarEventLink : String
+    , date : Date
+    }
+
+
+type InvalidAppointmentReason
+    = UnrecognizedTutorName String
+
+
+type alias InvalidAppointmentEntry =
+    { calendarEvent : CalendarEvent
+    , reason : InvalidAppointmentReason
+    }
+
+
 type alias CalendarCheckResult =
-    { stuff : String
+    { invalidAppointments : List InvalidAppointmentEntry
     }
 
 
@@ -345,7 +361,27 @@ getLocations =
 
 decodeCalendarCheckResult : Json.Decoder CalendarCheckResult
 decodeCalendarCheckResult =
-    Json.succeed (CalendarCheckResult "Hello!")
+    let
+        decodeCalendarEvent =
+            Json.map2
+                CalendarEvent
+                (Json.field "directCalendarEventLink" Json.string)
+                (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+
+        decodeInvalidAppointmentReason =
+            Json.map
+                UnrecognizedTutorName
+                (Json.field "invalidTutorName" Json.string)
+
+        decodeInvalidAppointment =
+            Json.map2
+                InvalidAppointmentEntry
+                decodeCalendarEvent
+                decodeInvalidAppointmentReason
+    in
+    Json.map
+        CalendarCheckResult
+        (Json.field "invalidAppointments" (decodeInvalidAppointment |> Json.list))
 
 
 getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
