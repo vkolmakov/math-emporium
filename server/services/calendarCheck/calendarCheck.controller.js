@@ -109,13 +109,37 @@ function getValidatedRequestInputOrValidationErrors(query) {
 }
 
 function createErrorHandler(nextMiddlewareCallback) {
-    return function handleError(error) {
-        if (isCustomError(error)) {
-            return nextMiddlewareCallback(error);
+    return function handleError(err) {
+        let errorObject;
+
+        if (isCustomError(err)) {
+            /**
+             * Because we are inside an admin-level API used to diagnose
+             * calendar and location issues, there is no need
+             * to follow the regular error handling process which will
+             * obscure the errors. For example, if the Google calendar for
+             * the selected location is not available, we would want the user
+             * to know about it.
+             */
+            errorObject = actionFailed("perform", "schedule check", err.error);
+        } else if (typeof err === "string") {
+            /**
+             * This is a validation error.
+             */
+            errorObject = actionFailed("perform", "schedule check", err);
+        } else {
+            /**
+             * In this case, this is not a validation error nor it is
+             * a known domain error.
+             *
+             * With that, going through the regular error handling
+             * flow makes more sense as the details of this error
+             * are not useful to user of the API.
+             */
+            errorObject = err;
         }
-        return nextMiddlewareCallback(
-            actionFailed("perform", "schedule check", error)
-        );
+
+        return nextMiddlewareCallback(errorObject);
     };
 }
 
