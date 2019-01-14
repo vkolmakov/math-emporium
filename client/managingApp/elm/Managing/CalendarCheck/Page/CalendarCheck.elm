@@ -16,6 +16,7 @@ import Managing.AppConfig exposing (AppConfig)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date, TimezoneOffset)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
+import Managing.Utils.Url as Url exposing (Url)
 import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
@@ -33,7 +34,7 @@ type alias Location =
 
 
 type alias CalendarEvent =
-    { directCalendarEventLink : String
+    { directCalendarEventLink : Url
     , date : Date
     , summary : String
     }
@@ -86,6 +87,7 @@ type Msg
     = StartDateChange DatePickerDateValue
     | EndDateChange DatePickerDateValue
     | SelectedLocationChange (Maybe Location)
+    | RequestUpdateCalendarEvent CalendarEvent
     | ReceiveLocations (Result Http.Error (List Location))
     | ReceiveCalendarCheckResult (Result Http.Error CalendarCheckResult)
     | CheckIfTakingTooLong RemoteDataRequest
@@ -94,7 +96,7 @@ type Msg
 
 
 type OutMsg
-    = NoOpOutMsg
+    = RequestOpenNewBrowserTab Url
 
 
 initCmd : Model -> Cmd Msg
@@ -183,6 +185,12 @@ update msg model =
             , Nothing
             )
 
+        RequestUpdateCalendarEvent calendarEvent ->
+            ( model
+            , Cmd.none
+            , Just (RequestOpenNewBrowserTab calendarEvent.directCalendarEventLink)
+            )
+
         ReceiveLocations (Err e) ->
             ( { model | locations = RemoteData.Error (RemoteData.errorFromHttpError e) }
             , Cmd.none
@@ -255,7 +263,7 @@ viewCalendarCheckResultContent appConfig { invalidAppointments } =
                 , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
                 , DataTable.textField "Reason" (invalidAppointmentReasonToString value.reason)
                 , DataTable.actionContainer
-                    [ DataTable.actionLink "Update the calendar event" (E.onClick NoOp)
+                    [ DataTable.actionLink "Update the calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
                     ]
                 ]
     in
@@ -396,7 +404,7 @@ decodeCalendarCheckResult =
         decodeCalendarEvent =
             Json.map3
                 CalendarEvent
-                (Json.field "directCalendarEventLink" Json.string)
+                (Json.field "directCalendarEventLink" Json.string |> Json.map Url.fromString)
                 (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
                 (Json.field "calendarEventSummary" Json.string)
 

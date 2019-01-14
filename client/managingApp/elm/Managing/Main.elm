@@ -5,9 +5,7 @@ import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Html as H exposing (Attribute, Html)
 import Html.Attributes as A
-import Html.Events as E
 import Html.Lazy exposing (lazy, lazy2)
-import Json.Decode as Json
 import Managing.AppConfig as AppConfig exposing (AppConfig)
 import Managing.Appointments.Page.AppointmentList as AppointmentList
 import Managing.CalendarCheck.Page.CalendarCheck as CalendarCheck
@@ -18,10 +16,10 @@ import Managing.Settings.Page.EditSettings as EditSettings
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Managing.Utils.Url as Url exposing (Url)
 import Managing.View.Modal as Modal
 import Process
 import Task
-import Url exposing (Url)
 
 
 main =
@@ -160,8 +158,8 @@ handleOutMsg model outMsg =
         AppointmentListPageOutMsg Nothing ->
             ( model, Cmd.none )
 
-        CalendarCheckPageOutMsg (Just CalendarCheck.NoOpOutMsg) ->
-            ( model, Cmd.none )
+        CalendarCheckPageOutMsg (Just (CalendarCheck.RequestOpenNewBrowserTab url)) ->
+            ( model, requestOpenNewBrowserTab (Url.toString url) )
 
         CalendarCheckPageOutMsg Nothing ->
             ( model, Cmd.none )
@@ -487,6 +485,13 @@ port requestCloseModal : String -> Cmd msg
 
 
 port onModalCloseRequest : (String -> msg) -> Sub msg
+
+
+
+-- BROWSER
+
+
+port requestOpenNewBrowserTab : String -> Cmd msg
 
 
 

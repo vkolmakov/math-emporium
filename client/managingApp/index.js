@@ -98,6 +98,13 @@ const ports = (elmPortsRef) => {
         }
     });
 
+    /**
+     * Browser
+     */
+    elmPortsRef.requestOpenNewBrowserTab.subscribe((url) => {
+        window.open(url);
+    });
+
     return function portsCleanup() {
         window.removeEventListener("popstate", onLocationHrefChange);
     };
