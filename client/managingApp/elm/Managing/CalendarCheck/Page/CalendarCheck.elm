@@ -51,7 +51,7 @@ type alias InvalidAppointmentEntry =
 
 
 type alias CalendarCheckResult =
-    { invalidAppointments : List InvalidAppointmentEntry
+    { invalidAppointments : Maybe (List InvalidAppointmentEntry)
     }
 
 
@@ -257,6 +257,13 @@ invalidAppointmentReasonToString reason =
 viewCalendarCheckResultContent : AppConfig -> CalendarCheckResult -> Html Msg
 viewCalendarCheckResultContent appConfig { invalidAppointments } =
     let
+        viewEmptySection =
+            H.div [] []
+
+        viewSectionWithTitle title children =
+            H.div []
+                (H.h2 [] [ H.text title ] :: children)
+
         viewInvalidAppointment value =
             DataTable.item
                 [ DataTable.textField "Summary" value.calendarEvent.summary
@@ -266,10 +273,15 @@ viewCalendarCheckResultContent appConfig { invalidAppointments } =
                     [ DataTable.actionLink "Update the calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
                     ]
                 ]
+
+        viewInvalidAppointmentsSection =
+            invalidAppointments
+                |> Maybe.map (List.map viewInvalidAppointment)
+                |> Maybe.map (viewSectionWithTitle "Invalid Appointments")
+                |> Maybe.withDefault viewEmptySection
     in
     H.div []
-        [ H.h2 [] [ H.text "Invalid Appointments" ]
-        , H.div [] (List.map viewInvalidAppointment invalidAppointments)
+        [ viewInvalidAppointmentsSection
         ]
 
 
@@ -401,6 +413,14 @@ getLocations =
 decodeCalendarCheckResult : Json.Decoder CalendarCheckResult
 decodeCalendarCheckResult =
     let
+        wrapListWithMaybe list =
+            case list of
+                [] ->
+                    Nothing
+
+                _ ->
+                    Just list
+
         decodeCalendarEvent =
             Json.map3
                 CalendarEvent
@@ -421,7 +441,7 @@ decodeCalendarCheckResult =
     in
     Json.map
         CalendarCheckResult
-        (Json.field "invalidAppointments" (decodeInvalidAppointment |> Json.list))
+        (Json.field "invalidAppointments" (decodeInvalidAppointment |> Json.list |> Json.map wrapListWithMaybe))
 
 
 getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
