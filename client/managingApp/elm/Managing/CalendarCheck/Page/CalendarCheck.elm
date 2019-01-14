@@ -16,6 +16,7 @@ import Managing.AppConfig exposing (AppConfig)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date, TimezoneOffset)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
+import Managing.View.DataTable as DataTable
 import Managing.View.Input as Input
 import Managing.View.Loading exposing (spinner)
 import Managing.View.PageMessage as PageMessage exposing (viewPageError, viewPageMessage)
@@ -34,6 +35,7 @@ type alias Location =
 type alias CalendarEvent =
     { directCalendarEventLink : String
     , date : Date
+    , summary : String
     }
 
 
@@ -231,11 +233,40 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    H.div [] [ viewInputs model, viewCalendarCheckResult model.calendarCheckResult ]
+    H.div []
+        [ viewInputs model
+        , viewCalendarCheckResult model.appConfig model.calendarCheckResult
+        ]
 
 
-viewCalendarCheckResult : RemoteData CalendarCheckResult -> Html Msg
-viewCalendarCheckResult calendarCheckResultRemoteData =
+invalidAppointmentReasonToString : InvalidAppointmentReason -> String
+invalidAppointmentReasonToString reason =
+    case reason of
+        UnrecognizedTutorName tutorName ->
+            "Unrecognized tutor name: " ++ tutorName
+
+
+viewCalendarCheckResultContent : AppConfig -> CalendarCheckResult -> Html Msg
+viewCalendarCheckResultContent appConfig { invalidAppointments } =
+    let
+        viewInvalidAppointment value =
+            DataTable.item
+                [ DataTable.textField "Summary" value.calendarEvent.summary
+                , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
+                , DataTable.textField "Reason" (invalidAppointmentReasonToString value.reason)
+                , DataTable.actionContainer
+                    [ DataTable.actionLink "Update the calendar event" (E.onClick NoOp)
+                    ]
+                ]
+    in
+    H.div []
+        [ H.h2 [] [ H.text "Invalid Appointments" ]
+        , H.div [] (List.map viewInvalidAppointment invalidAppointments)
+        ]
+
+
+viewCalendarCheckResult : AppConfig -> RemoteData CalendarCheckResult -> Html Msg
+viewCalendarCheckResult appConfig calendarCheckResultRemoteData =
     let
         viewContent =
             case calendarCheckResultRemoteData of
@@ -252,7 +283,7 @@ viewCalendarCheckResult calendarCheckResultRemoteData =
                     viewPageError (Retry CalendarCheckResultRequest) err
 
                 RemoteData.Available calendarCheckResult ->
-                    H.div [] [ H.text "Here's the calendar check result" ]
+                    viewCalendarCheckResultContent appConfig calendarCheckResult
     in
     H.div [] [ viewContent ]
 
@@ -363,10 +394,11 @@ decodeCalendarCheckResult : Json.Decoder CalendarCheckResult
 decodeCalendarCheckResult =
     let
         decodeCalendarEvent =
-            Json.map2
+            Json.map3
                 CalendarEvent
                 (Json.field "directCalendarEventLink" Json.string)
                 (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
+                (Json.field "calendarEventSummary" Json.string)
 
         decodeInvalidAppointmentReason =
             Json.map
