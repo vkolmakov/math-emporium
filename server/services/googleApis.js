@@ -3,7 +3,7 @@ import googleapis from "googleapis";
 import cache from "./cache";
 import { errorMessage } from "./errorMessages";
 
-import { TIMEZONE, R, Either } from "../aux";
+import { TIMEZONE, R, Either, dateTime } from "../aux";
 import config from "../config";
 
 function decodeServiceKey(base64ServiceKey) {
@@ -31,6 +31,18 @@ function getAuth(resource) {
     });
 }
 
+function toCalendarEvent(googleCalendarEvent) {
+    const { summary, start, id, htmlLink } = googleCalendarEvent;
+
+    return {
+        summary,
+        start,
+        id,
+        directCalendarEventLink: htmlLink,
+        startDateTimeObject: dateTime.fromISOString(start.dateTime),
+    };
+}
+
 class CalendarService {
     constructor() {
         this.isInitialized = false;
@@ -46,12 +58,6 @@ class CalendarService {
 
     getCalendarEvents(calendarId, startDate, endDate, options) {
         const { useCache } = options;
-        const pickRequiredFields = R.pick([
-            "summary",
-            "start",
-            "id",
-            "htmlLink",
-        ]);
 
         const fetchEvents = () =>
             new Promise((resolve, reject) => {
@@ -86,7 +92,7 @@ class CalendarService {
 
                             reject(errorMessage(errorText, 500));
                         } else {
-                            resolve(result.items.map(pickRequiredFields));
+                            resolve(result.items.map(toCalendarEvent));
                         }
                     }
                 );

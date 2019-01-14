@@ -1,5 +1,13 @@
 import { dateTime } from "../../aux";
 
+function getCalendarEventInformation(calendarEvent) {
+    return {
+        directCalendarEventLink: calendarEvent.directCalendarEventLink,
+        timestamp: dateTime.toTimestamp(calendarEvent.startDateTimeObject),
+        calendarEventSummary: calendarEvent.summary,
+    };
+}
+
 const calendarCheckResult = {
     unit() {
         return {
@@ -9,31 +17,23 @@ const calendarCheckResult = {
         };
     },
 
-    createInvalidSchedulesEntry(invalidTutorNames, scheduleOverride) {
+    createInvalidSchedulesEntry(invalidTutorNames, calendarEvent) {
         return {
             invalidTutorNames,
-            directCalendarEventLink: scheduleOverride.directCalendarEventLink,
-            timestamp: dateTime.toTimestamp(
-                scheduleOverride.startDateTimeObject
-            ),
+            ...getCalendarEventInformation(calendarEvent),
         };
     },
 
-    createInvalidAppointmentsEntry(invalidTutorName, appointment) {
+    createInvalidAppointmentsEntry(invalidTutorName, calendarEvent) {
         return {
             invalidTutorName,
-            directCalendarEventLink: appointment.directCalendarEventLink,
-            timestamp: dateTime.toTimestamp(appointment.startDateTimeObject),
+            ...getCalendarEventInformation(calendarEvent),
         };
     },
 
     createUnrecognizedCalendarEventsEntry(calendarEvent) {
         return {
-            directCalendarEventLink: calendarEvent.htmlLink,
-            summary: calendarEvent.summary,
-            timestamp: dateTime.toTimestamp(
-                dateTime.fromISOString(calendarEvent.start.dateTime)
-            ),
+            ...getCalendarEventInformation(calendarEvent),
         };
     },
 
@@ -49,7 +49,11 @@ const calendarCheckResult = {
         const isValidTutorName = (tutorName) =>
             validTutorNamesLowerCase.has(String(tutorName).toLowerCase());
 
-        const reduceSpecialInstruction = (result, specialInstruction) => {
+        const reduceSpecialInstruction = (
+            result,
+            specialInstruction,
+            calendarEvent
+        ) => {
             // For now this is the only type of special instruction
             let scheduleOverride = specialInstruction;
 
@@ -60,7 +64,7 @@ const calendarCheckResult = {
             if (invalidTutorNames.length > 0) {
                 const invalidSchedulesEntry = calendarCheckResult.createInvalidSchedulesEntry(
                     invalidTutorNames,
-                    scheduleOverride
+                    calendarEvent
                 );
 
                 result.invalidSchedules.push(invalidSchedulesEntry);
@@ -69,14 +73,14 @@ const calendarCheckResult = {
             return result;
         };
 
-        const reduceAppointment = (result, appointment) => {
+        const reduceAppointment = (result, appointment, calendarEvent) => {
             const hasValidTutorName =
                 appointment.tutor && isValidTutorName(appointment.tutor);
 
             if (!hasValidTutorName) {
                 const invalidAppointmentsEntry = calendarCheckResult.createInvalidAppointmentsEntry(
                     appointment.tutor,
-                    appointment
+                    calendarEvent
                 );
                 result.invalidAppointments.push(invalidAppointmentsEntry);
             }
@@ -100,12 +104,16 @@ const calendarCheckResult = {
                 calendarEvent
             );
             if (specialInstruction) {
-                return reduceSpecialInstruction(result, specialInstruction);
+                return reduceSpecialInstruction(
+                    result,
+                    specialInstruction,
+                    calendarEvent
+                );
             }
 
             const appointment = calendarEventToAppointment(calendarEvent);
             if (appointment) {
-                return reduceAppointment(result, appointment);
+                return reduceAppointment(result, appointment, calendarEvent);
             }
 
             return reduceUnrecognizedCalendarEvent(result, calendarEvent);
