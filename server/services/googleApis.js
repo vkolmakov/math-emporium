@@ -82,7 +82,6 @@ class CalendarService {
                                 errorText = [
                                     `Could not reach Google calendar ${calendarId}.`,
                                     "Make sure that the Google calendar ID is correct and shared with the service account.",
-                                    `Full error: ${JSON.stringify(err)}`,
                                 ].join(" ");
                             } else {
                                 errorText = `Google calendar error for ${calendarId}: ${JSON.stringify(
