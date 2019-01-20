@@ -84,7 +84,7 @@ function getValidatedRequestInputOrValidationErrors(query) {
             "endDate must be larger than startDate"
         ),
         toValidationObject(
-            dateTime.differenceInDays(startDate, endDate) <=
+            Math.abs(dateTime.differenceInDays(startDate, endDate)) <=
                 MAX_DISTANCE_FOR_CALENDAR_CHECK,
             `difference between startDate and endDate must not exceed ${MAX_DISTANCE_FOR_CALENDAR_CHECK} days`
         ),
