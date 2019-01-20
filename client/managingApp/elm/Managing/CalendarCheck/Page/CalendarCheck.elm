@@ -33,6 +33,10 @@ type alias Location =
     }
 
 
+type TutorName
+    = TutorName String
+
+
 type alias CalendarEvent =
     { directCalendarEventLink : Url
     , date : Date
@@ -41,7 +45,7 @@ type alias CalendarEvent =
 
 
 type InvalidAppointmentReason
-    = UnrecognizedTutorName String
+    = UnrecognizedTutorNameInAppointment TutorName
 
 
 type alias InvalidAppointmentEntry =
@@ -50,8 +54,19 @@ type alias InvalidAppointmentEntry =
     }
 
 
+type InvalidScheduleReason
+    = UnrecognizedTutorNamesInSchedule (List TutorName)
+
+
+type alias InvalidScheduleEntry =
+    { calendarEvent : CalendarEvent
+    , reason : InvalidScheduleReason
+    }
+
+
 type alias CalendarCheckResult =
     { invalidAppointments : Maybe (List InvalidAppointmentEntry)
+    , invalidSchedules : Maybe (List InvalidScheduleEntry)
     }
 
 
@@ -250,12 +265,25 @@ view model =
 invalidAppointmentReasonToString : InvalidAppointmentReason -> String
 invalidAppointmentReasonToString reason =
     case reason of
-        UnrecognizedTutorName tutorName ->
+        UnrecognizedTutorNameInAppointment (TutorName tutorName) ->
             "Unrecognized tutor name: " ++ tutorName
 
 
+invalidScheduleReasonToString : InvalidScheduleReason -> String
+invalidScheduleReasonToString reason =
+    case reason of
+        UnrecognizedTutorNamesInSchedule tutorNames ->
+            let
+                tutorNamesString =
+                    tutorNames
+                        |> List.map (\(TutorName name) -> name)
+                        |> String.join ", "
+            in
+            "Unrecognized tutor names: " ++ tutorNamesString
+
+
 viewCalendarCheckResultContent : AppConfig -> CalendarCheckResult -> Html Msg
-viewCalendarCheckResultContent appConfig { invalidAppointments } =
+viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules } =
     let
         viewEmptySection =
             H.div [] []
@@ -264,24 +292,41 @@ viewCalendarCheckResultContent appConfig { invalidAppointments } =
             H.div []
                 (H.h2 [] [ H.text title ] :: children)
 
+        viewSection title viewSingleItem maybeItemList =
+            maybeItemList
+                |> Maybe.map (List.map viewSingleItem)
+                |> Maybe.map (viewSectionWithTitle title)
+                |> Maybe.withDefault viewEmptySection
+
         viewInvalidAppointment value =
             DataTable.item
                 [ DataTable.textField "Summary" value.calendarEvent.summary
                 , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
                 , DataTable.textField "Reason" (invalidAppointmentReasonToString value.reason)
                 , DataTable.actionContainer
-                    [ DataTable.actionLink "Update the calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
+                    [ DataTable.actionLink "Update calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
+                    ]
+                ]
+
+        viewInvalidSchedule value =
+            DataTable.item
+                [ DataTable.textField "Summary" value.calendarEvent.summary
+                , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
+                , DataTable.textField "Reason" (invalidScheduleReasonToString value.reason)
+                , DataTable.actionContainer
+                    [ DataTable.actionLink "Update calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
                     ]
                 ]
 
         viewInvalidAppointmentsSection =
-            invalidAppointments
-                |> Maybe.map (List.map viewInvalidAppointment)
-                |> Maybe.map (viewSectionWithTitle "Invalid Appointments")
-                |> Maybe.withDefault viewEmptySection
+            viewSection "Invalid Appointments" viewInvalidAppointment invalidAppointments
+
+        viewInvalidSchedulesSection =
+            viewSection "Invalid Schedules" viewInvalidSchedule invalidSchedules
     in
     H.div []
         [ viewInvalidAppointmentsSection
+        , viewInvalidSchedulesSection
         ]
 
 
@@ -428,20 +473,35 @@ decodeCalendarCheckResult =
                 (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
                 (Json.field "calendarEventSummary" Json.string)
 
+        decodeTutorName =
+            Json.string |> Json.map TutorName
+
         decodeInvalidAppointmentReason =
             Json.map
-                UnrecognizedTutorName
-                (Json.field "invalidTutorName" Json.string)
+                UnrecognizedTutorNameInAppointment
+                (Json.field "invalidTutorName" decodeTutorName)
+
+        decodeInvalidScheduleReason =
+            Json.map
+                UnrecognizedTutorNamesInSchedule
+                (Json.field "invalidTutorNames" (Json.list decodeTutorName))
 
         decodeInvalidAppointment =
             Json.map2
                 InvalidAppointmentEntry
                 decodeCalendarEvent
                 decodeInvalidAppointmentReason
+
+        decodeInvalidSchedule =
+            Json.map2
+                InvalidScheduleEntry
+                decodeCalendarEvent
+                decodeInvalidScheduleReason
     in
-    Json.map
+    Json.map2
         CalendarCheckResult
         (Json.field "invalidAppointments" (decodeInvalidAppointment |> Json.list |> Json.map wrapListWithMaybe))
+        (Json.field "invalidSchedules" (decodeInvalidSchedule |> Json.list |> Json.map wrapListWithMaybe))
 
 
 getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
