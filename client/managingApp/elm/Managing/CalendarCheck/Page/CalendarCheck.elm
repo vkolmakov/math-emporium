@@ -37,10 +37,14 @@ type TutorName
     = TutorName String
 
 
+type CalendarEventSummary
+    = CalendarEventSummary String
+
+
 type alias CalendarEvent =
     { directCalendarEventLink : Url
     , date : Date
-    , summary : String
+    , summary : CalendarEventSummary
     }
 
 
@@ -67,6 +71,7 @@ type alias InvalidScheduleEntry =
 type alias CalendarCheckResult =
     { invalidAppointments : Maybe (List InvalidAppointmentEntry)
     , invalidSchedules : Maybe (List InvalidScheduleEntry)
+    , unrecognizedCalendarEvents : Maybe (List CalendarEvent)
     }
 
 
@@ -282,8 +287,13 @@ invalidScheduleReasonToString reason =
             "Unrecognized tutor names: " ++ tutorNamesString
 
 
+calendarEventSummaryToString : CalendarEventSummary -> String
+calendarEventSummaryToString (CalendarEventSummary summary) =
+    summary
+
+
 viewCalendarCheckResultContent : AppConfig -> CalendarCheckResult -> Html Msg
-viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules } =
+viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules, unrecognizedCalendarEvents } =
     let
         viewEmptySection =
             H.div [] []
@@ -300,7 +310,7 @@ viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules
 
         viewInvalidAppointment value =
             DataTable.item
-                [ DataTable.textField "Summary" value.calendarEvent.summary
+                [ DataTable.textField "Summary" (calendarEventSummaryToString value.calendarEvent.summary)
                 , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
                 , DataTable.textField "Reason" (invalidAppointmentReasonToString value.reason)
                 , DataTable.actionContainer
@@ -310,11 +320,20 @@ viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules
 
         viewInvalidSchedule value =
             DataTable.item
-                [ DataTable.textField "Summary" value.calendarEvent.summary
+                [ DataTable.textField "Summary" (calendarEventSummaryToString value.calendarEvent.summary)
                 , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes value.calendarEvent.date)
                 , DataTable.textField "Reason" (invalidScheduleReasonToString value.reason)
                 , DataTable.actionContainer
                     [ DataTable.actionLink "Update calendar event" (E.onClick <| RequestUpdateCalendarEvent value.calendarEvent)
+                    ]
+                ]
+
+        viewUnrecognizedCalendarEvent calendarEvent =
+            DataTable.item
+                [ DataTable.textField "Summary" (calendarEventSummaryToString calendarEvent.summary)
+                , DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes calendarEvent.date)
+                , DataTable.actionContainer
+                    [ DataTable.actionLink "Update calendar event" (E.onClick <| RequestUpdateCalendarEvent calendarEvent)
                     ]
                 ]
 
@@ -323,10 +342,14 @@ viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules
 
         viewInvalidSchedulesSection =
             viewSection "Invalid Schedules" viewInvalidSchedule invalidSchedules
+
+        viewUnrecognizedCalendarEventsSection =
+            viewSection "Unrecognized Calendar Events" viewUnrecognizedCalendarEvent unrecognizedCalendarEvents
     in
     H.div []
         [ viewInvalidAppointmentsSection
         , viewInvalidSchedulesSection
+        , viewUnrecognizedCalendarEventsSection
         ]
 
 
@@ -471,7 +494,7 @@ decodeCalendarCheckResult =
                 CalendarEvent
                 (Json.field "directCalendarEventLink" Json.string |> Json.map Url.fromString)
                 (Json.field "timestamp" Json.int |> Json.andThen Date.decodeTimestamp)
-                (Json.field "calendarEventSummary" Json.string)
+                (Json.field "calendarEventSummary" Json.string |> Json.map CalendarEventSummary)
 
         decodeTutorName =
             Json.string |> Json.map TutorName
@@ -498,10 +521,11 @@ decodeCalendarCheckResult =
                 decodeCalendarEvent
                 decodeInvalidScheduleReason
     in
-    Json.map2
+    Json.map3
         CalendarCheckResult
         (Json.field "invalidAppointments" (decodeInvalidAppointment |> Json.list |> Json.map wrapListWithMaybe))
         (Json.field "invalidSchedules" (decodeInvalidSchedule |> Json.list |> Json.map wrapListWithMaybe))
+        (Json.field "unrecognizedCalendarEvents" (decodeCalendarEvent |> Json.list |> Json.map wrapListWithMaybe))
 
 
 getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
