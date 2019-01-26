@@ -119,7 +119,6 @@ type Msg
     | ReceiveLocations (Result Http.Error (List Location))
     | ReceiveCalendarCheckResult (Result Http.Error CalendarCheckResult)
     | CheckIfTakingTooLong RemoteDataRequest
-    | Retry RemoteDataRequest
     | NoOp
 
 
@@ -272,10 +271,6 @@ update msg model =
             , Nothing
             )
 
-        Retry _ ->
-            -- TODO: implement
-            ( model, Cmd.none, Nothing )
-
         NoOp ->
             ( model, Cmd.none, Nothing )
 
@@ -393,7 +388,7 @@ viewCalendarCheckResult appConfig calendarCheckResultRemoteData =
                     spinner
 
                 RemoteData.Error err ->
-                    viewPageError (Retry CalendarCheckResultRequest) err
+                    viewPageMessage (PageMessage.Error err)
 
                 RemoteData.Available calendarCheckResult ->
                     viewCalendarCheckResultContent appConfig calendarCheckResult
