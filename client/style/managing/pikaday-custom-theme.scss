@@ -1,50 +1,50 @@
 @import "../variables.scss";
 
-.pika-single.pikaday-custom-theme {
-    font-family: $font-family;
-    color: $primary-text-color;
-    background: $primary-text-background-color;
-    border: 1px solid $border-color-for-controls;
-}
+.pikaday-custom-theme {
+    // Top-level font and text color, container border.
+    &.pika-single {
+        font-family: $font-family;
+        color: $primary-text-color;
+        background: $primary-text-background-color;
+        border: 1px solid $border-color-for-controls;
+    }
 
-.pikaday-custom-theme .pika-label {
-    background-color: $primary-text-background-color;
-}
+    // Colors for the weekdays
+    .pika-table th {
+        color: $primary-text-color;
+    }
 
-.pikaday-custom-theme .pika-table th {
-    color: $primary-text-color;
-}
+    // Generic button styles.
+    .pika-button {
+        color: $primary-text-color;
+        background: $primary-text-background-color;
 
-.pikaday-custom-theme .pika-button {
-    color: $primary-text-color;
-    background: $primary-text-background-color;
-}
+        &:hover {
+            background: $primary-color-focused;
+            color: $primary-text-color;
+        }
+    }
 
-.pikaday-custom-theme .is-today .pika-button {
-    color: $primary-text-color;
-}
+    /**
+     * Special buttons.
+     */
+    .is-today .pika-button {
+        color: $primary-text-color;
+    }
 
-.pikaday-custom-theme .is-selected .pika-button {
-    color: $primary-text-color;
-    background: $primary-color;
-}
+    .is-selected .pika-button {
+        color: $primary-text-color;
+        background: $primary-color;
+    }
 
-.pikaday-custom-theme .is-disabled .pika-button {
-    color: $tertiary-color;
-    opacity: 0.1;
-}
+    .is-disabled .pika-button {
+        color: $tertiary-color;
+        opacity: 0.1;
+    }
 
-.pikaday-custom-theme .pika-button:hover {
-    background: $tertiary-color;
-    color: $primary-text-color;
-}
-
-.pikaday-custom-theme .is-startrange .pika-button {
-    background: $datepicker-range-boundary-background-color;
-    color: $datepicker-range-boundary-text-color;
-}
-
-.pikaday-custom-theme .is-endrange .pika-button {
-    background: $datepicker-range-boundary-background-color;
-    color: $datepicker-range-boundary-text-color;
+    .is-startrange .pika-button,
+    .is-endrange .pika-button {
+        background: $datepicker-range-boundary-background-color;
+        color: $datepicker-range-boundary-text-color;
+    }
 }
