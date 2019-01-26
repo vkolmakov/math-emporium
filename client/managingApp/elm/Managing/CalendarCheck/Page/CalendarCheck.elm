@@ -137,10 +137,7 @@ initCmd model =
                 ]
 
         initializeDatePickers =
-            Cmd.batch
-                [ calendarCheckInitializeStartDatePickerElement "calendar-check-start-date"
-                , calendarCheckInitializeEndDatePickerElement "calendar-check-end-date"
-                ]
+            calendarCheckInitializeDatePickers { startDatePickerId = "calendar-check-start-date", endDatePickerId = "calendar-check-end-date" }
     in
     case model.locations of
         RemoteData.NotRequested ->
@@ -606,10 +603,7 @@ subscriptions =
 -- PORTS
 
 
-port calendarCheckInitializeStartDatePickerElement : String -> Cmd msg
-
-
-port calendarCheckInitializeEndDatePickerElement : String -> Cmd msg
+port calendarCheckInitializeDatePickers : { startDatePickerId : String, endDatePickerId : String } -> Cmd msg
 
 
 port onDatePickerDateSelection : ({ id : String, timestamp : Int } -> msg) -> Sub msg

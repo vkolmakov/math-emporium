@@ -24,31 +24,64 @@ const getScrollPosition = () => ({
     y: window.pageYOffset,
 });
 
-function afterElementAvailableInDom(elementId, action) {
-    const elementRef = document.getElementById(elementId);
+function afterElementsAvailableInDom(elementIds, action) {
+    const refs = elementIds.map((elementId) =>
+        document.getElementById(elementId)
+    );
 
-    if (elementRef === null) {
-        console.log("trying to get element", elementId);
+    if (refs.some((ref) => ref === null)) {
         return requestAnimationFrame(() =>
-            afterElementAvailableInDom(elementId, action)
+            afterElementsAvailableInDom(elementIds, action)
         );
     }
 
-    return action(elementRef);
+    return action(refs);
 }
 
-function initializeDatePicker(elmPortsRef, datePickerInputElement) {
-    const datePicker = new Pikaday({
-        field: datePickerInputElement,
+function initializeDatePicker(
+    elmPortsRef,
+    startDatePickerInputRef,
+    endDatePickerInputRef
+) {
+    const baseDatePickerOptions = {
+        firstDate: 1, // set Monday as first day
+    };
+
+    const startDatePicker = new Pikaday({
+        field: startDatePickerInputRef,
         onSelect: (date) => {
             elmPortsRef.onDatePickerDateSelection.send({
                 timestamp: date.getTime(),
-                id: datePickerInputElement.id,
+                id: startDatePickerInputRef.id,
             });
+            updateStartDate(date);
         },
+        ...baseDatePickerOptions,
     });
 
-    return datePicker;
+    const endDatePicker = new Pikaday({
+        field: endDatePickerInputRef,
+        onSelect: (date) => {
+            elmPortsRef.onDatePickerDateSelection.send({
+                timestamp: date.getTime(),
+                id: endDatePickerInputRef.id,
+            });
+            updateEndDate(date);
+        },
+        ...baseDatePickerOptions,
+    });
+
+    function updateStartDate(date) {
+        startDatePicker.setStartRange(date);
+        endDatePicker.setStartRange(date);
+        endDatePicker.setMinDate(date);
+    }
+
+    function updateEndDate(date) {
+        endDatePicker.setEndRange(date);
+        startDatePicker.setEndRange(date);
+        startDatePicker.setMaxDate(date);
+    }
 }
 
 const ports = (elmPortsRef) => {
@@ -130,22 +163,16 @@ const ports = (elmPortsRef) => {
     /**
      * Date Pickers
      */
-    elmPortsRef.calendarCheckInitializeStartDatePickerElement.subscribe(
-        (datePickerInputElementId) => {
-            return afterElementAvailableInDom(
-                datePickerInputElementId,
-                (datePickerInputRef) =>
-                    initializeDatePicker(elmPortsRef, datePickerInputRef)
-            );
-        }
-    );
-
-    elmPortsRef.calendarCheckInitializeEndDatePickerElement.subscribe(
-        (datePickerInputElementId) => {
-            return afterElementAvailableInDom(
-                datePickerInputElementId,
-                (datePickerInputRef) =>
-                    initializeDatePicker(elmPortsRef, datePickerInputRef)
+    elmPortsRef.calendarCheckInitializeDatePickers.subscribe(
+        ({ startDatePickerId, endDatePickerId }) => {
+            return afterElementsAvailableInDom(
+                [startDatePickerId, endDatePickerId],
+                ([startDatePickerInputRef, endDatePickerInputRef]) =>
+                    initializeDatePicker(
+                        elmPortsRef,
+                        startDatePickerInputRef,
+                        endDatePickerInputRef
+                    )
             );
         }
     );
