@@ -45,6 +45,15 @@ function calendarCheckInitializeDateRangePicker(
 ) {
     const baseDatePickerOptions = {
         firstDate: 1, // set Monday as first day
+        /**
+         * Overriding toString to return an empty string to
+         * avoid flashing of the pre-selected dates inside the
+         * date picker input before Elm sets the correct display
+         * values.
+         */
+        toString: () => {
+            return "";
+        },
     };
 
     const startDatePicker = new Pikaday({
@@ -73,12 +82,19 @@ function calendarCheckInitializeDateRangePicker(
 
     function updateStartDate(date) {
         startDatePicker.setStartRange(date);
+        // another goToDate is required to update the
+        // selected start range in case with keyboard
+        // navigation.
+        startDatePicker.gotoDate(date);
         endDatePicker.setStartRange(date);
         endDatePicker.setMinDate(date);
     }
 
     function updateEndDate(date) {
         endDatePicker.setEndRange(date);
+        // same deal with goToDate, required to avoid
+        // lagging endDateRange when navigating with keyboard.
+        endDatePicker.gotoDate(date);
         startDatePicker.setEndRange(date);
         startDatePicker.setMaxDate(date);
     }

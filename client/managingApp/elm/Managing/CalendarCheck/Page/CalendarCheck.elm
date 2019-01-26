@@ -411,7 +411,7 @@ viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
     let
         dateString =
             maybeValue
-                |> Maybe.map (Date.toDebugTimestampString timezoneOffset)
+                |> Maybe.map (Date.toCompactDateDisplayString timezoneOffset)
                 |> Maybe.withDefault ""
     in
     H.div [ Styles.apply [ Styles.field.self ] ]
@@ -421,6 +421,7 @@ viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
             , A.id elementId
             , A.value dateString
             , E.onInput onChangeMsg
+            , A.readonly True
             ]
             []
         ]
