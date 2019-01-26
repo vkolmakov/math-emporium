@@ -137,7 +137,15 @@ initCmd model =
                 ]
 
         initializeDatePickers =
-            calendarCheckInitializeDatePickers { startDatePickerId = "calendar-check-start-date", endDatePickerId = "calendar-check-end-date" }
+            calendarCheckInitializeDatePickers
+                -- Note that values have to be sent for cases when some values were selected, but user navigated
+                -- away from the tab. Values are still alive on the model, but date picker element does not
+                -- remember them.
+                { startDatePickerId = "calendar-check-start-date"
+                , selectedStartDateTimestamp = model.selectedStartDate |> Maybe.map Date.dateToTimestamp
+                , endDatePickerId = "calendar-check-end-date"
+                , selectedEndDateTimestamp = model.selectedEndDate |> Maybe.map Date.dateToTimestamp
+                }
     in
     case model.locations of
         RemoteData.NotRequested ->
@@ -603,7 +611,13 @@ subscriptions =
 -- PORTS
 
 
-port calendarCheckInitializeDatePickers : { startDatePickerId : String, endDatePickerId : String } -> Cmd msg
+port calendarCheckInitializeDatePickers :
+    { startDatePickerId : String
+    , selectedStartDateTimestamp : Maybe Int
+    , endDatePickerId : String
+    , selectedEndDateTimestamp : Maybe Int
+    }
+    -> Cmd msg
 
 
 port onDatePickerDateSelection : ({ id : String, timestamp : Int } -> msg) -> Sub msg
