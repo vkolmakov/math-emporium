@@ -44,6 +44,7 @@ function calendarCheckInitializeDateRangePicker(
     endDatePickerDescription
 ) {
     const baseDatePickerOptions = {
+        theme: "pikaday-custom-theme",
         firstDate: 1, // set Monday as first day
         /**
          * Overriding toString to return an empty string to
