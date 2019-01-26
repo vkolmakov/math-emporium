@@ -393,7 +393,7 @@ viewCalendarCheckResult appConfig calendarCheckResultRemoteData =
                 RemoteData.Available calendarCheckResult ->
                     viewCalendarCheckResultContent appConfig calendarCheckResult
     in
-    H.div [] [ viewContent ]
+    H.div [ Styles.apply [ Styles.calendarCheck.contentContainer ] ] [ viewContent ]
 
 
 noValueOption : Input.SelectOption

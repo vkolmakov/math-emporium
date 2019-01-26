@@ -118,4 +118,5 @@ home =
 calendarCheck =
     { self = "m-calendar-check"
     , inputContainer = "m-calendar-check__input-container"
+    , contentContainer = "m-calendar-check__content-container"
     }
