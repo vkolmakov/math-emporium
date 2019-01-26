@@ -3,6 +3,8 @@ import React from "react";
 import ElmWrapper from "@client/components/ElmWrapper";
 import ElmModule from "./elm/Managing/Main.elm";
 import "@client/style/managing/main.scss";
+import Pikaday from "pikaday";
+import "pikaday/css/pikaday.css";
 
 const Managing = ElmModule.Elm.Managing;
 
@@ -21,6 +23,33 @@ const getScrollPosition = () => ({
     x: window.pageXOffset,
     y: window.pageYOffset,
 });
+
+function afterElementAvailableInDom(elementId, action) {
+    const elementRef = document.getElementById(elementId);
+
+    if (elementRef === null) {
+        console.log("trying to get element", elementId);
+        return requestAnimationFrame(() =>
+            afterElementAvailableInDom(elementId, action)
+        );
+    }
+
+    return action(elementRef);
+}
+
+function initializeDatePicker(elmPortsRef, datePickerInputElement) {
+    const datePicker = new Pikaday({
+        field: datePickerInputElement,
+        onSelect: (date) => {
+            elmPortsRef.onDatePickerDateSelection.send({
+                timestamp: date.getTime(),
+                id: datePickerInputElement.id,
+            });
+        },
+    });
+
+    return datePicker;
+}
 
 const ports = (elmPortsRef) => {
     /**
@@ -97,6 +126,29 @@ const ports = (elmPortsRef) => {
             );
         }
     });
+
+    /**
+     * Date Pickers
+     */
+    elmPortsRef.calendarCheckInitializeStartDatePickerElement.subscribe(
+        (datePickerInputElementId) => {
+            return afterElementAvailableInDom(
+                datePickerInputElementId,
+                (datePickerInputRef) =>
+                    initializeDatePicker(elmPortsRef, datePickerInputRef)
+            );
+        }
+    );
+
+    elmPortsRef.calendarCheckInitializeEndDatePickerElement.subscribe(
+        (datePickerInputElementId) => {
+            return afterElementAvailableInDom(
+                datePickerInputElementId,
+                (datePickerInputRef) =>
+                    initializeDatePicker(elmPortsRef, datePickerInputRef)
+            );
+        }
+    );
 
     /**
      * Browser

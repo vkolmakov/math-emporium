@@ -471,8 +471,10 @@ viewHomePage =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    onLocationHrefChange LocationHrefChange
-
+    Sub.batch
+        [ onLocationHrefChange LocationHrefChange
+        , Sub.map CalendarCheckPageMsg CalendarCheck.subscriptions
+        ]
 
 
 -- MODAL

@@ -1,14 +1,16 @@
-module Managing.CalendarCheck.Page.CalendarCheck exposing
+port module Managing.CalendarCheck.Page.CalendarCheck exposing
     ( Model
     , Msg
     , OutMsg(..)
     , init
     , initCmd
+    , subscriptions
     , update
     , view
     )
 
 import Html as H exposing (Html)
+import Html.Attributes as A
 import Html.Events as E
 import Http
 import Json.Decode as Json
@@ -87,7 +89,13 @@ type alias Model =
 
 init : AppConfig -> Model
 init appConfig =
-    Model appConfig RemoteData.NotRequested Nothing Nothing Nothing RemoteData.NotRequested
+    Model
+        appConfig
+        RemoteData.NotRequested
+        Nothing
+        Nothing
+        Nothing
+        RemoteData.NotRequested
 
 
 
@@ -127,22 +135,34 @@ initCmd model =
                 [ getLocations
                 , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong LocationsRequest)
                 ]
+
+        initializeDatePickers =
+            Cmd.batch
+                [ calendarCheckInitializeStartDatePickerElement "calendar-check-start-date"
+                , calendarCheckInitializeEndDatePickerElement "calendar-check-end-date"
+                ]
     in
     case model.locations of
         RemoteData.NotRequested ->
-            fetchData
+            Cmd.batch
+                [ fetchData
+                , initializeDatePickers
+                ]
 
         RemoteData.Requested ->
-            fetchData
+            Cmd.batch
+                [ fetchData
+                , initializeDatePickers
+                ]
 
         RemoteData.StillLoading ->
-            Cmd.none
+            initializeDatePickers
 
         RemoteData.Error _ ->
-            Cmd.none
+            initializeDatePickers
 
         RemoteData.Available _ ->
-            Cmd.none
+            initializeDatePickers
 
 
 getUpdatedDate : DatePickerDateValue -> Maybe Date
@@ -381,15 +401,24 @@ noValueOption =
     Input.toSelectOption { label = "", value = "" }
 
 
-viewDatePicker : TimezoneOffset -> String -> Maybe Date -> (String -> msg) -> Html msg
-viewDatePicker timezoneOffset label maybeValue onChangeMsg =
+viewDatePicker : String -> TimezoneOffset -> String -> Maybe Date -> (String -> msg) -> Html msg
+viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
     let
         dateString =
             maybeValue
                 |> Maybe.map (Date.toDebugTimestampString timezoneOffset)
                 |> Maybe.withDefault ""
     in
-    Input.text { isEditable = True, isLabelHidden = False, label = label } dateString onChangeMsg
+    H.div [ Styles.apply [ Styles.field.self ] ]
+        [ H.label [ Styles.apply [ Styles.field.label ] ] [ H.text label ]
+        , H.input
+            [ Styles.apply [ Styles.field.input ]
+            , A.id elementId
+            , A.value dateString
+            , E.onInput onChangeMsg
+            ]
+            []
+        ]
 
 
 viewInputs : Model -> Html Msg
@@ -427,8 +456,8 @@ viewInputs model =
     in
     H.div [ Styles.apply [ Styles.calendarCheck.inputContainer ] ]
         [ viewLocationSelect
-        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "Start Date" selectedStartDate (StartDateChange << DatePickerDateValue)
-        , viewDatePicker appConfig.localTimezoneOffsetInMinutes "End Date" selectedEndDate (EndDateChange << DatePickerDateValue)
+        , viewDatePicker "calendar-check-start-date" appConfig.localTimezoneOffsetInMinutes "Start Date" selectedStartDate (StartDateChange << DatePickerDateValue)
+        , viewDatePicker "calendar-check-end-date" appConfig.localTimezoneOffsetInMinutes "End Date" selectedEndDate (EndDateChange << DatePickerDateValue)
         ]
 
 
@@ -548,3 +577,39 @@ getCalendarCheckResult location startDate endDate =
     Http.send
         ReceiveCalendarCheckResult
         (Http.get url decodeCalendarCheckResult)
+
+
+
+-- SUBSCRIPTIONS
+
+
+datePickerDateSelectionToCmd : { id : String, timestamp : Int } -> Msg
+datePickerDateSelectionToCmd { id, timestamp } =
+    case id of
+        "calendar-check-start-date" ->
+            StartDateChange (DatePickerDateValue <| String.fromInt timestamp)
+
+        "calendar-check-end-date" ->
+            EndDateChange (DatePickerDateValue <| String.fromInt timestamp)
+
+        _ ->
+            NoOp
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.batch
+        [ onDatePickerDateSelection datePickerDateSelectionToCmd ]
+
+
+
+-- PORTS
+
+
+port calendarCheckInitializeStartDatePickerElement : String -> Cmd msg
+
+
+port calendarCheckInitializeEndDatePickerElement : String -> Cmd msg
+
+
+port onDatePickerDateSelection : ({ id : String, timestamp : Int } -> msg) -> Sub msg
