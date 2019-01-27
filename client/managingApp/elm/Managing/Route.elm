@@ -1,11 +1,26 @@
-module Managing.Route exposing (Route(..), fromLocationHref, href, link, toHref)
+module Managing.Route exposing
+    ( CalendarCheckRouteInitialStateQueryParams
+    , Route(..)
+    , fromLocationHref
+    , href
+    , link
+    , toHref
+    )
 
 import Html as H exposing (Attribute, Html)
 import Html.Attributes as A
 import Html.Events as E
 import Json.Decode as Json
 import Url exposing (Url)
-import Url.Parser as UrlParser exposing ((</>), Parser, s)
+import Url.Parser as UrlParser exposing ((</>), (<?>), Parser, s)
+import Url.Parser.Query as Query
+
+
+type alias CalendarCheckRouteInitialStateQueryParams =
+    { locationId : Maybe Int
+    , startDateTimestamp : Maybe Int
+    , endDateTimestamp : Maybe Int
+    }
 
 
 type Route
@@ -16,7 +31,7 @@ type Route
     | ErrorEventList
     | EditSettings
     | AppointmentList
-    | CalendarCheck
+    | CalendarCheck CalendarCheckRouteInitialStateQueryParams
     | Unknown
 
 
@@ -32,7 +47,14 @@ fromLocationHref locationHref =
                 , UrlParser.map ErrorEventList (s "manage-portal" </> s "errors")
                 , UrlParser.map EditSettings (s "manage-portal" </> s "settings")
                 , UrlParser.map AppointmentList (s "manage-portal" </> s "appointments")
-                , UrlParser.map CalendarCheck (s "manage-portal" </> s "calendar-check")
+                , UrlParser.map CalendarCheck
+                    (s "manage-portal"
+                        </> s "calendar-check"
+                        <?> Query.map3 CalendarCheckRouteInitialStateQueryParams
+                                (Query.int "locationId")
+                                (Query.int "startDate")
+                                (Query.int "endDate")
+                    )
                 ]
 
         correspondingRoute =
@@ -70,7 +92,7 @@ toHref r =
                 AppointmentList ->
                     "appointments"
 
-                CalendarCheck ->
+                CalendarCheck _ ->
                     "calendar-check"
 
                 Unknown ->

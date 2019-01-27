@@ -16,6 +16,7 @@ import Managing.Settings.Page.EditSettings as EditSettings
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Managing.Utils.RemoteData as RemoteData
 import Managing.Utils.Url as Url exposing (Url)
 import Managing.View.Modal as Modal
 import Process
@@ -366,8 +367,28 @@ getInitModelCmd route model =
         Route.AppointmentList ->
             ( model, Cmd.map AppointmentListPageMsg (AppointmentList.initCmd model.appointmentListPageModel) )
 
-        Route.CalendarCheck ->
-            ( model, Cmd.map CalendarCheckPageMsg (CalendarCheck.initCmd model.calendarCheckPageModel) )
+        Route.CalendarCheck queryParams ->
+            let
+                basePageModel =
+                    case ( queryParams.locationId, queryParams.startDateTimestamp, queryParams.endDateTimestamp ) of
+                        ( Nothing, Nothing, Nothing ) ->
+                            -- If nothing is present in the query string -> use the pre-existing model
+                            -- This case will happen when user stays within the app and navigates away to
+                            -- a different tab.
+                            model.calendarCheckPageModel
+
+                        _ ->
+                            -- If anything is present in the query string -> kill the existing model.
+                            -- and use the values from the query string. This happens when page was refreshed
+                            -- or a link was followed directly. (initial load)
+                            CalendarCheck.init model.appConfig
+
+                updatedPageModel =
+                    { basePageModel | initialSelection = queryParams }
+            in
+            ( { model | calendarCheckPageModel = updatedPageModel }
+            , Cmd.map CalendarCheckPageMsg (CalendarCheck.initCmd updatedPageModel)
+            )
 
         Route.Unknown ->
             ( model, Navigation.load "/" )
@@ -384,7 +405,7 @@ activeNavItems =
     , NavItem Route.ErrorEventList "Errors"
     , NavItem Route.EditSettings "Settings"
     , NavItem Route.AppointmentList "Appointments"
-    , NavItem Route.CalendarCheck "Calendar Check"
+    , NavItem (Route.CalendarCheck { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing }) "Calendar Check"
     ]
 
 
@@ -412,8 +433,8 @@ getHighlightedRoute route =
         Route.AppointmentList ->
             Just Route.AppointmentList
 
-        Route.CalendarCheck ->
-            Just Route.CalendarCheck
+        Route.CalendarCheck _ ->
+            Just (Route.CalendarCheck { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing })
 
         Route.Unknown ->
             Nothing
@@ -452,7 +473,7 @@ viewPageContent model =
                 Route.AppointmentList ->
                     H.map AppointmentListPageMsg <| AppointmentList.view model.appointmentListPageModel
 
-                Route.CalendarCheck ->
+                Route.CalendarCheck _ ->
                     H.map CalendarCheckPageMsg <| CalendarCheck.view model.calendarCheckPageModel
 
                 Route.Unknown ->
@@ -475,6 +496,7 @@ subscriptions model =
         [ onLocationHrefChange LocationHrefChange
         , Sub.map CalendarCheckPageMsg CalendarCheck.subscriptions
         ]
+
 
 
 -- MODAL

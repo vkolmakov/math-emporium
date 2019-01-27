@@ -15,6 +15,7 @@ import Html.Events as E
 import Http
 import Json.Decode as Json
 import Managing.AppConfig exposing (AppConfig)
+import Managing.Route exposing (CalendarCheckRouteInitialStateQueryParams)
 import Managing.Styles as Styles
 import Managing.Utils.Date as Date exposing (Date, TimezoneOffset)
 import Managing.Utils.RemoteData as RemoteData exposing (RemoteData)
@@ -79,6 +80,7 @@ type alias CalendarCheckResult =
 
 type alias Model =
     { appConfig : AppConfig
+    , initialSelection : CalendarCheckRouteInitialStateQueryParams
     , locations : RemoteData (List Location)
     , selectedStartDate : Maybe Date
     , selectedEndDate : Maybe Date
@@ -91,6 +93,7 @@ init : AppConfig -> Model
 init appConfig =
     Model
         appConfig
+        { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing }
         RemoteData.NotRequested
         Nothing
         Nothing
@@ -135,15 +138,35 @@ initCmd model =
                 , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong LocationsRequest)
                 ]
 
+        startDateSelection =
+            -- Prioritize values coming from the model.
+            -- If none, check if something was supplied from the query string.
+            case model.selectedStartDate of
+                Just _ ->
+                    model.selectedStartDate |> Maybe.map Date.dateToTimestamp
+
+                Nothing ->
+                    model.initialSelection.startDateTimestamp
+
+        endDateSelection =
+            -- Prioritize values coming from the model.
+            -- If none, check if something was supplied from the query string.
+            case model.selectedEndDate of
+                Just _ ->
+                    model.selectedEndDate |> Maybe.map Date.dateToTimestamp
+
+                Nothing ->
+                    model.initialSelection.endDateTimestamp
+
         initializeDatePickers =
             calendarCheckInitializeDatePickers
                 -- Note that values have to be sent for cases when some values were selected, but user navigated
                 -- away from the tab. Values are still alive on the model, but date picker element does not
                 -- remember them.
                 { startDatePickerId = "calendar-check-start-date"
-                , selectedStartDateTimestamp = model.selectedStartDate |> Maybe.map Date.dateToTimestamp
+                , selectedStartDateTimestamp = startDateSelection
                 , endDatePickerId = "calendar-check-end-date"
-                , selectedEndDateTimestamp = model.selectedEndDate |> Maybe.map Date.dateToTimestamp
+                , selectedEndDateTimestamp = endDateSelection
                 }
     in
     case model.locations of
@@ -175,18 +198,38 @@ getUpdatedDate (DatePickerDateValue dateString) =
         |> Maybe.map Date.timestampToDate
 
 
-attemptCalendarCheckRequest : Maybe Location -> Maybe Date -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
-attemptCalendarCheckRequest selectedLocation selectedStartDate selectedEndDate =
-    case ( selectedLocation, selectedStartDate, selectedEndDate ) of
-        ( Just location, Just startDate, Just endDate ) ->
+attemptCalendarCheckRequest : Model -> Maybe Location -> Maybe Date -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
+attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate selectedEndDate =
+    let
+        anyValuesUpdated =
+            (previousModel.selectedLocation /= selectedLocation)
+                || (previousModel.selectedStartDate /= selectedStartDate)
+                || (previousModel.selectedEndDate /= selectedEndDate)
+    in
+    case ( anyValuesUpdated, ( selectedLocation, selectedStartDate, selectedEndDate ) ) of
+        ( True, ( Just location, Just startDate, Just endDate ) ) ->
             ( RemoteData.Requested
             , Cmd.batch
                 [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
                 , getCalendarCheckResult location startDate endDate
+                , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate endDate)
                 ]
             )
 
+        ( False, ( Just location, Just startDate, Just endDate ) ) ->
+            -- No values were updated, but everything required is selected.
+            -- We can get into this scenario when user navigates to a different tab
+            -- within the application. In this case, we don't have to make another request for
+            -- the calendar check and can reuse the previous results.
+            -- The only action we need to do is to sync up the query string so that it matches
+            -- the current state.
+            ( previousModel.calendarCheckResult
+            , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate endDate)
+            )
+
         _ ->
+            -- In this case, we don't have enough info to make the request, so we don't
+            -- do anything and remove the existing calendar check request results.
             ( RemoteData.NotRequested, Cmd.none )
 
 
@@ -199,7 +242,7 @@ update msg model =
                     getUpdatedDate value
 
                 ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest model.selectedLocation updatedStartDate model.selectedEndDate
+                    attemptCalendarCheckRequest model model.selectedLocation updatedStartDate model.selectedEndDate
             in
             ( { model | selectedStartDate = updatedStartDate, calendarCheckResult = nextCalendarCheckResultState }
             , command
@@ -212,7 +255,7 @@ update msg model =
                     getUpdatedDate value
 
                 ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest model.selectedLocation model.selectedStartDate updatedEndDate
+                    attemptCalendarCheckRequest model model.selectedLocation model.selectedStartDate updatedEndDate
             in
             ( { model | selectedEndDate = updatedEndDate, calendarCheckResult = nextCalendarCheckResultState }
             , command
@@ -222,7 +265,7 @@ update msg model =
         SelectedLocationChange updatedLocation ->
             let
                 ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest updatedLocation model.selectedStartDate model.selectedEndDate
+                    attemptCalendarCheckRequest model updatedLocation model.selectedStartDate model.selectedEndDate
             in
             ( { model | selectedLocation = updatedLocation, calendarCheckResult = nextCalendarCheckResultState }
             , command
@@ -242,8 +285,27 @@ update msg model =
             )
 
         ReceiveLocations (Ok locations) ->
-            ( { model | locations = RemoteData.Available locations }
-            , Cmd.none
+            -- At this point, we have the locations, and may have a location selection saved from
+            -- the query string.
+            let
+                selectedLocation =
+                    model.initialSelection.locationId
+                        |> Maybe.andThen (getLocationById locations)
+
+                -- Because we could make a location selection based on the value from the query
+                -- string, we will attempt to perform a calendar check request.
+                ( nextCalendarCheckResultState, possibleCalendarCheckRequestCommand ) =
+                    attemptCalendarCheckRequest model selectedLocation model.selectedStartDate model.selectedEndDate
+
+                updatedModel =
+                    { model
+                        | locations = RemoteData.Available locations
+                        , selectedLocation = selectedLocation
+                        , calendarCheckResult = nextCalendarCheckResultState
+                    }
+            in
+            ( updatedModel
+            , possibleCalendarCheckRequestCommand
             , Nothing
             )
 
@@ -462,8 +524,8 @@ viewInputs model =
         ]
 
 
-decodeLocationFromRawLocationId : List Location -> String -> Json.Decoder (Maybe Location)
-decodeLocationFromRawLocationId locations rawLocationId =
+getLocationById : List Location -> Int -> Maybe Location
+getLocationById locations id =
     let
         find list getAttribute item =
             case list of
@@ -476,12 +538,18 @@ decodeLocationFromRawLocationId locations rawLocationId =
 
                 [] ->
                     Nothing
+    in
+    find locations .id id
 
+
+decodeLocationFromRawLocationId : List Location -> String -> Json.Decoder (Maybe Location)
+decodeLocationFromRawLocationId locations rawLocationId =
+    let
         maybeLocationId =
             String.toInt rawLocationId
     in
     maybeLocationId
-        |> Maybe.andThen (find locations .id)
+        |> Maybe.andThen (getLocationById locations)
         |> Json.succeed
 
 
@@ -558,22 +626,25 @@ decodeCalendarCheckResult =
         (Json.field "unrecognizedCalendarEvents" (decodeCalendarEvent |> Json.list |> Json.map wrapListWithMaybe))
 
 
-getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
-getCalendarCheckResult location startDate endDate =
+parameterSelectionToQueryParamsString : Location -> Date -> Date -> String
+parameterSelectionToQueryParamsString location startDate endDate =
     let
         queryParams =
             [ ( "locationId", String.fromInt location.id )
             , ( "startDate", startDate |> Date.dateToTimestamp |> String.fromInt )
             , ( "endDate", endDate |> Date.dateToTimestamp |> String.fromInt )
             ]
+    in
+    queryParams
+        |> List.map (\( key, value ) -> key ++ "=" ++ value)
+        |> String.join "&"
 
-        query =
-            queryParams
-                |> List.map (\( key, value ) -> key ++ "=" ++ value)
-                |> String.join "&"
 
+getCalendarCheckResult : Location -> Date -> Date -> Cmd Msg
+getCalendarCheckResult location startDate endDate =
+    let
         url =
-            "/api/admin/calendar/check" ++ "?" ++ query
+            "/api/admin/calendar/check" ++ "?" ++ parameterSelectionToQueryParamsString location startDate endDate
     in
     Http.send
         ReceiveCalendarCheckResult
@@ -614,6 +685,9 @@ port calendarCheckInitializeDatePickers :
     , selectedEndDateTimestamp : Maybe Int
     }
     -> Cmd msg
+
+
+port calendarCheckRequestSetStateInQueryString : String -> Cmd msg
 
 
 port onDatePickerDateSelection : ({ id : String, timestamp : Int } -> msg) -> Sub msg

@@ -151,6 +151,12 @@ const ports = (elmPortsRef) => {
         });
     });
 
+    elmPortsRef.calendarCheckRequestSetStateInQueryString.subscribe(
+        (queryParams) => {
+            history.replaceState({}, "", location.pathname + "?" + queryParams);
+        }
+    );
+
     /**
      * Modals
      */
