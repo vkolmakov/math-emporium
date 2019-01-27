@@ -429,8 +429,8 @@ viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules
             viewSection "Unrecognized Calendar Events" viewUnrecognizedCalendarEvent unrecognizedCalendarEvents
     in
     H.div []
-        [ viewInvalidAppointmentsSection
-        , viewInvalidSchedulesSection
+        [ viewInvalidSchedulesSection
+        , viewInvalidAppointmentsSection
         , viewUnrecognizedCalendarEventsSection
         ]
 
