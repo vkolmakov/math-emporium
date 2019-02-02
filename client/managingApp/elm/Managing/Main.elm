@@ -5,11 +5,10 @@ import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Html as H exposing (Attribute, Html)
 import Html.Attributes as A
-import Html.Events as E
 import Html.Lazy exposing (lazy, lazy2)
-import Json.Decode as Json
 import Managing.AppConfig as AppConfig exposing (AppConfig)
 import Managing.Appointments.Page.AppointmentList as AppointmentList
+import Managing.CalendarCheck.Page.CalendarCheck as CalendarCheck
 import Managing.ErrorEvents.Page.ErrorEventList as ErrorEventList
 import Managing.Events.Page.EventList as EventList
 import Managing.Route as Route exposing (Route)
@@ -17,10 +16,11 @@ import Managing.Settings.Page.EditSettings as EditSettings
 import Managing.Styles as Styles
 import Managing.Users.Page.UserDetail as UserDetail
 import Managing.Users.Page.UserList as UserList
+import Managing.Utils.RemoteData as RemoteData
+import Managing.Utils.Url as Url exposing (Url)
 import Managing.View.Modal as Modal
 import Process
 import Task
-import Url exposing (Url)
 
 
 main =
@@ -51,6 +51,7 @@ type alias Model =
     , errorEventListPageModel : ErrorEventList.Model
     , editSettingsPageModel : EditSettings.Model
     , appointmentListPageModel : AppointmentList.Model
+    , calendarCheckPageModel : CalendarCheck.Model
     }
 
 
@@ -73,6 +74,7 @@ init flags =
                 (ErrorEventList.init appConfig)
                 (EditSettings.init appConfig)
                 (AppointmentList.init appConfig)
+                (CalendarCheck.init appConfig)
 
         ( initialModelBasedOnRoute, initialCmdBasedOnRoute ) =
             getInitModelCmd route initialModel
@@ -96,6 +98,7 @@ type Msg
     | ErrorEventListPageMsg ErrorEventList.Msg
     | EditSettingsPageMsg EditSettings.Msg
     | AppointmentListPageMsg AppointmentList.Msg
+    | CalendarCheckPageMsg CalendarCheck.Msg
     | ScrollPositionRestorationFailure Int { x : Float, y : Float }
     | AttemptRestoreScrollPosition Int { x : Float, y : Float }
     | NoOp
@@ -108,6 +111,7 @@ type OutMsg
     | ErrorEventListPageOutMsg (Maybe ErrorEventList.OutMsg)
     | EditSettingsPageOutMsg (Maybe EditSettings.OutMsg)
     | AppointmentListPageOutMsg (Maybe AppointmentList.OutMsg)
+    | CalendarCheckPageOutMsg (Maybe CalendarCheck.OutMsg)
 
 
 handleOutMsg : Model -> OutMsg -> ( Model, Cmd msg )
@@ -153,6 +157,12 @@ handleOutMsg model outMsg =
             ( model, requestCloseModal (Modal.getModalElementId modal) )
 
         AppointmentListPageOutMsg Nothing ->
+            ( model, Cmd.none )
+
+        CalendarCheckPageOutMsg (Just (CalendarCheck.RequestOpenNewBrowserTab url)) ->
+            ( model, requestOpenNewBrowserTab (Url.toString url) )
+
+        CalendarCheckPageOutMsg Nothing ->
             ( model, Cmd.none )
 
 
@@ -285,6 +295,18 @@ update message model =
             , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map AppointmentListPageMsg innerCmd ]
             )
 
+        CalendarCheckPageMsg msg ->
+            let
+                ( innerModel, innerCmd, outMsg ) =
+                    CalendarCheck.update msg model.calendarCheckPageModel
+
+                ( updatedModelAfterOutMsg, cmdRequestedByOutMsg ) =
+                    handleOutMsg model (CalendarCheckPageOutMsg outMsg)
+            in
+            ( { updatedModelAfterOutMsg | calendarCheckPageModel = innerModel }
+            , Cmd.batch [ cmdRequestedByOutMsg, Cmd.map CalendarCheckPageMsg innerCmd ]
+            )
+
         {- Scroll restoration flow:
            * LocationHrefChange makes the first attempt to restore the scroll
            * attemptRestoreScrollPosition will get the current scene size and check
@@ -345,6 +367,29 @@ getInitModelCmd route model =
         Route.AppointmentList ->
             ( model, Cmd.map AppointmentListPageMsg (AppointmentList.initCmd model.appointmentListPageModel) )
 
+        Route.CalendarCheck queryParams ->
+            let
+                basePageModel =
+                    case ( queryParams.locationId, queryParams.startDateTimestamp, queryParams.endDateTimestamp ) of
+                        ( Nothing, Nothing, Nothing ) ->
+                            -- If nothing is present in the query string -> use the pre-existing model
+                            -- This case will happen when user stays within the app and navigates away to
+                            -- a different tab.
+                            model.calendarCheckPageModel
+
+                        _ ->
+                            -- If anything is present in the query string -> kill the existing model.
+                            -- and use the values from the query string. This happens when page was refreshed
+                            -- or a link was followed directly. (initial load)
+                            CalendarCheck.init model.appConfig
+
+                updatedPageModel =
+                    { basePageModel | initialSelection = queryParams }
+            in
+            ( { model | calendarCheckPageModel = updatedPageModel }
+            , Cmd.map CalendarCheckPageMsg (CalendarCheck.initCmd updatedPageModel)
+            )
+
         Route.Unknown ->
             ( model, Navigation.load "/" )
 
@@ -360,6 +405,7 @@ activeNavItems =
     , NavItem Route.ErrorEventList "Errors"
     , NavItem Route.EditSettings "Settings"
     , NavItem Route.AppointmentList "Appointments"
+    , NavItem (Route.CalendarCheck { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing }) "Calendar Check"
     ]
 
 
@@ -386,6 +432,9 @@ getHighlightedRoute route =
 
         Route.AppointmentList ->
             Just Route.AppointmentList
+
+        Route.CalendarCheck _ ->
+            Just (Route.CalendarCheck { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing })
 
         Route.Unknown ->
             Nothing
@@ -424,6 +473,9 @@ viewPageContent model =
                 Route.AppointmentList ->
                     H.map AppointmentListPageMsg <| AppointmentList.view model.appointmentListPageModel
 
+                Route.CalendarCheck _ ->
+                    H.map CalendarCheckPageMsg <| CalendarCheck.view model.calendarCheckPageModel
+
                 Route.Unknown ->
                     H.text "At unknown route"
     in
@@ -440,7 +492,10 @@ viewHomePage =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    onLocationHrefChange LocationHrefChange
+    Sub.batch
+        [ onLocationHrefChange LocationHrefChange
+        , Sub.map CalendarCheckPageMsg CalendarCheck.subscriptions
+        ]
 
 
 
@@ -454,6 +509,13 @@ port requestCloseModal : String -> Cmd msg
 
 
 port onModalCloseRequest : (String -> msg) -> Sub msg
+
+
+
+-- BROWSER
+
+
+port requestOpenNewBrowserTab : String -> Cmd msg
 
 
 

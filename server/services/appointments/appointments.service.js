@@ -2,10 +2,26 @@ import moment from "moment";
 
 import { TIMESTAMP_FORMAT, sanitizeCalendarInput } from "../../aux";
 
-function extractInfoFromSummary(summary) {
-    if (!summary) {
+function getBaseCalendarEventFields(calendarEvent) {
+    const startDateTime = moment(calendarEvent.start.dateTime);
+    const directCalendarEventLink = calendarEvent.htmlLink;
+
+    return {
+        // TODO: track all references to startDateTime and remove them/convert to use startDateTimeObject
+        startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
+        startDateTimeObject: startDateTime.toDate(),
+        directCalendarEventLink,
+        weekday: parseInt(startDateTime.format("E"), 10),
+        time: startDateTime.hours() * 60 + startDateTime.minutes(),
+    };
+}
+
+export function calendarEventToAppointment(calendarEvent) {
+    if (!calendarEvent || !calendarEvent.summary) {
         return null;
     }
+
+    const { summary } = calendarEvent;
 
     const appointmentRegex = /^([A-Za-z].+?)\((.+?)\)(.+)/;
     const match = summary.trim().match(appointmentRegex);
@@ -18,37 +34,33 @@ function extractInfoFromSummary(summary) {
         tutor: sanitizeCalendarInput(match[1]),
         student: match[2],
         course: sanitizeCalendarInput(match[3]),
+        ...getBaseCalendarEventFields(calendarEvent),
     };
 }
 
 export function getAppointments(calendarEvents) {
     const appointments = calendarEvents.reduce((results, item) => {
-        const appointmentInfo = extractInfoFromSummary(item.summary);
+        const appointmentInfo = calendarEventToAppointment(item);
+
         if (!appointmentInfo) {
             return results;
         }
 
-        const startDateTime = moment(item.start.dateTime);
-        const appointment = {
-            ...appointmentInfo,
-            startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format("E"), 10),
-            time: startDateTime.hours() * 60 + startDateTime.minutes(),
-        };
-
-        return results.concat(appointment);
+        return results.concat(appointmentInfo);
     }, []);
 
     return appointments;
 }
 
-function extractSpecialInstructions(summary) {
-    if (!summary) {
+export function calendarEventToSpecialInstruction(calendarEvent) {
+    if (!calendarEvent || !calendarEvent.summary) {
         return null;
     }
 
-    const instructionsRegex = /^_\d+\((.+?)\)$/;
-    const match = summary.trim().match(instructionsRegex);
+    const { summary } = calendarEvent;
+
+    const overwriteTutorsInstructionRegex = /^_\d+\((.+?)\)$/;
+    const match = summary.trim().match(overwriteTutorsInstructionRegex);
 
     if (!match) {
         return null;
@@ -58,25 +70,23 @@ function extractSpecialInstructions(summary) {
         overwriteTutors: match[1].split("_").map((tutorName) => ({
             name: sanitizeCalendarInput(tutorName),
         })),
+        ...getBaseCalendarEventFields(calendarEvent),
     };
+}
+
+export function isScheduleOverrideSpecialInstruction(specialInstruction) {
+    return Array.isArray(specialInstruction.overwriteTutors);
 }
 
 export function getSpecialInstructions(calendarEvents) {
     const specialInstructions = calendarEvents.reduce((results, item) => {
-        const instructionsInfo = extractSpecialInstructions(item.summary);
+        const instructionsInfo = calendarEventToSpecialInstruction(item);
+
         if (!instructionsInfo) {
             return results;
         }
 
-        const startDateTime = moment(item.start.dateTime);
-        const instructions = {
-            ...instructionsInfo,
-            startDateTime: startDateTime.format(TIMESTAMP_FORMAT),
-            weekday: parseInt(startDateTime.format("E"), 10),
-            time: startDateTime.hours() * 60 + startDateTime.minutes(),
-        };
-
-        return results.concat(instructions);
+        return results.concat(instructionsInfo);
     }, []);
 
     return specialInstructions;

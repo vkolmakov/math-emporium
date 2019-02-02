@@ -168,6 +168,14 @@ export const dateTime = {
         return dt.getTime();
     },
 
+    fromTimestamp(timestamp) {
+        return new Date(timestamp);
+    },
+
+    fromISOString(s) {
+        return new Date(s);
+    },
+
     parse(other) {
         const result = _dateFns.parse(other);
         return result;
@@ -179,5 +187,13 @@ export const dateTime = {
 
     isAfter(dt, other) {
         return _dateFns.isAfter(dt, other);
+    },
+
+    isValid(dt) {
+        return _dateFns.isValid(dt);
+    },
+
+    differenceInDays(dt, other) {
+        return _dateFns.differenceInDays(dt, other);
     },
 };

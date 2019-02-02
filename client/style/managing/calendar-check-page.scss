@@ -1,0 +1,17 @@
+.m-calendar-check {
+    &__input-container {
+        @include on-medium-screen() {
+            // Place all of the input fields on a single row on medium screens
+            display: flex;
+
+            > .m-field:not(:last-child) {
+                // Adds space between all present input fields
+                margin-right: 0.75em;
+            }
+        }
+    }
+
+    &__content-container {
+        margin-top: 1em;
+    }
+}

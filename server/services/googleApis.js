@@ -1,8 +1,9 @@
 import googleapis from "googleapis";
 
 import cache from "./cache";
+import { errorMessage } from "./errorMessages";
 
-import { TIMEZONE, R, Either } from "../aux";
+import { TIMEZONE, R, Either, dateTime } from "../aux";
 import config from "../config";
 
 function decodeServiceKey(base64ServiceKey) {
@@ -30,6 +31,18 @@ function getAuth(resource) {
     });
 }
 
+function toCalendarEvent(googleCalendarEvent) {
+    const { summary, start, id, htmlLink } = googleCalendarEvent;
+
+    return {
+        summary,
+        start,
+        id,
+        directCalendarEventLink: htmlLink,
+        startDateTimeObject: dateTime.fromISOString(start.dateTime),
+    };
+}
+
 class CalendarService {
     constructor() {
         this.isInitialized = false;
@@ -45,7 +58,6 @@ class CalendarService {
 
     getCalendarEvents(calendarId, startDate, endDate, options) {
         const { useCache } = options;
-        const pickRequiredFields = R.pick(["summary", "start", "id"]);
 
         const fetchEvents = () =>
             new Promise((resolve, reject) => {
@@ -61,9 +73,25 @@ class CalendarService {
                     },
                     (err, result) => {
                         if (err) {
-                            reject(err);
+                            let errorText;
+
+                            if (err.code === 404) {
+                                // Treating this error as 500 because from the standpoint of
+                                // the application it's not actually a 404 and should not be logged
+                                // and exposed as such.
+                                errorText = [
+                                    `Could not reach Google calendar ${calendarId}.`,
+                                    "Make sure that the Google calendar ID is correct and shared with the service account.",
+                                ].join(" ");
+                            } else {
+                                errorText = `Google calendar error for ${calendarId}: ${JSON.stringify(
+                                    err
+                                )}`;
+                            }
+
+                            reject(errorMessage(errorText, 500));
                         } else {
-                            resolve(result.items.map(pickRequiredFields));
+                            resolve(result.items.map(toCalendarEvent));
                         }
                     }
                 );

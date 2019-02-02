@@ -9,6 +9,7 @@ import Managing.Utils.RemoteData as RemoteData exposing (RemoteDataError)
 type PageMessage
     = NoItemsAvailable
     | Error RemoteDataError
+    | RequiredInput String
 
 
 pageMessageToString : PageMessage -> String
@@ -19,6 +20,9 @@ pageMessageToString pageMessage =
 
         Error remoteDataErr ->
             "Error: " ++ RemoteData.errorToString remoteDataErr
+
+        RequiredInput message ->
+            message
 
 
 viewPageMessageWithAdditionalContent : List (Html msg) -> PageMessage -> Html msg

@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
-    "elm-analyse": "^0.15.0",
+    "elm-analyse": "^0.16.1",
     "elm-format": "^0.8.1",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
@@ -80,6 +80,7 @@
     "passport-azure-ad-oauth2": "^0.0.4",
     "pg": "^4.5.5",
     "pg-hstore": "^2.3.2",
+    "pikaday": "^1.8.0",
     "postcss-loader": "^2.0.5",
     "ramda": "^0.24.0",
     "react": "^16.4.0",

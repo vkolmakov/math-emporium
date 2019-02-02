@@ -2,12 +2,15 @@
 
 .m-section-nav {
     display: flex;
+    flex-flow: row wrap;
     list-style-type: none;
     padding: 0;
 
     &__item {
         display: flex;
         margin-right: 0.5em;
+        // adds some vertical spacing in case section nav items start wrapping
+        margin-bottom: 0.5em;
         text-align: center;
     }
 

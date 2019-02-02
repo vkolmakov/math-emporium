@@ -3,6 +3,8 @@ import React from "react";
 import ElmWrapper from "@client/components/ElmWrapper";
 import ElmModule from "./elm/Managing/Main.elm";
 import "@client/style/managing/main.scss";
+import Pikaday from "pikaday";
+import "pikaday/css/pikaday.css";
 
 const Managing = ElmModule.Elm.Managing;
 
@@ -21,6 +23,91 @@ const getScrollPosition = () => ({
     x: window.pageXOffset,
     y: window.pageYOffset,
 });
+
+function afterElementsAvailableInDom(elementIds, action) {
+    const refs = elementIds.map((elementId) =>
+        document.getElementById(elementId)
+    );
+
+    if (refs.some((ref) => ref === null)) {
+        return requestAnimationFrame(() =>
+            afterElementsAvailableInDom(elementIds, action)
+        );
+    }
+
+    return action(refs);
+}
+
+function calendarCheckInitializeDateRangePicker(
+    elmPortsRef,
+    startDatePickerDescription,
+    endDatePickerDescription
+) {
+    const baseDatePickerOptions = {
+        theme: "pikaday-custom-theme",
+        firstDay: 1, // set Monday as first day
+        /**
+         * Overriding toString to return an empty string to
+         * avoid flashing of the pre-selected dates inside the
+         * date picker input before Elm sets the correct display
+         * values.
+         */
+        toString: () => {
+            return "";
+        },
+    };
+
+    const startDatePicker = new Pikaday({
+        field: startDatePickerDescription.ref,
+        onSelect: (date) => {
+            elmPortsRef.onDatePickerDateSelection.send({
+                timestamp: date.getTime(),
+                id: startDatePickerDescription.ref.id,
+            });
+            updateStartDate(date);
+        },
+        ...baseDatePickerOptions,
+    });
+
+    const endDatePicker = new Pikaday({
+        field: endDatePickerDescription.ref,
+        onSelect: (date) => {
+            elmPortsRef.onDatePickerDateSelection.send({
+                timestamp: date.getTime(),
+                id: endDatePickerDescription.ref.id,
+            });
+            updateEndDate(date);
+        },
+        ...baseDatePickerOptions,
+    });
+
+    function updateStartDate(date) {
+        startDatePicker.setStartRange(date);
+        // another goToDate is required to update the
+        // selected start range in case with keyboard
+        // navigation.
+        startDatePicker.gotoDate(date);
+        endDatePicker.setStartRange(date);
+        endDatePicker.setMinDate(date);
+    }
+
+    function updateEndDate(date) {
+        endDatePicker.setEndRange(date);
+        // same deal with goToDate, required to avoid
+        // lagging endDateRange when navigating with keyboard.
+        endDatePicker.gotoDate(date);
+        startDatePicker.setEndRange(date);
+        startDatePicker.setMaxDate(date);
+    }
+
+    if (startDatePickerDescription.timestamp) {
+        startDatePicker.setDate(new Date(startDatePickerDescription.timestamp));
+    }
+
+    if (endDatePickerDescription.timestamp) {
+        endDatePicker.setDate(new Date(endDatePickerDescription.timestamp));
+    }
+}
 
 const ports = (elmPortsRef) => {
     /**
@@ -64,6 +151,12 @@ const ports = (elmPortsRef) => {
         });
     });
 
+    elmPortsRef.calendarCheckRequestSetStateInQueryString.subscribe(
+        (queryParams) => {
+            history.replaceState({}, "", location.pathname + "?" + queryParams);
+        }
+    );
+
     /**
      * Modals
      */
@@ -96,6 +189,41 @@ const ports = (elmPortsRef) => {
                 `requestCloseModal elm port: ${modalId} is not a dialog element`
             );
         }
+    });
+
+    /**
+     * Date Pickers
+     */
+    elmPortsRef.calendarCheckInitializeDatePickers.subscribe((message) => {
+        const {
+            startDatePickerId,
+            selectedStartDateTimestamp,
+            endDatePickerId,
+            selectedEndDateTimestamp,
+        } = message;
+
+        return afterElementsAvailableInDom(
+            [startDatePickerId, endDatePickerId],
+            ([startDatePickerInputRef, endDatePickerInputRef]) =>
+                calendarCheckInitializeDateRangePicker(
+                    elmPortsRef,
+                    {
+                        timestamp: selectedStartDateTimestamp,
+                        ref: startDatePickerInputRef,
+                    },
+                    {
+                        timestamp: selectedEndDateTimestamp,
+                        ref: endDatePickerInputRef,
+                    }
+                )
+        );
+    });
+
+    /**
+     * Browser
+     */
+    elmPortsRef.requestOpenNewBrowserTab.subscribe((url) => {
+        window.open(url);
     });
 
     return function portsCleanup() {
