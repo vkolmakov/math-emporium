@@ -25,6 +25,13 @@
         }
     }
 
+    // Week selection hover highlight
+    .pika-button:hover,
+    .pika-row.pick-whole-week:hover .pika-button {
+        background: $tertiary-color;
+        color: $primary-text-color;
+    }
+
     /**
      * Special buttons.
      */
@@ -35,11 +42,14 @@
     .is-selected .pika-button {
         color: $primary-text-color;
         background: $primary-color;
+        box-shadow: none;
+        border-radius: 0;
+        font-weight: normal;
     }
 
     .is-disabled .pika-button {
         color: $tertiary-color;
-        opacity: 0.1;
+        opacity: 0.5;
     }
 
     .is-startrange .pika-button,

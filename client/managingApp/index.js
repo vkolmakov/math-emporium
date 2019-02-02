@@ -55,6 +55,7 @@ function calendarCheckInitializeWeekPicker(elmPortsRef, weekPickerDescription) {
 
     const weekPicker = new Pikaday({
         pickWholeWeek: true,
+        showDaysInNextAndPreviousMonths: true,
         field: weekPickerDescription.ref,
         onSelect: (date) => {
             const mondayDate = date.getDate() - date.getDay() + 1;
