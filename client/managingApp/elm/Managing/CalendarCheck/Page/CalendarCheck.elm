@@ -343,9 +343,32 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        requiredInputMessage =
+            case ( model.selectedLocation, model.selectedStartDate, model.selectedEndDate ) of
+                ( Nothing, _, _ ) ->
+                    Just "Select a location"
+
+                ( Just _, Nothing, _ ) ->
+                    Just "Select a start date"
+
+                ( Just _, Just _, Nothing ) ->
+                    Just "Select an end date"
+
+                _ ->
+                    Nothing
+
+        viewDisplayedContent =
+            case requiredInputMessage of
+                Just message ->
+                    viewPageMessage (PageMessage.RequiredInput message)
+
+                Nothing ->
+                    viewCalendarCheckResult model.appConfig model.calendarCheckResult
+    in
     H.div []
         [ viewInputs model
-        , viewCalendarCheckResult model.appConfig model.calendarCheckResult
+        , viewDisplayedContent
         ]
 
 
@@ -428,11 +451,16 @@ viewCalendarCheckResultContent appConfig { invalidAppointments, invalidSchedules
         viewUnrecognizedCalendarEventsSection =
             viewSection "Unrecognized Calendar Events" viewUnrecognizedCalendarEvent unrecognizedCalendarEvents
     in
-    H.div []
-        [ viewInvalidSchedulesSection
-        , viewInvalidAppointmentsSection
-        , viewUnrecognizedCalendarEventsSection
-        ]
+    case ( invalidAppointments, invalidSchedules, unrecognizedCalendarEvents ) of
+        ( Nothing, Nothing, Nothing ) ->
+            H.div [] [ viewPageMessage PageMessage.NoItemsAvailable ]
+
+        _ ->
+            H.div []
+                [ viewInvalidSchedulesSection
+                , viewInvalidAppointmentsSection
+                , viewUnrecognizedCalendarEventsSection
+                ]
 
 
 viewCalendarCheckResult : AppConfig -> RemoteData CalendarCheckResult -> Html Msg
