@@ -325,12 +325,24 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
+        -- Check if the initial selection was already made in the query string before
+        -- rendering the required input message. This allows us to avoid flashing a
+        -- message that asks for the input right before the ports communicate the pre-selected
+        -- values to the model.
+        shouldDisplayRequiredInputMessage { locationId, startDateTimestamp, endDateTimestamp } =
+            case ( locationId, startDateTimestamp, endDateTimestamp ) of
+                ( Just _, Just _, Just _ ) ->
+                    False
+
+                _ ->
+                    True
+
         requiredInputMessage =
-            case ( model.selectedLocation, model.selectedStartDate ) of
-                ( Nothing, _ ) ->
+            case ( shouldDisplayRequiredInputMessage model.initialSelection, model.selectedLocation, model.selectedStartDate ) of
+                ( True, Nothing, _ ) ->
                     Just "Select a location"
 
-                ( Just _, Nothing ) ->
+                ( True, Just _, Nothing ) ->
                     Just "Select a week"
 
                 _ ->
