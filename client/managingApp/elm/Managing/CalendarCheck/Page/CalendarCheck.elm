@@ -2,6 +2,7 @@ port module Managing.CalendarCheck.Page.CalendarCheck exposing
     ( Model
     , Msg
     , OutMsg(..)
+    , cleanupCmd
     , init
     , initCmd
     , subscriptions
@@ -180,6 +181,11 @@ initCmd model =
 
         RemoteData.Available _ ->
             initializeDatePickers
+
+
+cleanupCmd : Cmd Msg
+cleanupCmd =
+    calendarCheckCleanupWeekPicker { pickerInputId = weekPickerInputElementId }
 
 
 getUpdatedDate : DatePickerDateValue -> Maybe Date
@@ -701,6 +707,9 @@ port calendarCheckInitializeWeekPicker :
     , selectedStartWeekMondayTimestamp : Maybe Int
     }
     -> Cmd msg
+
+
+port calendarCheckCleanupWeekPicker : { pickerInputId : String } -> Cmd msg
 
 
 port calendarCheckRequestSetStateInQueryString : String -> Cmd msg

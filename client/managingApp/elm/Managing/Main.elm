@@ -213,6 +213,9 @@ update message model =
                 ( updatedModelBasedOnRoute, initCmdBasedOnRoute ) =
                     getInitModelCmd newRoute model
 
+                previousRouteCleanupCmd =
+                    getRouteCleanupCmd model.route
+
                 scrollPositionRestorationCmd =
                     case scrollPosition of
                         Just sp ->
@@ -221,7 +224,9 @@ update message model =
                         Nothing ->
                             Cmd.none
             in
-            ( { updatedModelBasedOnRoute | route = newRoute }, Cmd.batch [ scrollPositionRestorationCmd, initCmdBasedOnRoute ] )
+            ( { updatedModelBasedOnRoute | route = newRoute }
+            , Cmd.batch [ scrollPositionRestorationCmd, initCmdBasedOnRoute, previousRouteCleanupCmd ]
+            )
 
         UserListPageMsg msg ->
             let
@@ -392,6 +397,37 @@ getInitModelCmd route model =
 
         Route.Unknown ->
             ( model, Navigation.load "/" )
+
+
+getRouteCleanupCmd : Route -> Cmd Msg
+getRouteCleanupCmd route =
+    case route of
+        Route.Home ->
+            Cmd.none
+
+        Route.UserList ->
+            Cmd.none
+
+        Route.UserDetail _ ->
+            Cmd.none
+
+        Route.EventList ->
+            Cmd.none
+
+        Route.ErrorEventList ->
+            Cmd.none
+
+        Route.EditSettings ->
+            Cmd.none
+
+        Route.AppointmentList ->
+            Cmd.none
+
+        Route.CalendarCheck _ ->
+            CalendarCheck.cleanupCmd |> Cmd.map CalendarCheckPageMsg
+
+        Route.Unknown ->
+            Cmd.none
 
 
 

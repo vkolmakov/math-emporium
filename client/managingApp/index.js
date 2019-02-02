@@ -72,6 +72,13 @@ function calendarCheckInitializeWeekPicker(elmPortsRef, weekPickerDescription) {
     if (weekPickerDescription.timestamp) {
         weekPicker.setDate(new Date(weekPickerDescription.timestamp));
     }
+
+    /**
+     * Store the reference to the picker under a custom property on a host element.
+     * This will be used when we exit the calendar check route to clean up after the
+     * date picker element.
+     */
+    weekPickerDescription.ref.PIKADAY_INSTANCE = weekPicker;
 }
 
 const ports = (elmPortsRef) => {
@@ -171,6 +178,20 @@ const ports = (elmPortsRef) => {
                 })
         );
     });
+
+    elmPortsRef.calendarCheckCleanupWeekPicker.subscribe(
+        ({ pickerInputId }) => {
+            const pickerInputRef = document.getElementById(pickerInputId);
+
+            if (
+                pickerInputRef &&
+                pickerInputRef.PIKADAY_INSTANCE &&
+                typeof pickerInputRef.PIKADAY_INSTANCE.destroy === "function"
+            ) {
+                pickerInputRef.PIKADAY_INSTANCE.destroy();
+            }
+        }
+    );
 
     /**
      * Browser
