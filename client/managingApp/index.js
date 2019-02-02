@@ -38,11 +38,7 @@ function afterElementsAvailableInDom(elementIds, action) {
     return action(refs);
 }
 
-function calendarCheckInitializeDateRangePicker(
-    elmPortsRef,
-    startDatePickerDescription,
-    endDatePickerDescription
-) {
+function calendarCheckInitializeWeekPicker(elmPortsRef, weekPickerDescription) {
     const baseDatePickerOptions = {
         theme: "pikaday-custom-theme",
         firstDay: 1, // set Monday as first day
@@ -57,55 +53,23 @@ function calendarCheckInitializeDateRangePicker(
         },
     };
 
-    const startDatePicker = new Pikaday({
-        field: startDatePickerDescription.ref,
+    const weekPicker = new Pikaday({
+        pickWholeWeek: true,
+        field: weekPickerDescription.ref,
         onSelect: (date) => {
+            const mondayDate = date.getDate() - date.getDay() + 1;
+            const monday = new Date(date.setDate(mondayDate));
+
             elmPortsRef.onDatePickerDateSelection.send({
-                timestamp: date.getTime(),
-                id: startDatePickerDescription.ref.id,
+                timestamp: monday.getTime(),
+                id: weekPickerDescription.ref.id,
             });
-            updateStartDate(date);
         },
         ...baseDatePickerOptions,
     });
 
-    const endDatePicker = new Pikaday({
-        field: endDatePickerDescription.ref,
-        onSelect: (date) => {
-            elmPortsRef.onDatePickerDateSelection.send({
-                timestamp: date.getTime(),
-                id: endDatePickerDescription.ref.id,
-            });
-            updateEndDate(date);
-        },
-        ...baseDatePickerOptions,
-    });
-
-    function updateStartDate(date) {
-        startDatePicker.setStartRange(date);
-        // another goToDate is required to update the
-        // selected start range in case with keyboard
-        // navigation.
-        startDatePicker.gotoDate(date);
-        endDatePicker.setStartRange(date);
-        endDatePicker.setMinDate(date);
-    }
-
-    function updateEndDate(date) {
-        endDatePicker.setEndRange(date);
-        // same deal with goToDate, required to avoid
-        // lagging endDateRange when navigating with keyboard.
-        endDatePicker.gotoDate(date);
-        startDatePicker.setEndRange(date);
-        startDatePicker.setMaxDate(date);
-    }
-
-    if (startDatePickerDescription.timestamp) {
-        startDatePicker.setDate(new Date(startDatePickerDescription.timestamp));
-    }
-
-    if (endDatePickerDescription.timestamp) {
-        endDatePicker.setDate(new Date(endDatePickerDescription.timestamp));
+    if (weekPickerDescription.timestamp) {
+        weekPicker.setDate(new Date(weekPickerDescription.timestamp));
     }
 }
 
@@ -194,28 +158,16 @@ const ports = (elmPortsRef) => {
     /**
      * Date Pickers
      */
-    elmPortsRef.calendarCheckInitializeDatePickers.subscribe((message) => {
-        const {
-            startDatePickerId,
-            selectedStartDateTimestamp,
-            endDatePickerId,
-            selectedEndDateTimestamp,
-        } = message;
+    elmPortsRef.calendarCheckInitializeWeekPicker.subscribe((message) => {
+        const { pickerInputId, selectedStartWeekMondayTimestamp } = message;
 
         return afterElementsAvailableInDom(
-            [startDatePickerId, endDatePickerId],
-            ([startDatePickerInputRef, endDatePickerInputRef]) =>
-                calendarCheckInitializeDateRangePicker(
-                    elmPortsRef,
-                    {
-                        timestamp: selectedStartDateTimestamp,
-                        ref: startDatePickerInputRef,
-                    },
-                    {
-                        timestamp: selectedEndDateTimestamp,
-                        ref: endDatePickerInputRef,
-                    }
-                )
+            [pickerInputId],
+            ([pickerInputRef]) =>
+                calendarCheckInitializeWeekPicker(elmPortsRef, {
+                    timestamp: selectedStartWeekMondayTimestamp,
+                    ref: pickerInputRef,
+                })
         );
     });
 

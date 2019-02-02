@@ -1,6 +1,7 @@
 module Managing.Utils.Date exposing
     ( Date
     , TimezoneOffset
+    , addDays
     , createTimezoneOffsetInMinutes
     , dateToTimestamp
     , decodeTimestamp
@@ -17,6 +18,16 @@ import Time exposing (Month(..), Posix, Weekday(..))
 minutesToMilliseconds : Int -> Int
 minutesToMilliseconds minutes =
     minutes * 60 * 1000
+
+
+hoursToMilliseconds : Int -> Int
+hoursToMilliseconds hours =
+    minutesToMilliseconds (hours * 60)
+
+
+daysToMilliseconds : Int -> Int
+daysToMilliseconds numDays =
+    hoursToMilliseconds (24 * numDays)
 
 
 type TimezoneOffset
@@ -40,6 +51,14 @@ dateToTimestamp (Date posixTimestamp) =
 timestampToDate : Int -> Date
 timestampToDate timestamp =
     Date <| Time.millisToPosix timestamp
+
+
+addDays : Int -> Date -> Date
+addDays numDays date =
+    date
+        |> dateToTimestamp
+        |> (\timestamp -> timestamp + daysToMilliseconds numDays)
+        |> timestampToDate
 
 
 weekdayToString : Weekday -> String

@@ -26,6 +26,11 @@ import Managing.View.Loading exposing (spinner)
 import Managing.View.PageMessage as PageMessage exposing (viewPageError, viewPageMessage)
 
 
+weekPickerInputElementId : String
+weekPickerInputElementId =
+    "calendar-check-week-picker"
+
+
 
 -- MODEL
 
@@ -83,7 +88,6 @@ type alias Model =
     , initialSelection : CalendarCheckRouteInitialStateQueryParams
     , locations : RemoteData (List Location)
     , selectedStartDate : Maybe Date
-    , selectedEndDate : Maybe Date
     , selectedLocation : Maybe Location
     , calendarCheckResult : RemoteData CalendarCheckResult
     }
@@ -95,7 +99,6 @@ init appConfig =
         appConfig
         { locationId = Nothing, startDateTimestamp = Nothing, endDateTimestamp = Nothing }
         RemoteData.NotRequested
-        Nothing
         Nothing
         Nothing
         RemoteData.NotRequested
@@ -116,7 +119,6 @@ type DatePickerDateValue
 
 type Msg
     = StartDateChange DatePickerDateValue
-    | EndDateChange DatePickerDateValue
     | SelectedLocationChange (Maybe Location)
     | RequestUpdateCalendarEvent CalendarEvent
     | ReceiveLocations (Result Http.Error (List Location))
@@ -148,25 +150,13 @@ initCmd model =
                 Nothing ->
                     model.initialSelection.startDateTimestamp
 
-        endDateSelection =
-            -- Prioritize values coming from the model.
-            -- If none, check if something was supplied from the query string.
-            case model.selectedEndDate of
-                Just _ ->
-                    model.selectedEndDate |> Maybe.map Date.dateToTimestamp
-
-                Nothing ->
-                    model.initialSelection.endDateTimestamp
-
         initializeDatePickers =
-            calendarCheckInitializeDatePickers
+            calendarCheckInitializeWeekPicker
                 -- Note that values have to be sent for cases when some values were selected, but user navigated
                 -- away from the tab. Values are still alive on the model, but date picker element does not
                 -- remember them.
-                { startDatePickerId = "calendar-check-start-date"
-                , selectedStartDateTimestamp = startDateSelection
-                , endDatePickerId = "calendar-check-end-date"
-                , selectedEndDateTimestamp = endDateSelection
+                { pickerInputId = weekPickerInputElementId
+                , selectedStartWeekMondayTimestamp = startDateSelection
                 }
     in
     case model.locations of
@@ -198,25 +188,29 @@ getUpdatedDate (DatePickerDateValue dateString) =
         |> Maybe.map Date.timestampToDate
 
 
-attemptCalendarCheckRequest : Model -> Maybe Location -> Maybe Date -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
-attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate selectedEndDate =
+getWeekEndDate : Date -> Date
+getWeekEndDate startDate =
+    startDate |> Date.addDays 7
+
+
+attemptCalendarCheckRequest : Model -> Maybe Location -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
+attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate =
     let
         anyValuesUpdated =
             (previousModel.selectedLocation /= selectedLocation)
                 || (previousModel.selectedStartDate /= selectedStartDate)
-                || (previousModel.selectedEndDate /= selectedEndDate)
     in
-    case ( anyValuesUpdated, ( selectedLocation, selectedStartDate, selectedEndDate ) ) of
-        ( True, ( Just location, Just startDate, Just endDate ) ) ->
+    case ( anyValuesUpdated, ( selectedLocation, selectedStartDate ) ) of
+        ( True, ( Just location, Just startDate ) ) ->
             ( RemoteData.Requested
             , Cmd.batch
                 [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
-                , getCalendarCheckResult location startDate endDate
-                , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate endDate)
+                , getCalendarCheckResult location startDate (getWeekEndDate startDate)
+                , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate (getWeekEndDate startDate))
                 ]
             )
 
-        ( False, ( Just location, Just startDate, Just endDate ) ) ->
+        ( False, ( Just location, Just startDate ) ) ->
             -- No values were updated, but everything required is selected.
             -- We can get into this scenario when user navigates to a different tab
             -- within the application. In this case, we don't have to make another request for
@@ -224,7 +218,7 @@ attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate sel
             -- The only action we need to do is to sync up the query string so that it matches
             -- the current state.
             ( previousModel.calendarCheckResult
-            , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate endDate)
+            , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate (getWeekEndDate startDate))
             )
 
         _ ->
@@ -242,22 +236,9 @@ update msg model =
                     getUpdatedDate value
 
                 ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest model model.selectedLocation updatedStartDate model.selectedEndDate
+                    attemptCalendarCheckRequest model model.selectedLocation updatedStartDate
             in
             ( { model | selectedStartDate = updatedStartDate, calendarCheckResult = nextCalendarCheckResultState }
-            , command
-            , Nothing
-            )
-
-        EndDateChange value ->
-            let
-                updatedEndDate =
-                    getUpdatedDate value
-
-                ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest model model.selectedLocation model.selectedStartDate updatedEndDate
-            in
-            ( { model | selectedEndDate = updatedEndDate, calendarCheckResult = nextCalendarCheckResultState }
             , command
             , Nothing
             )
@@ -265,7 +246,7 @@ update msg model =
         SelectedLocationChange updatedLocation ->
             let
                 ( nextCalendarCheckResultState, command ) =
-                    attemptCalendarCheckRequest model updatedLocation model.selectedStartDate model.selectedEndDate
+                    attemptCalendarCheckRequest model updatedLocation model.selectedStartDate
             in
             ( { model | selectedLocation = updatedLocation, calendarCheckResult = nextCalendarCheckResultState }
             , command
@@ -295,7 +276,7 @@ update msg model =
                 -- Because we could make a location selection based on the value from the query
                 -- string, we will attempt to perform a calendar check request.
                 ( nextCalendarCheckResultState, possibleCalendarCheckRequestCommand ) =
-                    attemptCalendarCheckRequest model selectedLocation model.selectedStartDate model.selectedEndDate
+                    attemptCalendarCheckRequest model selectedLocation model.selectedStartDate
 
                 updatedModel =
                     { model
@@ -345,15 +326,12 @@ view : Model -> Html Msg
 view model =
     let
         requiredInputMessage =
-            case ( model.selectedLocation, model.selectedStartDate, model.selectedEndDate ) of
-                ( Nothing, _, _ ) ->
+            case ( model.selectedLocation, model.selectedStartDate ) of
+                ( Nothing, _ ) ->
                     Just "Select a location"
 
-                ( Just _, Nothing, _ ) ->
-                    Just "Select a start date"
-
-                ( Just _, Just _, Nothing ) ->
-                    Just "Select an end date"
+                ( Just _, Nothing ) ->
+                    Just "Select a week"
 
                 _ ->
                     Nothing
@@ -491,12 +469,17 @@ noValueOption =
     Input.toSelectOption { label = "", value = "" }
 
 
-viewDatePicker : String -> TimezoneOffset -> String -> Maybe Date -> (String -> msg) -> Html msg
-viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
+viewWeekPicker : String -> TimezoneOffset -> String -> Maybe Date -> Html msg
+viewWeekPicker elementId timezoneOffset label maybeValue =
     let
+        getWeekRangeDisplayString weekStartDate =
+            Date.toCompactDateDisplayString timezoneOffset weekStartDate
+                ++ " - "
+                ++ Date.toCompactDateDisplayString timezoneOffset (getWeekEndDate weekStartDate)
+
         dateString =
             maybeValue
-                |> Maybe.map (Date.toCompactDateDisplayString timezoneOffset)
+                |> Maybe.map getWeekRangeDisplayString
                 |> Maybe.withDefault ""
     in
     H.div [ Styles.apply [ Styles.field.self ] ]
@@ -505,7 +488,6 @@ viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
             [ Styles.apply [ Styles.field.input ]
             , A.id elementId
             , A.value dateString
-            , E.onInput onChangeMsg
             , A.readonly True
             ]
             []
@@ -515,7 +497,7 @@ viewDatePicker elementId timezoneOffset label maybeValue onChangeMsg =
 viewInputs : Model -> Html Msg
 viewInputs model =
     let
-        { selectedLocation, locations, appConfig, selectedStartDate, selectedEndDate } =
+        { selectedLocation, locations, appConfig, selectedStartDate } =
             model
 
         locationToSelectOption location =
@@ -547,8 +529,7 @@ viewInputs model =
     in
     H.div [ Styles.apply [ Styles.calendarCheck.inputContainer ] ]
         [ viewLocationSelect
-        , viewDatePicker "calendar-check-start-date" appConfig.localTimezoneOffsetInMinutes "Start Date" selectedStartDate (StartDateChange << DatePickerDateValue)
-        , viewDatePicker "calendar-check-end-date" appConfig.localTimezoneOffsetInMinutes "End Date" selectedEndDate (EndDateChange << DatePickerDateValue)
+        , viewWeekPicker weekPickerInputElementId appConfig.localTimezoneOffsetInMinutes "Week" selectedStartDate
         ]
 
 
@@ -686,11 +667,8 @@ getCalendarCheckResult location startDate endDate =
 datePickerDateSelectionToCmd : { id : String, timestamp : Int } -> Msg
 datePickerDateSelectionToCmd { id, timestamp } =
     case id of
-        "calendar-check-start-date" ->
+        "calendar-check-week-picker" ->
             StartDateChange (DatePickerDateValue <| String.fromInt timestamp)
-
-        "calendar-check-end-date" ->
-            EndDateChange (DatePickerDateValue <| String.fromInt timestamp)
 
         _ ->
             NoOp
@@ -706,11 +684,9 @@ subscriptions =
 -- PORTS
 
 
-port calendarCheckInitializeDatePickers :
-    { startDatePickerId : String
-    , selectedStartDateTimestamp : Maybe Int
-    , endDatePickerId : String
-    , selectedEndDateTimestamp : Maybe Int
+port calendarCheckInitializeWeekPicker :
+    { pickerInputId : String
+    , selectedStartWeekMondayTimestamp : Maybe Int
     }
     -> Cmd msg
 
