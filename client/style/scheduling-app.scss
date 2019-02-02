@@ -66,6 +66,13 @@ $gutter-size: 0.75em;
             .dual-datepicker__inactive-input-container {
                 > input {
                     @include input-no-rounded-border();
+                    // Disable individual outlines on both active and inactive input containers.
+                    // Having this outline triggered on the active container results in showing
+                    // a double outline around the active container (overlapping the dual date-picker outline
+                    // that is set by the React component on the active element focus by adding `has-focus` class.
+                    // Having this outline triggered on the readonly container
+                    // results in an outline flash before the main container is focused.
+                    outline: 0;
                 }
 
                 width: 100%;

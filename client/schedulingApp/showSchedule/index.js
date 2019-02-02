@@ -182,28 +182,23 @@ class ShowSchedule extends Component {
                                 }}
                                 id="dual-datepicker"
                             />
-                            <div
-                                className="dual-datepicker__inactive-input-container"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    /**
-                                     * Input is wrapped in a div so that we can disable it
-                                     * and still be able to fire an onClick and redirect the click to
-                                     * the actual active date picker element.
-                                     */
-                                    if (
-                                        this.activeDatePickerInputRef &&
-                                        typeof this.activeDatePickerInputRef
-                                            .setFocus === "function"
-                                    ) {
-                                        this.activeDatePickerInputRef.setFocus();
-                                    }
-                                }}>
+                            <div className="dual-datepicker__inactive-input-container">
                                 <input
                                     value={moment(startDate)
                                         .endOf("isoWeek")
                                         .format("MM/DD/YYYY")}
-                                    disabled={true}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (
+                                            this.activeDatePickerInputRef &&
+                                            typeof this.activeDatePickerInputRef
+                                                .setFocus === "function"
+                                        ) {
+                                            this.activeDatePickerInputRef.setFocus();
+                                        }
+                                    }}
+                                    readOnly={true}
+                                    tabIndex={-1}
                                 />
                             </div>
                         </div>
