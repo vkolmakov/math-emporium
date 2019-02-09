@@ -233,6 +233,24 @@ attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate =
             ( RemoteData.NotRequested, Cmd.none )
 
 
+sortCalendarCheckResult : CalendarCheckResult -> CalendarCheckResult
+sortCalendarCheckResult { unrecognizedCalendarEvents, invalidSchedules, invalidAppointments } =
+    let
+        dateTimestamp calendarEvent =
+            Date.dateToTimestamp calendarEvent.date
+    in
+    { unrecognizedCalendarEvents =
+        unrecognizedCalendarEvents
+            |> Maybe.map (List.sortBy dateTimestamp)
+    , invalidSchedules =
+        invalidSchedules
+            |> Maybe.map (List.sortBy (dateTimestamp << .calendarEvent))
+    , invalidAppointments =
+        invalidAppointments
+            |> Maybe.map (List.sortBy (dateTimestamp << .calendarEvent))
+    }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
@@ -303,7 +321,7 @@ update msg model =
             )
 
         ReceiveCalendarCheckResult (Ok calendarCheckResult) ->
-            ( { model | calendarCheckResult = RemoteData.Available calendarCheckResult }
+            ( { model | calendarCheckResult = RemoteData.Available <| sortCalendarCheckResult calendarCheckResult }
             , Cmd.none
             , Nothing
             )
