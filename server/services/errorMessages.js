@@ -5,9 +5,9 @@ export function notFound(item) {
     };
 }
 
-export function unathorized() {
+export function unauthorized() {
     return {
-        error: "Unathorized request. Please sign in.",
+        error: "Unauthorized request. Please sign in.",
         status: 401,
     };
 }

@@ -1,6 +1,6 @@
-import { unathorized } from "../services/errorMessages";
+import { unauthorized } from "../services/errorMessages";
 
-const unathorizedRequest = (req, res) => res.status(401).send(unathorized());
+const unauthorizedRequest = (req, res) => res.status(401).send(unauthorized());
 
 export default function requireGroup(groupId) {
     const ensureUser = (req, res, next) => {
@@ -8,7 +8,7 @@ export default function requireGroup(groupId) {
             return next();
         }
 
-        return unathorizedRequest(req, res);
+        return unauthorizedRequest(req, res);
     };
 
     const ensureRequiredGroup = (req, res, next) => {
@@ -17,7 +17,7 @@ export default function requireGroup(groupId) {
             return next();
         }
 
-        return unathorizedRequest(req, res);
+        return unauthorizedRequest(req, res);
     };
 
     return [ensureUser, ensureRequiredGroup];
