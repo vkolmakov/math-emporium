@@ -125,6 +125,7 @@ type Msg
     | ReceiveLocations (Result Http.Error (List Location))
     | ReceiveCalendarCheckResult (Result Http.Error CalendarCheckResult)
     | CheckIfTakingTooLong RemoteDataRequest
+    | Retry RemoteDataRequest
     | NoOp
 
 
@@ -132,14 +133,19 @@ type OutMsg
     = RequestOpenNewBrowserTab Url
 
 
+fetchLocations : Cmd Msg
+fetchLocations =
+    Cmd.batch
+        [ getLocations
+        , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong LocationsRequest)
+        ]
+
+
 initCmd : Model -> Cmd Msg
 initCmd model =
     let
         fetchData =
-            Cmd.batch
-                [ getLocations
-                , RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong LocationsRequest)
-                ]
+            fetchLocations
 
         startDateSelection =
             -- Prioritize values coming from the model.
@@ -199,6 +205,15 @@ getWeekEndDate startDate =
     startDate |> Date.addDays 7
 
 
+performCalendarCheckRequest : Location -> Date -> Cmd Msg
+performCalendarCheckRequest location startDate =
+    Cmd.batch
+        [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
+        , getCalendarCheckResult location startDate (getWeekEndDate startDate)
+        , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate (getWeekEndDate startDate))
+        ]
+
+
 attemptCalendarCheckRequest : Model -> Maybe Location -> Maybe Date -> ( RemoteData CalendarCheckResult, Cmd Msg )
 attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate =
     let
@@ -209,11 +224,7 @@ attemptCalendarCheckRequest previousModel selectedLocation selectedStartDate =
     case ( anyValuesUpdated, ( selectedLocation, selectedStartDate ) ) of
         ( True, ( Just location, Just startDate ) ) ->
             ( RemoteData.Requested
-            , Cmd.batch
-                [ RemoteData.scheduleLoadingStateTrigger (CheckIfTakingTooLong CalendarCheckResultRequest)
-                , getCalendarCheckResult location startDate (getWeekEndDate startDate)
-                , calendarCheckRequestSetStateInQueryString (parameterSelectionToQueryParamsString location startDate (getWeekEndDate startDate))
-                ]
+            , performCalendarCheckRequest location startDate
             )
 
         ( False, ( Just location, Just startDate ) ) ->
@@ -338,12 +349,40 @@ update msg model =
             , Nothing
             )
 
+        Retry LocationsRequest ->
+            ( { model | locations = RemoteData.NotRequested }
+            , fetchLocations
+            , Nothing
+            )
+
+        Retry CalendarCheckResultRequest ->
+            let
+                command =
+                    case ( model.selectedLocation, model.selectedStartDate ) of
+                        ( Just location, Just startDate ) ->
+                            performCalendarCheckRequest location startDate
+
+                        _ ->
+                            -- This should never happen
+                            Cmd.none
+            in
+            ( { model | calendarCheckResult = RemoteData.NotRequested }
+            , command
+            , Nothing
+            )
+
         NoOp ->
             ( model, Cmd.none, Nothing )
 
 
 
 -- VIEW
+
+
+type PageInputMessage
+    = RequiredInput String
+    | ErrorGettingInitialData RemoteData.RemoteDataError
+    | NoPageInputMessage
 
 
 view : Model -> Html Msg
@@ -364,20 +403,31 @@ view model =
         requiredInputMessage =
             case ( shouldDisplayRequiredInputMessage model.initialSelection, model.selectedLocation, model.selectedStartDate ) of
                 ( True, Nothing, _ ) ->
-                    Just "Select a location"
+                    RequiredInput "Select a location"
 
                 ( True, Just _, Nothing ) ->
-                    Just "Select a week"
+                    RequiredInput "Select a week"
 
                 _ ->
-                    Nothing
+                    NoPageInputMessage
+
+        errorGettingInitialData =
+            case model.locations of
+                RemoteData.Error err ->
+                    ErrorGettingInitialData err
+
+                _ ->
+                    NoPageInputMessage
 
         viewDisplayedContent =
-            case requiredInputMessage of
-                Just message ->
+            case ( errorGettingInitialData, requiredInputMessage ) of
+                ( ErrorGettingInitialData err, _ ) ->
+                    viewPageError (Retry LocationsRequest) err
+
+                ( NoPageInputMessage, RequiredInput message ) ->
                     viewPageMessage (PageMessage.RequiredInput message)
 
-                Nothing ->
+                _ ->
                     viewCalendarCheckResult model.appConfig model.calendarCheckResult
     in
     H.div []
@@ -492,7 +542,7 @@ viewCalendarCheckResult appConfig calendarCheckResultRemoteData =
                     spinner
 
                 RemoteData.Error err ->
-                    viewPageMessage (PageMessage.Error err)
+                    viewPageError (Retry CalendarCheckResultRequest) err
 
                 RemoteData.Available calendarCheckResult ->
                     viewCalendarCheckResultContent appConfig calendarCheckResult
@@ -544,6 +594,14 @@ viewInputs model =
                 |> Maybe.map locationToSelectOption
                 |> Maybe.withDefault noValueOption
 
+        hasLocationsAvailable =
+            case locations of
+                RemoteData.Available _ ->
+                    True
+
+                _ ->
+                    False
+
         locationsList =
             locations
                 |> RemoteData.withDefault []
@@ -558,7 +616,7 @@ viewInputs model =
 
         viewLocationSelect =
             Input.select
-                { isEditable = True, isLabelHidden = False, label = "Location" }
+                { isEditable = hasLocationsAvailable, isLabelHidden = False, label = "Location" }
                 locationSelectOptions
                 selectedLocationOption
                 (E.on "change" decodeSelectedLocationFromChangeEvent)
