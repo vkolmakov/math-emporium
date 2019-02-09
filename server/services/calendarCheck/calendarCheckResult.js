@@ -32,9 +32,7 @@ const calendarCheckResult = {
     },
 
     createUnrecognizedCalendarEventsEntry(calendarEvent) {
-        return {
-            ...getCalendarEventInformation(calendarEvent),
-        };
+        return getCalendarEventInformation(calendarEvent);
     },
 
     createCalendarEventsReducer(
