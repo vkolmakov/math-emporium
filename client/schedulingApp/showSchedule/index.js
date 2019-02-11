@@ -40,6 +40,72 @@ function getLastActiveElementInfo(event) {
     };
 }
 
+function onDatePickerKeyDown(showScheduleInstance) {
+    const KEYBOARD_SELECTED_DAY_SELECTOR =
+        ".react-datepicker__day--keyboard-selected";
+
+    const IN_RANGE_DAY_CLASS_NAME = "react-datepicker__day--in-range";
+    const KEYBOARD_SELECTED_WEEK_CLASS_NAME =
+        "react-datepicker__week--custom-contains-current-keyboard-selection";
+
+    /**
+     * This event handler highlights the whole week on the react-datepicker
+     * instead of a single day on keyboard selection.
+     */
+    return function handleDatePickerKeyDown() {
+        // Because calendar instance exists, we know that the datepicker is currently opened.
+        // Otherwise, we are in the case where date input is focused, but datepicker is not currently opened.
+        if (
+            showScheduleInstance.activeDatePickerInputRef &&
+            showScheduleInstance.activeDatePickerInputRef.calendar &&
+            showScheduleInstance.activeDatePickerInputRef.calendar.instanceRef
+        ) {
+            const calendarDOMElement =
+                showScheduleInstance.activeDatePickerInputRef.calendar
+                    .instanceRef.monthContainer;
+
+            // Because this event fires on key DOWN, no selection was yet made and we are at the very
+            // beginning of the event processing.
+            // This allows us to identify the element of the date that was PREVIOUSLY selected and clean up
+            // the custom class that added the background-color on the parent. (week)
+            const previouslySelectedDayDOMElement = calendarDOMElement.querySelector(
+                KEYBOARD_SELECTED_DAY_SELECTOR
+            );
+            if (previouslySelectedDayDOMElement) {
+                previouslySelectedDayDOMElement.parentElement.classList.remove(
+                    KEYBOARD_SELECTED_WEEK_CLASS_NAME
+                );
+            }
+
+            // Hand over control to react-datepicker and allow it to process the event.
+            // This allows us to get our hands on the day that will be selected as a result
+            // of this key press.
+            window.setTimeout(() => {
+                // At this point, the key down event was fully processed by the react-datepicker instance
+                // and the instance value was updated and the class that we use to identify the current
+                // selected date was applied. Now we can get it and apply the class that adds background-color to
+                // the parent. (week)
+                const selectedDayDOMElement = calendarDOMElement.querySelector(
+                    KEYBOARD_SELECTED_DAY_SELECTOR
+                );
+                if (
+                    selectedDayDOMElement &&
+                    !selectedDayDOMElement.classList.contains(
+                        IN_RANGE_DAY_CLASS_NAME
+                    )
+                ) {
+                    // Note that we also don't want to add the indication of week being keyboard-selected
+                    // in cases when the currently-keyboard-selected week is the one that's in range (i.e.,
+                    // selected by the user and currently used to get the list of available appointments)
+                    selectedDayDOMElement.parentElement.classList.add(
+                        KEYBOARD_SELECTED_WEEK_CLASS_NAME
+                    );
+                }
+            }, 0);
+        }
+    };
+}
+
 class ShowSchedule extends Component {
     constructor() {
         super();
@@ -167,6 +233,7 @@ class ShowSchedule extends Component {
                                 dateFormat="MM/DD/YYYY"
                                 readOnly={true}
                                 onChange={this.onStartDateChange.bind(this)}
+                                onKeyDown={onDatePickerKeyDown(this)}
                                 onFocus={() =>
                                     this.datePickerWrapRef.classList.add(
                                         "has-focus"

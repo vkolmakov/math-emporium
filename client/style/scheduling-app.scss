@@ -110,6 +110,13 @@ $gutter-size: 0.75em;
         &:focus {
             background-color: $tertiary-color;
         }
+
+        &--custom-contains-current-keyboard-selection {
+            // This is a custom modifier class whish is not a part of react-datepicker.
+            // The class is added to the week that contains currently-selected date
+            // through JavaScript when keyboard selection is made.
+            background-color: $tertiary-color;
+        }
     }
 
     &__header {
@@ -146,6 +153,31 @@ $gutter-size: 0.75em;
                 background-color: $primary-color;
                 border-radius: 0;
             }
+        }
+
+        &--keyboard-selected {
+            // Because we're not concerned with individual keyboard-selected days
+            // and only care about weeks, disable styling for the keyboard-selected days.
+            // Note that the indication of a week being keyboard-selected will come from
+            // react-datepicker__week--custom-contains-current-keyboard-selection class instead.
+            // Inheriting color works for the most cases, because in case of a keyboard-selected
+            // week, the background of the parent will make the background of the keyboard-selected
+            // day disappear.
+            // However, there is one exception - case when we are keyboard-selecting a day inside of the
+            // week that is in-range. (colored with primary color) There, parent has no background color, but
+            // the elements themselves provide an illusion of a continuous background color by tightly filling
+            // in the space. This case is handled in the following rule set.
+            background-color: inherit;
+            color: inherit;
+        }
+
+        &--keyboard-selected#{&}--in-range {
+            // Handling the case when the day is both keyboard-selected and in range. The reason behind this
+            // is described under &--keyboard-selected rule set. The selector is a bit hard to read, but can be
+            // interpreted as: day that has both --keyboard-selected AND --in-range modifiers.
+            // In this case, we'd want to default the date to the exact same color as --in-range.
+            background-color: $primary-color;
+            color: black;
         }
     }
 }
