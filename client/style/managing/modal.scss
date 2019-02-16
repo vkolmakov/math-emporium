@@ -15,8 +15,18 @@
      * enough space when new content is added and styles are not
      * adjusted, especially given that the content is centered.
      */
-    width: $width;
     min-height: $min-height;
+
+    /**
+     * Handling width:
+     *
+     * on mobile screens, take up as much space as available and leave a bit of padding around
+     * on desktop screens, take up a fixed amount of space.
+     */
+    width: 85vw;
+    @include on-medium-screen() {
+        width: $width;
+    }
 
     /**
      * Assume that main-container is present.
