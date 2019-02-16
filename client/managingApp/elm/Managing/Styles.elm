@@ -90,6 +90,7 @@ field =
 
 modal =
     { self = "m-modal"
+    , contentOffPage = "m-modal__content-off-page"
     , scheduledAppointmentDetailsModalContent =
         { self = "m-modal__scheduled-appointment-details-modal-content"
         , mainContainer = "m-modal__scheduled-appointment-details-modal-content__main-container"

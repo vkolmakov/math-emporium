@@ -241,6 +241,14 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
         closeModalButton =
             Button.view "Close" "modal-close-button" Button.Enabled CloseScheduledAppointmentDetails
 
+        displayModalContentState =
+            case ( id, data ) of
+                ( Nothing, _ ) ->
+                    Modal.HideContent
+
+                ( Just _, appointmentData ) ->
+                    Modal.remoteDataToModalContentDisplayState appointmentData
+
         contentChildren =
             case ( data, id ) of
                 ( RemoteData.Available appointment, Just appointmentId ) ->
@@ -285,7 +293,7 @@ viewScheduledAppointmentDetailModal appConfig { data, id } =
                 ]
             ]
     in
-    Modal.viewModal Modal.ScheduledAppointmentDetailsModal modalContent
+    Modal.viewModal Modal.ScheduledAppointmentDetailsModal displayModalContentState modalContent
 
 
 
@@ -296,12 +304,12 @@ decodeEventKind : Int -> Json.Decoder EventKind
 decodeEventKind eventKindId =
     case eventKindId of
         1 ->
-            Json.at ["data", "appointment"] decodeAppointmentRef
+            Json.at [ "data", "appointment" ] decodeAppointmentRef
                 |> Json.maybe
                 |> Json.map ScheduleAppointmentEvent
 
         2 ->
-            Json.at ["data", "appointment"] decodeAppointmentRef
+            Json.at [ "data", "appointment" ] decodeAppointmentRef
                 |> Json.maybe
                 |> Json.map DeleteAppointmentEvent
 

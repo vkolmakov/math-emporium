@@ -52,6 +52,14 @@
     border-radius: 5px;
     padding: 1.5em;
 
+    &__content-off-page {
+        // We're sliding the content off the page instead of hiding it to preserve the
+        // modal overlay. Having the overlay display immediately, gives us
+        // a sense of instant feedback from the click without a flash of an
+        // empty modal.
+        top: -100vh;
+    }
+
     /**
      * Used on Events page.
      */

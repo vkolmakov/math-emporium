@@ -254,6 +254,11 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
         closeModalButton =
             Button.view "Close" "modal-close-button" Button.Enabled CloseAppointmentDiagnosticData
 
+        displayModalContentState =
+            displayedDiagnosticDataEntry
+                |> Maybe.map Modal.remoteDataToModalContentDisplayState
+                |> Maybe.withDefault Modal.HideContent
+
         contentChildren =
             case displayedDiagnosticDataEntry of
                 Nothing ->
@@ -323,7 +328,7 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
                 ]
             ]
     in
-    Modal.viewModal Modal.AppointmentDiagnosticDataModal content
+    Modal.viewModal Modal.AppointmentDiagnosticDataModal displayModalContentState content
 
 
 
