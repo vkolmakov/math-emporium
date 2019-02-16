@@ -1,16 +1,17 @@
 @mixin base-modal-content($width, $min-height) {
+    // Ensure that loading an error states are also displayed properly:
+    // this will end up pushing the close button to the bottom of the modal
+    // container.
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
 
     /**
      * Set an initial width/height for the modal to
-     * accomodate potential loading state and avoid seeing
+     * accommodate potential loading state and avoid seeing
      * a modal that jumps in side between state transitions.
      *
      * Modal height is not fixed because minor vertical growth in
-     * the modal size is more tollerable than not having
+     * the modal size is more tolerable than not having
      * enough space when new content is added and styles are not
      * adjusted, especially given that the content is centered.
      */
@@ -48,7 +49,10 @@
         @include base-modal-content($width: 30em, $min-height: 15em);
 
         &__close-button {
-            align-self: flex-end;
+            // close button is a container -> this pushes
+            // the button to the right corner of the container
+            display: flex;
+            justify-content: flex-end;
         }
     }
 
@@ -56,17 +60,21 @@
      * Used on Appointments page.
      */
     &__appointment-diagnostic-data-modal-content {
-        @include base-modal-content($width: 30em, $min-height: 20em);
+        // This has a width close to the maximum width of the page content
+        // due to a possibility of getting a lot of user-generated content
+        // that has a potential for taking up a lot of space.
+        @include base-modal-content($width: 40em, $min-height: 20em);
 
         &__main-container {
             // Limit maximum height of the container to avoid situations
-            // where modal content might end up being of the viewfinder
+            // where modal content might end up being outside of the viewfinder
             max-height: 30em;
             overflow: scroll;
         }
 
         &__close-button {
-            align-self: flex-end;
+            display: flex;
+            justify-content: flex-end;
         }
     }
 }

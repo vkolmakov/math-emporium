@@ -305,7 +305,7 @@ viewAppointmentDiagnosticDataModal appConfig displayedDiagnosticDataEntry =
                     in
                     [ DataTable.item
                         [ DataTable.textField "Time" (Date.toDisplayString appConfig.localTimezoneOffsetInMinutes time)
-                        , DataTable.sourceCodeField "Preset Calendar Events" presentCalendarEventsText
+                        , DataTable.sourceCodeField "Present Calendar Events" presentCalendarEventsText
                         , DataTable.sourceCodeField "Derived Appointments" derivedAppointmentsText
                         , DataTable.sourceCodeField "Derived Scheduled Tutors" (getTutorListText derivedScheduledTutors)
                         , DataTable.sourceCodeField "Derived Available Tutors" (getTutorListText derivedAvailableTutors)
