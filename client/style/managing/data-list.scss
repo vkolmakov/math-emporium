@@ -36,7 +36,9 @@
                 width: 7em;
                 overflow: auto;
                 border-right: 1px solid $border-color-for-controls;
-                padding: 0.4em;
+                // Add some extra padding for top and bottom to allow
+                // some space for a scrollbar in case of overflow.
+                padding: 0.5em 0.4em;
             }
 
             &__value {
