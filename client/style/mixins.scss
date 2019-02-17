@@ -1,5 +1,24 @@
 @import "variables";
 
+@function str-replace($string, $search, $replace: "") {
+    $index: str-index($string, $search);
+
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace +
+            str-replace(
+                str-slice($string, $index + str-length($search)),
+                $search,
+                $replace
+            );
+    }
+
+    @return $string;
+}
+
+@function to-string($value) {
+    @return inspect($value);
+}
+
 @mixin rounded-border {
     border: 1px solid $border-color-for-controls;
     @include border-radius(5px);
@@ -23,6 +42,19 @@
 @mixin input {
     @include input-no-rounded-border();
     @include rounded-border();
+}
+
+@mixin select-input-override-browser-styling($color) {
+    appearance: none;
+
+    // using %23 instead of # for the color due to https://www.chromestatus.com/features/5656049583390720
+    $color-encoded: str-replace(to-string($color), "#", "%23");
+
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='#{$color-encoded}'><polygon points='0,0 10,0 5,5'/></svg>");
+    background-size: 0.75em;
+    background-position: calc(100% - 10px) 70%;
+    background-repeat: no-repeat;
+    background-color: white;
 }
 
 @mixin input-no-rounded-border {

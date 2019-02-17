@@ -67,6 +67,11 @@ body {
 
 select {
     @include input;
+    @include select-input-override-browser-styling($color: black);
+
+    &:disabled {
+        @include select-input-override-browser-styling($color: #b5b5b5);
+    }
 }
 
 .clearfix {

@@ -30,7 +30,10 @@ $gutter-size: 0.75em;
 
         .select-filter-error {
             @include rounded-border-enlarge;
-            border-color: $danger-color;
+            @include select-input-override-browser-styling(
+                $color: $required-input-color
+            );
+            border-color: $required-input-color;
         }
 
         .select-filter-empty {
