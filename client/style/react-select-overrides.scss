@@ -1,0 +1,33 @@
+@import "variables.scss";
+
+/**
+ * Input group border and text color.
+ */
+.Select-control {
+    border-color: $border-color-for-controls;
+}
+
+.Select.has-value.Select--single
+    > .Select-control
+    .Select-value
+    .Select-value-label {
+    color: $primary-text-color;
+}
+
+/**
+ * Colors for the select triangle.
+ */
+.Select-arrow {
+    border-color: $primary-text-color transparent transparent;
+}
+
+.Select.is-open > .Select-control .Select-arrow {
+    border-color: transparent transparent $primary-text-color;
+}
+
+/**
+ * Clear icon color.
+ */
+.Select-clear-zone {
+    color: $primary-text-color;
+}
