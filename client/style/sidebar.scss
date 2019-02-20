@@ -31,15 +31,21 @@
     }
 
     .sidebar-link {
+        color: $primary-text-color;
+        padding: 0.5em;
+        // Setting an explicit border radius instead of using rounded-border mixin
+        // because using it ends up doubling down on the border width and not setting
+        // border-radius on the link ends up showing the corners of the link
+        // on hover/focus states overlapping the rounded border of the .sidebar-item
+        border-radius: 5px;
+
         flex: 1;
         text-align: center;
 
-        padding: 0.5em;
-
         @include url();
-        color: $primary-text-color;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
             @include in-focus();
         }
 
