@@ -14,6 +14,13 @@ const rootElementProps = {
     tabIndex: -1,
 };
 
+/**
+ * @desc Maps corresponding host HTML element IDs of the outside components
+ * to the corresponding clean-up functions.
+ * @type {Map<string, function(): void>}
+ */
+const outsideComponentElementCleanupFunctions = new Map();
+
 const flags = () => ({
     initialHref: location.href,
     localTimezoneOffsetInMinutes: new Date().getTimezoneOffset(),
@@ -74,11 +81,14 @@ function calendarCheckInitializeWeekPicker(elmPortsRef, weekPickerDescription) {
     }
 
     /**
-     * Store the reference to the picker under a custom property on a host element.
-     * This will be used when we exit the calendar check route to clean up after the
-     * date picker element.
+     * Store the cleanup function.
      */
-    weekPickerDescription.ref.PIKADAY_INSTANCE = weekPicker;
+    if (typeof weekPicker.destroy === "function") {
+        outsideComponentElementCleanupFunctions.set(
+            weekPickerDescription.ref.id,
+            () => weekPicker.destroy()
+        );
+    }
 }
 
 const ports = (elmPortsRef) => {
@@ -181,14 +191,13 @@ const ports = (elmPortsRef) => {
 
     elmPortsRef.calendarCheckCleanupWeekPicker.subscribe(
         ({ pickerInputId }) => {
-            const pickerInputRef = document.getElementById(pickerInputId);
+            const cleanupFunction = outsideComponentElementCleanupFunctions.get(
+                pickerInputId
+            );
 
-            if (
-                pickerInputRef &&
-                pickerInputRef.PIKADAY_INSTANCE &&
-                typeof pickerInputRef.PIKADAY_INSTANCE.destroy === "function"
-            ) {
-                pickerInputRef.PIKADAY_INSTANCE.destroy();
+            if (typeof cleanupFunction === "function") {
+                cleanupFunction();
+                outsideComponentElementCleanupFunctions.delete(pickerInputId);
             }
         }
     );
