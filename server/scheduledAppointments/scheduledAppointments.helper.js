@@ -352,7 +352,7 @@ export default (
         const emailBodyConstructor = () =>
             `Your appointment for ${course.code} with ${
                 tutorData.tutor.name
-            } on ${formattedTime} in the ${
+            } on ${formattedTime} at ${
                 location.name
             } has been scheduled. ${contactInfo}`;
         const subjectConstructor = () =>
@@ -375,17 +375,26 @@ export default (
             const endTime = dateTime.addMinutes(startTime, APPOINTMENT_LENGTH);
 
             const getAppointmentSummary = () => {
-                const EXPLICITLY_REQUESTED_TUTOR_SYMBOL = " ## ";
-
                 const tutorName = tutorData.tutor.name;
                 const wasTutorExplicitlyRequested =
                     tutorData.wasExplicitlyRequested;
 
-                return `${tutorName}${
-                    wasTutorExplicitlyRequested
-                        ? EXPLICITLY_REQUESTED_TUTOR_SYMBOL
-                        : " "
-                }(${user.firstName}) ${course.code}`;
+                /**
+                 * Format:
+                 *
+                 * tutor was not requested explicitly - {tutorName} ({userName}) {courseCode}
+                 * tutor was requested explicitly - {tutorName} ## ({userName}) {courseCode}
+                 */
+                const tokens = [
+                    tutorName,
+                    wasTutorExplicitlyRequested ? "##" : "",
+                    "(" + user.firstName + ")",
+                    course.code,
+                ];
+
+                return tokens
+                    .filter(Boolean) // to remove an empty string when tutor was not explicitly requested
+                    .join(" ");
             };
 
             const getAppointmentDescription = () => {
