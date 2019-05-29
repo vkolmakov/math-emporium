@@ -49,17 +49,11 @@ class EditingApp extends Component {
                     ["subjects", "Subjects"],
                     ["courses", "Courses"],
                     ["tutors", "Tutors"],
-                    ["schedules", "Schedules"],
-                    ["schedules-overview", "Schedules Overview"],
-                    ["tutors-overview", "Tutors Overview"],
                 ];
                 break;
             case AUTH_GROUPS.employee:
             default:
-                links = [
-                    ["schedules-overview", "Schedules Overview"],
-                    ["tutors-overview", "Tutors Overview"],
-                ];
+                links = [];
                 break;
         }
 
