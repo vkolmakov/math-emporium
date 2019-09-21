@@ -1,5 +1,8 @@
 import SparkPost from "sparkpost";
+import axios from "axios";
+import querystring from "querystring";
 import config from "../config";
+import constants from "../constants";
 import logger from "./logger";
 import { getSettingsValue, SETTINGS_KEYS } from "./settings/settings.service";
 import { pickOneFrom } from "../aux";
@@ -66,9 +69,44 @@ function createLetter(user, letterConstructors, additionalRecipients = []) {
     };
 }
 
-function productionSendEmail(letterStructure) {
-    const client = new SparkPost(config.email.SPARKPOST_API_KEY);
-    return client.transmissions.send(letterStructure);
+function productionSendEmail(provider, letterStructure) {
+    if (provider === constants.PRODUCTION_EMAIL_PROVIDER.SPARKPOST) {
+        const client = new SparkPost(config.email.SPARKPOST_API_KEY);
+        return client.transmissions.send(letterStructure);
+    } else if (provider === constants.PRODUCTION_EMAIL_PROVIDER.MAILGUN) {
+        const { content, recipients } = letterStructure;
+
+        const sendingEmailDomain = content.from.email.split("@")[1];
+        const mailgunApiUrl = `https://api.mailgun.net/v3/${sendingEmailDomain}/messages`;
+
+        const authorization = Buffer.from(
+            `api:${config.email.MAILGUN_API_KEY}`
+        ).toString("base64");
+
+        /**
+         * With Mailgun, each email must be sent
+         * individually for each recipient.
+         */
+        const sentEmails = recipients.map((recipient) => {
+            return axios({
+                method: "POST",
+                url: mailgunApiUrl,
+                data: querystring.stringify({
+                    from: `${content.from.name} <${content.from.email}>`,
+                    to: recipient.address,
+                    subject: content.subject,
+                    text: content.text,
+                    html: content.html,
+                }),
+                headers: {
+                    Authorization: `Basic ${authorization}`,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
+        });
+
+        return Promise.all(sentEmails).then(() => Promise.resolve());
+    }
 }
 
 function debugSendEmail(letterStructure) {
@@ -92,7 +130,7 @@ export default function sendEmail(user, letterConstructors) {
         })
         .then((letter) => {
             return config.IS_PRODUCTION
-                ? productionSendEmail(letter)
+                ? productionSendEmail(config.email.PROVIDER, letter)
                 : debugSendEmail(letter);
         });
 }

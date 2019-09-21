@@ -20,13 +20,20 @@ const pluckAppointmentDetailFieldsFromDatabaseRecord = ({
 });
 
 export default class ScheduledAppointmentsController {
-    constructor(cacheService, dateTime, createEventLogger, helper) {
+    constructor(
+        cacheService,
+        dateTime,
+        createEventLogger,
+        helper,
+        logRequestError
+    ) {
         this.cacheService = cacheService;
         this.dateTime = dateTime;
         this.logger = {
             log: {
                 createEvent: createEventLogger(events.USER_CREATED_APPOINTMENT),
                 deleteEvent: createEventLogger(events.USER_REMOVED_APPOINTMENT),
+                requestError: logRequestError,
             },
         };
         this.helper = helper;
@@ -97,7 +104,7 @@ export default class ScheduledAppointmentsController {
                     activeAppointmentsForUser,
                     completeAppointmentData,
                     now
-                ).then((scheduledAppointment) =>
+                ).then((scheduledAppointment) => {
                     Promise.all([
                         this.cacheService.calendarEvents.invalidate(
                             location.calendarId
@@ -117,8 +124,10 @@ export default class ScheduledAppointmentsController {
                             scheduledAppointment.id,
                             completeAppointmentData
                         ),
-                    ])
-                );
+                    ]).catch((err) => {
+                        return this.logger.log.requestError(req, err);
+                    });
+                });
             })
             .then(() => {
                 res.status(200).json(successMessage());
@@ -144,7 +153,8 @@ export default class ScheduledAppointmentsController {
 
         return appointmentWithLocationPromise
             .then(({ appointment, location }) => {
-                return this.helper.deleteAppointment(appointment).then(() =>
+                return this.helper.deleteAppointment(appointment).then(() => {
+                    // fire and forget
                     Promise.all([
                         this.cacheService.calendarEvents.invalidate(
                             location.calendarId
@@ -157,8 +167,10 @@ export default class ScheduledAppointmentsController {
                         this.logger.log.deleteEvent(req, {
                             removedAppointmentId: deletionRecord.id,
                         }),
-                    ])
-                );
+                    ]).catch((err) => {
+                        return this.logger.log.requestError(req, err);
+                    });
+                });
             })
             .then(() => {
                 res.status(200).json(successMessage());

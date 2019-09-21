@@ -1,4 +1,4 @@
-const { NODE_ENV_VALUE } = require("./constants");
+const { NODE_ENV_VALUE, PRODUCTION_EMAIL_PROVIDER } = require("./constants");
 
 const timeUnits = {
     minutes: (n) => n * 60 * 1000,
@@ -20,7 +20,14 @@ module.exports = {
     SECRET: process.env.SECRET || "this is supersecret",
     SESSION_LENGTH: getSessionLength(process.env.SESSION_LENGTH),
     email: {
+        PROVIDER:
+            process.env.EMAIL_PROVIDER || PRODUCTION_EMAIL_PROVIDER.MAILGUN,
+        // Not required - was used for sending emails before Sparkpost
+        // changed their free plan limits to include less than 500 emails.
         SPARKPOST_API_KEY: process.env.EMAIL_SPARKPOST_API_KEY,
+        MAILGUN_API_KEY: process.env.EMAIL_MAILGUN_API_KEY,
+        // NOTE: domain of the provided email address must be registered with
+        // the respective email service provider.
         ADDRESS: process.env.EMAIL_ADDRESS,
         NAME: process.env.EMAIL_NAME,
     },

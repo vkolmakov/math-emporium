@@ -10,6 +10,7 @@ import cache from "../services/cache";
 import * as openSpotsService from "../services/openSpots/openSpots.service";
 import createEventLogger from "../middleware/logEvent";
 import { getSettingsValue } from "../services/settings/settings.service";
+import logger from "../services/logger";
 
 import scheduledAppointmentsHelper from "../scheduledAppointments/scheduledAppointments.helper";
 import ScheduledAppointmentsController from "../scheduledAppointments/scheduledAppointments.controller";
@@ -32,7 +33,8 @@ export default function createScheduledAppointmentRouter() {
         cache,
         dateTime,
         createEventLogger,
-        helper
+        helper,
+        logger.log.requestError
     );
 
     router.get(
