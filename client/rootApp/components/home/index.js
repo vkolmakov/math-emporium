@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import CourseSelectionAutocomplete from "./courseSelectionAutocomplete";
+
 import MainContentWrap from "@client/components/mainContentWrap";
 import LocationsInfo from "@client/components/locationsInfo";
 import withRouterContext from "@client/routing/withRouterContext";
@@ -45,7 +47,7 @@ class Home extends Component {
             </button>
         );
 
-        const HomeHeader = () => (
+        const HomeHeader = ({ children }) => (
             <div
                 className="home-header"
                 style={
@@ -60,13 +62,7 @@ class Home extends Component {
                             ? backgroundPictureOverlayStyle()
                             : {}
                     }>
-                    <div className="home-header-block">
-                        <h1 className="home-header-title">
-                            {this.props.applicationTitle}
-                        </h1>
-                        <h2>Study with us!</h2>
-                        <ScheduleButton />
-                    </div>
+                    <div className="home-header-block">{children}</div>
                 </div>
             </div>
         );
@@ -74,7 +70,23 @@ class Home extends Component {
         return (
             <MainContentWrap>
                 <div className="home-content-container">
-                    <HomeHeader key="leading-element" />
+                    {this.props.isSimplifiedSchedulingUxEnabled ? (
+                        <HomeHeader key="leading-element">
+                            <h1 className="home-header-title">
+                                {this.props.applicationTitle}
+                            </h1>
+                            <h2>Type in your course name or code</h2>
+                            <CourseSelectionAutocomplete />
+                        </HomeHeader>
+                    ) : (
+                        <HomeHeader key="leading-element">
+                            <h1 className="home-header-title">
+                                {this.props.applicationTitle}
+                            </h1>
+                            <h2>Study with us!</h2>
+                            <ScheduleButton />
+                        </HomeHeader>
+                    )}
                     <Locations key="locations" />
                 </div>
             </MainContentWrap>
@@ -87,6 +99,8 @@ function mapStateToProps(state) {
         locations: { all: state.sharedPublicData.locations.all },
         headerPictureLink: state.util.settings.applicationMainHomePictureLink,
         applicationTitle: state.util.settings.applicationTitle,
+        isSimplifiedSchedulingUxEnabled:
+            state.util.isSimplifiedSchedulingUxEnabled,
     };
 }
 

@@ -15,6 +15,7 @@ const INITIAL_UTIL_STATE = {
         announcementBackgroundColor: "",
         announcementTextColor: "",
     },
+    isSimplifiedSchedulingUxEnabled: true,
 };
 
 export default function utilReducer(state = INITIAL_UTIL_STATE, action) {
