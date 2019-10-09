@@ -7,10 +7,38 @@ const SEARCH_PLACEHOLDER = "Try typing in MATH125 or Chemistry";
 
 const getSuggestions = (value, courses) => {
     const inputValue = value.trim().toLowerCase();
+    /**
+     * Handles the case where someone entered an input
+     * that ends with a digit, which is likely an attempt
+     * to get the course by its code. Following items will match:
+     *
+     * "math 125" -> ["math", " ", "125"]
+     * "math-125" -> ["math", "-", "125"]
+     * "chem201"  -> ["chem", "",  "201"]
+     */
+    const regex = /([a-z]+)(.*?)(\d+)/;
+    // inputValue is lowercased prior to matching
+    const splitCourseCodeMatchGroup = regex.exec(inputValue);
+    let isSplitCourseCodeInput = splitCourseCodeMatchGroup !== null;
     const inputLength = inputValue.length;
-    const isMatchingInput = (course) =>
-        course.code.toLowerCase().includes(inputValue) ||
-        course.name.toLowerCase().includes(inputValue);
+
+    const isMatchingInput = (course) => {
+        if (isSplitCourseCodeInput) {
+            // whatever letters come before the number
+            const courseNamePortion = splitCourseCodeMatchGroup[1];
+            // whatever digits the query ends with
+            const courseNumberPortion = splitCourseCodeMatchGroup[3];
+            return (
+                course.code.toLowerCase().includes(courseNamePortion) &&
+                course.code.toLowerCase().includes(courseNumberPortion)
+            );
+        }
+
+        return (
+            course.code.toLowerCase().includes(inputValue) ||
+            course.name.toLowerCase().includes(inputValue)
+        );
+    };
 
     return inputLength === 0 ? [] : courses.filter(isMatchingInput);
 };
@@ -39,7 +67,7 @@ function CourseSelectionAutocomplete(props) {
                 inputProps={{
                     placeholder: SEARCH_PLACEHOLDER,
                     value: value,
-                    onChange: (event, { newValue }) => {
+                    onChange: (_event, { newValue }) => {
                         setValue(newValue);
                         // TODO: dispatch an action to move into scheduling
                     },
