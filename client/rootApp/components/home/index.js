@@ -7,7 +7,7 @@ import MainContentWrap from "@client/components/mainContentWrap";
 import LocationsInfo from "@client/components/locationsInfo";
 import withRouterContext from "@client/routing/withRouterContext";
 
-import { getLocations } from "@client/sharedPublicData/actions";
+import { getLocations, getCourses } from "@client/sharedPublicData/actions";
 import { setLocation } from "@client/schedulingApp/actions";
 import {
     redirectTo,
@@ -20,6 +20,10 @@ class Home extends Component {
         if (!this.props.locations.all.length > 0) {
             this.props.getLocations();
         }
+
+        if (!this.props.locations.all.length > 0) {
+            this.props.getCourses();
+        }
     }
 
     redirectToSchedule() {
@@ -27,6 +31,16 @@ class Home extends Component {
     }
 
     render() {
+        if (
+            !(
+                this.props.locations.all.length > 0 &&
+                this.props.courses.all.length > 0
+            )
+        ) {
+            // not ready to render yet
+            return <div />;
+        }
+
         const Locations = () => (
             <div className="locations">
                 <LocationsInfo
@@ -75,8 +89,9 @@ class Home extends Component {
                             <h1 className="home-header-title">
                                 {this.props.applicationTitle}
                             </h1>
-                            <h2>Type in your course name or code</h2>
-                            <CourseSelectionAutocomplete />
+                            <CourseSelectionAutocomplete
+                                courses={this.props.courses.all}
+                            />
                         </HomeHeader>
                     ) : (
                         <HomeHeader key="leading-element">
@@ -97,6 +112,9 @@ class Home extends Component {
 function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
+        courses: {
+            all: state.sharedPublicData.courses.all,
+        },
         headerPictureLink: state.util.settings.applicationMainHomePictureLink,
         applicationTitle: state.util.settings.applicationTitle,
         isSimplifiedSchedulingUxEnabled:
@@ -109,5 +127,6 @@ export default connect(
     {
         getLocations,
         setLocation,
+        getCourses,
     }
 )(withRouterContext(Home));

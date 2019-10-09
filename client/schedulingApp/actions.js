@@ -11,7 +11,6 @@ export const SA_INITIALIZE = "SA_INITIALIZE";
 export const SA_GET_LOCATIONS = spd.SA_GET_LOCATIONS;
 
 const BASE_URL_SUBJECTS = "/api/public/subjects";
-const BASE_URL_COURSES = "/api/public/courses";
 
 import { resetOpenSpots } from "./showSchedule/actions";
 
@@ -20,21 +19,13 @@ export function markAsInitialized() {
 }
 
 export const getLocations = spd.getLocations;
+export const getCourses = spd.getCourses;
 
 export function getSubjects() {
     const request = axios.get(BASE_URL_SUBJECTS);
 
     return {
         type: SA_GET_SUBJECTS,
-        payload: request,
-    };
-}
-
-export function getCourses() {
-    const request = axios.get(BASE_URL_COURSES);
-
-    return {
-        type: SA_GET_COURSES,
         payload: request,
     };
 }
