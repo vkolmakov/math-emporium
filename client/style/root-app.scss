@@ -16,6 +16,15 @@
     min-height: $home-entry-min-height-mobile;
 }
 
+.home {
+    &__course-autocomplete-container {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
 .home-header {
     display: flex;
 

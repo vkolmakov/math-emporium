@@ -81,27 +81,37 @@ class Home extends Component {
             </div>
         );
 
-        return (
-            <MainContentWrap>
-                <div className="home-content-container">
-                    {this.props.isSimplifiedSchedulingUxEnabled ? (
-                        <HomeHeader key="leading-element">
+        if (this.props.isSimplifiedSchedulingUxEnabled) {
+            return (
+                <MainContentWrap>
+                    <div className="home-content-container">
+                        <div
+                            className="home__course-autocomplete-container"
+                            key="leading-element">
                             <h1 className="home-header-title">
                                 {this.props.applicationTitle}
                             </h1>
+                            <h2>Select your course to see our schedule</h2>
                             <CourseSelectionAutocomplete
                                 courses={this.props.courses.all}
                             />
-                        </HomeHeader>
-                    ) : (
-                        <HomeHeader key="leading-element">
-                            <h1 className="home-header-title">
-                                {this.props.applicationTitle}
-                            </h1>
-                            <h2>Study with us!</h2>
-                            <ScheduleButton />
-                        </HomeHeader>
-                    )}
+                        </div>
+                    </div>
+                </MainContentWrap>
+            );
+        }
+
+        return (
+            <MainContentWrap>
+                <div className="home-content-container">
+                    <HomeHeader key="leading-element">
+                        <h1 className="home-header-title">
+                            {this.props.applicationTitle}
+                        </h1>
+                        <h2>Study with us!</h2>
+                        <ScheduleButton />
+                    </HomeHeader>
+
                     <Locations key="locations" />
                 </div>
             </MainContentWrap>

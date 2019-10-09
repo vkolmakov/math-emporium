@@ -1,0 +1,56 @@
+.course-selection-autocomplete {
+    &__suggestion-option {
+        padding: 8px 4px;
+    }
+}
+
+/**
+ * Overrides for react-autosuggest
+ */
+.react-autosuggest {
+    &__input {
+        width: 440px;
+        font-size: 1em;
+        padding: 0.5em;
+        border: 1px solid $border-color-for-controls;
+        border-radius: 5px;
+        outline: 0;
+        &--open {
+            // only round the top corners when input is open
+            border-radius: 5px 5px 0 0;
+        }
+
+        &--focused,
+        &:hover {
+            box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+        }
+    }
+
+    &__suggestions-container {
+        &--open {
+            background-color: $primary-text-background-color;
+            color: $primary-text-color;
+            max-height: 400px;
+            overflow: auto;
+
+            box-shadow: 0 6px 12px 0 rgba(32, 33, 36, 0.28);
+            border: 1px solid #949494;
+            // top border will come from the input
+            border-top: none;
+        }
+    }
+
+    &__suggestion {
+        &--highlighted {
+            background-color: $primary-color;
+        }
+    }
+
+    &__suggestions-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+        min-width: 440px;
+    }
+}

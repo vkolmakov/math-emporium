@@ -44,7 +44,7 @@ const getSuggestions = (value, courses) => {
 };
 function Suggestion(course) {
     return (
-        <div>
+        <div className="course-selection-autocomplete__suggestion-option">
             {course.code}: {course.name}
         </div>
     );
