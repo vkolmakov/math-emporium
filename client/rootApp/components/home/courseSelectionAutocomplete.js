@@ -5,7 +5,7 @@ import propTypes from "prop-types";
 
 const SEARCH_PLACEHOLDER = "Try typing in MATH125 or Chemistry";
 
-const getSuggestions = (value, courses) => {
+function checkForSplitCourseCodeInput(value) {
     const inputValue = value.trim().toLowerCase();
     /**
      * Handles the case where someone entered an input
@@ -20,17 +20,32 @@ const getSuggestions = (value, courses) => {
     // inputValue is lowercased prior to matching
     const splitCourseCodeMatchGroup = regex.exec(inputValue);
     let isSplitCourseCodeInput = splitCourseCodeMatchGroup !== null;
-    const inputLength = inputValue.length;
 
-    const isMatchingInput = (course) => {
-        if (isSplitCourseCodeInput) {
-            // whatever letters come before the number
-            const courseNamePortion = splitCourseCodeMatchGroup[1];
+    if (isSplitCourseCodeInput) {
+        return {
+            courseNamePortion: splitCourseCodeMatchGroup[1],
             // whatever digits the query ends with
-            const courseNumberPortion = splitCourseCodeMatchGroup[3];
+            courseNumberPortion: splitCourseCodeMatchGroup[3],
+        };
+    }
+    return void 0;
+}
+
+const getSuggestions = (value, courses) => {
+    const inputValue = value.toLowerCase();
+    const inputLength = value.length;
+    const splitCourseCodeCheck = checkForSplitCourseCodeInput(value);
+
+    function isMatchingInput(course) {
+        if (splitCourseCodeCheck) {
+            // whatever letters come before the number
             return (
-                course.code.toLowerCase().includes(courseNamePortion) &&
-                course.code.toLowerCase().includes(courseNumberPortion)
+                course.code
+                    .toLowerCase()
+                    .includes(splitCourseCodeCheck.courseNamePortion) &&
+                course.code
+                    .toLowerCase()
+                    .includes(splitCourseCodeCheck.courseNumberPortion)
             );
         }
 
@@ -38,7 +53,7 @@ const getSuggestions = (value, courses) => {
             course.code.toLowerCase().includes(inputValue) ||
             course.name.toLowerCase().includes(inputValue)
         );
-    };
+    }
 
     return inputLength === 0 ? [] : courses.filter(isMatchingInput);
 };
@@ -47,10 +62,76 @@ function courseToString(course) {
     return `${course.code}: ${course.name}`;
 }
 
-function Suggestion(course) {
+function WithHighlightedFragments({ text, fragmentsToHighlight }) {
+    // first unhighlighted fragment
+    const result = [];
+    let currentUnhighlightedIndex = 0;
+    for (let { start, end } of fragmentsToHighlight) {
+        const unhighlightedFragment = (
+            <span key={`${text}-${currentUnhighlightedIndex}-${start}`}>
+                {text.substring(currentUnhighlightedIndex, start)}
+            </span>
+        );
+        const highlightedFragment = (
+            <span
+                key={`${text}-${start}-${end}`}
+                className="course-selection-autocomplete__suggestion-option-query-text">
+                {text.substring(start, end)}
+            </span>
+        );
+        currentUnhighlightedIndex = end;
+
+        result.push(unhighlightedFragment, highlightedFragment);
+    }
+    const lastUnhighlightedFragment = (
+        <span key={`${text}-${currentUnhighlightedIndex}-${text.length}`}>
+            {text.substring(currentUnhighlightedIndex, text.length)}
+        </span>
+    );
+    result.push(lastUnhighlightedFragment);
+    return result;
+}
+
+function Suggestion(course, { query }) {
+    const courseString = courseToString(course);
+    const splitCourseCodeCheck = checkForSplitCourseCodeInput(query);
+    let fragmentsToHighlight = [];
+
+    if (splitCourseCodeCheck) {
+        const courseStringLower = courseString.toLowerCase();
+        const courseNameStart = courseStringLower.indexOf(
+            splitCourseCodeCheck.courseNamePortion
+        );
+        const courseNameEnd =
+            courseNameStart + splitCourseCodeCheck.courseNamePortion.length;
+        const courseNumberStart = courseStringLower.indexOf(
+            splitCourseCodeCheck.courseNumberPortion
+        );
+        const courseNumberEnd =
+            courseNumberStart + splitCourseCodeCheck.courseNumberPortion.length;
+        fragmentsToHighlight = [
+            { start: courseNameStart, end: courseNameEnd },
+            { start: courseNumberStart, end: courseNumberEnd },
+        ];
+    } else {
+        // default to trying to find the first occurrence of the text.
+        const queryMatchStart = courseString
+            .toLowerCase()
+            .indexOf(query.toLowerCase());
+
+        if (queryMatchStart > -1) {
+            fragmentsToHighlight = [
+                { start: queryMatchStart, end: queryMatchStart + query.length },
+            ];
+        }
+    }
+
     return (
         <div className="course-selection-autocomplete__suggestion-option">
-            {courseToString(course)}
+            <WithHighlightedFragments
+                text={courseString}
+                fragmentsToHighlight={fragmentsToHighlight}
+            />
         </div>
     );
 }
