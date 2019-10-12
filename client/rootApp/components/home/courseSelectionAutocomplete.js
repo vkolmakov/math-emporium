@@ -42,10 +42,15 @@ const getSuggestions = (value, courses) => {
 
     return inputLength === 0 ? [] : courses.filter(isMatchingInput);
 };
+
+function courseToString(course) {
+    return `${course.code}: ${course.name}`;
+}
+
 function Suggestion(course) {
     return (
         <div className="course-selection-autocomplete__suggestion-option">
-            {course.code}: {course.name}
+            {courseToString(course)}
         </div>
     );
 }
@@ -62,7 +67,7 @@ function CourseSelectionAutocomplete(props) {
                     setSuggestions(getSuggestions(value, props.courses))
                 }
                 onSuggestionsClearRequested={() => setSuggestions([])}
-                getSuggestionValue={(value) => value.code}
+                getSuggestionValue={(value) => courseToString(value)}
                 renderSuggestion={Suggestion}
                 inputProps={{
                     placeholder: SEARCH_PLACEHOLDER,

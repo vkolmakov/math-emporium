@@ -61,14 +61,14 @@ class Home extends Component {
             </button>
         );
 
+        const withBackgroundImage = () => {
+            return this.props.headerPictureLink
+                ? backgroundPictureStyle(this.props.headerPictureLink)
+                : {};
+        };
+
         const HomeHeader = ({ children }) => (
-            <div
-                className="home-header"
-                style={
-                    this.props.headerPictureLink
-                        ? backgroundPictureStyle(this.props.headerPictureLink)
-                        : {}
-                }>
+            <div className="home-header" style={withBackgroundImage()}>
                 <div
                     className="home-header-overlay"
                     style={
@@ -84,14 +84,20 @@ class Home extends Component {
         if (this.props.isSimplifiedSchedulingUxEnabled) {
             return (
                 <MainContentWrap>
-                    <div className="home-content-container">
+                    <div className="home-autocomplete">
                         <div
-                            className="home__course-autocomplete-container"
-                            key="leading-element">
-                            <h1 className="home-header-title">
+                            className="home-autocomplete__background-image"
+                            style={withBackgroundImage()}>
+                            <div className="home-autocomplete__background-image-overlay" />
+                        </div>
+
+                        <div className="home-autocomplete__content-container">
+                            <h1 className="home-autocomplete__header-title">
                                 {this.props.applicationTitle}
                             </h1>
-                            <h2>Select your course to see our schedule</h2>
+                            <h2 className="home-autocomplete__header-subtitle">
+                                Select your course to see our schedule
+                            </h2>
                             <CourseSelectionAutocomplete
                                 courses={this.props.courses.all}
                             />

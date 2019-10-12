@@ -16,12 +16,51 @@
     min-height: $home-entry-min-height-mobile;
 }
 
-.home {
-    &__course-autocomplete-container {
-        height: 400px;
+.home-autocomplete {
+    $nav-bar-height: 47px;
+
+    display: flex;
+    justify-content: center;
+
+    &__background-image {
+        position: absolute;
+        width: 100%;
+        height: calc(100vh - #{$nav-bar-height});
+        z-index: -1;
+    }
+
+    &__background-image-overlay {
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    &__header-title {
+        font-size: 2em;
+        @include on-medium-screen {
+            font-size: 2.75em;
+        }
+        text-align: center;
+        margin: 0;
+    }
+
+    &__header-subtitle {
+        font-size: 1.5em;
+        @include on-medium-screen {
+            font-size: 2em;
+        }
+        text-align: center;
+        margin: 24px 0;
+    }
+
+    &__content-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 30px;
+        margin-top: 48px;
+        border-radius: 5px;
+        color: white;
     }
 }
 
