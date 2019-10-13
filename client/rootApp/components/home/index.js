@@ -100,6 +100,7 @@ class Home extends Component {
                             </h2>
                             <CourseSelectionAutocomplete
                                 courses={this.props.courses.all}
+                                coursesSearcher={this.props.courses.searcher}
                             />
                         </div>
                     </div>
@@ -130,6 +131,7 @@ function mapStateToProps(state) {
         locations: { all: state.sharedPublicData.locations.all },
         courses: {
             all: state.sharedPublicData.courses.all,
+            searcher: state.sharedPublicData.courses.searcher,
         },
         headerPictureLink: state.util.settings.applicationMainHomePictureLink,
         applicationTitle: state.util.settings.applicationTitle,

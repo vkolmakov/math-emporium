@@ -5,57 +5,9 @@ import propTypes from "prop-types";
 
 const SEARCH_PLACEHOLDER = "Try typing in MATH125 or Chemistry";
 
-function checkForSplitCourseCodeInput(value) {
-    const inputValue = value.trim().toLowerCase();
-    /**
-     * Handles the case where someone entered an input
-     * that ends with a digit, which is likely an attempt
-     * to get the course by its code. Following items will match:
-     *
-     * "math 125" -> ["math", " ", "125"]
-     * "math-125" -> ["math", "-", "125"]
-     * "chem201"  -> ["chem", "",  "201"]
-     */
-    const regex = /([a-z]+)(.*?)(\d+)/;
-    // inputValue is lowercased prior to matching
-    const splitCourseCodeMatchGroup = regex.exec(inputValue);
-    let isSplitCourseCodeInput = splitCourseCodeMatchGroup !== null;
-
-    if (isSplitCourseCodeInput) {
-        return {
-            courseNamePortion: splitCourseCodeMatchGroup[1],
-            // whatever digits the query ends with
-            courseNumberPortion: splitCourseCodeMatchGroup[3],
-        };
-    }
-    return void 0;
-}
-
-const getSuggestions = (value, courses) => {
-    const inputValue = value.toLowerCase();
+const getSuggestions = (value, coursesSearcher) => {
     const inputLength = value.length;
-    const splitCourseCodeCheck = checkForSplitCourseCodeInput(value);
-
-    function isMatchingInput(course) {
-        if (splitCourseCodeCheck) {
-            // whatever letters come before the number
-            return (
-                course.code
-                    .toLowerCase()
-                    .includes(splitCourseCodeCheck.courseNamePortion) &&
-                course.code
-                    .toLowerCase()
-                    .includes(splitCourseCodeCheck.courseNumberPortion)
-            );
-        }
-
-        return (
-            course.code.toLowerCase().includes(inputValue) ||
-            course.name.toLowerCase().includes(inputValue)
-        );
-    }
-
-    return inputLength === 0 ? [] : courses.filter(isMatchingInput);
+    return inputLength === 0 ? [] : coursesSearcher.queryWithMatches(value);
 };
 
 function courseToString(course) {
@@ -92,39 +44,11 @@ function WithHighlightedFragments({ text, fragmentsToHighlight }) {
     return result;
 }
 
-function Suggestion(course, { query }) {
+function Suggestion(courseWithMatches) {
+    const course = courseWithMatches.item;
     const courseString = courseToString(course);
-    const splitCourseCodeCheck = checkForSplitCourseCodeInput(query);
     let fragmentsToHighlight = [];
-
-    if (splitCourseCodeCheck) {
-        const courseStringLower = courseString.toLowerCase();
-        const courseNameStart = courseStringLower.indexOf(
-            splitCourseCodeCheck.courseNamePortion
-        );
-        const courseNameEnd =
-            courseNameStart + splitCourseCodeCheck.courseNamePortion.length;
-        const courseNumberStart = courseStringLower.indexOf(
-            splitCourseCodeCheck.courseNumberPortion
-        );
-        const courseNumberEnd =
-            courseNumberStart + splitCourseCodeCheck.courseNumberPortion.length;
-        fragmentsToHighlight = [
-            { start: courseNameStart, end: courseNameEnd },
-            { start: courseNumberStart, end: courseNumberEnd },
-        ];
-    } else {
-        // default to trying to find the first occurrence of the text.
-        const queryMatchStart = courseString
-            .toLowerCase()
-            .indexOf(query.toLowerCase());
-
-        if (queryMatchStart > -1) {
-            fragmentsToHighlight = [
-                { start: queryMatchStart, end: queryMatchStart + query.length },
-            ];
-        }
-    }
+    // TODO: highlight matches
 
     return (
         <div className="course-selection-autocomplete__suggestion-option">
@@ -145,10 +69,10 @@ function CourseSelectionAutocomplete(props) {
             <Autosuggest
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={({ value }) =>
-                    setSuggestions(getSuggestions(value, props.courses))
+                    setSuggestions(getSuggestions(value, props.coursesSearcher))
                 }
                 onSuggestionsClearRequested={() => setSuggestions([])}
-                getSuggestionValue={(value) => courseToString(value)}
+                getSuggestionValue={(value) => courseToString(value.item)}
                 renderSuggestion={Suggestion}
                 inputProps={{
                     placeholder: SEARCH_PLACEHOLDER,
@@ -172,9 +96,12 @@ CourseSelectionAutocomplete.propTypes = {
             subject: propTypes.shape({ id: propTypes.number }),
         })
     ),
+    coursesSearcher: propTypes.shape({
+        queryWithMatches: propTypes.func,
+    }),
 };
 
-function mapStateToProps(state) {
+function mapStateToProps() {
     return {};
 }
 
