@@ -1,10 +1,19 @@
 .course-selection-autocomplete {
     &__suggestion-option {
-        padding: 8px 0;
+        padding: 2px 0;
     }
 
     &__suggestion-option-query-text {
         font-weight: bold;
+    }
+
+    &__suggestion-option-value {
+        color: black;
+    }
+
+    &__suggestion-option-location {
+        color: #949494;
+        font-size: 0.75em;
     }
 }
 
@@ -55,6 +64,10 @@
         &:hover {
             box-shadow: 4px 4px 6px 1px rgba(32, 33, 36, 0.28);
         }
+
+        &--course-selection-autocomplete-with-suggestion-selected {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='%23105c93'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
     }
 
     &__suggestions-container {
@@ -82,6 +95,7 @@
 
     &__suggestion {
         padding-left: var(--course-search-input-left-padding);
+        cursor: pointer;
 
         &--highlighted {
             background-color: $primary-color;

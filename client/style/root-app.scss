@@ -24,9 +24,17 @@
 
     &__background-image {
         position: absolute;
-        width: 100%;
-        height: calc(100vh - #{$nav-bar-height});
+        top: 0;
+
+        width: 100vw;
+        height: 100vh;
         z-index: -1;
+
+        transition: filter 400ms linear;
+
+        &--with-focused-search-input {
+            filter: blur(5px);
+        }
     }
 
     &__background-image-overlay {

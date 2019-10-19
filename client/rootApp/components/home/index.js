@@ -24,6 +24,11 @@ import {
 } from "@client/utils";
 
 class Home extends Component {
+    constructor() {
+        super();
+        this.state = { isCourseAutocompleteInputFocused: false };
+    }
+
     componentDidMount() {
         if (!this.props.locations.all.length > 0) {
             this.props.getLocations();
@@ -101,11 +106,29 @@ class Home extends Component {
         );
 
         if (this.props.isSimplifiedSchedulingUxEnabled) {
+            const locationNameLookup = {};
+            for (let course of this.props.courses.all) {
+                const location = this.props.locations.all.find(
+                    (location) => location.id === course.location.id
+                );
+
+                if (location && location.name) {
+                    locationNameLookup[course.id] = `at ${location.name}`;
+                } else {
+                    locationNameLookup[course.id] = " ";
+                }
+            }
+
             return (
                 <MainContentWrap>
                     <div className="home-autocomplete">
                         <div
-                            className="home-autocomplete__background-image"
+                            className={`home-autocomplete__background-image
+                                ${
+                                    this.state.isCourseAutocompleteInputFocused
+                                        ? " home-autocomplete__background-image--with-focused-search-input"
+                                        : " "
+                                }`}
                             style={withBackgroundImage()}>
                             <div className="home-autocomplete__background-image-overlay" />
                         </div>
@@ -120,9 +143,22 @@ class Home extends Component {
                             <CourseSelectionAutocomplete
                                 courses={this.props.courses.all}
                                 coursesSearcher={this.props.courses.searcher}
+                                getLocationNameFromCourse={(course) => {
+                                    return locationNameLookup[course.id];
+                                }}
                                 onCourseSelection={(course) =>
                                     this.onCourseSelection(course)
                                 }
+                                onFocus={() => {
+                                    this.setState({
+                                        isCourseAutocompleteInputFocused: true,
+                                    });
+                                }}
+                                onBlur={() => {
+                                    this.setState({
+                                        isCourseAutocompleteInputFocused: false,
+                                    });
+                                }}
                             />
                         </div>
                     </div>

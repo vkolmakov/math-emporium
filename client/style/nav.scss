@@ -2,6 +2,7 @@
 @import "mixins";
 
 nav {
+    background-color: white;
     display: flex;
     flex-flow: column nowrap;
     border-bottom: 1px solid darken($tertiary-color, 25%);
@@ -22,7 +23,9 @@ nav {
         overflow: hidden;
         white-space: nowrap;
 
-        &:hover, &:focus, &.selected {
+        &:hover,
+        &:focus,
+        &.selected {
             background: $primary-color;
             font-weight: bold;
         }
