@@ -1,5 +1,13 @@
-import { SPD_GET_LOCATIONS, SPD_GET_COURSES } from "./actions";
-import { locationComparator, courseComparator } from "../utils";
+import {
+    SPD_GET_LOCATIONS,
+    SPD_GET_COURSES,
+    SPD_GET_SUBJECTS,
+} from "./actions";
+import {
+    locationComparator,
+    courseComparator,
+    subjectComparator,
+} from "../utils";
 
 import Fuse from "fuse.js";
 
@@ -32,6 +40,7 @@ function getCoursesSearchInstance(courses) {
 
 const INITIAL_STATE = {
     locations: { all: [] },
+    subjects: { all: [] },
     courses: {
         all: [],
         searcher: {
@@ -51,6 +60,13 @@ export default (state = INITIAL_STATE, action) => {
                 ...state,
                 locations: {
                     all: action.payload.data.sort(locationComparator),
+                },
+            };
+        case SPD_GET_SUBJECTS:
+            return {
+                ...state,
+                subjects: {
+                    all: action.payload.data.sort(subjectComparator),
                 },
             };
         case SPD_GET_COURSES:

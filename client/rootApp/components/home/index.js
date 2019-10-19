@@ -7,8 +7,16 @@ import MainContentWrap from "@client/components/mainContentWrap";
 import LocationsInfo from "@client/components/locationsInfo";
 import withRouterContext from "@client/routing/withRouterContext";
 
-import { getLocations, getCourses } from "@client/sharedPublicData/actions";
-import { setLocation } from "@client/schedulingApp/actions";
+import {
+    getLocations,
+    getCourses,
+    getSubjects,
+} from "@client/sharedPublicData/actions";
+import {
+    setLocation,
+    setSubject,
+    setCourse,
+} from "@client/schedulingApp/actions";
 import {
     redirectTo,
     backgroundPictureStyle,
@@ -21,12 +29,23 @@ class Home extends Component {
             this.props.getLocations();
         }
 
-        if (!this.props.locations.all.length > 0) {
+        if (!this.props.courses.all.length > 0) {
             this.props.getCourses();
+        }
+
+        if (!this.props.subjects.all.length > 0) {
+            this.props.getSubjects();
         }
     }
 
     redirectToSchedule() {
+        redirectTo(this.props.history, "/schedule");
+    }
+
+    onCourseSelection(course) {
+        this.props.setLocation(course.location);
+        this.props.setSubject(course.subject);
+        this.props.setCourse(course);
         redirectTo(this.props.history, "/schedule");
     }
 
@@ -101,6 +120,9 @@ class Home extends Component {
                             <CourseSelectionAutocomplete
                                 courses={this.props.courses.all}
                                 coursesSearcher={this.props.courses.searcher}
+                                onCourseSelection={(course) =>
+                                    this.onCourseSelection(course)
+                                }
                             />
                         </div>
                     </div>
@@ -129,6 +151,7 @@ class Home extends Component {
 function mapStateToProps(state) {
     return {
         locations: { all: state.sharedPublicData.locations.all },
+        subjects: { all: state.sharedPublicData.subjects.all },
         courses: {
             all: state.sharedPublicData.courses.all,
             searcher: state.sharedPublicData.courses.searcher,
@@ -144,7 +167,10 @@ export default connect(
     mapStateToProps,
     {
         getLocations,
-        setLocation,
+        getSubjects,
         getCourses,
+        setLocation,
+        setSubject,
+        setCourse,
     }
 )(withRouterContext(Home));

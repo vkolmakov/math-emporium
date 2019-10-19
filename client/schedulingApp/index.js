@@ -35,6 +35,7 @@ class SchedulingApp extends Component {
 
         const hasPreSelectedLocation = !!this.props.locations.selected;
         const shouldInitializeLocations = !this.props.locations.all.length > 0;
+        const shouldInitializeSubjects = !this.props.subjects.all.length > 0;
         const shouldInitializeCourses = !this.props.courses.all.length > 0;
         const shouldInitializeProfile =
             this.props.authenticated && !this.props.profile;
@@ -55,7 +56,9 @@ class SchedulingApp extends Component {
                 shouldInitializeCourses
                     ? this.props.getCourses()
                     : Promise.resolve(),
-                this.props.getSubjects(),
+                shouldInitializeSubjects
+                    ? this.props.getSubjects()
+                    : Promise.resolve(),
             ]);
 
             requiredData
@@ -163,6 +166,9 @@ function mapStateToProps(state) {
         locations: {
             all: state.scheduling.shared.locations.all,
             selected: state.scheduling.shared.locations.selected,
+        },
+        subjects: {
+            all: state.scheduling.shared.subjects.all,
         },
         courses: {
             all: state.scheduling.shared.courses.all,

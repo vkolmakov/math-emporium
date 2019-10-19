@@ -90,8 +90,11 @@ function CourseSelectionAutocomplete(props) {
                     value: value,
                     onChange: (_event, { newValue }) => {
                         setValue(newValue);
-                        // TODO: dispatch an action to move into scheduling
                     },
+                }}
+                onSuggestionSelected={(_event, data) => {
+                    const selectedCourse = data.suggestion.item;
+                    props.onCourseSelection(selectedCourse);
                 }}
             />
         </div>
@@ -110,6 +113,7 @@ CourseSelectionAutocomplete.propTypes = {
     coursesSearcher: propTypes.shape({
         queryWithMatches: propTypes.func,
     }),
+    onCourseSelection: propTypes.func,
 };
 
 function mapStateToProps() {
