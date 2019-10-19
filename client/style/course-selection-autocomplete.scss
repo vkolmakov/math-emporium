@@ -14,8 +14,8 @@
      * CSS variables can be set dynamically based on media queries.
      */
     --course-search-input-width: 300px;
-    --course-search-input-left-padding: 1em;
-    --course-search-input-right-padding: 1em;
+    --course-search-input-left-padding: 42px;
+    --course-search-input-right-padding: 16px;
 
     @include on-medium-screen {
         --course-search-input-width: 440px;
@@ -31,17 +31,24 @@
 
         font-size: 1em;
 
-        padding: 0.75em; // top and bottom
+        padding: 12px; // top and bottom
         padding-left: var(--course-search-input-left-padding);
         padding-right: var(--course-search-input-right-padding);
 
         border: 1px solid $border-color-for-controls;
         border-radius: 5px;
         outline: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='%23949494'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-size: 28px;
+        background-position: 6px center;
+        background-repeat: no-repeat;
 
         &--open {
             // only round the top corners when input is open
             border-radius: 5px 5px 0 0;
+
+            // update color of the icon
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='black'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         &--focused,
@@ -74,7 +81,7 @@
     }
 
     &__suggestion {
-        padding-left: 1em;
+        padding-left: var(--course-search-input-left-padding);
 
         &--highlighted {
             background-color: $primary-color;
