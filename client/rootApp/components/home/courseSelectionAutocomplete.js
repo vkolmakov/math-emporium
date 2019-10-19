@@ -44,11 +44,22 @@ function WithHighlightedFragments({ text, fragmentsToHighlight }) {
     return result;
 }
 
-function Suggestion(courseWithMatches) {
+function Suggestion(courseWithMatches, { query }) {
     const course = courseWithMatches.item;
     const courseString = courseToString(course);
     let fragmentsToHighlight = [];
-    // TODO: highlight matches
+    const tokens = query.split(/\s+/);
+    for (let token of tokens) {
+        const queryTokenIndex = courseString
+            .toLowerCase()
+            .indexOf(token.toLowerCase());
+        if (queryTokenIndex > -1) {
+            fragmentsToHighlight.push({
+                start: queryTokenIndex,
+                end: queryTokenIndex + token.length,
+            });
+        }
+    }
 
     return (
         <div className="course-selection-autocomplete__suggestion-option">

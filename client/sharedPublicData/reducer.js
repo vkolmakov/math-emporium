@@ -7,9 +7,9 @@ function getCoursesSearchInstance(courses) {
     const COURSES_FUSE_OPTIONS = {
         shouldSort: true,
         includeMatches: true,
-        threshold: 0.2,
+        threshold: 0.6,
         location: 0,
-        distance: 2,
+        distance: 30,
         maxPatternLength: 32,
         minMatchCharLength: 2,
         keys: ["code", "name"],
