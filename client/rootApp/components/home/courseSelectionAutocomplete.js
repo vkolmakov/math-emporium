@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import Modal from "react-modal";
 import { connect } from "react-redux";
 import Autosuggest from "react-autosuggest";
 import propTypes from "prop-types";
@@ -89,17 +90,22 @@ function CourseSelectionAutocomplete(props) {
     const autosuggestInputRef = useRef(null);
 
     useEffect(() => {
-        if (typeof autosuggestInputRef.current.input.focus === "function") {
-            autosuggestInputRef.current.input.focus();
-        }
+        if (props.shouldFocusOnInputWhenRendered) {
+            if (typeof autosuggestInputRef.current.input.focus === "function") {
+                autosuggestInputRef.current.input.focus();
+            }
 
-        if (typeof props.onAfterInitialFocus === "function") {
-            props.onAfterInitialFocus();
+            if (typeof props.onAfterInitialFocus === "function") {
+                props.onAfterInitialFocus();
+            }
         }
     }, []);
 
     return (
-        <div className="course-selection-autocomplete">
+        <div
+            className={`course-selection-autocomplete course-selection-autocomplete--${
+                props.theme
+            }`}>
             <Autosuggest
                 ref={autosuggestInputRef}
                 suggestions={suggestions}
@@ -174,6 +180,8 @@ CourseSelectionAutocomplete.propTypes = {
     onFocus: propTypes.func,
     onBlur: propTypes.func,
     onAfterInitialFocus: propTypes.func,
+    shouldFocusOnInputWhenRendered: propTypes.bool,
+    theme: propTypes.string,
 };
 
 function mapStateToProps() {

@@ -1,4 +1,6 @@
-// eslint-disable-next-line
+import { windowResize } from "@client/util/actions";
+
 export default function attachUtilEventListeners(window, store) {
-    // leaving this as a stub in case it's needed later
+    // TODO: throttle
+    window.addEventListener("resize", (e) => store.dispatch(windowResize(e)));
 }

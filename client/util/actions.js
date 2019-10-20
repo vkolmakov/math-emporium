@@ -10,6 +10,8 @@ export const UT_GET_PUBLIC_SETTINGS_DELTA = "UT_GET_PUBLIC_SETTINGS_DELTA";
 export const UT_DISPLAY_ANNOUNCEMENT = "UT_DISPLAY_ANNOUNCEMENT";
 export const UT_HIDE_ANNOUNCEMENT = "UT_HIDE_ANNOUNCEMENT";
 
+export const UT_WINDOW_RESIZE = "UT_WINDOW_RESIZE";
+
 export function setPageTitle(title) {
     document.title = title;
 }
@@ -100,4 +102,14 @@ export function getFaqContent() {
 
             return Promise.resolve();
         });
+}
+
+export function windowResize(e) {
+    return {
+        type: UT_WINDOW_RESIZE,
+        payload: {
+            rawEvent: e,
+            window: window,
+        },
+    };
 }

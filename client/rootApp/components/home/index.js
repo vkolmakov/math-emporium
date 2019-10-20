@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Modal from "@client/components/Modal";
 
 import CourseSelectionAutocomplete from "./courseSelectionAutocomplete";
 
@@ -122,6 +123,78 @@ class Home extends Component {
                     locationNameLookup[course.id] = " ";
                 }
             }
+            let content;
+
+            if (
+                !this.props.isDesktop &&
+                this.state.isCourseAutocompleteInputFocused
+            ) {
+                content = (
+                    <Modal isOpen={true} className="home-autocomplete__modal">
+                        <CourseSelectionAutocomplete
+                            theme="in-modal"
+                            shouldFocusOnInputWhenRendered={true}
+                            courses={this.props.courses.all}
+                            coursesSearcher={this.props.courses.searcher}
+                            getLocationNameFromCourse={(course) => {
+                                return locationNameLookup[course.id];
+                            }}
+                            onCourseSelection={(course) =>
+                                this.onCourseSelection(course)
+                            }
+                            onFocus={() => {
+                                this.setState({
+                                    isCourseAutocompleteInputFocused: true,
+                                });
+                            }}
+                            onBlur={() => {
+                                this.setState({
+                                    isCourseAutocompleteInputFocused: false,
+                                });
+                            }}
+                            onAfterInitialFocus={() => {
+                                setTimeout(() => {
+                                    this.setState({
+                                        isBackgroundTransitionAnimationEnabled: true,
+                                    });
+                                }, 0);
+                            }}
+                        />
+                    </Modal>
+                );
+            } else {
+                content = (
+                    <CourseSelectionAutocomplete
+                        theme={"standalone"}
+                        shouldFocusOnInputWhenRendered={this.props.isDesktop}
+                        courses={this.props.courses.all}
+                        coursesSearcher={this.props.courses.searcher}
+                        getLocationNameFromCourse={(course) => {
+                            return locationNameLookup[course.id];
+                        }}
+                        onCourseSelection={(course) =>
+                            this.onCourseSelection(course)
+                        }
+                        onFocus={() => {
+                            this.setState({
+                                isCourseAutocompleteInputFocused: true,
+                            });
+                        }}
+                        onBlur={() => {
+                            this.setState({
+                                isCourseAutocompleteInputFocused: false,
+                            });
+                        }}
+                        onAfterInitialFocus={() => {
+                            setTimeout(() => {
+                                this.setState({
+                                    isBackgroundTransitionAnimationEnabled: true,
+                                });
+                            }, 0);
+                        }}
+                    />
+                );
+            }
 
             return (
                 <MainContentWrap>
@@ -149,33 +222,7 @@ class Home extends Component {
                             <h2 className="home-autocomplete__header-subtitle">
                                 Select your course to see our schedule
                             </h2>
-                            <CourseSelectionAutocomplete
-                                courses={this.props.courses.all}
-                                coursesSearcher={this.props.courses.searcher}
-                                getLocationNameFromCourse={(course) => {
-                                    return locationNameLookup[course.id];
-                                }}
-                                onCourseSelection={(course) =>
-                                    this.onCourseSelection(course)
-                                }
-                                onFocus={() => {
-                                    this.setState({
-                                        isCourseAutocompleteInputFocused: true,
-                                    });
-                                }}
-                                onBlur={() => {
-                                    this.setState({
-                                        isCourseAutocompleteInputFocused: false,
-                                    });
-                                }}
-                                onAfterInitialFocus={() => {
-                                    setTimeout(() => {
-                                        this.setState({
-                                            isBackgroundTransitionAnimationEnabled: true,
-                                        });
-                                    }, 0);
-                                }}
-                            />
+                            {content}
                         </div>
                     </div>
                 </MainContentWrap>
@@ -212,6 +259,7 @@ function mapStateToProps(state) {
         applicationTitle: state.util.settings.applicationTitle,
         isSimplifiedSchedulingUxEnabled:
             state.util.isSimplifiedSchedulingUxEnabled,
+        isDesktop: state.util.isDesktop,
     };
 }
 
