@@ -26,7 +26,11 @@ import {
 class Home extends Component {
     constructor() {
         super();
-        this.state = { isCourseAutocompleteInputFocused: false };
+
+        this.state = {
+            isCourseAutocompleteInputFocused: false,
+            isBackgroundTransitionAnimationEnabled: false,
+        };
     }
 
     componentDidMount() {
@@ -126,9 +130,14 @@ class Home extends Component {
                             className={`home-autocomplete__background-image
                                 ${
                                     this.state.isCourseAutocompleteInputFocused
-                                        ? " home-autocomplete__background-image--with-focused-search-input"
-                                        : " "
-                                }`}
+                                        ? ""
+                                        : " home-autocomplete__background-image--without-blur-on-background-image"
+                                } ${
+                                this.state
+                                    .isBackgroundTransitionAnimationEnabled
+                                    ? " home-autocomplete__background-image--with-background-transition-animation"
+                                    : ""
+                            }`}
                             style={withBackgroundImage()}>
                             <div className="home-autocomplete__background-image-overlay" />
                         </div>
@@ -158,6 +167,13 @@ class Home extends Component {
                                     this.setState({
                                         isCourseAutocompleteInputFocused: false,
                                     });
+                                }}
+                                onAfterInitialFocus={() => {
+                                    setTimeout(() => {
+                                        this.setState({
+                                            isBackgroundTransitionAnimationEnabled: true,
+                                        });
+                                    }, 0);
                                 }}
                             />
                         </div>

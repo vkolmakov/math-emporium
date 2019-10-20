@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import Autosuggest from "react-autosuggest";
 import propTypes from "prop-types";
@@ -88,6 +88,16 @@ function CourseSelectionAutocomplete(props) {
     const [value, setValue] = useState("");
     const autosuggestInputRef = useRef(null);
 
+    useEffect(() => {
+        if (typeof autosuggestInputRef.current.input.focus === "function") {
+            autosuggestInputRef.current.input.focus();
+        }
+
+        if (typeof props.onAfterInitialFocus === "function") {
+            props.onAfterInitialFocus();
+        }
+    }, []);
+
     return (
         <div className="course-selection-autocomplete">
             <Autosuggest
@@ -163,6 +173,7 @@ CourseSelectionAutocomplete.propTypes = {
     onCourseSelection: propTypes.func,
     onFocus: propTypes.func,
     onBlur: propTypes.func,
+    onAfterInitialFocus: propTypes.func,
 };
 
 function mapStateToProps() {
