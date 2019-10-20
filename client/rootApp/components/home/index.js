@@ -129,8 +129,24 @@ class Home extends Component {
                 !this.props.isDesktop &&
                 this.state.isCourseAutocompleteInputFocused
             ) {
+                const closeModal = () => {
+                    this.setState({
+                        isCourseAutocompleteInputFocused: false,
+                    });
+                };
                 content = (
-                    <Modal isOpen={true} className="home-autocomplete__modal">
+                    <Modal
+                        isOpen={true}
+                        onRequestClose={closeModal}
+                        shouldCloseOnOverlayClick={false}
+                        overlayClassName="home-autocomplete__modal-overlay"
+                        closeTimeoutMS={1}
+                        className="home-autocomplete__modal">
+                        <button
+                            onClick={closeModal}
+                            className="home-autocomplete__modal-close-button">
+                            Cancel
+                        </button>
                         <CourseSelectionAutocomplete
                             theme="in-modal"
                             shouldFocusOnInputWhenRendered={true}

@@ -78,7 +78,48 @@
 
     &__modal {
         margin: 16px;
+        margin-top: 4px;
         margin-bottom: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__modal-overlay {
+        overflow: hidden; // prevent scrolling when modal is open
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    &__modal-close-button {
+        // browser button overrides
+        font-family: inherit;
+        font-size: 100%;
+        line-height: 1.15;
+        margin: 0;
+        overflow: visible;
+        text-transform: none;
+        appearance: button;
+        border: none;
+
+        cursor: pointer;
+        padding: 12px;
+        color: #105c93;
+        outline: 0;
+        background-color: transparent;
+        margin-left: auto;
+
+        &:focus {
+            text-decoration: underline;
+        }
+
+        &:active {
+            transform: translateY(1px);
+            filter: saturate(150%);
+        }
     }
 }
 
