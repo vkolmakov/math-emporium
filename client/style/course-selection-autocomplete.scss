@@ -1,4 +1,15 @@
 .course-selection-autocomplete {
+    /**
+     * On sizing: all of the inner elements will take up all of the available space.
+     * The overall max size is controlled by this outer container.
+     */
+    width: 100%;
+    max-width: calc(
+        var(--course-search-input-max-width) +
+            var(--course-search-input-left-padding) +
+            var(--course-search-input-right-padding)
+    );
+
     &__suggestion-option {
         padding: 2px 0;
     }
@@ -17,6 +28,8 @@
     }
 
     &--in-modal {
+        max-width: 100%; // take up all of the available space in a modal
+
         .course-selection-autocomplete__suggestion-option {
             padding: 8px 0; // add more top-bottom padding to make tapping on an option more comfortable
         }
@@ -24,23 +37,12 @@
         .react-autosuggest {
             &__input {
                 flex: 1;
-                box-sizing: border-box;
-                width: 100%;
             }
 
             &__container {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-            }
-
-            &__suggestions-container {
-                position: unset;
-                box-sizing: border-box;
-                width: 100%;
-                &--open {
-                    max-height: 35vh; // assuming that mobile keyboard + browser controls will take up the rest of the space
-                }
             }
         }
     }
@@ -51,12 +53,12 @@
      * Using CSS variables instead of SASS variables here because
      * CSS variables can be set dynamically based on media queries.
      */
-    --course-search-input-width: 300px;
+    --course-search-input-max-width: 300px;
     --course-search-input-left-padding: 42px;
     --course-search-input-right-padding: 16px;
 
     @include on-medium-screen {
-        --course-search-input-width: 440px;
+        --course-search-input-max-width: 440px;
     }
 }
 
@@ -65,9 +67,10 @@
  */
 .react-autosuggest {
     &__input {
-        width: var(--course-search-input-width);
-
         font-size: 1em;
+
+        box-sizing: border-box;
+        width: 100%;
 
         padding: 12px; // top and bottom
         padding-left: var(--course-search-input-left-padding);
@@ -101,12 +104,8 @@
 
     &__suggestions-container {
         &--open {
-            position: absolute;
-            width: calc(
-                var(--course-search-input-width) +
-                    var(--course-search-input-left-padding) +
-                    var(--course-search-input-right-padding)
-            );
+            box-sizing: border-box;
+            width: 100%;
 
             background-color: $primary-text-background-color;
             color: $primary-text-color;
