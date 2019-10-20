@@ -17,6 +17,10 @@
     }
 
     &--in-modal {
+        .course-selection-autocomplete__suggestion-option {
+            padding: 8px 0; // add more top-bottom padding to make tapping on an option more comfortable
+        }
+
         .react-autosuggest {
             &__input {
                 flex: 1;
@@ -35,7 +39,7 @@
                 box-sizing: border-box;
                 width: 100%;
                 &--open {
-                    max-height: 80vh;
+                    max-height: 35vh; // assuming that mobile keyboard + browser controls will take up the rest of the space
                 }
             }
         }
