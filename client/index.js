@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import promise from "redux-promise";
 import reduxThunk from "redux-thunk";
 import attachUtilEventListeners from "./util/attachUtilEventListeners";
@@ -32,6 +32,8 @@ import "./assets/favicon.ico";
 
 let middlewares = [promise, reduxThunk];
 
+let composeEnhancers = compose;
+
 if (process.env.NODE_ENV !== "production") {
     const createLogger = require("redux-logger");
     const logger = createLogger({
@@ -40,10 +42,18 @@ if (process.env.NODE_ENV !== "production") {
     });
 
     middlewares = middlewares.concat([logger]);
+
+    // Redux devtools extension
+    composeEnhancers =
+        window && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+            ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+            : compose;
 }
 
-const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
-const store = createStoreWithMiddleware(reducers);
+const store = createStore(
+    reducers,
+    composeEnhancers(applyMiddleware(...middlewares))
+);
 
 attachUtilEventListeners(window, store);
 
