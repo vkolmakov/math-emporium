@@ -81,3 +81,11 @@ export function setCourse(course) {
         });
     };
 }
+
+export function setCompleteCourseSelection({ course, location, subject }) {
+    return (dispatch) => {
+        dispatch(setLocation(location));
+        dispatch(setSubject(subject));
+        dispatch(setCourse(course));
+    };
+}

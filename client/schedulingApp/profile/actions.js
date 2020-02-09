@@ -1,5 +1,5 @@
 import axios from "axios";
-import { setCourse, setLocation, setSubject } from "../actions";
+import { setCompleteCourseSelection } from "../actions";
 
 export const SA_GET_USER_PROFILE = "SA_GET_USER_PROFILE";
 export const SA_UPDATE_USER_PROFILE = "SA_UPDATE_USER_PROFILE";
@@ -38,9 +38,7 @@ export function setOpenSpotDataFromProfile(profile) {
     return (dispatch) => {
         const { location, course, subject } = profile;
 
-        dispatch(setLocation(location));
-        dispatch(setSubject(subject));
-        dispatch(setCourse(course));
+        dispatch(setCompleteCourseSelection({ location, course, subject }));
     };
 }
 

@@ -18,7 +18,12 @@ import { redirectTo } from "@client/utils";
 
 import { MODAL_LIFECYCLE, getOpenSpotElementId } from "./constants";
 
-import { setLocation, setSubject, setCourse } from "../actions";
+import {
+    setLocation,
+    setSubject,
+    setCourse,
+    setCompleteCourseSelection,
+} from "../actions";
 
 import {
     setStartDate,
@@ -129,9 +134,11 @@ class ShowSchedule extends Component {
 
         if (hasPreSelectedOpenSpot) {
             const { time, course, location, subject } = selectedOpenSpotInfo;
-            this.props.setLocation(location);
-            this.props.setSubject(subject);
-            this.props.setCourse(course);
+            this.props.setCompleteCourseSelection({
+                location,
+                subject,
+                course,
+            });
 
             this.props.getOpenSpots({
                 location,
@@ -627,6 +634,7 @@ export default connect(
         setSubject,
         setCourse,
         setStartDate,
+        setCompleteCourseSelection,
         getOpenSpots,
         selectOpenSpot,
         clearOpenSpotSelection,
