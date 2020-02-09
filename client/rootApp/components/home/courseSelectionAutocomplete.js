@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import Modal from "react-modal";
 import { connect } from "react-redux";
 import Autosuggest from "react-autosuggest";
 import propTypes from "prop-types";
@@ -20,61 +19,14 @@ function courseToString(course) {
     return `${course.code}: ${course.name}`;
 }
 
-function WithHighlightedFragments({ text, fragmentsToHighlight }) {
-    // first unhighlighted fragment
-    const result = [];
-    let currentUnhighlightedIndex = 0;
-    for (let { start, end } of fragmentsToHighlight) {
-        const unhighlightedFragment = (
-            <span key={`${text}-${currentUnhighlightedIndex}-${start}`}>
-                {text.substring(currentUnhighlightedIndex, start)}
-            </span>
-        );
-        const highlightedFragment = (
-            <span
-                key={`${text}-${start}-${end}`}
-                className="course-selection-autocomplete__suggestion-option-query-text">
-                {text.substring(start, end)}
-            </span>
-        );
-        currentUnhighlightedIndex = end;
-
-        result.push(unhighlightedFragment, highlightedFragment);
-    }
-    const lastUnhighlightedFragment = (
-        <span key={`${text}-${currentUnhighlightedIndex}-${text.length}`}>
-            {text.substring(currentUnhighlightedIndex, text.length)}
-        </span>
-    );
-    result.push(lastUnhighlightedFragment);
-    return result;
-}
-
 function Suggestion(getLocationNameFromCourse) {
     return (courseWithMatches, { query }) => {
         const course = courseWithMatches.item;
         const courseString = courseToString(course);
-        let fragmentsToHighlight = [];
-        const tokens = query.split(/\s+/);
-        for (let token of tokens) {
-            const queryTokenIndex = courseString
-                .toLowerCase()
-                .indexOf(token.toLowerCase());
-            if (token && queryTokenIndex > -1) {
-                fragmentsToHighlight.push({
-                    start: queryTokenIndex,
-                    end: queryTokenIndex + token.length,
-                });
-            }
-        }
-
         return (
             <div className="course-selection-autocomplete__suggestion-option">
                 <div className="course-selection-autocomplete__suggestion-option-value">
-                    <WithHighlightedFragments
-                        text={courseString}
-                        fragmentsToHighlight={fragmentsToHighlight}
-                    />
+                    {courseString}
                 </div>
                 <div className="course-selection-autocomplete__suggestion-option-location">
                     <span>{getLocationNameFromCourse(course)}</span>
