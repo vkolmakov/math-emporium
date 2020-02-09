@@ -22,6 +22,7 @@ export function getLocations() {
             type: SPD_GET_LOCATIONS,
             payload: request,
         });
+        return request;
     };
 }
 
@@ -36,6 +37,7 @@ export function getSubjects() {
             type: SPD_GET_SUBJECTS,
             payload: request,
         });
+        return request;
     };
 }
 
@@ -50,5 +52,6 @@ export function getCourses() {
             type: SPD_GET_COURSES,
             payload: request,
         });
+        return request;
     };
 }
