@@ -55,6 +55,9 @@
     background-position: calc(100% - 10px) 70%;
     background-repeat: no-repeat;
     background-color: white;
+
+    // to avoid text getting on top of the caret element (background)
+    padding-right: 2em;
 }
 
 @mixin input-no-rounded-border {

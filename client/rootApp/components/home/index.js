@@ -217,11 +217,7 @@ class Home extends Component {
                     <div className="home-autocomplete">
                         <div
                             className={`home-autocomplete__background-image
-                                ${
-                                    this.state.isCourseAutocompleteInputFocused
-                                        ? ""
-                                        : " home-autocomplete__background-image--without-blur-on-background-image"
-                                } ${
+                                ${" home-autocomplete__background-image--without-blur-on-background-image"} ${
                                 this.state
                                     .isBackgroundTransitionAnimationEnabled
                                     ? " home-autocomplete__background-image--with-background-transition-animation"
