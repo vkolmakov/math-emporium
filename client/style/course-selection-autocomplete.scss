@@ -46,6 +46,15 @@
                 // primarily a mobile feature, I think that this trade-off makes sense.
                 margin-top: -2px;
             }
+
+            &__input {
+                // always hide the magnifying glass icon when input is displayed
+                // in a modal to preserve the screen space
+                background-image: none;
+                // ensure that the input will always have the same padding
+                // as the options below it when displayed in the modal
+                padding-left: var(--course-search-input-left-padding);
+            }
         }
     }
 }
@@ -56,11 +65,12 @@
      * CSS variables can be set dynamically based on media queries.
      */
     --course-search-input-max-width: 300px;
-    --course-search-input-left-padding: 42px;
+    --course-search-input-left-padding: 16px;
     --course-search-input-right-padding: 16px;
 
     @include on-medium-screen {
         --course-search-input-max-width: 440px;
+        --course-search-input-left-padding: 42px;
     }
 }
 
@@ -75,32 +85,44 @@
         width: 100%;
 
         padding: 12px; // top and bottom
-        padding-left: var(--course-search-input-left-padding);
-        padding-right: var(--course-search-input-right-padding);
+
+        // reduce padding to ensure that the whole suggestion
+        // placeholder is available
+        padding-right: 6px;
+        padding-left: 30px;
+        @include on-medium-screen {
+            padding-right: var(--course-search-input-right-padding);
+            padding-left: 42px;
+        }
 
         border: 1px solid $border-color-for-controls;
         border-radius: 5px;
         outline: 0;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='%23949494'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        background-size: 28px;
-        background-position: 6px center;
+        background-size: 24px;
+        background-position: 4px center;
+        @include on-medium-screen {
+            background-size: 28px;
+            background-position: 6px center;
+        }
         background-repeat: no-repeat;
 
         &--open {
             // only round the top corners when input is open
             border-radius: 5px 5px 0 0;
 
-            // update color of the icon
+            // reset left padding back since the options will be displayed
+            // and the text of the placeholder must align with the text
+            // of each option
+            padding-left: var(--course-search-input-left-padding);
+
+            // update color of the icon on desktop
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='black'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         &--focused,
         &:hover {
             box-shadow: 4px 4px 6px 1px rgba(32, 33, 36, 0.28);
-        }
-
-        &--course-selection-autocomplete-with-suggestion-selected {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='32px' viewBox='0 0 32 32' width='32px'%3E%3Cg fill='none' fill-rule='evenodd' stroke='none' stroke-width='1'%3E%3Cg fill='%23105c93'%3E%3Cpath d='M19.4271164,20.4271164 C18.0372495,21.4174803 16.3366522,22 14.5,22 C9.80557939,22 6,18.1944206 6,13.5 C6,8.80557939 9.80557939,5 14.5,5 C19.1944206,5 23,8.80557939 23,13.5 C23,15.8472103 22.0486052,17.9722103 20.5104077,19.5104077 L26.5077736,25.5077736 C26.782828,25.782828 26.7761424,26.2238576 26.5,26.5 C26.2219324,26.7780676 25.7796227,26.7796227 25.5077736,26.5077736 L19.4271164,20.4271164 L19.4271164,20.4271164 Z M14.5,21 C18.6421358,21 22,17.6421358 22,13.5 C22,9.35786417 18.6421358,6 14.5,6 C10.3578642,6 7,9.35786417 7,13.5 C7,17.6421358 10.3578642,21 14.5,21 L14.5,21 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
     }
 
@@ -116,7 +138,7 @@
             max-height: 30vh;
             overflow: auto;
 
-            box-shadow: 0 6px 12px 0 rgba(32, 33, 36, 0.28);
+            box-shadow: 0 6px 6px 0 rgba(32, 33, 36, 0.28);
             border: 1px solid #949494;
             // top border will come from the input
             border-top: none;

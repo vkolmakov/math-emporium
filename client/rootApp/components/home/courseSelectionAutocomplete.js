@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Autosuggest from "react-autosuggest";
 import propTypes from "prop-types";
 
-const SEARCH_PLACEHOLDER = "Try searching for MATH125 or Chemistry";
+const SEARCH_PLACEHOLDER = "Try searching for MATH125 or Statistics";
 
 const SUGGESTION_SELECTED_CLASS_NAME =
     "react-autosuggest__input--course-selection-autocomplete-with-suggestion-selected";
