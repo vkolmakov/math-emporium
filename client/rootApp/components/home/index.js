@@ -134,6 +134,17 @@ class Home extends Component {
                         isCourseAutocompleteInputFocused: false,
                     });
                 };
+
+                const CancelButton = function CancelButton() {
+                    return (
+                        <button
+                            onClick={closeModal}
+                            className="home-autocomplete__modal-close-button">
+                            Cancel
+                        </button>
+                    );
+                };
+
                 content = (
                     <Modal
                         isOpen={true}
@@ -142,11 +153,7 @@ class Home extends Component {
                         overlayClassName="home-autocomplete__modal-overlay"
                         closeTimeoutMS={1}
                         className="home-autocomplete__modal">
-                        <button
-                            onClick={closeModal}
-                            className="home-autocomplete__modal-close-button">
-                            Cancel
-                        </button>
+                        <CancelButton />
                         <CourseSelectionAutocomplete
                             theme="in-modal"
                             shouldFocusOnInputWhenRendered={true}

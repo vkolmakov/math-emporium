@@ -77,6 +77,7 @@ function CourseSelectionAutocomplete(props) {
                 inputProps={{
                     placeholder: SEARCH_PLACEHOLDER,
                     value: value,
+                    type: "search",
                     onChange: (_event, { newValue }) => {
                         setValue(newValue);
                     },
