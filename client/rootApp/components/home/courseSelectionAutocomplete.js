@@ -42,14 +42,10 @@ function CourseSelectionAutocomplete(props) {
     const autosuggestInputRef = useRef(null);
 
     useEffect(() => {
-        if (props.shouldFocusOnInputWhenRendered) {
-            if (typeof autosuggestInputRef.current.input.focus === "function") {
-                autosuggestInputRef.current.input.focus();
-            }
-
-            if (typeof props.onAfterInitialFocus === "function") {
-                props.onAfterInitialFocus();
-            }
+        if (typeof props.onRenderComplete === "function") {
+            props.onRenderComplete({
+                textInputRef: autosuggestInputRef.current.input,
+            });
         }
     }, []);
 
@@ -124,17 +120,16 @@ CourseSelectionAutocomplete.propTypes = {
             location: propTypes.shape({ id: propTypes.number }),
             subject: propTypes.shape({ id: propTypes.number }),
         })
-    ),
-    getLocationNameFromCourse: propTypes.func,
+    ).isRequired,
+    getLocationNameFromCourse: propTypes.func.isRequired,
     coursesSearcher: propTypes.shape({
         queryWithMatches: propTypes.func,
-    }),
+    }).isRequired,
     onCourseSelection: propTypes.func,
     onFocus: propTypes.func,
     onBlur: propTypes.func,
-    onAfterInitialFocus: propTypes.func,
-    shouldFocusOnInputWhenRendered: propTypes.bool,
-    theme: propTypes.string,
+    onRenderComplete: propTypes.func,
+    theme: propTypes.string.isRequired,
 };
 
 function mapStateToProps() {

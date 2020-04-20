@@ -30,7 +30,6 @@ class Home extends Component {
 
         this.state = {
             isCourseAutocompleteInputFocused: false,
-            isBackgroundTransitionAnimationEnabled: false,
         };
     }
 
@@ -156,7 +155,14 @@ class Home extends Component {
                         <CancelButton />
                         <CourseSelectionAutocomplete
                             theme="in-modal"
-                            shouldFocusOnInputWhenRendered={true}
+                            onRenderComplete={({ textInputRef }) => {
+                                if (
+                                    textInputRef &&
+                                    typeof textInputRef.focus === "function"
+                                ) {
+                                    textInputRef.focus();
+                                }
+                            }}
                             courses={this.props.courses.all}
                             coursesSearcher={this.props.courses.searcher}
                             getLocationNameFromCourse={(course) => {
@@ -175,13 +181,6 @@ class Home extends Component {
                                     isCourseAutocompleteInputFocused: false,
                                 });
                             }}
-                            onAfterInitialFocus={() => {
-                                setTimeout(() => {
-                                    this.setState({
-                                        isBackgroundTransitionAnimationEnabled: true,
-                                    });
-                                }, 0);
-                            }}
                         />
                     </Modal>
                 );
@@ -189,7 +188,15 @@ class Home extends Component {
                 content = (
                     <CourseSelectionAutocomplete
                         theme={"standalone"}
-                        shouldFocusOnInputWhenRendered={this.props.isDesktop}
+                        onRenderComplete={({ textInputRef }) => {
+                            if (
+                                this.props.isDesktop &&
+                                textInputRef &&
+                                typeof textInputRef.focus === "function"
+                            ) {
+                                textInputRef.focus();
+                            }
+                        }}
                         courses={this.props.courses.all}
                         coursesSearcher={this.props.courses.searcher}
                         getLocationNameFromCourse={(course) => {
@@ -208,13 +215,6 @@ class Home extends Component {
                                 isCourseAutocompleteInputFocused: false,
                             });
                         }}
-                        onAfterInitialFocus={() => {
-                            setTimeout(() => {
-                                this.setState({
-                                    isBackgroundTransitionAnimationEnabled: true,
-                                });
-                            }, 0);
-                        }}
                     />
                 );
             }
@@ -224,12 +224,7 @@ class Home extends Component {
                     <div className="home-autocomplete">
                         <div
                             className={`home-autocomplete__background-image
-                                ${" home-autocomplete__background-image--without-blur-on-background-image"} ${
-                                this.state
-                                    .isBackgroundTransitionAnimationEnabled
-                                    ? " home-autocomplete__background-image--with-background-transition-animation"
-                                    : ""
-                            }`}
+                                ${" home-autocomplete__background-image--without-blur-on-background-image"}`}
                             style={withBackgroundImage()}>
                             <div className="home-autocomplete__background-image-overlay" />
                         </div>
