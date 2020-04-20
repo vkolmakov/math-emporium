@@ -6,6 +6,8 @@ export const SA_UPDATE_USER_PROFILE = "SA_UPDATE_USER_PROFILE";
 export const SA_SET_USER_PROFILE = "SA_SET_USER_PROFILE";
 export const SA_SET_ACTIVE_USER_APPOINTMENTS =
     "SA_SET_ACTIVE_USER_APPOINTMENTS";
+export const SA_SET_RECENT_USER_APPOINTMENTS =
+    "SA_SET_RECENT_USER_APPOINTMENTS";
 
 const BASE_URL = "/api/user";
 const BASE_URL_APPOINTMENTS = "/api/scheduled-appointments";
@@ -39,6 +41,24 @@ export function setOpenSpotDataFromProfile(profile) {
         const { location, course, subject } = profile;
 
         dispatch(setCompleteCourseSelection({ location, course, subject }));
+    };
+}
+
+export function getRecentUserAppointments() {
+    return (dispatch) => {
+        // TODO: get this data from an API
+        const recentUserAppointmentsRequest = Promise.resolve([
+            { courseId: 1 },
+            { courseId: 25 },
+            { courseId: 30 },
+        ]);
+
+        return recentUserAppointmentsRequest.then((recentUserAppointments) => {
+            dispatch({
+                type: SA_SET_RECENT_USER_APPOINTMENTS,
+                payload: recentUserAppointments,
+            });
+        });
     };
 }
 

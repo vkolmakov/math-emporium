@@ -2,11 +2,13 @@ import {
     SA_SET_USER_PROFILE,
     SA_UPDATE_USER_PROFILE,
     SA_SET_ACTIVE_USER_APPOINTMENTS,
+    SA_SET_RECENT_USER_APPOINTMENTS,
 } from "./actions";
 
 const INITIAL_STATE = {
     user: null,
     activeUserAppointments: null,
+    recentUserAppointments: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -34,6 +36,14 @@ export default (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 activeUserAppointments,
+            };
+        }
+        case SA_SET_RECENT_USER_APPOINTMENTS: {
+            const recentUserAppointments = payload;
+
+            return {
+                ...state,
+                recentUserAppointments,
             };
         }
         default: {

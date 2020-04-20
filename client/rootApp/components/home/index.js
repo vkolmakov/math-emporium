@@ -13,6 +13,7 @@ import {
     getCourses,
     getSubjects,
 } from "@client/sharedPublicData/actions";
+import { getRecentUserAppointments } from "@client/schedulingApp/profile/actions";
 import {
     setLocation,
     setSubject,
@@ -23,6 +24,34 @@ import {
     backgroundPictureStyle,
     backgroundPictureOverlayStyle,
 } from "@client/utils";
+
+function RecentUserAppointments({
+    recentUserAppointments,
+    courses,
+    onAppointmentClick,
+}) {
+    const relevantCourseIds = new Set(
+        recentUserAppointments.map((appointment) => appointment.courseId)
+    );
+    const coursesWithAppointments = courses.filter((course) =>
+        relevantCourseIds.has(course.id)
+    );
+    const onAppointmentLinkClick = (course) => (event) => {
+        event.preventDefault();
+        onAppointmentClick(course);
+    };
+
+    const RecentUserAppointment = function RecentUserAppointment(course) {
+        return (
+            <li>
+                <button onClick={onAppointmentLinkClick(course)}>
+                    {course.code}: {course.name}
+                </button>
+            </li>
+        );
+    };
+    return <ul>{coursesWithAppointments.map(RecentUserAppointment)}</ul>;
+}
 
 class Home extends Component {
     constructor() {
@@ -45,6 +74,8 @@ class Home extends Component {
         if (!this.props.subjects.all.length > 0) {
             this.props.getSubjects();
         }
+
+        this.props.getRecentUserAppointments();
     }
 
     redirectToSchedule() {
@@ -62,7 +93,8 @@ class Home extends Component {
         if (
             !(
                 this.props.locations.all.length > 0 &&
-                this.props.courses.all.length > 0
+                this.props.courses.all.length > 0 &&
+                Array.isArray(this.props.recentUserAppointments)
             )
         ) {
             // not ready to render yet
@@ -122,6 +154,12 @@ class Home extends Component {
                     locationNameLookup[course.id] = " ";
                 }
             }
+
+            const recentlyScheduledCourses = this.props.recentUserAppointments
+                ? this.props.recentUserAppointments.map(
+                      (appointment) => appointment.courseId
+                  )
+                : [];
             let content;
 
             if (
@@ -164,6 +202,7 @@ class Home extends Component {
                                 }
                             }}
                             courses={this.props.courses.all}
+                            recentlyScheduledCourses={recentlyScheduledCourses}
                             coursesSearcher={this.props.courses.searcher}
                             getLocationNameFromCourse={(course) => {
                                 return locationNameLookup[course.id];
@@ -198,6 +237,7 @@ class Home extends Component {
                             }
                         }}
                         courses={this.props.courses.all}
+                        recentlyScheduledCourses={recentlyScheduledCourses}
                         coursesSearcher={this.props.courses.searcher}
                         getLocationNameFromCourse={(course) => {
                             return locationNameLookup[course.id];
@@ -233,8 +273,23 @@ class Home extends Component {
                             <h1 className="home-autocomplete__header-title">
                                 {this.props.applicationTitle}
                             </h1>
+                            <div className="home-autocomplete__recent-appointments">
+                                <h2 className="home-autocomplete__header-subtitle">
+                                    Reschedule one of your previous appointments
+                                </h2>
+                                <RecentUserAppointments
+                                    recentUserAppointments={
+                                        this.props.recentUserAppointments
+                                    }
+                                    courses={this.props.courses.all}
+                                    onAppointmentClick={this.onCourseSelection.bind(
+                                        this
+                                    )}
+                                />
+                            </div>
+
                             <h2 className="home-autocomplete__header-subtitle">
-                                Select your course to see our schedule
+                                Or search for your course below
                             </h2>
                             {content}
                         </div>
@@ -271,6 +326,7 @@ function mapStateToProps(state) {
         },
         headerPictureLink: state.util.settings.applicationMainHomePictureLink,
         applicationTitle: state.util.settings.applicationTitle,
+        recentUserAppointments: state.scheduling.profile.recentUserAppointments,
         isSimplifiedSchedulingUxEnabled:
             state.util.isSimplifiedSchedulingUxEnabled,
         isDesktop: state.util.isDesktop,
@@ -286,5 +342,6 @@ export default connect(
         setLocation,
         setSubject,
         setCourse,
+        getRecentUserAppointments,
     }
 )(withRouterContext(Home));
