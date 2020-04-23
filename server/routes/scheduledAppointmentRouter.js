@@ -54,6 +54,12 @@ export default function createScheduledAppointmentRouter() {
     );
 
     router.get(
+        `/${ROUTE_PATH_NAME}/suggestions`,
+        requireGroup(authGroups.USER),
+        controller.getSuggestionsForUser.bind(controller)
+    );
+
+    router.get(
         `/admin/${ROUTE_PATH_NAME}`,
         requireGroup(authGroups.ADMIN),
         controller.getAllActiveAppointments.bind(controller)

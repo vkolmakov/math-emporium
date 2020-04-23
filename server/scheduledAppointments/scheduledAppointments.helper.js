@@ -11,6 +11,8 @@ const RECOVERY_SUGGESTION = {
     RESCHEDULE: "RESCHEDULE",
 };
 
+const MAX_NUMBER_APPOINTMENT_SUGGESTIONS = 3;
+
 function activeAppointmentCondition(now) {
     return {
         googleCalendarAppointmentDate: { $gt: now },
@@ -120,6 +122,50 @@ export default (
             },
             order: [["googleCalendarAppointmentDate", "ASC"]],
         });
+    },
+
+    getAppointmentSuggestionsForUser(user, now) {
+        return mainStorage.db.models.scheduledAppointment
+            .findAll({
+                where: {
+                    userId: user.id,
+                    createdAt: {
+                        $gt: dateTime.addDays(now, -30), // only look at appointments that happened ~30 days before now
+                    },
+                },
+                order: [["createdAt", "DESC"]],
+                limit: 20, // given that we look 30 days back, 20 sounds like a good enough sample, completely random though
+            })
+            .then((appointmentsSample) => {
+                let courseIds = [];
+                let deletedCourseIds = [];
+
+                // First, check all of the appointments that were not deleted. If we
+                // already have 3 suggestions, exit. If not, dip into deleted appointments
+
+                // accumulating the course IDs manually because we would want to preserve the order
+                // of records
+                for (let appointment of appointmentsSample) {
+                    if (
+                        !appointment.isDeleted &&
+                        !courseIds.includes(appointment.courseId)
+                    ) {
+                        courseIds.push(appointment.courseId);
+                    } else if (
+                        appointment.isDeleted &&
+                        !deletedCourseIds.includes(appointment.courseId)
+                    ) {
+                        deletedCourseIds.push(appointment.courseId);
+                    }
+                }
+
+                return courseIds
+                    .concat(deletedCourseIds)
+                    .slice(0, MAX_NUMBER_APPOINTMENT_SUGGESTIONS)
+                    .map((courseId) => {
+                        return { courseId: courseId };
+                    });
+            });
     },
 
     getAllActiveAppointmentsWithRelatedData(now) {

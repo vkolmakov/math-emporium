@@ -185,6 +185,10 @@ export const dateTime = {
         return _dateFns.addMinutes(dt, minutes);
     },
 
+    addDays(dt, amount) {
+        return _dateFns.addDays(dt, amount);
+    },
+
     isAfter(dt, other) {
         return _dateFns.isAfter(dt, other);
     },

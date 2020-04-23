@@ -180,6 +180,23 @@ export default class ScheduledAppointmentsController {
             );
     }
 
+    getSuggestionsForUser(req, res, next) {
+        const { user } = req;
+        const now = this.dateTime.now();
+
+        return this.helper
+            .getAppointmentSuggestionsForUser(user, now)
+            .then((suggestions) => {
+                const suggestionsWithPublicFields = suggestions.map(
+                    (suggestion) => ({
+                        courseId: suggestion.courseId,
+                    })
+                );
+                res.status(200).json(suggestionsWithPublicFields);
+            })
+            .catch(() => next(actionFailed("get", "appointment suggestions")));
+    }
+
     getById(req, res, next) {
         const requestedAppointmentId = parseInt(req.params.id, 10);
 
