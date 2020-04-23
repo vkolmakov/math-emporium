@@ -272,11 +272,15 @@ class Home extends Component {
             let Content;
             if (this.props.recentUserAppointments.length > 0) {
                 // Add suggestions based on previous appointments
+                const rescheduleMessage =
+                    this.props.recentUserAppointments.length === 1
+                        ? "Reschedule your previous appointment"
+                        : "Reschedule one of your previous appointments";
                 Content = (
                     <div className="home-autocomplete__content-container">
                         <div className="home-autocomplete__recent-appointments">
                             <h2 className="home-autocomplete__header-subtitle">
-                                Reschedule one of your previous appointments
+                                {rescheduleMessage}
                             </h2>
                             <RecentUserAppointments
                                 recentUserAppointments={
@@ -290,7 +294,7 @@ class Home extends Component {
                         </div>
 
                         <h2 className="home-autocomplete__header-subtitle home-autocomplete__header-subtitle--alternative">
-                            Or search for your course below
+                            Or search for another course below
                         </h2>
                         {ResponsiveAutocomplete}
                     </div>
