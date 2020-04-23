@@ -30,11 +30,8 @@ function RecentUserAppointments({
     courses,
     onAppointmentClick,
 }) {
-    const relevantCourseIds = new Set(
-        recentUserAppointments.map((appointment) => appointment.courseId)
-    );
-    const coursesWithAppointments = courses.filter((course) =>
-        relevantCourseIds.has(course.id)
+    const coursesWithAppointments = recentUserAppointments.map((appointment) =>
+        courses.find((course) => course.id === appointment.courseId)
     );
     const onAppointmentLinkClick = (course) => (event) => {
         event.preventDefault();
