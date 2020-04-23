@@ -115,7 +115,13 @@ export function getOrigin() {
 
 export function backgroundPictureStyle(link) {
     return {
-        backgroundImage: `url(${link})`,
+        backgroundImage: `
+            linear-gradient(
+                rgba(0, 0, 0, 0.75),
+                rgba(0, 0, 0, 0.75)
+            ),
+            url(${link})
+        `,
         backgroundSize: "cover",
         backgroundPosition: "center",
     };
