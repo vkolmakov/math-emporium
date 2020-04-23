@@ -44,14 +44,22 @@ export function setOpenSpotDataFromProfile(profile) {
     };
 }
 
-export function getRecentUserAppointments() {
+export function getRecentUserAppointments({ isUserLoggedIn }) {
     return (dispatch) => {
-        // TODO: get this data from an API
-        const recentUserAppointmentsRequest = Promise.resolve([
-            { courseId: 1 },
-            { courseId: 25 },
-            { courseId: 30 },
-        ]);
+        let recentUserAppointmentsRequest;
+        if (isUserLoggedIn) {
+            recentUserAppointmentsRequest = axios
+                .get(`${BASE_URL_APPOINTMENTS}/suggestions`)
+                .then((response) => {
+                    if (!Array.isArray(response.data)) {
+                        return [];
+                    }
+                    return response.data;
+                })
+                .catch(() => []); // default to an empty list if unavailable
+        } else {
+            recentUserAppointmentsRequest = Promise.resolve([]);
+        }
 
         return recentUserAppointmentsRequest.then((recentUserAppointments) => {
             dispatch({

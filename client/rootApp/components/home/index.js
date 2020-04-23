@@ -86,7 +86,9 @@ class Home extends Component {
             this.props.getSubjects();
         }
 
-        this.props.getRecentUserAppointments();
+        this.props.getRecentUserAppointments({
+            isUserLoggedIn: this.props.isUserLoggedIn,
+        });
     }
 
     redirectToSchedule() {
@@ -351,6 +353,7 @@ function mapStateToProps(state) {
         isSimplifiedSchedulingUxEnabled:
             state.util.isSimplifiedSchedulingUxEnabled,
         isDesktop: state.util.isDesktop,
+        isUserLoggedIn: state.auth.authenticated,
     };
 }
 
