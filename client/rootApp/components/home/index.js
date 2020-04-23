@@ -43,14 +43,25 @@ function RecentUserAppointments({
 
     const RecentUserAppointment = function RecentUserAppointment(course) {
         return (
-            <li>
-                <button onClick={onAppointmentLinkClick(course)}>
-                    {course.code}: {course.name}
+            <li className="recent-user-appointments__appointment-container">
+                <button
+                    className="recent-user-appointments__appointment-button"
+                    onClick={onAppointmentLinkClick(course)}>
+                    <div className="recent-user-appointments__course-code">
+                        {course.code}
+                    </div>
+                    <div className="recent-user-appointments__course-name">
+                        {course.name}
+                    </div>
                 </button>
             </li>
         );
     };
-    return <ul>{coursesWithAppointments.map(RecentUserAppointment)}</ul>;
+    return (
+        <ul className="recent-user-appointments__list">
+            {coursesWithAppointments.map(RecentUserAppointment)}
+        </ul>
+    );
 }
 
 class Home extends Component {
@@ -160,7 +171,7 @@ class Home extends Component {
                       (appointment) => appointment.courseId
                   )
                 : [];
-            let content;
+            let ResponsiveAutocomplete;
 
             if (
                 !this.props.isDesktop &&
@@ -182,7 +193,7 @@ class Home extends Component {
                     );
                 };
 
-                content = (
+                ResponsiveAutocomplete = (
                     <Modal
                         isOpen={true}
                         onRequestClose={closeModal}
@@ -224,7 +235,7 @@ class Home extends Component {
                     </Modal>
                 );
             } else {
-                content = (
+                ResponsiveAutocomplete = (
                     <CourseSelectionAutocomplete
                         theme={"standalone"}
                         onRenderComplete={({ textInputRef }) => {
@@ -259,40 +270,50 @@ class Home extends Component {
                 );
             }
 
+            let Content;
+            if (this.props.recentUserAppointments.length > 0) {
+                // Add suggestions based on previous appointments
+                Content = (
+                    <div className="home-autocomplete__content-container">
+                        <div className="home-autocomplete__recent-appointments">
+                            <h2 className="home-autocomplete__header-subtitle">
+                                Reschedule one of your previous appointments
+                            </h2>
+                            <RecentUserAppointments
+                                recentUserAppointments={
+                                    this.props.recentUserAppointments
+                                }
+                                courses={this.props.courses.all}
+                                onAppointmentClick={this.onCourseSelection.bind(
+                                    this
+                                )}
+                            />
+                        </div>
+
+                        <h2 className="home-autocomplete__header-subtitle home-autocomplete__header-subtitle--alternative">
+                            Or search for your course below
+                        </h2>
+                        {ResponsiveAutocomplete}
+                    </div>
+                );
+            } else {
+                // Just show search
+                Content = (
+                    <div className="home-autocomplete__content-container">
+                        <h2 className="home-autocomplete__header-subtitle home-autocomplete__header-subtitle--alternative">
+                            Select your course to see our schedule
+                        </h2>
+                        {ResponsiveAutocomplete}
+                    </div>
+                );
+            }
+
             return (
                 <MainContentWrap>
-                    <div className="home-autocomplete">
-                        <div
-                            className={`home-autocomplete__background-image
-                                ${" home-autocomplete__background-image--without-blur-on-background-image"}`}
-                            style={withBackgroundImage()}>
-                            <div className="home-autocomplete__background-image-overlay" />
-                        </div>
-
-                        <div className="home-autocomplete__content-container">
-                            <h1 className="home-autocomplete__header-title">
-                                {this.props.applicationTitle}
-                            </h1>
-                            <div className="home-autocomplete__recent-appointments">
-                                <h2 className="home-autocomplete__header-subtitle">
-                                    Reschedule one of your previous appointments
-                                </h2>
-                                <RecentUserAppointments
-                                    recentUserAppointments={
-                                        this.props.recentUserAppointments
-                                    }
-                                    courses={this.props.courses.all}
-                                    onAppointmentClick={this.onCourseSelection.bind(
-                                        this
-                                    )}
-                                />
-                            </div>
-
-                            <h2 className="home-autocomplete__header-subtitle">
-                                Or search for your course below
-                            </h2>
-                            {content}
-                        </div>
+                    <div
+                        className="home-autocomplete"
+                        style={withBackgroundImage()}>
+                        {Content}
                     </div>
                 </MainContentWrap>
             );
